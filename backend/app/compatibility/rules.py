@@ -1,0 +1,3 @@
+"""
+Deterministic compatibility rules.
+"""
