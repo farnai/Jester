@@ -5,19 +5,30 @@ import psycopg
 from backend.app.config import Settings, get_settings
 from backend.app.core.database import get_db
 
-router = APIRouter(tags=["health"])
+# Root system health router (mounted at root -> /healthz)
+health_root_router = APIRouter(tags=["health"])
 
 
-@router.get("/healthz", status_code=status.HTTP_200_OK)
+@health_root_router.get("/healthz", status_code=status.HTTP_200_OK)
 async def health_check() -> dict[str, str]:
+    """
+    Lightweight system liveness probe for load balancers.
+    """
     return {"status": "ok"}
 
 
-@router.get("/v1/health", status_code=status.HTTP_200_OK)
+# Versioned API health router (mounted under /v1 -> /v1/health)
+health_v1_router = APIRouter(tags=["health"])
+
+
+@health_v1_router.get("/health", status_code=status.HTTP_200_OK)
 async def detailed_health_check(
     settings: Settings = Depends(get_settings),
     db: psycopg.Connection = Depends(get_db),
 ) -> dict[str, Any]:
+    """
+    Detailed system and database connectivity health probe.
+    """
     db_status = "healthy"
     try:
         with db.cursor() as cur:
