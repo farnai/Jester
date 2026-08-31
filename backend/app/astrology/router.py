@@ -9,7 +9,7 @@ from backend.app.auth.models import AuthenticatedUser
 from backend.app.core.database import get_db
 from backend.app.core.errors import PrivacySafeNotFoundException
 
-router = APIRouter(tags=["astrology"])
+router = APIRouter(prefix="/astrology", tags=["astrology"])
 
 
 @router.post(

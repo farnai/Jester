@@ -282,3 +282,60 @@ def test_engine_version_metadata():
     """
     assert ASTROLOGY_ENGINE_VERSION == "1.0.0"
     assert SWISS_EPHEMERIS_VERSION == "2.10.03"
+
+
+# ==============================================================================
+# 7. TIMEZONE & COORDINATES CONSISTENCY VALIDATION
+# ==============================================================================
+
+def test_timezone_location_consistency_and_repeatability():
+    """
+    Proves why different timezones for the same local time and coordinates
+    produce different Ascendant values due to UTC time offset differences.
+
+    Case A: 1996-05-15 14:30 EDT (America/New_York, UTC-4) -> 18:30 UTC.
+            Eastern horizon at 18:30 UTC for NY coordinates is Virgo (169.89°).
+    Case B: 1996-05-15 14:30 GET (Asia/Tbilisi, UTC+4) -> 10:30 UTC (8 hours earlier).
+            Eastern horizon at 10:30 UTC for NY coordinates is Taurus (50.41°).
+    """
+    case_ny_tz = BirthDataInput(
+        birth_date=date(1996, 5, 15),
+        birth_time=time(14, 30),
+        birth_time_precision="exact",
+        birth_timezone="America/New_York",
+        latitude=40.7128,
+        longitude=-74.0060,
+    )
+    case_tb_tz = BirthDataInput(
+        birth_date=date(1996, 5, 15),
+        birth_time=time(14, 30),
+        birth_time_precision="exact",
+        birth_timezone="Asia/Tbilisi",
+        latitude=40.7128,
+        longitude=-74.0060,
+    )
+
+    # 1. Calculate Case NY Timezone
+    p_ny_1 = compute_natal_placements(case_ny_tz)
+    p_ny_2 = compute_natal_placements(case_ny_tz)
+    assert longitude_to_sign(p_ny_1.sun_longitude) == "Taurus"
+    assert longitude_to_sign(p_ny_1.moon_longitude) == "Taurus"
+    assert longitude_to_sign(p_ny_1.ascendant_longitude) == "Virgo"
+    # Deterministic repeatability check
+    assert p_ny_1.ascendant_longitude == p_ny_2.ascendant_longitude
+
+    # 2. Calculate Case Tbilisi Timezone
+    p_tb_1 = compute_natal_placements(case_tb_tz)
+    p_tb_2 = compute_natal_placements(case_tb_tz)
+    assert longitude_to_sign(p_tb_1.sun_longitude) == "Taurus"
+    assert longitude_to_sign(p_tb_1.moon_longitude) == "Taurus"
+    assert longitude_to_sign(p_tb_1.ascendant_longitude) == "Taurus"
+    # Deterministic repeatability check
+    assert p_tb_1.ascendant_longitude == p_tb_2.ascendant_longitude
+
+    # In 1996, Asia/Tbilisi was UTC+5 (DST) and America/New_York was UTC-4 (EDT).
+    # UTC difference is 9.0 hours -> difference in Julian Day is 9.0 / 24.0 = 0.375 days.
+    jd_ny = compute_julian_day(case_ny_tz.birth_date, case_ny_tz.birth_time, case_ny_tz.birth_timezone)
+    jd_tb = compute_julian_day(case_tb_tz.birth_date, case_tb_tz.birth_time, case_tb_tz.birth_timezone)
+    assert abs((jd_ny - jd_tb) - (9.0 / 24.0)) < 1e-6
+

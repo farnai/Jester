@@ -20,6 +20,22 @@ async def get_my_profile(
         cur.execute("SELECT * FROM public.profiles WHERE id = %s;", (current_user.id,))
         row = cur.fetchone()
         if not row:
+            # Auto-create default profile for authenticated user if not present
+            display_name = current_user.email.split("@")[0] if current_user.email else "User"
+            cur.execute(
+                """
+                INSERT INTO public.profiles (id, display_name)
+                VALUES (%s, %s)
+                ON CONFLICT (id) DO NOTHING
+                RETURNING *;
+                """,
+                (current_user.id, display_name),
+            )
+            row = cur.fetchone()
+            if not row:
+                cur.execute("SELECT * FROM public.profiles WHERE id = %s;", (current_user.id,))
+                row = cur.fetchone()
+        if not row:
             raise PrivacySafeNotFoundException("Profile not found")
         return ProfileResponse(**row)
 
@@ -30,6 +46,9 @@ async def update_my_profile(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> ProfileResponse:
+    # Ensure profile row exists
+    await get_my_profile(current_user=current_user, db=db)
+
     fields = update_data.model_dump(exclude_unset=True)
     if not fields:
         return await get_my_profile(current_user=current_user, db=db)

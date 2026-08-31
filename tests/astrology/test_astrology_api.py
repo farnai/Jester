@@ -14,13 +14,14 @@ from tests.database.test_database_security import create_test_user, db_conn
 async def test_astrology_recalculation_and_privacy_boundary(db_conn):
     """
     Verifies:
-    1. POST /v1/profile/recalculate computes natal chart and safe profile.
+    1. POST /v1/astrology/profile/recalculate computes natal chart and safe profile.
     2. Response contains ONLY safe derived fields.
     3. Server-side astro_private is populated with high-precision raw data.
     4. Client response never leaks raw planetary longitudes or houses.
     """
     user_id = str(uuid.uuid4())
-    create_test_user(db_conn, user_id, "astro_user@test.jester.app", "Astro Tester")
+    user_email = f"astro_user_{user_id[:8]}@test.jester.app"
+    create_test_user(db_conn, user_id, user_email, "Astro Tester")
 
     # Insert birth data
     with db_conn.cursor() as cur:
@@ -37,12 +38,12 @@ async def test_astrology_recalculation_and_privacy_boundary(db_conn):
             (user_id,),
         )
 
-    token = generate_test_jwt(user_id=user_id, email="astro_user@test.jester.app")
+    token = generate_test_jwt(user_id=user_id, email=user_email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         # 1. Recalculate astrology
         res = await ac.post(
-            "/v1/profile/recalculate",
+            "/v1/astrology/profile/recalculate",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200
@@ -74,13 +75,26 @@ async def test_astrology_recalculation_and_privacy_boundary(db_conn):
             assert len(private_row["houses"]) == 12
             assert private_row["source_birth_data_version"] == 1
 
-        # 3. GET /v1/profile/safe-astro returns the same safe profile
+        # 3. GET /v1/astrology/profile/safe-astro returns the same safe profile
         res_get = await ac.get(
-            "/v1/profile/safe-astro",
+            "/v1/astrology/profile/safe-astro",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res_get.status_code == 200
         assert res_get.json()["sun_sign"] == "Virgo"
+
+        # 4. Verify GET /v1/astrology/people/{id}/safe-astro
+        other_user_id = str(uuid.uuid4())
+        other_email = f"viewer_{other_user_id[:8]}@test.jester.app"
+        create_test_user(db_conn, other_user_id, other_email, "Viewer Tester")
+        viewer_token = generate_test_jwt(user_id=other_user_id, email=other_email)
+
+        res_person = await ac.get(
+            f"/v1/astrology/people/{user_id}/safe-astro",
+            headers={"Authorization": f"Bearer {viewer_token}"},
+        )
+        assert res_person.status_code == 200
+        assert res_person.json()["sun_sign"] == "Virgo"
 
 
 @pytest.mark.asyncio
@@ -90,7 +104,8 @@ async def test_birth_data_version_bump_updates_astrology(db_conn):
     updates source_birth_data_version in astro_private and astro_safe_profile.
     """
     user_id = str(uuid.uuid4())
-    create_test_user(db_conn, user_id, "ver_user@test.jester.app", "Version Tester")
+    user_email = f"ver_user_{user_id[:8]}@test.jester.app"
+    create_test_user(db_conn, user_id, user_email, "Version Tester")
 
     with db_conn.cursor() as cur:
         cur.execute(
@@ -104,11 +119,11 @@ async def test_birth_data_version_bump_updates_astrology(db_conn):
             (user_id,),
         )
 
-    token = generate_test_jwt(user_id=user_id, email="ver_user@test.jester.app")
+    token = generate_test_jwt(user_id=user_id, email=user_email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         # Initial calculation (v1)
-        res1 = await ac.post("/v1/profile/recalculate", headers={"Authorization": f"Bearer {token}"})
+        res1 = await ac.post("/v1/astrology/profile/recalculate", headers={"Authorization": f"Bearer {token}"})
         assert res1.status_code == 200
         assert res1.json()["source_birth_data_version"] == 1
         assert res1.json()["sun_sign"] == "Capricorn"
@@ -129,7 +144,7 @@ async def test_birth_data_version_bump_updates_astrology(db_conn):
             assert new_v == 2  # Trigger bumped version
 
         # Recalculate updates to v2
-        res2 = await ac.post("/v1/profile/recalculate", headers={"Authorization": f"Bearer {token}"})
+        res2 = await ac.post("/v1/astrology/profile/recalculate", headers={"Authorization": f"Bearer {token}"})
         assert res2.status_code == 200
         assert res2.json()["source_birth_data_version"] == 2
         assert res2.json()["sun_sign"] == "Aries"
