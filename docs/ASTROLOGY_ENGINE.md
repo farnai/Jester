@@ -2,7 +2,7 @@
 
 ## 🔮 Overview
 
-The astrology engine in Jester handles astronomical calculations using **PySwissEph** (Python C-bindings for the Swiss Ephemeris library). It provides high-precision planetary longitudes, house cusps, and retrograde speed checks.
+The astrology engine in Jester handles astronomical calculations using **PySwissEph** (Python C-bindings for the Swiss Ephemeris library) and provides a deterministic **Synastry V1** cross-chart compatibility scoring engine.
 
 ---
 
@@ -46,6 +46,16 @@ Calculates positions using `swe.calc_ut` with default flags `swe.FLG_SWIEPH | sw
   - **Venus**: Weight = 2
   - **Mars**: Weight = 2
 
+### 5. Aspects Calculation & Orb Model (`backend/app/astrology/aspects.py`)
+- Supported aspect angles: Conjunction ($0^\circ$), Sextile ($60^\circ$), Square ($90^\circ$), Trine ($120^\circ$), Opposition ($180^\circ$).
+- Quadratic decay strength: $S_{\text{aspect}} = \left(1.0 - \frac{\delta}{\text{Orb}_{\text{max}}}\right)^2$.
+- Luminary boost (+2.0°) and Ascendant constraint (capped at 6.0°).
+
+### 6. Synastry V1 Engine (`backend/app/compatibility/`)
+- Multi-dimensional scoring ($S_{\text{harmony}}$, $S_{\text{communication}}$, $S_{\text{attraction}}$, $S_{\text{growth}}$).
+- Weighted planet-pair matrix, influence caps ($\pm 18.0$ per pair, outer aspect $+12.0$ combined cap), and non-linear stretch curve ($10.0 - 98.0$).
+- Deterministic signal extraction, topic recommendations, conversation starters, and full audit evidence trace.
+
 ---
 
 ## 🚦 Feature Status Inventory
@@ -60,14 +70,14 @@ Calculates positions using `swe.calc_ut` with default flags `swe.FLG_SWIEPH | sw
 | **Placidus House Calculation** | **IMPLEMENTED** | 12 house cusps calculated via `swe.houses(..., b"P")`. |
 | **Ascendant Calculation** | **IMPLEMENTED** | Ascendant longitude extracted and mapped to sign. |
 | **Primary Element / Modality Weighting**| **IMPLEMENTED** | Weighted counter algorithm for Fire/Earth/Air/Water & Cardinal/Fixed/Mutable. |
+| **Planetary Aspects & Orbs** | **IMPLEMENTED** | Conjunction, Sextile, Square, Trine, Opposition with quadratic decay. |
+| **Synastry Overlay Engine** | **IMPLEMENTED** | Deterministic Synastry V1 engine (`synastry-v1.0.0`). |
 | **MC / IC / DC Points** | **MISSING** | Midheaven (MC), IC, and Descendant longitudes are not saved in `astro_private`. |
-| **Planetary Aspects & Orbs** | **MISSING** | Zero angular aspect calculations (Conjunction, Trine, Square, etc.) exist. |
 | **North Node / South Node** | **MISSING** | Lunar Nodes (`swe.MEAN_NODE` / `swe.TRUE_NODE`) are not calculated. |
 | **Chiron & Lilith** | **MISSING** | Chiron (`swe.CHIRON`) and Black Moon Lilith (`swe.MEAN_LILITH`) are not calculated. |
 | **Asteroids & Part of Fortune** | **MISSING** | Ceres, Pallas, Juno, Vesta, and Part of Fortune are not calculated. |
 | **Alternative House Systems** | **MISSING** | No fallback to Whole Sign (`b"W"`) or Equal House when Placidus fails. |
 | **Daily Planetary Transits** | **STUB** | `backend/app/astrology/transits.py` is empty (47 bytes). |
-| **Synastry Overlay Engine** | **STUB** | `backend/app/comparisons/router.py` returns hardcoded baseline score (`82.5`). |
 
 ---
 
@@ -75,11 +85,7 @@ Calculates positions using `swe.calc_ut` with default flags `swe.FLG_SWIEPH | sw
 
 1. **`backend/app/astrology/calculator.py` Constraints**:
    - Computes **only** the 10 core planets (Sun to Pluto).
-   - Lacks aspect math (no orbs, no angular distance matrices).
    - Hardcodes Placidus house system. Crashes/errors on polar coordinates ($> 66.5^\circ$) without fallback.
 
 2. **`backend/app/astrology/transits.py` Constraints**:
    - Contains no implementation code.
-
-3. **Synastry & Compatibility Constraints**:
-   - `comparisons/router.py` does not compare natal longitudes between two users. It returns a static score `82.5`.

@@ -4,18 +4,31 @@ from httpx import ASGITransport, AsyncClient
 
 from backend.app.main import app
 from tests.backend.test_jwt_verification import generate_test_jwt
-from tests.database.test_database_security import create_test_user, db_conn
+from tests.database.test_database_security import create_test_user, db_conn, set_auth_context
 
 
 @pytest.mark.asyncio
 async def test_profile_and_connections_api_flow(db_conn):
     u1 = str(uuid.uuid4())
     u2 = str(uuid.uuid4())
-    create_test_user(db_conn, u1, "u1@test.jester.app", "User One")
-    create_test_user(db_conn, u2, "u2@test.jester.app", "User Two")
+    create_test_user(db_conn, u1, "u1_flow@test.jester.app", "User One")
+    create_test_user(db_conn, u2, "u2_flow@test.jester.app", "User Two")
 
-    token_u1 = generate_test_jwt(user_id=u1, email="u1@test.jester.app")
-    token_u2 = generate_test_jwt(user_id=u2, email="u2@test.jester.app")
+    # Seed birth data for both users so real Synastry engine can calculate
+    with db_conn.cursor() as cur:
+        set_auth_context(cur, None, "admin")
+        cur.execute(
+            """
+            INSERT INTO public.birth_data (user_id, birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude)
+            VALUES 
+                (%s, '1995-05-15', '14:30:00', 'exact', 'UTC', 41.7151, 44.8271),
+                (%s, '1996-08-20', '09:15:00', 'exact', 'UTC', 40.7128, -74.0060);
+            """,
+            (u1, u2),
+        )
+
+    token_u1 = generate_test_jwt(user_id=u1, email="u1_flow@test.jester.app")
+    token_u2 = generate_test_jwt(user_id=u2, email="u2_flow@test.jester.app")
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         # 1. Get profile me

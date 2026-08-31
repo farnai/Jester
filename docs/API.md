@@ -1,51 +1,34 @@
-# Jester — API Documentation & Contract Specifications
+# Jester — API Specification
 
-## 🌐 API Overview
+## 📡 Base URLs & Versioning
 
-Jester exposes a RESTful HTTP API built with FastAPI.
-- Base Prefix: `/v1` (except root health endpoint `/healthz`).
-- Authentication: `Authorization: Bearer <token>` required for all `/v1/*` routes except `/v1/health`.
-- Interactive Documentation: Swagger UI at `/docs`, ReDoc at `/redoc`, OpenAPI JSON at `/openapi.json`.
-
----
-
-## 📌 Endpoint Reference Index
-
-| Method | Path | Auth Required | Implementation File | Test File |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/healthz` | ❌ No | `backend/app/api/health.py` | `tests/backend/test_health.py` |
-| `GET` | `/v1/health` | ❌ No | `backend/app/api/health.py` | `tests/backend/test_health.py` |
-| `GET` | `/v1/users/me` | ✅ Yes | `backend/app/users/router.py` | `tests/backend/test_jwt_verification.py` |
-| `GET` | `/v1/profiles/me` | ✅ Yes | `backend/app/profiles/router.py` | `tests/backend/test_api_endpoints.py` |
-| `PATCH`| `/v1/profiles/me` | ✅ Yes | `backend/app/profiles/router.py` | `tests/backend/test_api_endpoints.py` |
-| `GET` | `/v1/profiles/{id}` | ✅ Yes | `backend/app/profiles/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/astrology/profile/recalculate` | ✅ Yes | `backend/app/astrology/router.py` | `tests/astrology/test_astrology_api.py` |
-| `GET` | `/v1/astrology/profile/safe-astro` | ✅ Yes | `backend/app/astrology/router.py` | `tests/astrology/test_astrology_api.py` |
-| `GET` | `/v1/astrology/people/{id}/safe-astro` | ✅ Yes | `backend/app/astrology/router.py` | `tests/astrology/test_astrology_api.py` |
-| `GET` | `/v1/connections` | ✅ Yes | `backend/app/connections/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/connections` | ✅ Yes | `backend/app/connections/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/connections/{id}/transition` | ✅ Yes | `backend/app/connections/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/compare` | ✅ Yes | `backend/app/comparisons/router.py` | `tests/database/test_database_security.py` |
-| `GET` | `/v1/people/{id}/why` | ✅ Yes | `backend/app/comparisons/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/conversations` | ✅ Yes | `backend/app/conversations/router.py` | `tests/database/test_database_security.py` |
-| `GET` | `/v1/conversations/{id}/messages` | ✅ Yes | `backend/app/conversations/router.py` | `tests/database/test_database_security.py` |
-| `POST` | `/v1/conversations/{id}/messages` | ✅ Yes | `backend/app/conversations/router.py` | `tests/database/test_database_security.py` |
-| `GET` | `/v1/notifications` | ✅ Yes | `backend/app/notifications/router.py` | `tests/database/test_database_security.py` |
-| `PATCH`| `/v1/notifications/{id}/read` | ✅ Yes | `backend/app/notifications/router.py` | `tests/database/test_database_security.py` |
+- **API Base Prefix**: `/v1`
+- **Current Active Version**: `v1`
+- **System Health Endpoints**: `/healthz`, `/v1/health`
 
 ---
 
-## 📖 Detailed Endpoint Specifications
+## 🔐 Authentication & Global Security Headers
 
-### System & Users
+All protected endpoints require an `Authorization` header containing a valid Supabase JWT Bearer token:
+```http
+Authorization: Bearer <supabase_jwt_token>
+```
 
-#### 1. System Health — `GET /healthz`
-- **Auth**: None
+---
+
+## 🗺️ Complete Endpoints Directory
+
+### System & Health
+
+#### 1. Liveness Check — `GET /healthz`
+- **Auth**: Public
 - **Response 200**: `{"status": "ok"}`
 
-#### 2. Get Account Info — `GET /v1/users/me`
-- **Auth**: Bearer JWT
-- **Response 200**: `UserResponse(id: UUID, email: str, role: str)`
+#### 2. Service Health & DB Connectivity — `GET /v1/health`
+- **Auth**: Public
+- **Response 200**: `{"status": "healthy", "environment": "development", "database": "connected"}`
+- **Response 503**: `{"status": "degraded", "environment": "development", "database": "disconnected"}`
 
 ---
 
@@ -105,9 +88,9 @@ Jester exposes a RESTful HTTP API built with FastAPI.
 #### 12. Compare Users / Calculate Compatibility — `POST /v1/compare`
 - **Auth**: Bearer JWT
 - **Body**: `CompareRequest(target_user_id: UUID)`
-- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, signals: list[dict], best_topics: list[str], conversation_starters: list[str], engine_version: str, calculated_at: datetime)`
-- **Errors**: `403 ForbiddenException` if active accepted connection does not exist.
-- *Implementation Note*: Returns baseline hardcoded score `82.5` until full synastry engine is built.
+- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], best_topics: list[str], conversation_starters: list[str], data_quality: dict, engine_version: str, calculated_at: datetime)`
+- **Errors**: `403 ForbiddenException` if active accepted connection does not exist. `404 PrivacySafeNotFoundException` if blocked.
+- *Implementation Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair.
 
 #### 13. Why This Person — `GET /v1/people/{target_user_id}/why`
 - **Auth**: Bearer JWT
@@ -127,8 +110,3 @@ Jester exposes a RESTful HTTP API built with FastAPI.
 - **Auth**: Bearer JWT
 - **Response 200**: `list[MessageResponse]`
 - **Errors**: `404 PrivacySafeNotFoundException` if not member or blocked.
-
-#### 16. Send Message — `POST /v1/conversations/{conversation_id}/messages`
-- **Auth**: Bearer JWT
-- **Body**: `MessageCreate(body: str)`
-- **Response 201**: `MessageResponse`
