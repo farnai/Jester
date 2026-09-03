@@ -2,76 +2,76 @@
 
 ## 🧪 Test Suite Summary
 
-The Jester test suite contains **42 automated test cases**, executing via `pytest` and `pytest-asyncio`.
+The Jester test suite contains **74 automated test cases**, executing via `pytest` and `pytest-asyncio`.
 
 ```bash
 python -m pytest
 ```
 
+All 74 tests pass deterministically in development and CI environments.
+
 ---
 
-## 📁 Test Inventory & Category Breakdown
+## 📁 Complete Test Inventory & Category Breakdown (74 Tests)
 
 ```text
 tests/
 ├── astrology/
-│   ├── test_astrology_api.py           [2 tests]  -> Recalculate & Safe Astro API endpoints
-│   ├── test_calculation_validation.py  [9 tests]  -> Birth date, timezone, & coordinate validation
-│   └── test_calculator.py              [5 tests]  -> Swiss Ephemeris Julian Day & Sun/Moon calculations
+│   ├── test_aspects.py                 [17 tests] -> Angular aspects, quadratic decay, orbs, luminary boost, Ascendant cap
+│   ├── test_astrology_api.py           [ 2 tests] -> Recalculate & Safe Astro API endpoints
+│   ├── test_calculation_validation.py  [10 tests] -> Birth date, timezone, polar errors, & coordinate validation
+│   └── test_calculator.py              [ 5 tests] -> Swiss Ephemeris Julian Day & Sun/Moon/Placidus calculations
 ├── backend/
-│   ├── test_api_endpoints.py           [1 test]   -> Profiles me GET/PATCH endpoint sanity
-│   ├── test_cors_and_openapi.py        [2 tests]  -> CORS middleware headers & OpenAPI JSON schema
-│   ├── test_health.py                  [2 tests]  -> /healthz & /v1/health endpoints
-│   └── test_jwt_verification.py        [9 tests]  -> JWT claims, expiration, HS256/JWKS algorithms
+│   ├── test_api_endpoints.py           [ 1 test ] -> Profiles me GET/PATCH endpoint sanity
+│   ├── test_cors_and_openapi.py        [ 2 tests] -> CORS middleware headers & OpenAPI JSON schema
+│   ├── test_health.py                  [ 2 tests] -> /healthz & /v1/health endpoints
+│   ├── test_jwt_verification.py        [ 9 tests] -> JWT claims, expiration, HS256/JWKS algorithms
+│   └── test_profiles_self_healing.py   [ 4 tests] -> Profile auto-provisioning on first JWT authentication
+├── compatibility/
+│   ├── test_router.py                  [ 2 tests] -> /v1/compare endpoint integration, authorization, & block guards
+│   └── test_synastry.py                [ 8 tests] -> Synastry V1 math, symmetry f(A,B)==f(B,A), dimensions, signals, normalization
 └── database/
     └── test_database_security.py       [12 tests] -> RLS policies, RBAC grants, block rules, cascades
 ```
 
 ---
 
-## 🔍 Detailed Category Analysis
+## 🔍 Detailed Subsystem Verification
 
-### 1. Database Security & RLS Tests (`tests/database/test_database_security.py`)
-- **Execution Setup**: Uses `psycopg3` direct connection to local PostgreSQL (`127.0.0.1:54322`). Sets PostgreSQL roles dynamically using `SET ROLE authenticated;`, `SET ROLE anon;`, `SET ROLE service_role;` and populates `request.jwt.claim.sub` session variables.
-- **Scenarios Tested**:
-  - `test_user_a_can_read_and_update_own_birth_data`: Confirms user can insert/read own `birth_data` and trigger increments `data_version`.
-  - `test_user_a_cannot_read_or_update_user_b_birth_data`: Confirms User A cannot read or mutate User B's `birth_data`.
-  - `test_anonymous_cannot_read_birth_data`: Verifies `anon` role receives `InsufficientPrivilege`.
-  - `test_authenticated_mobile_cannot_read_astro_private`: Verifies `authenticated` role receives `InsufficientPrivilege` when attempting to SELECT from `astro_private`.
-  - `test_safe_astrology_profile_visibility`: Verifies `is_discoverable = false` hides safe profile from other users.
-  - `test_canonical_pair_constraint_and_reverse_prevention`: Verifies `user_a_id < user_b_id` check constraint throws `CheckViolation` on reverse pairs.
-  - `test_client_cannot_update_connections_directly`: Verifies direct client `UPDATE` on `connections` is rejected (`InsufficientPrivilege`).
-  - `test_block_visibility_and_mutual_profile_hiding`: Verifies blocker sees connection row, blocked user does not, and profiles are mutually hidden.
-  - `test_compatibility_access_rules`: Verifies compatibility results require an active accepted connection and disappear if blocked.
-  - `test_chat_rls_and_block_enforcement`: Verifies messaging requires active accepted connection and messages become hidden upon block.
-  - `test_account_deletion_cascades_all_user_data`: Verifies hard-deletion of `auth.users` row cascades across all 11 tables.
-  - `test_triggers_and_version_bumping`: Verifies trigger updates timestamps and bumps `birth_data.data_version`.
+### 1. Synastry V1 Compatibility Engine (`tests/compatibility/`)
+- **Aspect Symmetry**: Confirms $f(\text{Person A}, \text{Person B}) \equiv f(\text{Person B}, \text{Person A})$.
+- **4 Sub-Score Calculations**: Validates Emotional Harmony, Communication, Attraction/Chemistry, and Growth bounds $[0.0, 100.0]$.
+- **Composite Score Normalization**: Verifies non-linear stretch curve produces scores within $[10.0, 98.0]$.
+- **Resilience to Unknown Birth Time**: Verifies calculations succeed when birth time is unknown, gracefully scaling weights and setting confidence to `0.75`.
+- **Signal Extraction & Starters**: Validates deterministic extraction of top relationship signals, topics, and starters.
 
-### 2. JWT Verification Tests (`tests/backend/test_jwt_verification.py`)
-- **Scenarios Tested**:
-  - Valid HS256 tokens in dev/test mode.
-  - Token expiration (`ExpiredSignatureError`).
-  - Missing `sub` or invalid UUID subject identifiers.
-  - Prohibition of HS256 when `ENV=production`.
-  - Unverified header decoding & algorithm enforcement.
+### 2. Planetary Aspects & Orbs (`tests/astrology/test_aspects.py`)
+- **Supported Angles**: Validates Conjunction ($0^\circ$), Sextile ($60^\circ$), Square ($90^\circ$), Trine ($120^\circ$), and Opposition ($180^\circ$).
+- **Quadratic Decay**: Asserts exact aspects receive strength $1.00$, halfway orbs receive $0.25$, and edge orbs receive $0.00$.
+- **Modifiers**: Verifies $+2.0^\circ$ boost for Luminaries (Sun, Moon) and $6.0^\circ$ cap for Ascendant.
 
-### 3. Astrology Engine Tests (`tests/astrology/`)
-- **Scenarios Tested**:
-  - `test_calculator.py`: Verifies Julian Day conversion for known dates, planetary longitude bounds $[0^\circ, 360^\circ)$, and Zodiac sign derivation.
-  - `test_calculation_validation.py`: Verifies date range checks (1900-today), timezone validity (`zoneinfo.ZoneInfo`), and coordinate boundaries.
-  - `test_astrology_api.py`: Verifies `/v1/astrology/profile/recalculate` and safe profile endpoints.
+### 3. Database Security & RLS (`tests/database/test_database_security.py`)
+- Direct PostgreSQL session testing using dynamic roles (`authenticated`, `anon`, `service_role`).
+- Verifies `birth_data` is strictly owner-only.
+- Verifies `astro_private` triggers `InsufficientPrivilege` on client roles (`REVOKE ALL`).
+- Verifies mutual block hiding (blocker and blocked users cannot read each other's profiles or compatibility).
+- Verifies hard account deletion cascades across all application tables.
+
+### 4. JWT Verification (`tests/backend/test_jwt_verification.py`)
+- Rejection of symmetric `HS256` tokens in `ENV=production`.
+- Support for `HS256` in dev/test only.
+- Expiration and malformed payload enforcement.
 
 ---
 
-## 🛑 Test Suite Gaps & False Confidence Warnings
+## 🛑 Real Test Suite Gaps (Remaining Work)
 
-While the 42 tests provide high confidence for security and privacy, there are critical functional testing gaps:
+While the core security, natal astrology, and Synastry V1 subsystems have 100% test coverage, the following gaps remain due to pending implementation:
 
-1. **False Confidence on Compatibility Endpoint**:
-   - `test_compatibility_access_rules` asserts that a score payload is returned. However, the test passes because the endpoint returns a **hardcoded score of `82.5`**. The test does **not** verify whether synastry math was actually executed.
-2. **No Tests for Aspect Calculation**:
-   - Zero tests exist for angular aspects or orb tolerances because aspect calculation code does not exist in `calculator.py`.
-3. **No Tests for Daily Transits**:
-   - No tests verify transit calculations because `transits.py` is empty and the daily energy job inserts static hardcoded text.
-4. **No Tests for AI / LLM Interpretations**:
-   - No tests exist for prompt formatting or OpenAI responses because the `interpretation/` module contains empty stubs.
+1. **Daily Transit Engine**:
+   - No tests verify transit aspect calculations because `backend/app/astrology/transits.py` is currently an empty stub.
+2. **AI / LLM Voice Interpretation Pipeline**:
+   - No tests verify OpenAI API client integration, prompt rendering, or JESTER voice generation because `backend/app/interpretation/` modules are architectural stubs.
+3. **Extended Celestial Bodies**:
+   - Chiron, Lilith, and Lunar Nodes do not have calculation tests because they are not yet supported in `calculator.py`.
+

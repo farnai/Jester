@@ -19,7 +19,7 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 ---
 
-## 📜 Complete Migration Inventory (001 – 020)
+## 📜 Complete Migration Inventory (001 – 021)
 
 ### `001_extensions.sql`
 - **Purpose**: Enables required PostgreSQL extensions.
@@ -117,3 +117,7 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 ### `020_realtime.sql`
 - **Purpose**: Adds `messages` and `notifications` to `supabase_realtime` publication.
+
+### `021_compatibility_evidence_trace.sql`
+- **Purpose**: Adds dedicated JSONB `evidence_trace` column to `public.compatibility_results` for deterministic auditability and explainability of Synastry V1 calculations.
+

@@ -1,25 +1,29 @@
-# 🃏 Jester — Social Astrology Engine Backend
+# 🃏 Jester — People Discovery & Relationship Intelligence Engine
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E.svg)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-42%20Passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-74%20Passed-brightgreen.svg)]()
 
-**Jester** is a high-performance, social astrology backend engine built with **FastAPI**, **Swiss Ephemeris (`pyswisseph`)**, and **Supabase (PostgreSQL + Auth + RLS)**. It powers precision natal chart calculations, synastry/compatibility analysis, user connections, real-time social features, and AI-driven astrological interpretations.
+> **"They show the match. JESTER explains the connection."**
+
+**Jester** is a high-performance **People Discovery and Relationship Intelligence** platform built with **FastAPI**, **Swiss Ephemeris (`pyswisseph`)**, and **Supabase (PostgreSQL + Auth + RLS)**. 
+
+Astrology is the underlying mathematical intelligence layer, not the product identity. JESTER is designed to help humans understand why they click, clash, challenge, or complement each other across friendships, collaborations, and romance.
 
 ---
 
 ## ✨ Features
 
-- 🔮 **Precision Astrological Calculations**: Utilizes the C-backed Swiss Ephemeris (`pyswisseph`) library to compute high-accuracy planetary positions (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, Chiron, Lilith, Nodes), house systems (Placidus, Whole Sign), and angular aspects.
-- 💫 **Synastry & Compatibility Analysis**: Algorithmic compatibility engine comparing natal charts across elements, modalities, and planetary aspects to compute composite relationship scores.
-- 🔒 **Supabase Auth & RLS Security**: Strict JWT verification middleware integrated with Supabase Authentication and database Row Level Security (RLS) policies for complete privacy of sensitive birth data.
-- 👥 **Social & Connection System**: Connection requests, friend graphs, and privacy-aware profile sharing (Safe Public Profiles vs. Private Astrological Data).
-- 💬 **Messaging & Conversations**: Real-time social messaging foundation between connected users.
-- ⚡ **Daily Transits & Job Queue**: Infrastructure for calculating personal daily planetary transits and dispatching notifications.
-- 🤖 **AI Astrological Interpretations**: Dynamic interpretation engine with modular LLM integration support (OpenAI GPT).
-- 🧪 **Comprehensive Test Suite**: Automated unit, integration, API, and database security tests covering 42+ test cases.
+- 🔮 **Precision Astrological Engine**: Utilizes the C-backed Swiss Ephemeris (`pyswisseph`) library to compute high-accuracy planetary positions (10 core planets: Sun to Pluto), Placidus house systems, and angular cross-aspects (Conjunction, Sextile, Square, Trine, Opposition) with quadratic orb decay. *(Chiron, Lilith, and Nodes are planned future additions).*
+- 💫 **Deterministic Synastry V1 Engine (`synastry-v1.0.0`)**: Comprehensive compatibility analysis across 4 sub-scores (Emotional Harmony, Communication, Attraction/Chemistry, Growth/Dynamics), normalized overall scoring ($10.0 - 98.0$), deterministic relationship signals, topics, and conversation starters.
+- 🔒 **Privacy by Design & RLS Security**: Strict JWT verification middleware integrated with Supabase Authentication and database Row Level Security (RLS) policies. Raw birth data and exact astronomical placements (`astro_private`) are completely protected; other users only see safe derived profiles (`astro_safe_profile`).
+- 👥 **Social & Connection System**: Canonical pair connection requests, friend graphs, and mutual block hiding (HTTP 404 Privacy-Safe Not Found).
+- 💬 **Messaging & Conversations**: Real-time social messaging foundation between connected users with connection-gated authorization.
+- ⚡ **Daily Transits & Day Vibe Infrastructure**: Architectural pipeline for calculating personal daily transits and translating them into sharp, witty JESTER daily insights (*transit calculation engine currently a stub*).
+- 🤖 **JESTER Voice & Interpretation Pipeline**: Architectural framework translating deterministic signals into human, witty, slightly sarcastic JESTER language (*LLM integration currently a stub*).
+- 🧪 **Comprehensive Test Suite**: 74 automated unit, API, synastry, and database security tests passing.
 
 ---
 

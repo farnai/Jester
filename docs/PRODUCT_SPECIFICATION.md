@@ -6,21 +6,67 @@
 
 ---
 
-# 1. Product Definition
+# 1. Product Definition & Strategic Positioning
 
-JESTER is a personal astrology-based social application that allows users to:
+**JESTER** is a **People Discovery and Relationship Intelligence** platform.
 
-1. create and maintain an astrological identity;
-2. understand their own natal profile;
-3. discover and connect with other people;
-4. compare two people's astrological profiles;
-5. understand the nature of their compatibility;
-6. use compatibility insights as a basis for conversation;
-7. communicate with connected people;
-8. receive personalized daily astrological information;
-9. interact with JESTER's AI interpretation layer.
+It uses high-precision astronomical calculations (Swiss Ephemeris) as its deterministic underlying intelligence layer, but **is not positioned as an astrology, horoscope, or dating app**. The consumer product is about **people, interpersonal curiosity, and connection dynamics**:
 
-JESTER V1 is therefore composed of five major capability domains:
+> **"They show the match. JESTER explains the connection."**
+
+Traditional astrology apps ask: *"Who are you?"*  
+JESTER asks: *"Why do you connect?"*
+
+### 1.1 Core Experience Model: ME → YOU → US → MORE PEOPLE
+
+The user experience follows a sequential psychological expansion:
+
+```text
+ME → YOU → US → MORE PEOPLE
+```
+
+1. **ME (Understand Myself)**: User enters birth data and gets their first personal taste of JESTER (*"Let's see what JESTER notices about me"*).
+2. **YOU (Curiosity About Another)**: Curiosity naturally extends outward (*"What would JESTER say about my friend?"*).
+3. **US (Relationship Intelligence)**: Comparing two profiles to unpack the connection (*"What does JESTER say about us?"*).
+4. **MORE PEOPLE (Network & Discovery)**: Discovering new people, friends, collaborators, and relationship dynamics (*"Who else should I check?"*).
+
+### 1.2 The "Day Vibe / Today's Energy" Experience
+
+"Today's Energy" (Day Vibe) is the user's primary daily habit hook and their **first taste of JESTER**.
+
+**Underlying Pipeline:**
+```text
+Natal Placements + Current Sky Transits
+       ↓ (Deterministic Calculations)
+Astrological Signals
+       ↓ (Core Meaning Extraction)
+Interpersonal / Psychological Meaning
+       ↓ (JESTER Voice Engine)
+Short Personalized Daily Insight (1–2 sentences)
+```
+
+The user never needs to understand astrological terminology. The output is:
+- Extremely short (1–2 sentences)
+- Immediately understandable
+- Personal, sharp, playful, and slightly sarcastic
+- Emotionally recognizable and shareable
+
+### 1.3 Core Viral Mechanic: The Insight Becomes the Invitation
+
+JESTER does not rely on artificial referral prompts (*"Invite 3 friends"*). Instead:
+> **THE INSIGHT BECOMES THE INVITATION.**
+
+When an insight is perceptive, witty, and humorous, the user naturally screenshots it or texts a friend:
+> *"ნახე, ჩემზე რას წერს JESTER 😂"* → *"შენც ნახე შენზე, მერე ჩვენი შედარება ვნახოთ."*
+
+### 1.4 Product Capability vs. Product Experience
+
+- **Backend / Data Layer (Product Capability)**: High-precision astronomical positions, house cusps, angular aspect geometries, and multi-dimensional matrices.
+- **Consumer Interface (Product Experience)**: Clean, witty, human-readable JESTER observations, relationship dynamics, conversation starters, and connection insights.
+
+---
+
+JESTER V1 functional capabilities are composed of five major capability domains:
 
 ```text
 JESTER V1
@@ -526,22 +572,27 @@ These dimensions contribute to the overall compatibility score.
 The system produces a normalized:
 
 ```text
-0–100
+10.0 – 98.0
 ```
 
 compatibility score.
 
-The score must be:
+### Core Strategic Principle:
+> **SCORE CREATES CURIOSITY. INTERPRETATION CREATES VALUE.**
 
-* deterministic;
-* reproducible;
-* derived from the underlying astrological data;
-* versioned;
-* independent of presentation language.
+A score (e.g. `87%`) acts as the initial spark that makes the user ask: *"Why?"*  
+The actual value and retention come from the multi-dimensional breakdown, dynamic tension points, and conversation starters.
 
-The score must not be hardcoded.
+The score is:
 
-Current backend value `82.5` is considered a placeholder and is not a valid V1 calculation.
+* **100% deterministic**;
+* **reproducible**;
+* **derived from the underlying astronomical cross-chart aspects**;
+* **versioned (`synastry-v1.0.0`)**;
+* **independent of presentation language**.
+
+The score is calculated by the production-ready Synastry V1 Engine (`backend/app/compatibility/synastry.py`), replacing the former hardcoded baseline (`82.5`).
+
 
 ---
 
@@ -772,7 +823,7 @@ Realtime infrastructure is provided through Supabase Realtime.
 
 The following are explicitly **not part of the current implemented capability set** and must not be treated as already available:
 
-### Astrology
+### Astrology (Missing / Deferred)
 
 * Chiron;
 * Lilith;
@@ -784,19 +835,13 @@ The following are explicitly **not part of the current implemented capability se
 * Vesta;
 * Part of Fortune;
 * Arabic Parts;
-* full angular point interpretation;
-* planetary aspect engine.
+* Alternative house system fallbacks (Equal, Whole Sign).
 
-### Compatibility
+*(Note: 10 core planets Sun..Pluto, Placidus houses, Ascendant, and angular aspects Conjunction, Sextile, Square, Trine, Opposition ARE implemented).*
 
-* real synastry score;
-* aspect-based scoring;
-* orb scoring;
-* planet-pair weighting;
-* element compatibility engine;
-* modality compatibility engine;
-* four-dimensional scoring;
-* dynamic signal extraction.
+### Compatibility / Synastry Status
+* **IMPLEMENTED**: Real deterministic Synastry V1 engine (`synastry-v1.0.0`) in `backend/app/compatibility/synastry.py` with 4-dimensional scoring, quadratic orb decay, planet-pair weighting, element/modality matrices, signals, topics, and starters.
+
 
 ### AI
 
@@ -911,11 +956,9 @@ Social and messaging capabilities turn that understanding into interaction.
 
 ---
 
-# 34. Current Implementation Gap
+# 34. Current Implementation Status
 
-The current backend already provides much of the infrastructure required for this capability model.
-
-The largest missing functional component is the actual deterministic Synastry engine.
+The backend infrastructure and mathematical foundations for the core capability model are in place.
 
 Current state:
 
@@ -923,48 +966,24 @@ Current state:
 Authentication       ██████████  Implemented
 Profiles             ██████████  Implemented
 Natal Astrology      ██████████  Implemented
+Aspect Engine        ██████████  Implemented
+Synastry V1          ██████████  Implemented
 Social Graph         ██████████  Implemented
 Messaging            ██████████  Implemented
 Notifications        █████████░  Implemented
-Synastry             ██░░░░░░░░  Stub
-Daily Astrology      ██░░░░░░░░  Stub
-JESTER AI            █░░░░░░░░░  Stub
+Daily Transits       ██░░░░░░░░  Stub
+JESTER AI Voice      █░░░░░░░░░  Stub
 ```
 
-Therefore the next technical milestone is:
-
-**Freeze and implement Synastry V1.**
+The mathematical specification for Synastry was completed and implemented as **Synastry V1 (`synastry-v1.0.0`)**, documented authoritatively in [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) and verified by 74 automated tests.
 
 ---
 
-# 35. Next Specification Required
+# 35. Next Technical Milestones
 
-This document intentionally does not define the final mathematical constants of the compatibility engine.
+With Synastry V1 fully operational, the remaining development milestones are:
 
-The next document should be:
+1. **Daily Transit & Day Vibe Engine**: Implement `backend/app/astrology/transits.py` to calculate real-time transit aspects against user natal placements and generate short, witty daily observations.
+2. **JESTER Voice & Interpretation Pipeline**: Connect the structured signal output from Synastry V1 and Daily Transits to OpenAI API via `backend/app/interpretation/jester.py` using validated prompt templates.
+3. **Frontend Consumer Transformation**: Translate the raw astronomical data exposure in the web app into the witty, human-first JESTER experience (`ME → YOU → US → MORE PEOPLE`).
 
-# JESTER SYNASTRY V1 — Mathematical & Engine Specification
-
-It must freeze:
-
-* supported bodies;
-* supported aspects;
-* orb values;
-* aspect strength formula;
-* planet-pair weights;
-* aspect weights;
-* element matrix;
-* modality matrix;
-* four sub-score formulas;
-* overall score formula;
-* normalization;
-* signal extraction rules;
-* topic extraction rules;
-* conversation-starter rules;
-* unknown-birth-time behavior;
-* missing Ascendant behavior;
-* edge cases;
-* engine versioning;
-* deterministic test vectors.
-
-Only after this specification is frozen should the backend implementation and frontend presentation of compatibility be considered authoritative.

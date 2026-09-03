@@ -1,8 +1,28 @@
 # Jester — Astrology Engine Documentation
 
-## 🔮 Overview
+## 🔮 Overview & Strategic Role
 
 The astrology engine in Jester handles astronomical calculations using **PySwissEph** (Python C-bindings for the Swiss Ephemeris library) and provides a deterministic **Synastry V1** cross-chart compatibility scoring engine.
+
+### Strategic Role:
+In the JESTER product architecture, **astrology is the underlying deterministic intelligence layer, not the consumer brand or product identity**. Jester uses astrology strictly to power **People Discovery and Relationship Intelligence**.
+
+```text
+ASTROLOGICAL DATA
+       ↓ (PySwissEph C Engine)
+DETERMINISTIC SIGNALS & ASPECTS (aspects.py)
+       ↓ (Rule-Based Aggregator)
+CORE INTERPERSONAL DYNAMICS & MEANING
+       ↓ (SynastryEngine / transits.py)
+RELATIONSHIP / PERSONAL CONTEXT
+       ↓ (Prompt Formatter with JESTER Voice Persona)
+JESTER VOICE TRANSFORMATION
+       ↓ (Structured Models)
+USER-FACING INSIGHT (Short, witty, human-readable)
+```
+
+**Core Principle**: JESTER does not invent astrological meaning. The ephemeris and aspect engines produce exact mathematical signals; downstream interpretation layers convert those signals into human, witty JESTER observations.
+
 
 ---
 

@@ -27,13 +27,26 @@ The requirements in this document are derived directly from the authoritative co
 2. **Deterministic Synastry Engine**: [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) and [`backend/app/compatibility/synastry.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/compatibility/synastry.py)
 3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/) (Migrations 001 through 021)
 4. **FastAPI API Contracts & Pydantic Models**: [`backend/app/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/)
-5. **Verified System Behaviors**: 69 passing automated unit, API, and database security tests in [`tests/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/)
+5. **Verified System Behaviors**: 74 passing automated unit, API, and database security tests in [`tests/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/)
 
 ---
 
-## 3. Product Loop
+## 3. Product Loop & Strategic Experience Architecture
 
-The core user experience is structured around the sequential 8-stage Jester Product Loop:
+### 3.1 Strategic Model: ME → YOU → US → MORE PEOPLE
+The frontend journey translates the underlying data into a 4-step psychological progression:
+1. **ME**: Onboarding + First taste of JESTER via **Today's Energy / Day Vibe** (*"Let's see what JESTER notices about me"*).
+2. **YOU**: Curiosity about a friend or connection (*"What would JESTER say about them?"*).
+3. **US**: Synastry comparison (*"What connects us? Why do we click?"*).
+4. **MORE PEOPLE**: Expanding into network discovery and comparing broader relationships.
+
+### 3.2 Current Technical Frontend vs. Consumer UX
+- **Current Scaffold**: Renders raw data (Sun, Moon, Ascendant, Element, Modality). Validates that the underlying data pipeline works.
+- **Consumer Product**: Uses that rich data layer to deliver sharp, witty JESTER observations. Rich astrological data is strictly preserved in the backend and safe profiles.
+
+### 3.3 The 8-Stage Operational Product Loop
+The core user experience maps directly into the 8-stage operational loop:
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

@@ -42,20 +42,21 @@ All calculations defined in this document are **100% deterministic**, **reproduc
 
 ---
 
-## 3. Existing-System Audit
+## 3. Existing-System Audit & Implementation Status
 
-A direct code and database audit of the current repository reveals:
+A direct code and database audit of the repository reveals the current implementation status:
 
-| Subsystem / Feature | Location | Code Reality / Status | Required Action |
+| Subsystem / Feature | Location | Code Reality / Status | Implementation Note |
 | :--- | :--- | :--- | :--- |
-| **Natal Planetary Ephemeris** | `backend/app/astrology/calculator.py` | `IMPLEMENTED`. Computes 10 main planets, retrogrades, Placidus houses, and Ascendant. | Reuse longitudes as input. |
-| **Birth Data Versioning** | `supabase/migrations/015_triggers.sql` | `IMPLEMENTED`. `birth_data.data_version` auto-increments via trigger on parameter changes. | Reuse for stale cache detection. |
-| **Canonical User Pairs** | `backend/app/connections/router.py` | `IMPLEMENTED`. Enforces `user_a_id < user_b_id` sorting. | Reuse for DB storage key. |
-| **Connection & RLS Guards** | `supabase/migrations/018_rls.sql` | `IMPLEMENTED`. `public.has_active_connection` and `public.is_user_blocked` active. | Reuse for authorization. |
-| **Compatibility Router** | `backend/app/comparisons/router.py` | `STUB / INCORRECT`. Returns hardcoded baseline score `82.5` and static signals. | **REQUIRED CHANGE**: Connect to real engine. |
-| **Compatibility Service** | `backend/app/compatibility/engine.py` | `STUB`. Unused class returning hardcoded `80.0`. | **REQUIRED CHANGE**: Replace with V1 engine. |
-| **Aspect Calculation Math** | `backend/app/astrology/` | `NOT IMPLEMENTED`. Zero aspect distance or orb calculation code exists. | **REQUIRED CHANGE**: Create `aspects.py`. |
-| **Synastry Overlay Math** | `backend/app/compatibility/` | `NOT IMPLEMENTED`. Zero cross-chart comparison code exists. | **REQUIRED CHANGE**: Create `synastry.py`. |
+| **Natal Planetary Ephemeris** | `backend/app/astrology/calculator.py` | `IMPLEMENTED`. Computes 10 main planets, retrogrades, Placidus houses, and Ascendant. | Longitudes used as input. |
+| **Birth Data Versioning** | `supabase/migrations/015_triggers.sql` | `IMPLEMENTED`. `birth_data.data_version` auto-increments via trigger on parameter changes. | Triggers stale cache recalculation. |
+| **Canonical User Pairs** | `backend/app/connections/router.py` | `IMPLEMENTED`. Enforces `user_a_id < user_b_id` sorting. | Primary key in DB storage. |
+| **Connection & RLS Guards** | `supabase/migrations/018_rls.sql` | `IMPLEMENTED`. `public.has_active_connection` and `public.is_user_blocked` active. | Access guard in API & DB. |
+| **Aspect Calculation Math** | `backend/app/astrology/aspects.py` | `IMPLEMENTED`. Quadratic decay, 5 major aspects, luminary boost, Ascendant cap. | Verified by 17 unit tests. |
+| **Synastry Overlay Math** | `backend/app/compatibility/synastry.py`| `IMPLEMENTED`. 4 sub-scores, dynamic signals, topics, starters, normalization. | Verified by 8 unit tests. |
+| **Compatibility Service** | `backend/app/compatibility/engine.py` | `IMPLEMENTED`. Service layer connecting DB & `SynastryEngine`. | Fully operational. |
+| **Compatibility Router** | `backend/app/comparisons/router.py` | `IMPLEMENTED`. `/v1/compare` and `/v1/people/{id}/why` run Synastry V1 engine. | Cached per canonical pair. |
+
 
 ---
 

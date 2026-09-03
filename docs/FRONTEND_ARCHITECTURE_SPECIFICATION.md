@@ -2,7 +2,7 @@
 
 **Document Version:** `1.0.0`  
 **System Role:** Lead Product Architect & Senior Frontend Systems Architect  
-**Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 69/69 passing tests)  
+**Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 74/74 passing tests)  
 **Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_CAPABILITY_SPECIFICATION.md)  
 **Status:** Authoritative Frontend Architectural Blueprint  
 
@@ -22,6 +22,8 @@ The JESTER frontend is designed as a high-integrity, deterministic, privacy-firs
 8. **Realtime-Synchronized Communication**: Direct messaging and notifications maintain seamless, bi-directional synchronization between local query caches and Supabase Realtime WebSocket streams.
 9. **Zero Business Logic Duplication**: Validation rules, connection transition invariants, and access guards live on the server; the frontend adheres strictly to server-provided error codes and status transitions.
 10. **Device-Agnostic Capability Parity**: The functional architecture, state machines, and API interactions remain identical across Desktop Web, Mobile Web, and Native Mobile (React Native) runtimes.
+11. **Data Layer vs. Consumer Experience**: The current technical screen exposing raw signs (Sun, Moon, Ascendant, Element, Modality) verifies data layer availability, but is NOT the final consumer UX. The production client translates rich underlying astrological computations into a human-first, witty JESTER experience (`ME → YOU → US → MORE PEOPLE`). Rich astrological data is strictly preserved in the backend/data layer.
+
 
 ---
 

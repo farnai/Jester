@@ -90,11 +90,12 @@ Authorization: Bearer <supabase_jwt_token>
 - **Body**: `CompareRequest(target_user_id: UUID)`
 - **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], best_topics: list[str], conversation_starters: list[str], data_quality: dict, engine_version: str, calculated_at: datetime)`
 - **Errors**: `403 ForbiddenException` if active accepted connection does not exist. `404 PrivacySafeNotFoundException` if blocked.
-- *Implementation Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair.
+- *Implementation & Product Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair. Encapsulates the core product axiom: **Score creates curiosity; interpretation creates value.** Includes data quality indicators (confidence scales to 0.75 if birth time is unknown).
 
 #### 13. Why This Person — `GET /v1/people/{target_user_id}/why`
 - **Auth**: Bearer JWT
-- **Response 200**: Alias for `POST /v1/compare`.
+- **Response 200**: Alias for `POST /v1/compare`. Explains interpersonal connection dynamics and conversation bridges.
+
 
 ---
 

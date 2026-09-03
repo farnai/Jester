@@ -57,6 +57,7 @@ Jester/
 │   │   ├── constants.py      # Planet IDs, Zodiac signs, element/modality maps
 │   │   ├── models.py         # Pydantic schemas for birth input & astro models
 │   │   ├── natal.py          # Natal orchestration (DB fetch -> calculate -> persist)
+│   │   ├── aspects.py        # Angular aspects (Conjunction, Sextile, Square, Trine, Opposition) & orbs
 │   │   ├── router.py         # /v1/astrology/* endpoints
 │   │   ├── transits.py       # [STUB] Transit calculations
 │   │   └── validation.py     # Date, timezone, precision, and coordinate validators
@@ -66,12 +67,13 @@ Jester/
 │   │   └── models.py         # AuthenticatedUser and TokenPayload models
 │   ├── comparisons/
 │   │   ├── models.py         # Compare schemas
-│   │   └── router.py         # /v1/compare and /v1/people/{id}/why endpoints
+│   │   └── router.py         # /v1/compare and /v1/people/{id}/why endpoints (invokes Synastry V1)
 │   ├── compatibility/
-│   │   ├── engine.py         # [STUB] Compatibility engine baseline
+│   │   ├── engine.py         # CompatibilityEngine service layer connecting DB & Synastry
 │   │   ├── models.py         # Compatibility model schemas
-│   │   ├── rules.py          # [STUB] Compatibility rules
-│   │   └── signals.py        # [STUB] Compatibility signals
+│   │   ├── rules.py          # Weight matrices, orb tables, and dynamic signal rules
+│   │   ├── signals.py        # Signal definitions
+│   │   └── synastry.py       # Deterministic Synastry V1 engine (synastry-v1.0.0)
 │   ├── connections/
 │   │   ├── models.py         # Connection schemas
 │   │   └── router.py         # /v1/connections endpoints & canonical pair helper
@@ -82,7 +84,7 @@ Jester/
 │   │   ├── database.py       # psycopg3 connection pool singleton
 │   │   └── errors.py         # API exceptions and global handler
 │   ├── interpretation/       # [STUB] Jester AI interpretation pipeline
-│   ├── jobs/                 # Background energy calculation jobs
+│   ├── jobs/                 # Background energy calculation jobs (stub)
 │   ├── notifications/        # User notification endpoints
 │   ├── profiles/             # User profile endpoints (/v1/profiles/*)
 │   └── users/                # User identity endpoint (/v1/users/me)
@@ -125,12 +127,34 @@ Jester/
    - `block` -> `status = 'blocked', blocked_by = caller_id`
    - `unblock` -> `status = 'removed', blocked_by = NULL`
 
-### 4. Compatibility Flow (`/v1/compare`)
+### 4. Compatibility Flow (`/v1/compare` and `/v1/people/{id}/why`)
 1. Accepts `target_user_id`, orders canonical pair `(user_a, user_b)`.
 2. Evaluates `public.has_active_connection(user_a, user_b)`. If false, raises HTTP 403 Forbidden.
-3. Checks `public.compatibility_results` for existing record matching current birth data versions.
-4. If missing/stale, upserts compatibility result record.
-   - *Current Implementation Note*: Upserts a deterministic baseline score `82.5` with static signals. Real synastry aspect calculation is pending.
+3. Evaluates `public.is_user_blocked(caller, target)`. If blocked, raises HTTP 404 Privacy-Safe Not Found.
+4. Checks `public.compatibility_results` for existing record matching current birth data versions of both users and engine version `synastry-v1.0.0`.
+5. If cache hit: returns cached record with data quality indicators.
+6. If cache miss or stale: loads `astro_private` placements (auto-recalculating natal placements if missing), invokes `CompatibilityEngine.calculate()`, executes deterministic Synastry V1 multi-dimensional scoring, dynamic signal extraction, recommended topics, and conversation starters.
+7. Upserts result into `public.compatibility_results` with full mathematical evidence trace and returns structured payload.
+
+---
+
+## 🎨 The Astrology → JESTER Content Pipeline
+
+```text
+ASTROLOGICAL DATA
+       ↓ (PySwissEph C Engine)
+DETERMINISTIC SIGNALS & ASPECTS (aspects.py)
+       ↓ (Rule-Based Aggregator)
+CORE INTERPERSONAL DYNAMICS & MEANING
+       ↓ (SynastryEngine / transits.py)
+RELATIONSHIP / PERSONAL CONTEXT
+       ↓ (Prompt Formatter with JESTER Voice Persona)
+JESTER VOICE TRANSFORMATION
+       ↓ (Structured Models)
+USER-FACING INSIGHT (Short, witty, human-readable)
+```
+
+**Core Principle**: JESTER does not invent astrological meaning; the engine deterministically computes signals, and JESTER translates those signals into the signature witty, sharp, playful JESTER voice.
 
 ---
 
@@ -138,3 +162,5 @@ Jester/
 
 - **Database Layer Isolation**: Client applications communicate with FastAPI using JWT tokens. Directly calling Supabase REST API via PostgREST is guarded by RLS policies. `astro_private` has `REVOKE ALL` for `authenticated` and `anon` roles.
 - **Privacy Safe Not Found**: When a resource is hidden due to block status or `is_discoverable = false`, endpoints raise `PrivacySafeNotFoundException` (HTTP 404) rather than HTTP 403 to prevent enumeration attacks.
+- **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
+

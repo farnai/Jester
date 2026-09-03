@@ -17,7 +17,7 @@
 | **Astrology (Chiron)** | **MISSING** | `backend/app/astrology/constants.py` | 🔴 None | PySwissEph Chiron ID | Missing key chart points | Chiron not calculated. |
 | **Astrology (Lilith)** | **MISSING** | `backend/app/astrology/constants.py` | 🔴 None | PySwissEph Lilith ID | Missing key chart points | Black Moon Lilith not calculated. |
 | **Astrology (Transits)**| **STUB** | `backend/app/astrology/transits.py` | 🔴 None | Daily job engine | Empty file (47 bytes) | File contains only docstring. |
-| **Synastry Engine** | **IMPLEMENTED** | `backend/app/compatibility/` | 🟢 Passing | `compatibility_results` | None | 100% deterministic Synastry V1 engine (`synastry-v1.0.0`). |
+| **Synastry Engine** | **IMPLEMENTED** | `backend/app/compatibility/synastry.py` | 🟢 Passing | `compatibility_results` | None | 100% deterministic Synastry V1 engine (`synastry-v1.0.0`). |
 | **Compatibility Engine**| **IMPLEMENTED** | `backend/app/compatibility/engine.py` | 🟢 Passing | `SynastryEngine` | None | Service layer connecting DB & `SynastryEngine`. |
 | **Connections Graph** | **IMPLEMENTED** | `backend/app/connections/` | 🟢 Passing | `public.connections` | None | Canonical pairs (`u1 < u2`), full state machine. |
 | **Conversations** | **IMPLEMENTED** | `backend/app/conversations/` | 🟢 Passing | `public.conversations` | None | Direct thread creation & active membership guards. |
@@ -29,17 +29,39 @@
 | **Row-Level Security**| **IMPLEMENTED** | `supabase/migrations/018_rls.sql` | 🟢 Passing | PostgreSQL RLS | None | Strict owner-only & block-aware policies. |
 | **Realtime Subsystem** | **IMPLEMENTED** | `supabase/migrations/020_realtime.sql`| 🟢 Passing | Supabase Realtime | None | Configured for `messages` and `notifications`. |
 | **Storage Subsystem** | **IMPLEMENTED** | `supabase/migrations/019_storage.sql` | 🟢 Passing | Supabase Storage | None | Avatar storage bucket policies configured. |
-| **Test Suite** | **IMPLEMENTED** | `tests/` | 🟢 Passing | Pytest | Missing transit tests | 69 unit, API, synastry, & DB security tests passing. |
+| **Test Suite** | **IMPLEMENTED** | `tests/` | 🟢 Passing | Pytest | Missing transit/AI tests | 74 unit, API, synastry, & DB security tests passing. |
 | **Observability** | **PARTIAL** | `backend/app/config.py` | 🔴 None | Sentry DSN | No active logging handler | SENTRY_DSN in config, but integration pending. |
-| **Production Readiness**| **PARTIAL** | Root Repository | 🟢 Passing | All Subsystems | AI stubs | Security/Auth/DB/Synastry V1 is prod ready. |
+| **Production Readiness**| **PARTIAL** | Root Repository | 🟢 Passing | All Subsystems | AI/Transit stubs | Security/Auth/DB/Synastry V1 is prod ready. |
+
+---
+
+## 🚦 Strategic & Product Status Matrix
+
+| Concept / Capability | Category | Operational Status | Strategic Definition |
+| :--- | :--- | :--- | :--- |
+| **People Discovery + Rel. Intelligence**| Positioning | **LOCKED** | Jester is not an astrology/horoscope/dating app; it explains connections. |
+| **Swiss Ephemeris 10 Planets** | Astrology | **LOCKED / IMPLEMENTED** | C-backed natal calculation in `backend/app/astrology/calculator.py`. |
+| **Synastry V1 Engine (`synastry-v1.0.0`)**| Compatibility | **LOCKED / IMPLEMENTED** | 4 sub-scores, normalized composite score, deterministic signals. |
+| **Privacy by Design & RLS** | Security | **LOCKED / IMPLEMENTED** | Raw birth data private; server-only `astro_private`; safe derived profile. |
+| **"The Insight Becomes the Invitation"** | Growth Model | **STRATEGIC HYPOTHESIS** | Primary viral acquisition mechanic via shareable daily/comparison insights. |
+| **ME → YOU → US → MORE PEOPLE** | Product UX | **STRATEGIC HYPOTHESIS** | Sequential psychological onboarding and engagement model. |
+| **Day Vibe as Daily Hook** | Engagement | **STRATEGIC HYPOTHESIS** | Short, witty daily insight driving D1/D7/D30 retention (transit engine pending). |
+| **16–25 Young Adults / Students** | Customer Beachhead | **STRATEGIC HYPOTHESIS** | Initial high-density socially curious cohort. |
+| **Multi-Domain Categories (Travel/Team)**| Relationships | **WORKING IDEA** | Extending comparison beyond general friendship into specific relationship modes. |
+| **18+ Intimacy Dynamics Mode** | Relationships | **PLANNED / PROTECTED** | Separate gated experience requiring age verification and dual consent. |
+| **Day Vibe Batch vs. Lazy Generation** | Technical Architecture | **UNKNOWN / REQUIRES DECISION**| Evaluating LLM token economics for daily updates. |
 
 ---
 
 ## 🚦 Status Legend Definitions
 
-- **IMPLEMENTED**: Fully coded, integrated, operational, and tested.
+- **LOCKED**: Strategically or technically established invariant.
+- **IMPLEMENTED**: Fully coded, integrated, operational, and tested in codebase.
 - **PARTIAL**: Partially functional; basic flow works but missing edge-case handling or sub-features.
 - **STUB**: Structural files, models, or endpoints exist, but contain hardcoded returns or empty stubs.
-- **INCORRECT**: Code exists and runs, but delivers mathematically or logically incorrect/dummy outputs.
+- **STRATEGIC HYPOTHESIS**: Strong current product/marketing hypothesis, but not yet validated with live user data.
+- **WORKING IDEA**: Useful direction that still requires product/design validation.
+- **PLANNED**: Intentionally defined future work.
 - **MISSING**: Feature is documented or planned, but zero code exists in the repository.
-- **UNKNOWN**: Status cannot be determined (none in this repository).
+- **UNKNOWN**: Open architectural or product question requiring decision.
+

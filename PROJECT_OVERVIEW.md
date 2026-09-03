@@ -1,11 +1,26 @@
-# 🃏 Jester — Social Astrology Engine Backend
+# 🃏 Jester — People Discovery & Relationship Intelligence Engine
 
-ეს დოკუმენტი შეიცავს სრულ ინფორმაციას **Jester**-ის პროექტის ტექნოლოგიური სტეკის, არქიტექტურისა და ამ დრომდე განხორციელებული ფუნქციონალის შესახებ.
+ეს დოკუმენტი შეიცავს სრულ ინფორმაციას **Jester**-ის პროექტის ტექნოლოგიური სტეკის, არქიტექტურისა, სტრატეგიული პოზიციონირებისა და ამ დრომდე განხორციელებული ფუნქციონალის შესახებ.
 
 ---
 
-### 📌 პროექტის აღწერა
-**Jester** წარმოადგენს სოციალური ასტროლოგიური პლატფორმის მაღალპროდუქტიულ ბექენდ ძრავს. იგი პასუხისმგებელია მაღალი სიზუსტის ნატალური რუკების გამოთვლაზე, მომხმარებლებს შორის ასტროლოგიური თავსებადობის (Synastry) ანალიზზე, რეალური დროის სოციალურ ინტერაქციასა და AI-ზე დაფუძნებულ ინტერპრეტაციებზე.
+### 📌 პროექტის აღწერა და სტრატეგიული პოზიციონირება
+**Jester** არ არის ტრადიციული ასტროლოგიური ან ჰოროსკოპის აპლიკაცია, არც გაცნობის (Dating) აპლიკაცია. **Jester არის ადამიანების აღმოჩენისა და ურთიერთობების ინტელექტის (People Discovery + Relationship Intelligence) პლატფორმა.**
+
+> **„ისინი გაჩვენებენ მატჩს (Match). JESTER ხსნის კავშირს (Connection).“**
+
+ასტრონომიული გამოთვლები (Swiss Ephemeris) წარმოადგენს დეტერმინისტულ მათემატიკურ ფუნდამენტს, ხოლო მომხმარებლისთვის პროდუქტი ორიენტირებულია ადამიანებსა და ურთიერთობებზე: რატომ უგებენ ადამიანები ერთმანეთს, სად აქვთ საერთო ენა და სად წარმოიშობა დინამიკური გამოწვევები.
+
+#### ძირითადი პროდუქტული მოდელი:
+```text
+ME (მე) → YOU (შენ) → US (ჩვენ) → MORE PEOPLE (მეტი ადამიანი)
+```
+1. **გავიგო ჩემ შესახებ** („ვნახოთ რას ამჩნევს Jester ჩემზე“)
+2. **ვნახო რას ამჩნევს სხვაზე** („რას იტყვის Jester ჩემს მეგობარზე?“)
+3. **გავიგო რა გვაკავშირებს** („რას ამბობს Jester ჩვენს ურთიერთობაზე?“)
+4. **აღმოვაჩინო ახალი ადამიანები და კავშირები** („კიდევ ვისთან მაქვს საინტერესო დინამიკა?“)
+
+---
 
 ### 🛠️ ტექნოლოგიური სტეკი (Tech Stack)
 | კომპონენტი | ტექნოლოგია / ბიბლიოთეკა | ვერსია / დეტალები |
@@ -13,11 +28,12 @@
 | **Language** | Python | `3.11+` |
 | **Web Framework** | FastAPI | `>=0.115.0` (ASGI, OpenAPI, Pydantic v2) |
 | **Astro Engine** | PySwissEph | `>=2.10.3.2` (C-backed Swiss Ephemeris) |
+| **Synastry Engine** | Synastry V1 (`synastry-v1.0.0`) | დეტერმინისტული თავსებადობის ალგორითმი (4 ქვე-ქულა, სიგნალები) |
 | **Database & Auth** | Supabase | PostgreSQL 15+, Auth JWT, Row Level Security (RLS) |
-| **DB Driver** | psycopg (v3) | `>=3.2.0` (Direct PostgreSQL Connection) |
-| **HTTP & Security** | PyJWT, Cryptography, HTTPX | JWT verification, async requests |
-| **AI / LLM** | OpenAI API Integration | GPT-4o-mini (ასტროლოგიური ტექსტების გენერაცია) |
-| **Testing** | Pytest & pytest-asyncio | `>=8.3.0` (42/42 ტესტი წარმატებით გადის) |
+| **DB Driver** | psycopg (v3) | `>=3.2.0` (Direct PostgreSQL Connection Pool) |
+| **HTTP & Security** | PyJWT, Cryptography, HTTPX | JWT verification (JWKS / HS256), async requests |
+| **AI / LLM** | OpenAI API Integration | [STUB] არქიტექტურული მოდელები მომზადებულია, ინტეგრაცია პროცესშია |
+| **Testing** | Pytest & pytest-asyncio | `>=8.3.0` (74/74 ტესტი წარმატებით გადის) |
 
 ---
 
@@ -26,39 +42,48 @@
 Jester/
 ├── backend/app/
 │   ├── api/             # სისტემის Health Endpoint-ები და V1 მარშრუტიზაცია
-│   ├── astrology/       # Swiss Ephemeris კალკულატორი, ნატალური რუკები, ტრანზიტები
-│   ├── auth/            # Supabase JWT ავტორიზაციის მიდლვერი
-│   ├── comparisons/     # ასტროლოგიური თავსებადობის (Synastry) გამოთვლები
-│   ├── connections/     # მეგობრობის მოთხოვნები და სოციალური კავშირები
+│   ├── astrology/       # Swiss Ephemeris კალკულატორი, ნატალური რუკები, ასპექტები (aspects.py)
+│   ├── auth/            # Supabase JWT ავტორიზაციის მიდლვერი (JWKS პროდაქშენში)
+│   ├── comparisons/     # ურთიერთობის თავსებადობის (/v1/compare, /v1/people/{id}/why) როუტერი
+│   ├── compatibility/   # Synastry V1 დეტერმინისტული ძრავი (synastry.py, engine.py, rules.py)
+│   ├── connections/     # მეგობრობის მოთხოვნები და სოციალური კავშირები (კანონიკური წყვილები)
 │   ├── conversations/   # რეალური დროის ჩატი და შეტყობინებები
-│   ├── core/            # გლობალური Exception-ები და Logging
-│   ├── interpretation/ # წესებზე და AI-ზე დაფუძნებული განმარტებები
-│   ├── jobs/            # ფონური ამოცანები (Daily Transit Recalculation)
+│   ├── core/            # გლობალური Exception-ები, DB Pool და Logging
+│   ├── interpretation/ # [STUB] წესებზე და JESTER-ის ხმაზე დაფუძნებული განმარტებები
+│   ├── jobs/            # ფონური ამოცანები (Daily Energy Generation Stub)
 │   ├── notifications/   # Push და In-App შეტყობინებები
 │   ├── profiles/        # პროფილისა და დაბადების მონაცემების მართვა
 │   └── users/           # მომხმარებელთა ანგარიშები
-├── supabase/migrations/ # 20 SQL მიგრაციის ფაილი (RLS, Triggers, Functions)
-├── tests/               # Unit, API და ბაზის უსაფრთხოების ტესტები
+├── supabase/migrations/ # 21 SQL მიგრაციის ფაილი (RLS, Triggers, Functions, Grants)
+├── tests/               # Unit, API, Synastry და ბაზის უსაფრთხოების ტესტები (74 ტესტი)
 └── README.md            # სრული დოკუმენტაცია GitHub-ისთვის
 ```
 
 ---
 
-### ⚙️ განხორციელებული ფუნქციონალი (Implemented Features)
-1. **ასტროლოგიური გამოთვლების ძრავი**:
-   - პლანეტების ზუსტი კოორდინატები (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, Chiron, Lilith, North/South Nodes).
-   - სახლების სისტემები (Placidus, Whole Sign) და კუთხური ასპექტები (Conjunction, Opposition, Trine, Square, Sextile).
-   - ტრანზიტებისა და ყოველდღიური ენერგიების გამოთვლა.
+### ⚙️ ფუნქციონალის სტატუსი (Feature Status)
 
-2. **თავსებადობის (Synastry) ანალიზი**:
-   - ორი მომხმარებლის ნატალური რუკების შედარება, ელემენტების/სტიქიების ბალანსი და ურთიერთობის ჯამური ინდექსი.
+1. **ასტრონომიული გამოთვლების ძრავი (IMPLEMENTED / PARTIAL)**:
+   - 10 ძირითადი პლანეტის ზუსტი კოორდინატები (Sun..Pluto) და რეტროგრადულობა (`calculator.py`).
+   - პლაციდუსის (Placidus) სახლების სისტემა და ასცენდენტი.
+   - კუთხური ასპექტები (`aspects.py`): შეერთება (0°), სექსტილი (60°), კვადრატი (90°), ტრიგონი (120°), ოპოზიცია (180°) კვადრატული ორბის მოდელით.
+   - *დაგეგმილი / აკლია*: ქირონი, ლილიტი, მთვარის კვანძები, ასტეროიდები.
 
-3. **მონაცემთა უსაფრთხოება & RLS**:
-   - დაბადების ზუსტი დროისა და ადგილის დაცვა `astro_private` სქემაში.
-   - 20 SQL მიგრაცია Supabase-ში RLS (Row Level Security) პოლიტიკებითა და `astro_safe_profile` ხედებით.
+2. **თავსებადობის (Synastry V1) ანალიზი (IMPLEMENTED)**:
+   - 100% დეტერმინისტული ალგორითმი (`synastry-v1.0.0`): 4 განზომილება (ჰარმონია, კომუნიკაცია, მიზიდულობა, ზრდა).
+   - ნორმალიზებული ჯამური ქულა (10.0 – 98.0).
+   - დეტერმინისტული ურთიერთობის სიგნალები, თემები და საუბრის დასაწყისი ფრაზები (Conversation Starters).
+   - ავტომატური ქეშირება და მონაცემთა ვერსიონირება.
+
+3. **მონაცემთა უსაფრთხოება & RLS (IMPLEMENTED / LOCKED)**:
+   - დაბადების ზუსტი დროისა და კოორდინატების მკაცრი დაცვა `public.birth_data`-ში (მხოლოდ მფლობელის წვდომა).
+   - გამოთვლილი ზუსტი გრადუსები ინახება `public.astro_private`-ში (კლიენტისთვის სრულად დაბლოკილი: `REVOKE ALL`).
+   - საჯაროდ ხელმისაწვდომია მხოლოდ უსაფრთხო ნაწარმოები ხედი (`astro_safe_profile`).
+   - ორმხრივი დაბლოკვა (Mutual Block Hiding): ბლოკის დროს რესურსი აბრუნებს 404 Privacy-Safe Not Found-ს.
 
 4. **ტესტირების დაფარვა (Test Coverage)**:
-   - 42 ავტომატიზებული ტესტი (`tests/astrology`, `tests/backend`, `tests/database`), რომლებიც სრულად ჩაბარებულია.
+   - **74 ავტომატიზებული ტესტი** (`tests/astrology`, `tests/backend`, `tests/compatibility`, `tests/database`), რომლებიც სრულად გადის.
 
-5. **GitHub რეპოზიტორი**:
-   - პროექტი ატვირთულია: `git@github.com:farnai/Jester.git` (`main` ბრენჩზე).
+5. **სტატუსი: AI და ყოველდღიური ტრანზიტები (STUB)**:
+   - `backend/app/interpretation/` და `backend/app/astrology/transits.py` წარმოადგენს მომზადებულ არქიტექტურულ სტაბებს.
+
