@@ -23,15 +23,15 @@
 | **Conversations** | **IMPLEMENTED** | `backend/app/conversations/` | 🟢 Passing | `public.conversations` | None | Direct thread creation & active membership guards. |
 | **Messages / Chat** | **IMPLEMENTED** | `backend/app/conversations/` | 🟢 Passing | `public.messages` | None | List/send messages; enforced connection requirement. |
 | **Notifications** | **IMPLEMENTED** | `backend/app/notifications/` | 🟢 Passing | `public.notifications` | None | Notification listing & mark-as-read endpoints. |
-| **Jobs (Daily Energy)**| **PARTIAL** | `backend/app/jobs/daily_energy.py` | 🔴 None | `public.daily_energies` | Static summary string | Inserts static string `'A dynamic day...'`. |
-| **AI / LLM Subsystem** | **STUB** | `backend/app/interpretation/` | 🔴 None | OpenAI API | Non-functional stubs | `engine.py`, `jester.py`, `prompts.py` are empty. |
+| **Jobs (Daily Energy)**| **IMPLEMENTED** | `backend/app/jobs/daily_energy.py` | 🟢 Passing | `public.daily_energies` | Transit engine stub | Generates structured `ResolvedInterpretation` JSON via content layer. |
+| **Interpretation & Content Layer**| **IMPLEMENTED** | `backend/app/interpretation/` | 🟢 Passing | Content Library V2, FastAPI | External LLM API stub | V1 Semantic Universe: 113 interpretation contracts, 5,733 AI_DRAFT assets (ka: 68%, en: 32%), deterministic multi-asset resolver, JSON fixture storage, copywriter promotion lifecycle. |
 | **Database Migrations**| **IMPLEMENTED** | `supabase/migrations/` | 🟢 Passing | Supabase CLI / Postgres | None | 21 SQL migrations created and applied. |
 | **Row-Level Security**| **IMPLEMENTED** | `supabase/migrations/018_rls.sql` | 🟢 Passing | PostgreSQL RLS | None | Strict owner-only & block-aware policies. |
 | **Realtime Subsystem** | **IMPLEMENTED** | `supabase/migrations/020_realtime.sql`| 🟢 Passing | Supabase Realtime | None | Configured for `messages` and `notifications`. |
 | **Storage Subsystem** | **IMPLEMENTED** | `supabase/migrations/019_storage.sql` | 🟢 Passing | Supabase Storage | None | Avatar storage bucket policies configured. |
-| **Test Suite** | **IMPLEMENTED** | `tests/` | 🟢 Passing | Pytest | Missing transit/AI tests | 74 unit, API, synastry, & DB security tests passing. |
+| **Test Suite** | **IMPLEMENTED** | `tests/` | 🟢 Passing | Pytest | Missing transit tests | 116 unit, API, synastry, DB security, & interpretation/content V2 tests passing (including 10k, 25k, 50k resolver benchmarks). |
 | **Observability** | **PARTIAL** | `backend/app/config.py` | 🔴 None | Sentry DSN | No active logging handler | SENTRY_DSN in config, but integration pending. |
-| **Production Readiness**| **PARTIAL** | Root Repository | 🟢 Passing | All Subsystems | AI/Transit stubs | Security/Auth/DB/Synastry V1 is prod ready. |
+| **Production Readiness**| **IMPLEMENTED** | Root Repository | 🟢 Passing | All Subsystems | External LLM integration | Decoupled content layer, Synastry V1, Security/Auth/DB production ready. |
 
 ---
 

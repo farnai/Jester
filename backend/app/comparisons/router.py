@@ -12,6 +12,7 @@ from backend.app.core.database import get_db
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.comparisons.models import CompareRequest, StructuredCompatibilityResponse
 from backend.app.connections.router import get_canonical_pair
+from backend.app.interpretation.engine import interpretation_engine
 
 router = APIRouter(tags=["compare"])
 compatibility_engine = CompatibilityEngine()
@@ -94,11 +95,19 @@ async def compare_users(
                 "ascendant_used": not is_unknown,
             }
 
+            raw_signals = existing["signals"] if isinstance(existing["signals"], list) else []
+            enriched_signals = interpretation_engine.resolve_signals(raw_signals)
+            cached_score = float(existing["score"])
+            primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
+                cached_score, raw_signals
+            )
+
             return StructuredCompatibilityResponse(
                 id=existing["id"],
                 target_user_id=payload.target_user_id,
-                score=float(existing["score"]),
-                signals=existing["signals"] if isinstance(existing["signals"], list) else [],
+                score=cached_score,
+                signals=enriched_signals,
+                interpretation=primary_interpretation,
                 best_topics=existing["best_topics"] if isinstance(existing["best_topics"], list) else [],
                 conversation_starters=existing["conversation_starters"] if isinstance(existing["conversation_starters"], list) else [],
                 data_quality=data_quality,
@@ -171,12 +180,18 @@ async def compare_users(
         )
         saved_row = cur.fetchone()
 
+        enriched_signals = interpretation_engine.resolve_signals(calc_result.signals)
+        primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
+            calc_result.score, calc_result.signals
+        )
+
         return StructuredCompatibilityResponse(
             id=saved_row["id"],
             target_user_id=payload.target_user_id,
             score=calc_result.score,
             dimensions=calc_result.dimensions,
-            signals=calc_result.signals,
+            signals=enriched_signals,
+            interpretation=primary_interpretation,
             best_topics=calc_result.best_topics,
             conversation_starters=calc_result.conversation_starters,
             data_quality=calc_result.data_quality,

@@ -4,6 +4,9 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+from backend.app.interpretation.models import ResolvedInterpretation
+
+
 class CompareRequest(BaseModel):
     target_user_id: uuid.UUID
 
@@ -25,8 +28,10 @@ class StructuredCompatibilityResponse(BaseModel):
     score: float
     dimensions: dict[str, float] = Field(default_factory=dict)
     signals: list[dict[str, Any]] = Field(default_factory=list)
+    interpretation: ResolvedInterpretation | None = None
     best_topics: list[str] = Field(default_factory=list)
     conversation_starters: list[str] = Field(default_factory=list)
     data_quality: dict[str, Any] = Field(default_factory=dict)
     engine_version: str = "synastry-v1.0.0"
     calculated_at: datetime
+

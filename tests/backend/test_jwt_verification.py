@@ -19,6 +19,7 @@ def generate_test_jwt(
     secret: str | None = None,
     alg: str = "HS256",
     kid: str | None = None,
+    app_metadata: dict | None = None,
 ) -> str:
     settings = get_settings()
     signing_secret = secret or settings.SUPABASE_JWT_SECRET.get_secret_value()
@@ -33,6 +34,7 @@ def generate_test_jwt(
         "exp": now + exp_delta,
         "iss": f"{settings.SUPABASE_URL}/auth/v1",
         "aud": "authenticated",
+        "app_metadata": app_metadata or {},
     }
     headers = {"alg": alg}
     if kid:

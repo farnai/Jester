@@ -88,14 +88,13 @@ Authorization: Bearer <supabase_jwt_token>
 #### 12. Compare Users / Calculate Compatibility — `POST /v1/compare`
 - **Auth**: Bearer JWT
 - **Body**: `CompareRequest(target_user_id: UUID)`
-- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], best_topics: list[str], conversation_starters: list[str], data_quality: dict, engine_version: str, calculated_at: datetime)`
+- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], interpretation: ResolvedInterpretation | None, best_topics: list[str], conversation_starters: list[str], data_quality: dict, engine_version: str, calculated_at: datetime)`
 - **Errors**: `403 ForbiddenException` if active accepted connection does not exist. `404 PrivacySafeNotFoundException` if blocked.
-- *Implementation & Product Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair. Encapsulates the core product axiom: **Score creates curiosity; interpretation creates value.** Includes data quality indicators (confidence scales to 0.75 if birth time is unknown).
+- *Implementation & Product Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair. Enriched with JESTER Voice interpretations: `interpretation` provides the primary relationship insight, and each entry in `signals` is enriched with its resolved interpretation.
 
 #### 13. Why This Person — `GET /v1/people/{target_user_id}/why`
 - **Auth**: Bearer JWT
-- **Response 200**: Alias for `POST /v1/compare`. Explains interpersonal connection dynamics and conversation bridges.
-
+- **Response 200**: Alias for `POST /v1/compare`. Explains interpersonal connection dynamics, relationship insights, and conversation bridges.
 
 ---
 
@@ -111,3 +110,79 @@ Authorization: Bearer <supabase_jwt_token>
 - **Auth**: Bearer JWT
 - **Response 200**: `list[MessageResponse]`
 - **Errors**: `404 PrivacySafeNotFoundException` if not member or blocked.
+
+---
+
+### Interpretation & JESTER Voice Content Layer (Content Architecture V2)
+
+#### 16. List All Interpretations — `GET /v1/interpretations`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[ContentRecord]`
+- **Description**: Returns all registered interpretation entries across categories with both AI draft and copywriter final states.
+
+#### 17. Get Interpretation Details — `GET /v1/interpretations/{interpretation_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `{"contract": InterpretationContract, "resolved": ResolvedInterpretation}`
+- **Errors**: `404 Not Found` if interpretation ID is not registered.
+
+#### 18. List Interpretation Assets — `GET /v1/interpretations/{interpretation_id}/assets`
+- **Auth**: Bearer JWT
+- **Query Params**: `locale?: str, context?: str, tone?: str, status?: str, include_archived: bool = false`
+- **Response 200**: `list[ContentAsset]`
+- **Description**: Lists all active copy assets associated with a semantic interpretation contract. Internal editorial metadata (notes, author) is sanitized for regular users.
+
+#### 19. Create Content Asset — `POST /v1/interpretations/{interpretation_id}/assets`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Body**: `ContentAssetCreatePayload(locale, context, tone, text, status?, priority?, variant_key?, author?, tags?, internal_notes?, experiment_id?, weight?)`
+- **Response 201**: `ContentAsset`
+- **Errors**: `403 Forbidden` if user lacks editorial privileges; `404 Not Found` if contract missing.
+
+#### 20. Get Content Asset by ID — `GET /v1/content/assets/{asset_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `ContentAsset`
+- **Errors**: `404 PrivacySafeNotFoundException` if asset missing. Internal notes stripped for standard users.
+
+#### 21. Update Content Asset — `PATCH /v1/content/assets/{asset_id}`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Body**: `ContentAssetUpdatePayload(text?, locale?, context?, tone?, persona?, status?, priority?, variant_key?, tags?, internal_notes?, experiment_id?, weight?, archived?)`
+- **Response 200**: `ContentAsset`
+- **Errors**: `403 Forbidden` if unauthorized.
+
+#### 22. Approve Content Asset — `POST /v1/content/assets/{asset_id}/approve`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Response 200**: `ContentAsset`
+- **Description**: Promotes asset to `status="approved"`. Takes immediate precedence over AI drafts during resolution without touching calculations.
+
+#### 23. Archive Content Asset — `POST /v1/content/assets/{asset_id}/archive`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Response 200**: `ContentAsset`
+- **Description**: Soft-archives asset, permanently excluding it from user resolution.
+
+#### 24. Content Inventory Matrix — `GET /v1/content/inventory`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Response 200**: `list[ContentInventoryItem]`
+- **Description**: Returns editorial inventory across all 30 contracts, reporting total assets, approved assets, AI drafts, tones, locales, and status.
+
+#### 25. Update Approved Copy (Legacy V1) — `PATCH /v1/interpretations/{interpretation_id}/copy`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Body**: `ContentUpdatePayload(text: str, status: "approved"|"not_reviewed", author?: str)`
+- **Response 200**: `ContentRecord`
+
+#### 26. Reset Interpretation to Draft (Legacy V1) — `POST /v1/interpretations/{interpretation_id}/reset`
+- **Auth**: Bearer JWT (Roles: `copywriter`, `admin`, or `service_role`)
+- **Response 200**: `ContentRecord`
+
+#### 27. Resolve Deterministic Signal — `POST /v1/interpretations/resolve-signal`
+- **Auth**: Bearer JWT
+- **Body**: `dict` (signal object, e.g. `{"type": "venus_conjunction_mars", "strength": "strong"}`)
+- **Query Params**: `context?: str, locale: str = "ka", tone?: str, persona: str = "jester", variant_key?: str, seed?: str`
+- **Response 200**: `{"signal": dict, "interpretation": ResolvedInterpretation}`
+- **Errors**: `404 Not Found` if signal does not map to any recognized interpretation.
+
+#### 28. Build Deep Analysis — `POST /v1/interpretations/deep-analysis`
+- **Auth**: Bearer JWT
+- **Body**: `{"score": float, "signals": list[dict], "confidence": float, "context"?: str, "locale"?: str, "tone"?: str, "seed"?: str}`
+- **Response 200**: `DeepAnalysisPayload(overall_score: float, primary_interpretation: ResolvedInterpretation, blocks: list[DeepAnalysisBlock], data_confidence: float)`
+- **Description**: Compiles verified signals into structured thematic narrative blocks grounded in aspect evidence trace.
+
+

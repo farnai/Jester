@@ -53,10 +53,19 @@ def require_role(allowed_roles: list[str]):
     def role_checker(
         current_user: Annotated[AuthenticatedUser, Depends(get_current_user)],
     ) -> AuthenticatedUser:
-        if current_user.role not in allowed_roles:
+        user_roles = {current_user.role}
+        if "role" in current_user.app_metadata:
+            user_roles.add(str(current_user.app_metadata["role"]))
+        if "roles" in current_user.app_metadata and isinstance(current_user.app_metadata["roles"], list):
+            user_roles.update(str(r) for r in current_user.app_metadata["roles"])
+
+        if not user_roles.intersection(set(allowed_roles)):
             raise ForbiddenException(
                 message=f"Role '{current_user.role}' is not authorized to access this resource"
             )
         return current_user
 
     return role_checker
+
+
+require_copywriter_or_admin = require_role(["copywriter", "admin", "service_role"])

@@ -8,6 +8,7 @@ from backend.app.connections.router import router as connections_router
 from backend.app.comparisons.router import router as comparisons_router
 from backend.app.conversations.router import router as conversations_router
 from backend.app.notifications.router import router as notifications_router
+from backend.app.interpretation.router import router as interpretation_router
 
 api_router = APIRouter()
 
@@ -24,5 +25,6 @@ api_v1_router.include_router(connections_router)
 api_v1_router.include_router(comparisons_router)
 api_v1_router.include_router(conversations_router)
 api_v1_router.include_router(notifications_router)
+api_v1_router.include_router(interpretation_router)
 
 api_router.include_router(api_v1_router)
