@@ -2,10 +2,16 @@ import { apiRequest } from "./client";
 import { supabase } from "../realtime/supabase";
 import {
   BirthDataPayload,
+  ComparePreviewRequest,
+  ComparePreviewResponse,
   ConnectionResponse,
   ConnectionTransitionPayload,
   ConversationResponse,
+  DailyEnergyResponse,
+  DiscoveryPerson,
   MessageResponse,
+  NatalResolveRequest,
+  NatalResolveResponseItem,
   NotificationResponse,
   ProfileResponse,
   ProfileUpdate,
@@ -126,5 +132,30 @@ export const API = {
       apiRequest<NotificationResponse>(`/v1/notifications/${notificationId}/read`, {
         method: "PATCH",
       }),
+  },
+
+  // Interpretation Architecture V2 & Content Exposure
+  interpretations: {
+    getDailyEnergy: (energyType: string = "confidence", locale: string = "ka", tone?: string) => {
+      const params = new URLSearchParams({ energy_type: energyType, locale });
+      if (tone) params.append("tone", tone);
+      return apiRequest<DailyEnergyResponse>(`/v1/interpretations/daily-energy?${params.toString()}`);
+    },
+    resolveNatal: (payload: NatalResolveRequest) =>
+      apiRequest<NatalResolveResponseItem[]>("/v1/interpretations/resolve-natal", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    getDiscoveryPeople: (viewerId?: string) => {
+      const params = viewerId ? `?viewer_id=${viewerId}` : "";
+      return apiRequest<DiscoveryPerson[]>(`/v1/interpretations/discovery-people${params}`);
+    },
+    comparePreview: (payload: ComparePreviewRequest) =>
+      apiRequest<ComparePreviewResponse>("/v1/interpretations/compare-preview", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    getContract: (interpretationId: string, locale: string = "ka") =>
+      apiRequest<Record<string, any>>(`/v1/interpretations/${interpretationId}?locale=${locale}`),
   },
 };

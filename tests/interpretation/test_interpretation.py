@@ -86,7 +86,7 @@ def test_ai_draft_fallback():
     resolved = lib.resolve_text(interp_id)
     assert resolved is not None
     assert resolved.content_status == "ai_draft"
-    assert "აქ მიზიდულობას ზედმეტი ახსნა" in resolved.text
+    assert "ერთ ოთახში რომ შემოდიხართ" in resolved.text
     assert resolved.language == "ka"
 
 
@@ -291,7 +291,7 @@ def test_versioned_interpretations_remain_resolvable():
     # Version fallback: hypothetical v3 gracefully falls back to v1
     resolved_v3 = engine.library.resolve_text("relationship.attraction.strong_chemistry.v3")
     assert resolved_v3 is not None
-    assert "აქ მიზიდულობას ზედმეტი ახსნა" in resolved_v3.text
+    assert "ერთ ოთახში რომ შემოდიხართ" in resolved_v3.text
 
 
 # ---------------------------------------------------------------------------
@@ -304,7 +304,7 @@ def test_georgian_content_returned_correctly():
     assert resolved.language == "ka"
 
     # Verify specific expected Georgian string from spec
-    expected_sample = "აქ მიზიდულობას ზედმეტი ახსნა ნამდვილად არ სჭირდება."
+    expected_sample = "ერთ ოთახში რომ შემოდიხართ, ჰაერი ისე მძიმდება, თითქოს ვიღაცამ კონდიციონერი გამორთო და დრამა ჩართო. ნაპერწკლები კარგია, მაგრამ ხანძარსაწინააღმდეგო სისტემა თუ არ მუშაობს, მალე ორივე ერთად დაიფერფლებით."
     assert resolved.text == expected_sample
 
     # Daily energy Georgian string

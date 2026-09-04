@@ -68,7 +68,32 @@ SIGNAL_TYPE_TO_INTERPRETATION_ID: dict[str, str] = {
     "moon_sextile_venus": "relationship.harmony.gentle_affinity.v1",
     "moon_venus_harmony": "relationship.harmony.gentle_affinity.v1",
 
-    # Mercury - Mercury
+    # Moon - Venus
+    "moon_venus_harmony": "relationship.attraction.gentle_affection.v1",
+    "moon_trine_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_sextile_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_conjunction_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_opposite_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_opposition_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_square_venus": "relationship.attraction.gentle_affection.v1",
+
+    # Mercury - Venus
+    "mercury_venus_harmony": "relationship.communication.playful_banter.v1",
+    "mercury_trine_venus": "relationship.communication.playful_banter.v1",
+    "mercury_sextile_venus": "relationship.communication.playful_banter.v1",
+    "mercury_conjunction_venus": "relationship.communication.playful_banter.v1",
+
+    # Moon - Ascendant
+    "ascendant_trine_moon": "relationship.harmony.deep_empathy.v1",
+    "ascendant_conjunction_moon": "relationship.harmony.deep_empathy.v1",
+    "ascendant_sextile_moon": "relationship.harmony.deep_empathy.v1",
+    "moon_ascendant_harmony": "relationship.harmony.deep_empathy.v1",
+
+    # Sun - Ascendant
+    "ascendant_trine_sun": "relationship.harmony.natural_resonance.v1",
+    "ascendant_conjunction_sun": "relationship.harmony.natural_resonance.v1",
+    "sun_ascendant_harmony": "relationship.harmony.natural_resonance.v1",
+
     "mercury_trine_mercury": "relationship.communication.intellectual_flow.v1",
     "mercury_sextile_mercury": "relationship.communication.intellectual_flow.v1",
     "mercury_conjunction_mercury": "relationship.communication.intellectual_flow.v1",

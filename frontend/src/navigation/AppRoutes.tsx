@@ -11,12 +11,17 @@ import { ComparePage } from "../modules/compatibility/ComparePage";
 import { WhyPage } from "../modules/compatibility/WhyPage";
 import { ChatPage } from "../modules/chat/ChatPage";
 import { NotificationsPage } from "../modules/notifications/NotificationsPage";
+import { ContentSmokeTestPage } from "../modules/smoke_test/ContentSmokeTestPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppShell } from "../shared/AppShell";
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* Primary UX & Content Smoke Test Route (Direct Inspection) */}
+      <Route path="/smoke-test" element={<ContentSmokeTestPage />} />
+      <Route path="/ux-test" element={<ContentSmokeTestPage />} />
+
       {/* Public Routes */}
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
@@ -31,16 +36,19 @@ export const AppRoutes: React.FC = () => {
         }
       />
 
+      {/* Default Landing to UX Content Smoke Test */}
+      <Route path="/" element={<Navigate to="/smoke-test" replace />} />
+
       {/* Authenticated Application Shell */}
       <Route
-        path="/"
+        path="/app"
         element={
           <ProtectedRoute requireBirthData={true}>
             <AppShell />
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/self/astrology" replace />} />
+        <Route index element={<Navigate to="/app/self/astrology" replace />} />
         <Route path="self/astrology" element={<SelfAstrologyPage />} />
         <Route path="self/profile" element={<SelfProfilePage />} />
         <Route path="people" element={<PersonProfilePage />} />
