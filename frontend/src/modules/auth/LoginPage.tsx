@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
     }
 
     if (data.user) {
-      const hasBirth = await refreshBirthDataCheck();
+      const hasBirth = await refreshBirthDataCheck(data.user.id);
       setLoading(false);
       if (!hasBirth) {
         navigate("/onboarding/birth-data");

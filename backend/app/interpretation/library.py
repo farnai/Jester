@@ -310,6 +310,7 @@ class ContentResolver:
         variant_key: str | None = None,
         seed: str | None = None,
         include_experimental: bool = False,
+        exclude_asset_ids: set[str] | None = None,
     ) -> ResolvedInterpretation | None:
         target_id = interpretation_id
         contract = INTERPRETATION_CONTRACTS.get(target_id)
@@ -424,6 +425,12 @@ class ContentResolver:
             variant_matched = [c for c in eligible_pool if c.variant_key == variant_key]
             if variant_matched:
                 eligible_pool = variant_matched
+
+        # Deduplication filtering: avoid already-used assets in feed if unused alternatives exist
+        if exclude_asset_ids:
+            unexcluded = [c for c in eligible_pool if c.asset_id not in exclude_asset_ids]
+            if unexcluded:
+                eligible_pool = unexcluded
 
         # Sort pool deterministically by priority DESC, version DESC, asset_id ASC
         eligible_pool.sort(key=lambda x: (-x.priority, -x.version, x.asset_id))
@@ -639,6 +646,7 @@ class ContentLibrary:
         variant_key: str | None = None,
         seed: str | None = None,
         include_experimental: bool = False,
+        exclude_asset_ids: set[str] | None = None,
     ) -> ResolvedInterpretation | None:
         """Primary V2 resolution entry point."""
         return self.resolver.resolve(
@@ -650,6 +658,7 @@ class ContentLibrary:
             variant_key=variant_key,
             seed=seed,
             include_experimental=include_experimental,
+            exclude_asset_ids=exclude_asset_ids,
         )
 
     def get_asset(self, asset_id: str) -> ContentAsset | None:

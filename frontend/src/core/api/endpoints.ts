@@ -81,6 +81,15 @@ export const API = {
       if (error) return false;
       return !!data;
     },
+    getBirthData: async (userId: string): Promise<BirthDataPayload | null> => {
+      const { data, error } = await supabase
+        .from("birth_data")
+        .select("birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (error || !data) return null;
+      return data as BirthDataPayload;
+    },
   },
 
   // Connections

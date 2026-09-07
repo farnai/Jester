@@ -415,6 +415,10 @@ async def get_discovery_people(
             bd_map = {r["user_id"]: r for r in cur.fetchall()}
 
     people_list: list[dict[str, Any]] = []
+    feed_used_interpretation_ids: set[str] = set()
+    feed_used_signal_types: set[str] = set()
+    feed_used_asset_ids: set[str] = set()
+
     for r in people_rows:
         pid = r["id"]
         sun = r["sun_sign"] or "Taurus"
@@ -449,13 +453,17 @@ async def get_discovery_people(
                 )
                 score = round(calc.score, 1)
 
-                # Relationship-level hook (ME -> YOU synastry signal / dynamic)
+                # Relationship-level hook (ME -> YOU synastry signal / dynamic) with feed deduplication
+                pair_seed = f"{min(str(calculation_viewer_id), str(pid))}:{max(str(calculation_viewer_id), str(pid))}"
                 hook_res = interpretation_engine.get_primary_relationship_interpretation(
                     score=score,
                     signals=calc.signals,
                     context="discovery",
                     locale="ka",
-                    seed=str(resolved_viewer_id),
+                    seed=pair_seed,
+                    used_interpretation_ids=feed_used_interpretation_ids,
+                    used_signal_types=feed_used_signal_types,
+                    used_asset_ids=feed_used_asset_ids,
                 )
             except Exception:
                 score = 60.0
@@ -467,7 +475,10 @@ async def get_discovery_people(
                 context="discovery",
                 locale="ka",
                 seed=str(pid),
+                exclude_asset_ids=feed_used_asset_ids,
             ) or content_library.resolve_text(f"self.identity.sun_{sun.lower()}.v1")
+            if hook_res and hook_res.content_asset_id:
+                feed_used_asset_ids.add(hook_res.content_asset_id)
 
         people_list.append({
             "id": str(pid),
@@ -594,11 +605,13 @@ async def compare_preview(
         person_b_placements=placements_map[target_id],
     )
 
+    pair_seed = f"{min(str(source_id), str(target_id))}:{max(str(source_id), str(target_id))}"
+
     enriched_signals = interpretation_engine.resolve_signals(
         calc_result.signals,
         locale=payload.locale,
         tone=payload.tone,
-        seed=str(source_id),
+        seed=pair_seed,
     )
 
     primary_interp = interpretation_engine.get_primary_relationship_interpretation(
@@ -606,7 +619,7 @@ async def compare_preview(
         signals=calc_result.signals,
         locale=payload.locale,
         tone=payload.tone,
-        seed=str(source_id),
+        seed=pair_seed,
     )
 
     deep_payload = interpretation_engine.build_deep_analysis_payload(
@@ -616,7 +629,7 @@ async def compare_preview(
         confidence=calc_result.data_quality.get("confidence", 1.0),
         locale=payload.locale,
         tone=payload.tone,
-        seed=str(source_id),
+        seed=pair_seed,
     )
 
     return {

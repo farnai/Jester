@@ -117,6 +117,8 @@ export const ComparePage: React.FC = () => {
     mutationFn: () => API.connections.create(targetId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["compatibility-us", targetId] });
+      queryClient.invalidateQueries({ queryKey: ["why-experience", targetId] });
     },
   });
 
@@ -127,6 +129,8 @@ export const ComparePage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["compatibility-us", targetId] });
+      queryClient.invalidateQueries({ queryKey: ["why-experience", targetId] });
     },
   });
 

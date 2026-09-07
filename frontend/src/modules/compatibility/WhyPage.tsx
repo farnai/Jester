@@ -114,6 +114,8 @@ export const WhyPage: React.FC = () => {
     mutationFn: () => API.connections.create(targetId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["compatibility-us", targetId] });
+      queryClient.invalidateQueries({ queryKey: ["why-experience", targetId] });
     },
   });
 
@@ -124,6 +126,8 @@ export const WhyPage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["compatibility-us", targetId] });
+      queryClient.invalidateQueries({ queryKey: ["why-experience", targetId] });
     },
   });
 

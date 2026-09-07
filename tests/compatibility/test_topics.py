@@ -166,3 +166,105 @@ def test_synastry_engine_end_to_end_topics():
     # Symmetry check
     res1_rev = engine.calculate(p1_b, p1_a)
     assert res1.best_topics == res1_rev.best_topics
+
+
+def test_conversation_starters_georgian_rules_integrity():
+    """
+    Every conversation starter in CONVERSATION_STARTER_RULES and DEFAULT_CONVERSATION_STARTERS
+    must be natural Georgian text and contain NO English/ASCII letters.
+    """
+    import re
+    from backend.app.compatibility.rules import (
+        CONVERSATION_STARTER_RULES,
+        DEFAULT_CONVERSATION_STARTERS,
+    )
+
+    georgian_pattern = re.compile(r"[\u10D0-\u10FA]")
+    english_pattern = re.compile(r"[a-zA-Z]")
+
+    # Check defaults
+    assert len(DEFAULT_CONVERSATION_STARTERS) >= 3
+    for starter in DEFAULT_CONVERSATION_STARTERS:
+        assert georgian_pattern.search(starter), f"Starter must contain Georgian characters: {starter}"
+        assert not english_pattern.search(starter), f"Starter contains English characters: {starter}"
+
+    # Check all rules
+    assert len(CONVERSATION_STARTER_RULES) > 0
+    for signal_type, starters in CONVERSATION_STARTER_RULES.items():
+        assert len(starters) > 0
+        for starter in starters:
+            assert georgian_pattern.search(starter), f"Starter for {signal_type} must contain Georgian characters: {starter}"
+            assert not english_pattern.search(starter), f"Starter for {signal_type} contains English characters: {starter}"
+
+
+def test_conversation_starters_deterministic_and_deduplicated():
+    """
+    extract_conversation_starters must return up to 3 deterministic,
+    deduplicated Georgian prompts based on top signals.
+    """
+    import re
+    english_pattern = re.compile(r"[a-zA-Z]")
+
+    signals = [
+        {"type": "sun_trine_moon", "category": "harmony", "strength": "high"},
+        {"type": "mercury_trine_mercury", "category": "communication", "strength": "high"},
+        {"type": "venus_conjunction_mars", "category": "attraction", "strength": "high"},
+    ]
+
+    res1 = extract_conversation_starters(signals)
+    res2 = extract_conversation_starters(signals)
+
+    assert res1 == res2
+    assert 1 <= len(res1) <= 3
+    assert len(res1) == len(set(res1))
+
+    for item in res1:
+        assert not english_pattern.search(item), f"Leaked English in starter: {item}"
+        assert len(item.strip()) > 10
+
+
+def test_conversation_starters_empty_fallback():
+    """Empty or unmapped signals must gracefully fall back to Georgian default starters."""
+    import re
+    english_pattern = re.compile(r"[a-zA-Z]")
+
+    empty_starters = extract_conversation_starters([])
+    assert len(empty_starters) == 3
+    for item in empty_starters:
+        assert not english_pattern.search(item), f"Leaked English in fallback: {item}"
+
+    # Unmapped signal type
+    unmapped_starters = extract_conversation_starters([{"type": "unknown_aspect_signal"}])
+    assert len(unmapped_starters) == 3
+    for item in unmapped_starters:
+        assert not english_pattern.search(item), f"Leaked English in fallback: {item}"
+
+
+def test_synastry_engine_end_to_end_georgian_starters():
+    """SynastryEngine end-to-end output must contain Georgian conversation starters."""
+    import re
+    english_pattern = re.compile(r"[a-zA-Z]")
+    engine = SynastryEngine()
+
+    def make_payload(**planets: float) -> NatalInputPayload:
+        default = {
+            "sun": 0.0, "moon": 30.0, "mercury": 15.0, "venus": 45.0, "mars": 60.0,
+            "jupiter": 90.0, "saturn": 120.0, "uranus": 150.0, "neptune": 180.0, "pluto": 210.0,
+        }
+        default.update(planets)
+        return NatalInputPayload(
+            user_id=uuid.uuid4(),
+            birth_data_version=1,
+            birth_time_precision="exact",
+            planet_longitudes=default,
+            ascendant_longitude=0.0,
+        )
+
+    p1 = make_payload(sun=0.0, moon=120.0)
+    p2 = make_payload(sun=120.0, moon=0.0)
+
+    res = engine.calculate(p1, p2)
+    assert 1 <= len(res.conversation_starters) <= 3
+    for starter in res.conversation_starters:
+        assert not english_pattern.search(starter), f"Leaked English in SynastryEngine starter: {starter}"
+

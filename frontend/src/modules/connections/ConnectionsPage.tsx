@@ -23,6 +23,8 @@ export const ConnectionsPage: React.FC = () => {
       API.connections.transition(id, action),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["compatibility-us"] });
+      queryClient.invalidateQueries({ queryKey: ["why-experience"] });
     },
   });
 

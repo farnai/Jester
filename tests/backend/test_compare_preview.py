@@ -67,6 +67,12 @@ async def test_compare_preview_viewer_binding_and_impersonation_rejection(db_con
         assert "deep_analysis" in data
         assert "blocks" in data["deep_analysis"]
         assert len(data["deep_analysis"]["blocks"]) > 0
+        assert "conversation_starters" in data
+        assert len(data["conversation_starters"]) > 0
+        import re
+        eng_pattern = re.compile(r"[a-zA-Z]")
+        for st in data["conversation_starters"]:
+            assert not eng_pattern.search(st), f"Leaked English in preview starter: {st}"
 
         # 2. Calling with matching source_user_id -> succeeds
         res_self_param = await ac.post(

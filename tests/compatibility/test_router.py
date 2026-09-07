@@ -88,6 +88,11 @@ async def test_compare_endpoint_full_flow(db_conn):
         assert "signals" in data1
         assert "best_topics" in data1
         assert "conversation_starters" in data1
+        assert len(data1["conversation_starters"]) > 0
+        import re
+        eng_pattern = re.compile(r"[a-zA-Z]")
+        for st in data1["conversation_starters"]:
+            assert not eng_pattern.search(st), f"Leaked English in compare starter: {st}"
         assert data1["data_quality"]["confidence"] == 1.0
 
         # 6. Compare reversed (U2 calls for U1) -> identical score and result

@@ -48,12 +48,13 @@ USERS_TO_CREATE = [
         "latitude": 41.7151,
         "longitude": 44.8271,
         "place_label": "თბილისი, საქართველო",
+        "is_discoverable": True,
     },
     {
         "id": "44444444-4444-4444-4444-444444444445",
         "email": "farna@gmail.com",
         "password": "123",
-        "display_name": "Farna",
+        "display_name": "Farna (Alias)",
         "bio": "Jester Explorer & Visionary. სტრატეგია, დაკვირვება და ადამიანური კავშირები.",
         "city": "თბილისი",
         "occupation": "Founder & Creator",
@@ -63,6 +64,7 @@ USERS_TO_CREATE = [
         "latitude": 41.7151,
         "longitude": 44.8271,
         "place_label": "თბილისი, საქართველო",
+        "is_discoverable": False,
     },
 ]
 
@@ -148,17 +150,18 @@ def seed_farna():
             print(f"  [+] Auth user registered in GoTrue (ID: {created_id})")
 
             # 3. Create public.profiles
+            is_disc = user_info.get("is_discoverable", True)
             cur.execute(
                 """
                 INSERT INTO public.profiles (id, display_name, bio, city, occupation, timezone, is_discoverable)
-                VALUES (%s, %s, %s, %s, %s, %s, true)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (id) DO UPDATE SET
                     display_name = excluded.display_name,
                     bio = excluded.bio,
                     city = excluded.city,
                     occupation = excluded.occupation,
                     timezone = excluded.timezone,
-                    is_discoverable = true;
+                    is_discoverable = excluded.is_discoverable;
                 """,
                 (
                     user_uuid,
@@ -167,6 +170,7 @@ def seed_farna():
                     user_info["city"],
                     user_info["occupation"],
                     user_info["birth_timezone"],
+                    is_disc,
                 ),
             )
             print("  [+] public.profiles created")

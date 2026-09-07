@@ -375,14 +375,23 @@ export const MePage: React.FC = () => {
                 <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
                   ძრავა: {astro.engine_version} • ვერსია: v{astro.source_birth_data_version} • ბოლოს გადათვლილი: {new Date(astro.updated_at).toLocaleDateString("ka-GE")}
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  isLoading={recalcMutation.isPending}
-                  onClick={() => recalcMutation.mutate()}
-                >
-                  🔄 რუკის გადათვლა
-                </Button>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate("/onboarding/birth-data")}
+                  >
+                    ✏️ დაბადების მონაცემები
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    isLoading={recalcMutation.isPending}
+                    onClick={() => recalcMutation.mutate()}
+                  >
+                    🔄 რუკის გადათვლა
+                  </Button>
+                </div>
               </div>
             </div>
           )}

@@ -3,6 +3,7 @@ Deterministic Meaning Engine for Jester.
 Maps structured astrological signals to semantic meaning contracts and resolves final text.
 Decouples astronomical truth from user-facing copy.
 """
+import hashlib
 from typing import Any
 
 from backend.app.interpretation.contracts import INTERPRETATION_CONTRACTS
@@ -67,21 +68,15 @@ SIGNAL_TYPE_TO_INTERPRETATION_ID: dict[str, str] = {
     "moon_trine_venus": "relationship.harmony.gentle_affinity.v1",
     "moon_sextile_venus": "relationship.harmony.gentle_affinity.v1",
     "moon_venus_harmony": "relationship.harmony.gentle_affinity.v1",
-
-    # Moon - Venus
-    "moon_venus_harmony": "relationship.attraction.gentle_affection.v1",
-    "moon_trine_venus": "relationship.attraction.gentle_affection.v1",
-    "moon_sextile_venus": "relationship.attraction.gentle_affection.v1",
-    "moon_conjunction_venus": "relationship.attraction.gentle_affection.v1",
-    "moon_opposite_venus": "relationship.attraction.gentle_affection.v1",
-    "moon_opposition_venus": "relationship.attraction.gentle_affection.v1",
-    "moon_square_venus": "relationship.attraction.gentle_affection.v1",
+    "moon_opposite_venus": "relationship.growth.emotional_divergence.v1",
+    "moon_opposition_venus": "relationship.growth.emotional_divergence.v1",
+    "moon_square_venus": "relationship.growth.emotional_divergence.v1",
 
     # Mercury - Venus
-    "mercury_venus_harmony": "relationship.communication.playful_banter.v1",
-    "mercury_trine_venus": "relationship.communication.playful_banter.v1",
-    "mercury_sextile_venus": "relationship.communication.playful_banter.v1",
-    "mercury_conjunction_venus": "relationship.communication.playful_banter.v1",
+    "mercury_venus_harmony": "relationship.attraction.aesthetic_harmony.v1",
+    "mercury_trine_venus": "relationship.attraction.aesthetic_harmony.v1",
+    "mercury_sextile_venus": "relationship.attraction.aesthetic_harmony.v1",
+    "mercury_conjunction_venus": "relationship.attraction.aesthetic_harmony.v1",
 
     # Moon - Ascendant
     "ascendant_trine_moon": "relationship.harmony.deep_empathy.v1",
@@ -90,9 +85,9 @@ SIGNAL_TYPE_TO_INTERPRETATION_ID: dict[str, str] = {
     "moon_ascendant_harmony": "relationship.harmony.deep_empathy.v1",
 
     # Sun - Ascendant
-    "ascendant_trine_sun": "relationship.harmony.natural_resonance.v1",
-    "ascendant_conjunction_sun": "relationship.harmony.natural_resonance.v1",
-    "sun_ascendant_harmony": "relationship.harmony.natural_resonance.v1",
+    "ascendant_trine_sun": "relationship.attraction.bold_momentum.v1",
+    "ascendant_conjunction_sun": "relationship.attraction.bold_momentum.v1",
+    "sun_ascendant_harmony": "relationship.attraction.bold_momentum.v1",
 
     "mercury_trine_mercury": "relationship.communication.intellectual_flow.v1",
     "mercury_sextile_mercury": "relationship.communication.intellectual_flow.v1",
@@ -194,6 +189,7 @@ SIGNAL_TYPE_TO_INTERPRETATION_ID: dict[str, str] = {
     "moon_moon_contrast": "relationship.growth.emotional_divergence.v1",
     "moon_square_moon": "relationship.growth.emotional_divergence.v1",
     "moon_opposite_moon": "relationship.growth.emotional_divergence.v1",
+    "moon_opposition_moon": "relationship.growth.emotional_divergence.v1",
 
     "mercury_moon_harmony": "relationship.communication.intuitive_listening.v1",
     "mercury_trine_moon": "relationship.communication.intuitive_listening.v1",
@@ -315,6 +311,7 @@ class InterpretationEngine:
         persona: str = "jester",
         variant_key: str | None = None,
         seed: str | None = None,
+        exclude_asset_ids: set[str] | None = None,
     ) -> ResolvedInterpretation | None:
         """
         Resolves a single signal dictionary into a user-facing ResolvedInterpretation
@@ -334,6 +331,7 @@ class InterpretationEngine:
             persona=persona,
             variant_key=variant_key,
             seed=seed,
+            exclude_asset_ids=exclude_asset_ids,
         )
         if resolved:
             return resolved
@@ -464,22 +462,144 @@ class InterpretationEngine:
         locale: str = "ka",
         tone: str | None = None,
         seed: str | None = None,
+        used_interpretation_ids: set[str] | None = None,
+        used_signal_types: set[str] | None = None,
+        used_asset_ids: set[str] | None = None,
     ) -> ResolvedInterpretation:
         """
         Synthesizes the overarching primary relationship interpretation based on
         overall compatibility score tier and highest-importance signal.
+        Supports feed-level deduplication across candidates via used_interpretation_ids,
+        used_signal_types, and used_asset_ids while strictly preserving astrological truth.
         """
         if signals:
-            top_signal = signals[0]
-            resolved = self.resolve_signal(
-                signal=top_signal,
-                context=context,
-                locale=locale,
-                tone=tone,
-                seed=seed,
-            )
-            if resolved:
-                return resolved
+            resolvable_signals: list[dict[str, Any]] = []
+            for sig in signals:
+                sig_type = sig.get("type", "")
+                interp_id = self.signal_to_interpretation_id(sig_type)
+                if interp_id and self.library.list_assets(interpretation_id=interp_id, locale=locale or "ka"):
+                    resolvable_signals.append(sig)
+
+            if resolvable_signals:
+                has_feed_tracking = (
+                    used_interpretation_ids is not None
+                    or used_signal_types is not None
+                    or used_asset_ids is not None
+                )
+
+                if has_feed_tracking:
+                    # Deduplication Priority 1 & 2:
+                    # Find highest-ranking signal whose interpretation ID and signal type
+                    # have NOT been used in the feed.
+                    chosen_signal = None
+                    for sig in resolvable_signals:
+                        st = sig.get("type", "").lower()
+                        iid = self.signal_to_interpretation_id(st)
+                        if not iid:
+                            continue
+                        if used_interpretation_ids is not None and iid in used_interpretation_ids:
+                            continue
+                        if used_signal_types is not None and st in used_signal_types:
+                            continue
+                        chosen_signal = sig
+                        break
+
+                    if chosen_signal:
+                        resolved = self.resolve_signal(
+                            signal=chosen_signal,
+                            context=context,
+                            locale=locale,
+                            tone=tone,
+                            seed=seed,
+                            exclude_asset_ids=used_asset_ids,
+                        )
+                        if resolved:
+                            if used_interpretation_ids is not None:
+                                used_interpretation_ids.add(resolved.id)
+                            if used_signal_types is not None:
+                                used_signal_types.add(chosen_signal.get("type", "").lower())
+                            if used_asset_ids is not None and resolved.content_asset_id:
+                                used_asset_ids.add(resolved.content_asset_id)
+                            return resolved
+
+                    # Deduplication Priority 3:
+                    # If all signals map to already-used interpretation contracts, find the
+                    # highest-ranking signal that has an unused content asset variant in the corpus.
+                    if used_asset_ids is not None:
+                        for sig in resolvable_signals:
+                            st = sig.get("type", "").lower()
+                            iid = self.signal_to_interpretation_id(st)
+                            if not iid:
+                                continue
+                            assets = self.library.list_assets(interpretation_id=iid, locale=locale or "ka")
+                            unused = [
+                                a for a in assets
+                                if a.asset_id not in used_asset_ids
+                                and (a.context == context or a.context == "relationship")
+                                and a.text and a.text.strip()
+                            ]
+                            if unused:
+                                resolved = self.resolve_signal(
+                                    signal=sig,
+                                    context=context,
+                                    locale=locale,
+                                    tone=tone,
+                                    seed=seed,
+                                    exclude_asset_ids=used_asset_ids,
+                                )
+                                if resolved:
+                                    if used_interpretation_ids is not None:
+                                        used_interpretation_ids.add(resolved.id)
+                                    if used_signal_types is not None:
+                                        used_signal_types.add(st)
+                                    if used_asset_ids is not None and resolved.content_asset_id:
+                                        used_asset_ids.add(resolved.content_asset_id)
+                                    return resolved
+
+                    # Deduplication Priority 4:
+                    # All variants across all candidate signals are exhausted in this feed.
+                    # Fall back to deterministic selection without fabricating non-existent aspects.
+                    top_slice = resolvable_signals[:3]
+                    if len(top_slice) == 1 or not seed:
+                        chosen_signal = top_slice[0]
+                    else:
+                        hash_val = int(hashlib.sha256(f"{seed}:hook_signal_select".encode()).hexdigest(), 16)
+                        chosen_signal = top_slice[hash_val % len(top_slice)]
+
+                    resolved = self.resolve_signal(
+                        signal=chosen_signal,
+                        context=context,
+                        locale=locale,
+                        tone=tone,
+                        seed=seed,
+                    )
+                    if resolved:
+                        if used_interpretation_ids is not None:
+                            used_interpretation_ids.add(resolved.id)
+                        if used_signal_types is not None:
+                            used_signal_types.add(chosen_signal.get("type", "").lower())
+                        if used_asset_ids is not None and resolved.content_asset_id:
+                            used_asset_ids.add(resolved.content_asset_id)
+                        return resolved
+
+                else:
+                    # Non-feed / single-comparison evaluation (preserving exact existing behavior)
+                    top_slice = resolvable_signals[:3]
+                    if len(top_slice) == 1 or not seed:
+                        chosen_signal = top_slice[0]
+                    else:
+                        hash_val = int(hashlib.sha256(f"{seed}:hook_signal_select".encode()).hexdigest(), 16)
+                        chosen_signal = top_slice[hash_val % len(top_slice)]
+
+                    resolved = self.resolve_signal(
+                        signal=chosen_signal,
+                        context=context,
+                        locale=locale,
+                        tone=tone,
+                        seed=seed,
+                    )
+                    if resolved:
+                        return resolved
 
         # Fallback to holistic score bracket
         if score >= 85.0:
@@ -497,9 +617,14 @@ class InterpretationEngine:
             locale=locale,
             tone=tone,
             seed=seed,
+            exclude_asset_ids=used_asset_ids,
         ) or self.library.resolve_text(interp_id)
 
         if resolved:
+            if used_interpretation_ids is not None:
+                used_interpretation_ids.add(resolved.id)
+            if used_asset_ids is not None and resolved.content_asset_id:
+                used_asset_ids.add(resolved.content_asset_id)
             return resolved
 
         # Safety fallback
