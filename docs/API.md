@@ -88,9 +88,9 @@ Authorization: Bearer <supabase_jwt_token>
 #### 12. Compare Users / Calculate Compatibility — `POST /v1/compare`
 - **Auth**: Bearer JWT
 - **Body**: `CompareRequest(target_user_id: UUID)`
-- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], interpretation: ResolvedInterpretation | None, best_topics: list[str], conversation_starters: list[str], data_quality: dict, engine_version: str, calculated_at: datetime)`
+- **Response 200**: `StructuredCompatibilityResponse(id: UUID, target_user_id: UUID, score: float, dimensions: dict[str, float], signals: list[dict], interpretation: ResolvedInterpretation | None, best_topics: list[str], conversation_starters: list[str], data_quality: dict, deep_analysis: DeepAnalysisPayload | None, engine_version: str, calculated_at: datetime)`
 - **Errors**: `403 ForbiddenException` if active accepted connection does not exist. `404 PrivacySafeNotFoundException` if blocked.
-- *Implementation & Product Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair. Enriched with JESTER Voice interpretations: `interpretation` provides the primary relationship insight, and each entry in `signals` is enriched with its resolved interpretation.
+- *Implementation & Product Note*: Computed by deterministic Synastry V1 engine (`synastry-v1.0.0`) using exact astronomical longitudes and cached per canonical user pair. Relationship dimensions (`emotional_harmony`, `communication`, `attraction`, `growth_long_term`) are persisted to `public.compatibility_results` (Migration 022) and preserved on cache hits. Enriched with JESTER Voice interpretations: `interpretation` provides the primary relationship insight, `signals` are enriched with resolved Georgian copy, and `deep_analysis` provides structured thematic blocks.
 
 #### 13. Why This Person — `GET /v1/people/{target_user_id}/why`
 - **Auth**: Bearer JWT
@@ -186,9 +186,43 @@ Authorization: Bearer <supabase_jwt_token>
 - **Response 200**: `{"signal": dict, "interpretation": ResolvedInterpretation}`
 - **Errors**: `404 Not Found` if signal does not map to any recognized interpretation.
 
-#### 28. Build Deep Analysis — `POST /v1/interpretations/deep-analysis`
-- **Auth**: Bearer JWT
-- **Body**: `{"score": float, "signals": list[dict], "confidence": float, "context"?: str, "locale"?: str, "tone"?: str, "seed"?: str}`
-- **Response 200**: `DeepAnalysisPayload(overall_score: float, primary_interpretation: ResolvedInterpretation, blocks: list[DeepAnalysisBlock], data_confidence: float)`
-- **Description**: Compiles verified signals into structured thematic narrative blocks grounded in aspect evidence trace.
+#### 29. Discovery Feed — `GET /v1/interpretations/discovery-people`
+- **Auth**: Bearer JWT (Required). Caller identity is strictly bound to `JWT.sub`.
+- **Query Params**: `viewer_id?: UUID` (Optional; if supplied, must strictly match `current_user.id`, otherwise returns `403 Forbidden`).
+- **Response 200**: `list[DiscoveryPerson]`
+  - `id`: Target user UUID
+  - `display_name`: Display name
+  - `bio`, `city`, `occupation`, `avatar_url`: Safe profile attributes
+  - `astrology`: Safe derived signals (`sun_sign`, `moon_sign`, `ascendant_sign`, `element_primary`, `modality_primary`)
+  - `compatibility_score`: Server-calculated Synastry V1 score
+  - `hook_observation`: Relationship-level JESTER hook observation (ME → YOU synastry dynamic with fallback to natal hook)
+- **Security & Privacy**:
+  - Excludes blocked relationships in either direction via `public.is_user_blocked(viewer, candidate)`.
+  - Excludes non-discoverable profiles (`is_discoverable = false`).
+  - Excludes the authenticated viewer.
+  - Rejects cross-user impersonation attempts (`viewer_id != current_user.id`) with `403 Forbidden`.
+
+#### 30. Pre-Connection Relationship Preview — `POST /v1/interpretations/compare-preview`
+- **Auth**: Optional / Bearer JWT. When authenticated, viewer identity is strictly derived from `JWT.sub`.
+- **Body**: `ComparePreviewRequest(target_user_id: UUID, source_user_id?: UUID, locale: str = "ka", tone?: str)`
+- **Response 200**:
+  - `source_user_id`: Caller UUID (derived from JWT)
+  - `target_user_id`: Target user UUID
+  - `score`: Synastry V1 overall compatibility score (0–100)
+  - `dimensions`: 4 subscores (`emotional_harmony`, `communication`, `attraction`, `growth_long_term`)
+  - `signals`: Array of top relational signals with Georgian resolved copy
+  - `interpretation`: Primary relationship insight (title, hook, text, tone)
+  - `best_topics`: Suggested discussion topics
+  - `conversation_starters`: Contextual conversation icebreakers
+  - `data_quality`: Confidence factor, precision, and house/ascendant flags
+  - `deep_analysis`: Structured thematic analysis blocks
+  - `engine_version`: Engine version string
+  - `calculated_at`: ISO timestamp
+- **Security & Privacy**:
+  - Strictly prevents viewer impersonation: If caller supplies `source_user_id != current_user.id`, returns `403 Forbidden` (`forbidden_viewer_impersonation`).
+  - Enforces block checks in either direction: returns `404 PrivacySafeNotFoundException` if blocked.
+  - Enforces discoverability: non-discoverable target profiles without an active connection return `404 PrivacySafeNotFoundException`.
+  - Never exposes private birth data, coordinates, raw planetary longitudes, or evidence traces.
+
+
 

@@ -13,7 +13,7 @@ from backend.app.auth.dependencies import get_current_user, get_optional_user, r
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.compatibility.engine import CompatibilityEngine
 from backend.app.core.database import get_db, db_manager
-from backend.app.core.errors import JesterAPIException, PrivacySafeNotFoundException
+from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.interpretation.engine import interpretation_engine
 from backend.app.interpretation.library import content_library
 from backend.app.interpretation.models import (
@@ -342,43 +342,65 @@ async def resolve_natal_profile_interpretations(
 @router.get("/interpretations/discovery-people", response_model=list[dict[str, Any]])
 async def get_discovery_people(
     viewer_id: uuid.UUID | None = None,
-    current_user: AuthenticatedUser | None = Depends(get_optional_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> list[dict[str, Any]]:
     """
     Returns discoverable profiles with their safe derived astrology and a resolved
     Georgian JESTER hook copy. Also calculates real synastry compatibility score.
+    Strictly authenticated: viewer identity is bound to current_user.id.
+    Excludes blocked relationships and non-discoverable profiles.
     """
-    resolved_viewer_id = viewer_id or (current_user.id if current_user else DEFAULT_DEMO_USER_ID)
+    if viewer_id is not None and viewer_id != current_user.id:
+        raise ForbiddenException(
+            message="Cannot request discovery results as another user.",
+            error_code="forbidden_viewer_impersonation",
+        )
+    resolved_viewer_id = current_user.id
 
     with db.cursor() as cur:
-        # Fallback to DEFAULT_DEMO_USER_ID if viewer has no birth data (e.g. unonboarded browser session)
+        # Check if viewer has birth data for compatibility calculations
         cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (resolved_viewer_id,))
-        if not cur.fetchone():
-            resolved_viewer_id = DEFAULT_DEMO_USER_ID
+        calculation_viewer_id = resolved_viewer_id
+        has_bd = cur.fetchone() is not None
+        if not has_bd:
+            # Check if DEFAULT_DEMO_USER_ID has birth data
+            cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (DEFAULT_DEMO_USER_ID,))
+            if cur.fetchone():
+                calculation_viewer_id = DEFAULT_DEMO_USER_ID
+                has_bd = True
 
-        # Ensure viewer astro_private placements exist
-        cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (resolved_viewer_id,))
-        viewer_placements = cur.fetchone()
-        if not viewer_placements:
-            recalculate_user_astrology(resolved_viewer_id, db)
-            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (resolved_viewer_id,))
+        viewer_placements = None
+        viewer_bd = {"birth_time_precision": "exact", "data_version": 1}
+        if has_bd:
+            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
             viewer_placements = cur.fetchone()
+            if not viewer_placements:
+                try:
+                    recalculate_user_astrology(calculation_viewer_id, db)
+                    cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
+                    viewer_placements = cur.fetchone()
+                except Exception:
+                    viewer_placements = None
 
-        cur.execute("SELECT birth_time_precision, data_version FROM public.birth_data WHERE user_id = %s;", (resolved_viewer_id,))
-        viewer_bd = cur.fetchone() or {"birth_time_precision": "exact", "data_version": 1}
+            cur.execute("SELECT birth_time_precision, data_version FROM public.birth_data WHERE user_id = %s;", (calculation_viewer_id,))
+            row_bd = cur.fetchone()
+            if row_bd:
+                viewer_bd = row_bd
 
-        # Query all discoverable people except viewer
+        # Query all discoverable people except viewer, strictly excluding blocked users
         cur.execute(
             """
             SELECT p.id, p.display_name, p.bio, p.city, p.occupation, p.avatar_url,
                    s.sun_sign, s.moon_sign, s.ascendant_sign, s.element_primary, s.modality_primary
             FROM public.profiles p
             LEFT JOIN public.astro_safe_profile s ON p.id = s.user_id
-            WHERE p.is_discoverable = true AND p.id != %s
+            WHERE p.is_discoverable = true
+              AND p.id != %s
+              AND NOT public.is_user_blocked(%s, p.id)
             ORDER BY p.display_name ASC;
             """,
-            (resolved_viewer_id,),
+            (resolved_viewer_id, resolved_viewer_id),
         )
         people_rows = cur.fetchall()
 
@@ -397,14 +419,6 @@ async def get_discovery_people(
         pid = r["id"]
         sun = r["sun_sign"] or "Taurus"
 
-        # Resolve hook observation for discovery card
-        hook_res = content_library.resolve(
-            interpretation_id=f"self.identity.sun_{sun.lower()}.v1",
-            context="discovery",
-            locale="ka",
-            seed=str(pid),
-        ) or content_library.resolve_text(f"self.identity.sun_{sun.lower()}.v1")
-
         target_placements = placements_map.get(pid)
         if not target_placements:
             try:
@@ -420,10 +434,11 @@ async def get_discovery_people(
 
         # Calculate real Synastry V1 compatibility
         score = 60.0
+        hook_res = None
         if target_placements and viewer_placements:
             try:
                 calc = compatibility_engine_instance.calculate(
-                    person_a_id=resolved_viewer_id,
+                    person_a_id=calculation_viewer_id,
                     person_a_version=viewer_bd["data_version"],
                     person_a_precision=viewer_bd["birth_time_precision"],
                     person_a_placements=viewer_placements,
@@ -433,8 +448,26 @@ async def get_discovery_people(
                     person_b_placements=target_placements,
                 )
                 score = round(calc.score, 1)
+
+                # Relationship-level hook (ME -> YOU synastry signal / dynamic)
+                hook_res = interpretation_engine.get_primary_relationship_interpretation(
+                    score=score,
+                    signals=calc.signals,
+                    context="discovery",
+                    locale="ka",
+                    seed=str(resolved_viewer_id),
+                )
             except Exception:
                 score = 60.0
+
+        # Fallback to natal hook if synastry or relationship hook was unavailable
+        if not hook_res:
+            hook_res = content_library.resolve(
+                interpretation_id=f"self.identity.sun_{sun.lower()}.v1",
+                context="discovery",
+                locale="ka",
+                seed=str(pid),
+            ) or content_library.resolve_text(f"self.identity.sun_{sun.lower()}.v1")
 
         people_list.append({
             "id": str(pid),
@@ -466,15 +499,20 @@ async def compare_preview(
     """
     Computes full Synastry V1 compatibility between two users with real Swiss Ephemeris data,
     resolves all signals in Georgian, and builds structured Deep Analysis.
+    Strictly prevents viewer impersonation when authenticated, enforces block checks,
+    and respects discoverability rules.
     """
-    source_id = payload.source_user_id or (current_user.id if current_user else DEFAULT_DEMO_USER_ID)
-    target_id = payload.target_user_id
+    if current_user:
+        if payload.source_user_id is not None and payload.source_user_id != current_user.id:
+            raise ForbiddenException(
+                message="Cannot request comparison preview as another user.",
+                error_code="forbidden_viewer_impersonation",
+            )
+        source_id = current_user.id
+    else:
+        source_id = payload.source_user_id or DEFAULT_DEMO_USER_ID
 
-    # Fallback to DEFAULT_DEMO_USER_ID if source user has no birth data (e.g. unonboarded browser session)
-    with db.cursor() as cur:
-        cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (source_id,))
-        if not cur.fetchone():
-            source_id = DEFAULT_DEMO_USER_ID
+    target_id = payload.target_user_id
 
     if source_id == target_id:
         raise JesterAPIException(
@@ -484,6 +522,46 @@ async def compare_preview(
         )
 
     with db.cursor() as cur:
+        # Enforce block status in either direction
+        cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (source_id, target_id))
+        block_res = cur.fetchone()
+        if block_res and block_res["is_blocked"]:
+            raise PrivacySafeNotFoundException("User not found or unavailable.")
+
+        # Check target profile existence and discoverability
+        cur.execute("SELECT is_discoverable FROM public.profiles WHERE id = %s;", (target_id,))
+        target_prof = cur.fetchone()
+        if not target_prof:
+            raise PrivacySafeNotFoundException("User not found or unavailable.")
+
+        if not target_prof["is_discoverable"]:
+            u_min, u_max = sorted([source_id, target_id])
+            cur.execute("SELECT public.has_active_connection(%s, %s) as is_active;", (u_min, u_max))
+            conn_res = cur.fetchone()
+            if not conn_res or not conn_res["is_active"]:
+                raise PrivacySafeNotFoundException("User not found or unavailable.")
+
+        # Validate source birth data existence (fallback to DEFAULT_DEMO_USER_ID for unonboarded demo sessions)
+        cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (source_id,))
+        if not cur.fetchone():
+            cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (DEFAULT_DEMO_USER_ID,))
+            if cur.fetchone():
+                source_id = DEFAULT_DEMO_USER_ID
+            else:
+                raise PrivacySafeNotFoundException("Birth data required for relationship preview.")
+
+        if source_id == target_id:
+            raise JesterAPIException(
+                status_code=400,
+                error_code="self_comparison_not_allowed",
+                message="Cannot compare a user with themselves.",
+            )
+
+        # Validate target birth data existence
+        cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (target_id,))
+        if not cur.fetchone():
+            raise PrivacySafeNotFoundException("Target user birth data unavailable.")
+
         cur.execute("SELECT * FROM public.astro_private WHERE user_id IN (%s, %s);", (source_id, target_id))
         placements_map = {r["user_id"]: r for r in cur.fetchall()}
 

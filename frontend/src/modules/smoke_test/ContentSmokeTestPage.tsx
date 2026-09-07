@@ -11,6 +11,7 @@ import {
   ResolvedInterpretationModel,
 } from "../../core/api/types";
 import { LoadingState, ErrorState } from "../../shared/StatusState";
+import { getTopicLabel } from "../compatibility/components/ConversationStarters";
 
 type TabMode = "me" | "discovery" | "you" | "us";
 
@@ -727,7 +728,7 @@ export const ContentSmokeTestPage: React.FC = () => {
                         <ul className="topics-list">
                           {compareData.best_topics?.map((topic, i) => (
                             <li key={i} className="topic-item">
-                              <span className="bullet">✦</span> {topic}
+                              <span className="bullet">✦</span> {getTopicLabel(topic)}
                             </li>
                           ))}
                         </ul>

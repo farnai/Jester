@@ -4,7 +4,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
-from backend.app.interpretation.models import ResolvedInterpretation
+from backend.app.interpretation.models import DeepAnalysisPayload, ResolvedInterpretation
 
 
 class CompareRequest(BaseModel):
@@ -32,6 +32,7 @@ class StructuredCompatibilityResponse(BaseModel):
     best_topics: list[str] = Field(default_factory=list)
     conversation_starters: list[str] = Field(default_factory=list)
     data_quality: dict[str, Any] = Field(default_factory=dict)
+    deep_analysis: DeepAnalysisPayload | None = None
     engine_version: str = "synastry-v1.0.0"
     calculated_at: datetime
 

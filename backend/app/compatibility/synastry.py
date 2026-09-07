@@ -402,7 +402,11 @@ class SynastryEngine:
         # Derive topics and starters (Sections 17 & 18)
         dominant_elem = elem_sun_a if elem_sun_a == elem_sun_b else None
         dominant_pattern = signals[0]["type"] if signals else None
-        best_topics = extract_best_topics(dominant_element=dominant_elem, dominant_aspect_pattern=dominant_pattern)
+        best_topics = extract_best_topics(
+            signals=signals,
+            dominant_element=dominant_elem,
+            dominant_aspect_pattern=dominant_pattern,
+        )
         starters = extract_conversation_starters(signals)
 
         # Data quality

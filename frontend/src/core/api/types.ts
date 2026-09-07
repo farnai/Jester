@@ -77,6 +77,7 @@ export interface Signal {
   strength: "low" | "medium" | "high";
   source_aspects: string[];
   label: string;
+  interpretation?: ResolvedInterpretationModel;
 }
 
 export interface Dimensions {
@@ -104,6 +105,8 @@ export interface StructuredCompatibilityResponse {
   data_quality: DataQuality;
   engine_version: string;
   calculated_at: string;
+  interpretation?: ResolvedInterpretationModel | null;
+  deep_analysis?: DeepAnalysisPayload | null;
 }
 
 export interface ConversationResponse {
@@ -153,6 +156,8 @@ export interface ResolvedInterpretationModel {
   tone?: string;
   persona?: string;
   variant_key?: string;
+  title?: string;
+  hook?: string;
 }
 
 export interface DailyEnergyArchetype {

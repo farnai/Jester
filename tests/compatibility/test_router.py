@@ -78,6 +78,13 @@ async def test_compare_endpoint_full_flow(db_conn):
         assert 10.0 <= data1["score"] <= 98.0
         assert data1["engine_version"] == "synastry-v1.0.0"
         assert "dimensions" in data1
+        assert "emotional_harmony" in data1["dimensions"]
+        assert "communication" in data1["dimensions"]
+        assert "attraction" in data1["dimensions"]
+        assert "growth_long_term" in data1["dimensions"]
+        assert data1["deep_analysis"] is not None
+        assert "blocks" in data1["deep_analysis"]
+        assert len(data1["deep_analysis"]["blocks"]) > 0
         assert "signals" in data1
         assert "best_topics" in data1
         assert "conversation_starters" in data1
@@ -93,8 +100,9 @@ async def test_compare_endpoint_full_flow(db_conn):
         data2 = res2.json()
         assert data2["score"] == data1["score"]
         assert data2["engine_version"] == "synastry-v1.0.0"
+        assert data2["dimensions"] == data1["dimensions"]
 
-        # 7. Check cache in database contains evidence_trace
+        # 7. Check cache in database contains evidence_trace and persisted dimensions
         with db_conn.cursor() as cur:
             set_auth_context(cur, None, "admin")
             cur.execute(
@@ -106,14 +114,39 @@ async def test_compare_endpoint_full_flow(db_conn):
             assert cached["engine_version"] == "synastry-v1.0.0"
             assert isinstance(cached["evidence_trace"], list)
             assert len(cached["evidence_trace"]) > 0
+            assert isinstance(cached["dimensions"], dict)
+            assert "emotional_harmony" in cached["dimensions"]
+            assert "communication" in cached["dimensions"]
+            assert "attraction" in cached["dimensions"]
+            assert "growth_long_term" in cached["dimensions"]
 
-        # 8. Test /v1/people/{id}/why endpoint
+        # 8. Test /v1/people/{id}/why endpoint (cache hit)
         res_why = await ac.get(
             f"/v1/people/{u2}/why",
             headers={"Authorization": f"Bearer {token_u1}"},
         )
         assert res_why.status_code == 200
-        assert res_why.json()["score"] == data1["score"]
+        why_data = res_why.json()
+        assert why_data["score"] == data1["score"]
+        assert "dimensions" in why_data
+        assert why_data["dimensions"] == data1["dimensions"]
+        assert why_data["deep_analysis"] is not None
+        assert len(why_data["deep_analysis"]["blocks"]) > 0
+
+        # 9. Test backward compatibility for cached record with empty dimensions
+        with db_conn.cursor() as cur:
+            set_auth_context(cur, None, "admin")
+            cur.execute(
+                "UPDATE public.compatibility_results SET dimensions = '{}'::jsonb WHERE user_a_id = %s AND user_b_id = %s;",
+                (u_min, u_max),
+            )
+        res_legacy = await ac.get(
+            f"/v1/people/{u2}/why",
+            headers={"Authorization": f"Bearer {token_u1}"},
+        )
+        assert res_legacy.status_code == 200
+        assert res_legacy.json()["dimensions"] == {}
+        assert res_legacy.json()["deep_analysis"] is not None
 
 
 @pytest.mark.asyncio

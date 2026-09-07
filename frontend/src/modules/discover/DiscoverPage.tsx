@@ -1,175 +1,182 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
-import { DiscoveryPerson } from "../../core/api/types";
-import { Card, Button, Badge, Avatar, LoadingState, ErrorState, EmptyState } from "../../shared/ui";
+import { DiscoveryPerson, ConnectionResponse } from "../../core/api/types";
+import { Badge, Skeleton, Card, ErrorState, EmptyState } from "../../shared/ui";
+import { PersonCard } from "./PersonCard";
 
 export const DiscoverPage: React.FC = () => {
   const { user } = useAuth();
 
-  const { data: people, isLoading, error, refetch } = useQuery<DiscoveryPerson[]>({
+  // 1. Fetch Discovery People (Production Endpoint)
+  const {
+    data: people,
+    isLoading: loadingPeople,
+    error: errorPeople,
+    refetch: refetchPeople,
+  } = useQuery<DiscoveryPerson[]>({
     queryKey: ["discovery-people", user?.id],
     queryFn: () => API.interpretations.getDiscoveryPeople(user?.id),
     enabled: !!user?.id,
   });
 
-  if (isLoading) {
-    return <LoadingState message="ადამიანების აღმოჩენა და სინასტრიული რუკების შედარება..." />;
+  // 2. Fetch Connections to determine relationship states and enforce privacy/block filters
+  const { data: connections, isLoading: loadingConnections } = useQuery<ConnectionResponse[]>({
+    queryKey: ["connections"],
+    queryFn: API.connections.list,
+  });
+
+  // Loading State with Skeletons matching PersonCard structure
+  if (loadingPeople || loadingConnections) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <Skeleton width="220px" height="2rem" />
+            <div style={{ marginTop: "0.5rem" }}>
+              <Skeleton width="340px" height="1rem" />
+            </div>
+          </div>
+          <Skeleton width="80px" height="2rem" borderRadius="20px" />
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gap: "1.5rem",
+          }}
+        >
+          {[1, 2, 3, 4].map((n) => (
+            <Card key={n} padded style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                  <Skeleton width="48px" height="48px" borderRadius="9999px" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                    <Skeleton width="120px" height="1.1rem" />
+                    <Skeleton width="90px" height="0.8rem" />
+                  </div>
+                </div>
+                <Skeleton width="48px" height="42px" borderRadius="10px" />
+              </div>
+              <Skeleton width="100%" height="4.5rem" borderRadius="8px" />
+              <div style={{ display: "flex", gap: "0.4rem" }}>
+                <Skeleton width="70px" height="1.5rem" borderRadius="12px" />
+                <Skeleton width="70px" height="1.5rem" borderRadius="12px" />
+              </div>
+              <Skeleton width="100%" height="44px" borderRadius="8px" />
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <ErrorState error={error as Error} onRetry={refetch} />;
+  // Error State
+  if (errorPeople) {
+    return <ErrorState error={errorPeople as Error} onRetry={refetchPeople} />;
   }
 
-  const list = people || [];
+  const rawPeople = people || [];
+  const connList = connections || [];
+
+  // Build map of connection statuses & exclude blocked users (Privacy Invariant)
+  const connectionMap = new Map<string, ConnectionResponse>();
+  const blockedUserIds = new Set<string>();
+
+  for (const conn of connList) {
+    const otherId = conn.user_a_id === user?.id ? conn.user_b_id : conn.user_a_id;
+    connectionMap.set(otherId, conn);
+    if (conn.status === "blocked") {
+      blockedUserIds.add(otherId);
+    }
+  }
+
+  // Filter out any blocked users to prevent existence leak
+  const visiblePeople = rawPeople.filter((p) => !blockedUserIds.has(p.id));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+      {/* Editorial Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+          gap: "1rem",
+        }}
+      >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
             <span style={{ fontSize: "1.5rem" }}>🧭</span>
-            <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: "1.65rem",
+                fontWeight: 800,
+                color: "#0f172a",
+                letterSpacing: "-0.02em",
+              }}
+            >
               აღმოაჩინე ადამიანები
             </h1>
           </div>
-          <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
-            პროფილები გაანგარიშებული სინასტრიული თანხვედრითა და JESTER-ის დაკვირვებებით.
+          <p
+            style={{
+              margin: "0.35rem 0 0 0",
+              color: "#475569",
+              fontSize: "0.95rem",
+              lineHeight: 1.5,
+              maxWidth: "600px",
+            }}
+          >
+            ადამიანები, რომელთა გაცნობაც ღირს — სინასტრიული თანხვედრა და JESTER-ის ხედვა.
           </p>
         </div>
 
-        <Badge variant="brand" size="md">
-          {list.length} ადამიანი
+        <Badge variant="score" size="md">
+          {visiblePeople.length} ხელმისაწვდომი
         </Badge>
       </div>
 
-      {list.length === 0 ? (
+      {/* Main Discover Feed */}
+      {visiblePeople.length === 0 ? (
         <EmptyState
-          title="ახალი ადამიანები ვერ მოიძებნა"
-          description="ამ მომენტში ყველა ხელმისაწვდომი პროფილი უკვე ნანახია ან ახალი მონაცემები ემატება."
+          title="ამ ეტაპზე ახალი პროფილები არ ჩანს"
+          description="თქვენ უკვე გაეცანით ყველა ხელმისაწვდომ პროფილს, ან ახალი მონაცემები ემატება. გადაამოწმეთ ცოტა ხანში."
           actionLabel="განახლება"
-          onAction={() => refetch()}
+          onAction={() => refetchPeople()}
         />
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.25rem" }}>
-          {list.map((person) => {
-            const score = person.compatibility_score ?? 60;
-            const hookText = person.hook_observation?.text;
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gap: "1.5rem",
+          }}
+        >
+          {visiblePeople.map((person) => {
+            const conn = connectionMap.get(person.id);
+            let relStatus: "none" | "pending_out" | "pending_in" | "accepted" | "blocked" = "none";
+
+            if (conn) {
+              if (conn.status === "accepted") {
+                relStatus = "accepted";
+              } else if (conn.status === "pending") {
+                relStatus = conn.initiated_by === user?.id ? "pending_out" : "pending_in";
+              } else if (conn.status === "blocked") {
+                relStatus = "blocked";
+              }
+            }
 
             return (
-              <Card
+              <PersonCard
                 key={person.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  padding: "1.25rem",
-                  gap: "1rem",
-                }}
-              >
-                <div>
-                  {/* Top Row: Avatar + Info + Score Badge */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem" }}>
-                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                      <Avatar src={person.avatar_url} name={person.display_name} size="lg" />
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: "1.05rem", color: "#0f172a" }}>
-                          {person.display_name}
-                        </div>
-                        {(person.occupation || person.city) && (
-                          <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.15rem" }}>
-                            {[person.occupation, person.city].filter(Boolean).join(" • ")}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Compatibility Curiosity Score */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        backgroundColor: "#fdf4ff",
-                        border: "1px solid #f0abfc",
-                        borderRadius: "10px",
-                        padding: "0.3rem 0.6rem",
-                        minWidth: "48px",
-                      }}
-                      title="სინასტრიული თანხვედრის ინდექსი"
-                    >
-                      <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#9333ea", lineHeight: 1 }}>
-                        {Math.round(score)}
-                      </span>
-                      <span style={{ fontSize: "0.65rem", fontWeight: 600, color: "#a855f7", textTransform: "uppercase", marginTop: "0.1rem" }}>
-                        Score
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bio snippet if available */}
-                  {person.bio && (
-                    <p style={{ fontSize: "0.85rem", color: "#475569", margin: "0.75rem 0 0 0", lineHeight: 1.45 }}>
-                      {person.bio}
-                    </p>
-                  )}
-
-                  {/* Safe Derived Astrology Tags */}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginTop: "0.75rem" }}>
-                    {person.astrology?.sun_sign && (
-                      <Badge variant="astrology" size="sm">
-                        ☀️ {person.astrology.sun_sign}
-                      </Badge>
-                    )}
-                    {person.astrology?.moon_sign && (
-                      <Badge variant="default" size="sm">
-                        🌙 {person.astrology.moon_sign}
-                      </Badge>
-                    )}
-                    {person.astrology?.element_primary && (
-                      <Badge variant="default" size="sm">
-                        🔥 {person.astrology.element_primary}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* JESTER Hook Observation (Human Interpretation First) */}
-                  {hookText && (
-                    <div
-                      style={{
-                        marginTop: "0.85rem",
-                        padding: "0.75rem",
-                        backgroundColor: "#f8fafc",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "8px",
-                        fontSize: "0.825rem",
-                        color: "#334155",
-                        lineHeight: 1.45,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      💡 {hookText}
-                    </div>
-                  )}
-                </div>
-
-                {/* Card Action CTAs */}
-                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
-                  <Link to={`/people/${person.id}/why`} style={{ flex: 1, textDecoration: "none" }}>
-                    <Button variant="brand" size="sm" fullWidth>
-                      რატომ ეს ადამიანი?
-                    </Button>
-                  </Link>
-                  <Link to={`/people/${person.id}`} style={{ textDecoration: "none" }}>
-                    <Button variant="outline" size="sm">
-                      პროფილი
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
+                person={person}
+                connectionStatus={relStatus}
+              />
             );
           })}
         </div>

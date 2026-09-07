@@ -8,7 +8,7 @@ import {
   Button,
   Badge,
   Avatar,
-  LoadingState,
+  Skeleton,
   ErrorState,
   PrivacySafeNotFoundState,
 } from "../../shared/ui";
@@ -29,6 +29,8 @@ export const PersonProfilePage: React.FC = () => {
     return <Navigate to="/discover" replace />;
   }
 
+  const isSelf = user?.id === targetId;
+
   // 1. Fetch Target Profile
   const {
     data: profile,
@@ -40,7 +42,7 @@ export const PersonProfilePage: React.FC = () => {
     retry: false,
   });
 
-  // 2. Fetch Target Safe Astrology
+  // 2. Fetch Target Safe Astrology (Deterministic Placements)
   const {
     data: astro,
     isLoading: loadingAstro,
@@ -51,7 +53,7 @@ export const PersonProfilePage: React.FC = () => {
     retry: false,
   });
 
-  // 3. Fetch Connections to determine state
+  // 3. Fetch Connections to determine relationship state & enforce block privacy
   const { data: connections, isLoading: loadingConnections } = useQuery({
     queryKey: ["connections"],
     queryFn: API.connections.list,
@@ -74,6 +76,22 @@ export const PersonProfilePage: React.FC = () => {
       relState = "blocked";
     }
   }
+
+  // 4. Fetch Relationship Preview (ME -> YOU Synastry Insight)
+  // Product Decision #2: Insight is discoverable BEFORE connection via safe comparePreview
+  const {
+    data: preview,
+    isLoading: loadingPreview,
+  } = useQuery({
+    queryKey: ["compare-preview", targetId],
+    queryFn: () =>
+      API.interpretations.comparePreview({
+        target_user_id: targetId,
+        locale: "ka",
+      }),
+    enabled: !!profile && !profileError && !isSelf && relState !== "blocked",
+    retry: false,
+  });
 
   // Mutations
   const connectMutation = useMutation({
@@ -102,198 +120,315 @@ export const PersonProfilePage: React.FC = () => {
     }
   };
 
-  if (loadingProfile || loadingAstro || loadingConnections) {
-    return <LoadingState message="პროფილის ჩატვირთვა..." />;
+  // Privacy invariant: If blocked or 404/403, render privacy-safe not-found
+  if (relState === "blocked") {
+    return <PrivacySafeNotFoundState message="პროფილი ვერ მოიძებნა ან მიუწვდომელია." />;
   }
 
   if (profileError) {
     const err = profileError as any;
     if (err.statusCode === 404 || err.statusCode === 403) {
-      return <PrivacySafeNotFoundState message="პროფილი ვერ მოიძებნა ან დაბლოკილია." />;
+      return <PrivacySafeNotFoundState message="პროფილი ვერ მოიძებნა ან მიუწვდომელია." />;
     }
     return <ErrorState error={profileError as Error} />;
   }
 
+  if (loadingProfile || loadingAstro || loadingConnections) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <Skeleton width="180px" height="1.5rem" />
+        <Card padded style={{ display: "flex", gap: "1.25rem", alignItems: "center", padding: "1.5rem" }}>
+          <Skeleton width="80px" height="80px" borderRadius="9999px" />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1 }}>
+            <Skeleton width="180px" height="1.5rem" />
+            <Skeleton width="120px" height="1rem" />
+          </div>
+        </Card>
+        <Skeleton width="100%" height="160px" borderRadius="12px" />
+      </div>
+    );
+  }
+
   if (!profile) return null;
 
-  const isSelf = user?.id === targetId;
+  const score = preview ? Math.round(preview.score) : 60;
+  const relationshipHook =
+    preview?.interpretation?.text ||
+    preview?.deep_analysis?.core_dynamic?.text ||
+    preview?.deep_analysis?.primary_interpretation?.text;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* Top Breadcrumb Navigation */}
+      {/* 1. Breadcrumb Navigation */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link to="/discover" style={{ textDecoration: "none", color: "#6366f1", fontSize: "0.875rem", fontWeight: 600 }}>
+        <Link
+          to="/discover"
+          style={{
+            textDecoration: "none",
+            color: "#6366f1",
+            fontSize: "0.875rem",
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.35rem",
+          }}
+        >
           ← აღმოჩენის სიაში დაბრუნება
         </Link>
+        {isSelf && (
+          <Badge variant="brand" size="sm">
+            ეს თქვენი პროფილია
+          </Badge>
+        )}
       </div>
 
-      {/* Profile Header Hero Card */}
-      <Card padded style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1.25rem" }}>
-        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
+      {/* 2. Identity Header Card (Clean, Human, Uncluttered) */}
+      <Card padded style={{ padding: "1.5rem" }}>
+        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
           <Avatar src={profile.avatar_url} name={profile.display_name} size="xl" />
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+          <div style={{ flex: 1, minWidth: "220px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: "1.5rem",
+                  fontWeight: 800,
+                  color: "#0f172a",
+                  letterSpacing: "-0.01em",
+                }}
+              >
                 {profile.display_name}
               </h1>
               {astro?.sun_sign && (
-                <Badge variant="astrology" size="md">
+                <Badge variant="astrology" size="sm">
                   ☀️ {astro.sun_sign}
                 </Badge>
               )}
             </div>
 
             {(profile.occupation || profile.city) && (
-              <div style={{ fontSize: "0.9rem", color: "#64748b", marginTop: "0.25rem" }}>
+              <div style={{ fontSize: "0.9rem", color: "#64748b", marginTop: "0.25rem", fontWeight: 500 }}>
                 {[profile.occupation, profile.city].filter(Boolean).join(" • ")}
               </div>
             )}
+
+            {profile.bio && (
+              <p
+                style={{
+                  margin: "0.75rem 0 0 0",
+                  color: "#334155",
+                  fontSize: "0.925rem",
+                  lineHeight: 1.55,
+                  fontStyle: "italic",
+                }}
+              >
+                "{profile.bio}"
+              </p>
+            )}
           </div>
         </div>
-
-        {/* Relationship Action Area */}
-        {!isSelf && (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-            {relState === "none" && (
-              <Button
-                variant="brand"
-                size="md"
-                isLoading={connectMutation.isPending}
-                onClick={() => connectMutation.mutate()}
-                icon={<span>🤝</span>}
-              >
-                დაკავშირება (Connect)
-              </Button>
-            )}
-
-            {relState === "pending_out" && (
-              <Badge variant="warning" size="md">
-                ⏳ მოთხოვნა გაგზავნილია
-              </Badge>
-            )}
-
-            {relState === "pending_in" && (
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <Button
-                  variant="brand"
-                  size="sm"
-                  isLoading={transitionMutation.isPending}
-                  onClick={() => transitionMutation.mutate("accept")}
-                >
-                  ✓ მიღება (Accept)
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  isLoading={transitionMutation.isPending}
-                  onClick={() => transitionMutation.mutate("decline")}
-                >
-                  ✕ უარყოფა
-                </Button>
-              </div>
-            )}
-
-            {relState === "accepted" && (
-              <Button variant="brand" size="md" onClick={handleStartChat} icon={<span>💬</span>}>
-                ჩატის დაწყება
-              </Button>
-            )}
-          </div>
-        )}
       </Card>
 
-      {/* Bio / About */}
-      {profile.bio && (
-        <Card padded>
-          <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
-            შესახებ
-          </h3>
-          <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.6 }}>
-            {profile.bio}
-          </p>
+      {/* 3. Hero JESTER Relationship Insight (ME -> YOU Dynamic) */}
+      {!isSelf && (
+        <Card variant="accent" padded style={{ padding: "1.75rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "1.3rem" }}>💡</span>
+              <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#1e1b4b" }}>
+                რატომ ეს ადამიანი თქვენთვის?
+              </h2>
+            </div>
+
+            {/* Restrained Curiosity Score */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                backgroundColor: "#ffffff",
+                border: "1px solid #f0abfc",
+                borderRadius: "20px",
+                padding: "0.3rem 0.75rem",
+              }}
+              title="სინასტრიული თანხვედრა (Curiosity Signal)"
+            >
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
+                თანხვედრა
+              </span>
+              <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#9333ea" }}>
+                {score}
+              </span>
+            </div>
+          </div>
+
+          {loadingPreview ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <Skeleton width="100%" height="4.5rem" />
+            </div>
+          ) : relationshipHook ? (
+            <div style={{ margin: "0 0 1.5rem 0" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "1.05rem",
+                  color: "#1e1b4b",
+                  lineHeight: 1.65,
+                  fontWeight: 500,
+                }}
+              >
+                {relationshipHook}
+              </p>
+            </div>
+          ) : (
+            <p style={{ margin: "0 0 1.25rem 0", color: "#475569", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              თქვენს ასტროლოგიურ რუკებს შორის შეინიშნება უნიკალური სინასტრიული თანხვედრა, რაც კომუნიკაციას განსაკუთრებით საინტერესოს ხდის.
+            </p>
+          )}
+
+          {/* Primary CTA: WHY? (The Natural Next Step) */}
+          <div>
+            <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
+              <Button
+                variant="brand"
+                size="lg"
+                fullWidth
+                style={{
+                  minHeight: "48px",
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  boxShadow: "0 4px 12px rgba(147, 51, 234, 0.2)",
+                }}
+              >
+                💡 რატომ ეს ადამიანი? (See Why) →
+              </Button>
+            </Link>
+          </div>
         </Card>
       )}
 
-      {/* Safe Astrological Placements (Deterministic Intelligence Layer) */}
+      {/* 4. Supporting Astrological Signals (Deterministic Intelligence Layer) */}
       {astro && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <h3 style={{ margin: 0, fontSize: "1.05rem", color: "#0f172a" }}>
-            ასტროლოგიური პროფილის სიგნალები
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.75rem" }}>
-            <Card padded>
-              <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
-                მზე (Sun)
-              </div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "0.2rem", color: "#0f172a" }}>
-                ☀️ {astro.sun_sign}
-              </div>
-            </Card>
-
-            <Card padded>
-              <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
-                მთვარე (Moon)
-              </div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "0.2rem", color: "#0f172a" }}>
-                🌙 {astro.moon_sign}
-              </div>
-            </Card>
-
-            {astro.ascendant_sign && (
-              <Card padded>
-                <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
-                  ასცენდენტი
-                </div>
-                <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "0.2rem", color: "#0f172a" }}>
-                  🌅 {astro.ascendant_sign}
-                </div>
-              </Card>
-            )}
-
-            <Card padded>
-              <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
-                სტიქია
-              </div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "0.2rem", color: "#0f172a" }}>
-                🔥 {astro.element_primary}
-              </div>
-            </Card>
-
-            <Card padded>
-              <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
-                მოდალობა
-              </div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 800, marginTop: "0.2rem", color: "#0f172a" }}>
-                ⚡ {astro.modality_primary}
-              </div>
-            </Card>
+        <Card padded style={{ padding: "1.25rem 1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+            <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              ასტროლოგიური კონტექსტი
+            </h3>
+            <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
+              უსაფრთხო დეტერმინისტული პროფილის სიგნალები
+            </span>
           </div>
-        </div>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {astro.sun_sign && (
+              <Badge variant="astrology" size="md">
+                ☀️ მზე: {astro.sun_sign}
+              </Badge>
+            )}
+            {astro.moon_sign && (
+              <Badge variant="default" size="md">
+                🌙 მთვარე: {astro.moon_sign}
+              </Badge>
+            )}
+            {astro.ascendant_sign && (
+              <Badge variant="default" size="md">
+                🌅 ასცენდენტი: {astro.ascendant_sign}
+              </Badge>
+            )}
+            {astro.element_primary && (
+              <Badge variant="outline" size="md">
+                🔥 სტიქია: {astro.element_primary}
+              </Badge>
+            )}
+            {astro.modality_primary && (
+              <Badge variant="outline" size="md">
+                ⚡ მოდალობა: {astro.modality_primary}
+              </Badge>
+            )}
+          </div>
+        </Card>
       )}
 
-      {/* Core V1 Product Journey CTAs: WHY? & US / COMPARISON */}
+      {/* 5. State-Aware Connection Invitation (INSIGHT -> INVITATION) */}
       {!isSelf && (
-        <Card variant="accent" padded style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h3 style={{ margin: "0 0 0.25rem 0", fontSize: "1.15rem", color: "#1e1b4b" }}>
-              გაინტერესებს ურთიერთობის დინამიკა?
-            </h3>
-            <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
-              ნახე რატომ არის ეს ადამიანი საინტერესო და შეამოწმე სინასტრიული თანხვედრა.
-            </p>
-          </div>
+        <Card padded style={{ padding: "1.25rem 1.5rem", backgroundColor: "#f8fafc" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: "0.975rem", color: "#0f172a" }}>
+                {relState === "accepted"
+                  ? "თქვენ უკვე დაკავშირებული ხართ"
+                  : relState === "pending_out"
+                  ? "კავშირის მოთხოვნა გაგზავნილია"
+                  : relState === "pending_in"
+                  ? "ამ ადამიანმა გამოგიგზავნათ კავშირის მოთხოვნა"
+                  : "გსურთ საუბრის დაწყება?"}
+              </div>
+              <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.15rem" }}>
+                {relState === "accepted"
+                  ? "გადადით პირდაპირ ჩატში და გააგრძელეთ საუბარი."
+                  : relState === "pending_out"
+                  ? "დაელოდეთ დასტურს საუბრის დასაწყებად."
+                  : relState === "pending_in"
+                  ? "მიიღეთ მოთხოვნა პირდაპირი მიმოწერის გასახსნელად."
+                  : "გაგზავნეთ მოთხოვნა, რათა გაიხსნას სრული შედარება (US) და მიმოწერა."}
+              </div>
+            </div>
 
-          <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-            <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
-              <Button variant="brand" size="md">
-                💡 რატომ ეს ადამიანი? (Why?)
-              </Button>
-            </Link>
-            <Link to={`/compare/${targetId}`} style={{ textDecoration: "none" }}>
-              <Button variant="outline" size="md">
-                ⚖️ შედარება (Compare)
-              </Button>
-            </Link>
+            <div style={{ display: "flex", gap: "0.6rem" }}>
+              {relState === "none" && (
+                <Button
+                  variant="outline"
+                  size="md"
+                  isLoading={connectMutation.isPending}
+                  onClick={() => connectMutation.mutate()}
+                  icon={<span>🤝</span>}
+                  style={{ minHeight: "44px", padding: "0 1.25rem" }}
+                >
+                  კავშირის შეთავაზება (Connect)
+                </Button>
+              )}
+
+              {relState === "pending_out" && (
+                <Badge variant="warning" size="md" style={{ padding: "0.5rem 0.85rem" }}>
+                  ⏳ მოთხოვნა გაგზავნილია
+                </Badge>
+              )}
+
+              {relState === "pending_in" && (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <Button
+                    variant="brand"
+                    size="md"
+                    isLoading={transitionMutation.isPending}
+                    onClick={() => transitionMutation.mutate("accept")}
+                    style={{ minHeight: "44px" }}
+                  >
+                    ✓ მიღება (Accept)
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    isLoading={transitionMutation.isPending}
+                    onClick={() => transitionMutation.mutate("decline")}
+                    style={{ minHeight: "44px" }}
+                  >
+                    ✕ უარყოფა
+                  </Button>
+                </div>
+              )}
+
+              {relState === "accepted" && (
+                <Button
+                  variant="brand"
+                  size="md"
+                  onClick={handleStartChat}
+                  icon={<span>💬</span>}
+                  style={{ minHeight: "44px", padding: "0 1.25rem" }}
+                >
+                  ჩატის დაწყება
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
       )}

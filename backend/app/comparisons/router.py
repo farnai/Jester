@@ -101,16 +101,26 @@ async def compare_users(
             primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
                 cached_score, raw_signals
             )
+            cached_dimensions = existing.get("dimensions") if isinstance(existing.get("dimensions"), dict) else {}
+            deep_payload = interpretation_engine.build_deep_analysis_payload(
+                score=cached_score,
+                signals=raw_signals,
+                evidence_trace=existing.get("evidence_trace") or [],
+                confidence=confidence,
+                seed=str(current_user.id),
+            )
 
             return StructuredCompatibilityResponse(
                 id=existing["id"],
                 target_user_id=payload.target_user_id,
                 score=cached_score,
+                dimensions=cached_dimensions,
                 signals=enriched_signals,
                 interpretation=primary_interpretation,
                 best_topics=existing["best_topics"] if isinstance(existing["best_topics"], list) else [],
                 conversation_starters=existing["conversation_starters"] if isinstance(existing["conversation_starters"], list) else [],
                 data_quality=data_quality,
+                deep_analysis=deep_payload,
                 engine_version=existing["engine_version"],
                 calculated_at=existing["calculated_at"],
             )
@@ -149,15 +159,16 @@ async def compare_users(
             """
             INSERT INTO public.compatibility_results (
                 user_a_id, user_b_id, user_a_birth_data_version, user_b_birth_data_version,
-                engine_version, score, signals, best_topics, conversation_starters,
+                engine_version, score, dimensions, signals, best_topics, conversation_starters,
                 evidence_trace, calculated_at
             ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now()
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now()
             ) ON CONFLICT (user_a_id, user_b_id) DO UPDATE SET
                 user_a_birth_data_version = EXCLUDED.user_a_birth_data_version,
                 user_b_birth_data_version = EXCLUDED.user_b_birth_data_version,
                 engine_version = EXCLUDED.engine_version,
                 score = EXCLUDED.score,
+                dimensions = EXCLUDED.dimensions,
                 signals = EXCLUDED.signals,
                 best_topics = EXCLUDED.best_topics,
                 conversation_starters = EXCLUDED.conversation_starters,
@@ -172,6 +183,7 @@ async def compare_users(
                 ver_b,
                 calc_result.engine_version,
                 calc_result.score,
+                Jsonb(calc_result.dimensions),
                 Jsonb(calc_result.signals),
                 Jsonb(calc_result.best_topics),
                 Jsonb(calc_result.conversation_starters),
@@ -184,6 +196,13 @@ async def compare_users(
         primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
             calc_result.score, calc_result.signals
         )
+        deep_payload = interpretation_engine.build_deep_analysis_payload(
+            score=calc_result.score,
+            signals=calc_result.signals,
+            evidence_trace=calc_result.evidence_trace,
+            confidence=calc_result.data_quality.get("confidence", 1.0),
+            seed=str(current_user.id),
+        )
 
         return StructuredCompatibilityResponse(
             id=saved_row["id"],
@@ -195,6 +214,7 @@ async def compare_users(
             best_topics=calc_result.best_topics,
             conversation_starters=calc_result.conversation_starters,
             data_quality=calc_result.data_quality,
+            deep_analysis=deep_payload,
             engine_version=calc_result.engine_version,
             calculated_at=saved_row["calculated_at"],
         )

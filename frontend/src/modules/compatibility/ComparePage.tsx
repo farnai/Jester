@@ -1,49 +1,52 @@
 import React from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
-import { Card, Button, Badge, LoadingState, ErrorState } from "../../shared/ui";
+import { ProfileResponse, Signal } from "../../core/api/types";
+import {
+  Skeleton,
+  ErrorState,
+  PrivacySafeNotFoundState,
+} from "../../shared/ui";
+import { RelationshipHeader } from "./components/RelationshipHeader";
+import { RelationshipHighlights } from "./components/RelationshipHighlights";
+import { DimensionCards } from "./components/DimensionCards";
+import { DeepAnalysisSection } from "./components/DeepAnalysisSection";
+import { ConversationStarters } from "./components/ConversationStarters";
+import { RelationshipAction } from "./components/RelationshipAction";
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const ComparePage: React.FC = () => {
   const { id, target_id } = useParams<{ id?: string; target_id?: string }>();
   const targetId = (id || target_id || "").trim();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["compatibility", targetId],
-    queryFn: async () => {
-      try {
-        return await API.compatibility.compare(targetId);
-      } catch (err: any) {
-        // Fallback to safe preview for unconnected users per Product Decision #2
-        if (err.statusCode === 403) {
-          const preview = await API.interpretations.comparePreview({
-            target_user_id: targetId,
-            locale: "ka",
-          });
-          return {
-            id: `preview-${targetId}`,
-            target_user_id: targetId,
-            score: preview.score,
-            dimensions: preview.dimensions,
-            signals: preview.signals || [],
-            best_topics: preview.best_topics || [],
-            conversation_starters: preview.conversation_starters || [],
-            data_quality: preview.data_quality,
-            engine_version: preview.engine_version,
-            calculated_at: preview.calculated_at,
-          };
-        }
-        throw err;
-      }
-    },
-    enabled: !!targetId,
+  const isValidUUID = UUID_REGEX.test(targetId);
+
+  // If no target ID or invalid format -> Redirect to Discover
+  if (!targetId || !isValidUUID) {
+    return <Navigate to="/discover" replace />;
+  }
+
+  // 1. Fetch Target Profile for contextual identity
+  const { data: targetProfile, error: targetProfileError } = useQuery({
+    queryKey: ["profile", targetId],
+    queryFn: () => API.profiles.getProfileById(targetId),
     retry: false,
   });
 
-  // Check connection status
+  // 2. Fetch Own Profile for ME + YOU dual header
+  const { data: viewerProfile } = useQuery<ProfileResponse>({
+    queryKey: ["profile", "me"],
+    queryFn: API.profiles.getMyProfile,
+    enabled: !!user,
+  });
+
+  // 3. Fetch Connections to determine relationship state & privacy
   const { data: connections } = useQuery({
     queryKey: ["connections"],
     queryFn: API.connections.list,
@@ -55,6 +58,61 @@ export const ComparePage: React.FC = () => {
       (c.user_b_id === user?.id && c.user_a_id === targetId)
   );
 
+  let relState: "none" | "pending_out" | "pending_in" | "accepted" | "blocked" = "none";
+  if (myConnection) {
+    if (myConnection.status === "pending") {
+      relState = myConnection.initiated_by === user?.id ? "pending_out" : "pending_in";
+    } else if (myConnection.status === "accepted") {
+      relState = "accepted";
+    } else if (myConnection.status === "blocked") {
+      relState = "blocked";
+    }
+  }
+
+  // 4. Fetch Relationship Intelligence (US / Compatibility)
+  // Product Decision #2: Uses safe comparePreview for unconnected discovery users
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["compatibility-us", targetId],
+    queryFn: async () => {
+      try {
+        const res = await API.compatibility.compare(targetId);
+        return {
+          score: res.score,
+          dimensions: res.dimensions,
+          interpretation: res.interpretation,
+          signals: (res.signals || []) as unknown as Signal[],
+          best_topics: res.best_topics || [],
+          conversation_starters: res.conversation_starters || [],
+          data_quality: res.data_quality,
+          deep_analysis: res.deep_analysis,
+          isFullComparison: true,
+        };
+      } catch (err: any) {
+        if (err.statusCode === 403 || err.status === 403) {
+          const preview = await API.interpretations.comparePreview({
+            target_user_id: targetId,
+            locale: "ka",
+          });
+          return {
+            score: preview.score,
+            dimensions: preview.dimensions,
+            interpretation: preview.interpretation,
+            signals: (preview.signals || []) as unknown as Signal[],
+            best_topics: preview.best_topics || [],
+            conversation_starters: preview.conversation_starters || [],
+            data_quality: preview.data_quality,
+            deep_analysis: preview.deep_analysis,
+            isFullComparison: false,
+          };
+        }
+        throw err;
+      }
+    },
+    enabled: !!targetId && relState !== "blocked",
+    retry: false,
+  });
+
+  // Mutations
   const connectMutation = useMutation({
     mutationFn: () => API.connections.create(targetId),
     onSuccess: () => {
@@ -62,138 +120,158 @@ export const ComparePage: React.FC = () => {
     },
   });
 
-  if (isLoading) return <LoadingState message="სინასტრიული რუკებისა და 4 განზომილების გამოთვლა..." />;
-  if (error) return <ErrorState error={error as Error} onRetry={refetch} />;
+  const transitionMutation = useMutation({
+    mutationFn: (action: "accept" | "decline" | "block" | "remove") => {
+      if (!myConnection) throw new Error("No active connection ID");
+      return API.connections.transition(myConnection.id, action);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+    },
+  });
+
+  const handleOpenChat = async () => {
+    try {
+      const conv = await API.conversations.createOrGetDirect(targetId);
+      navigate(`/chat/${conv.id}`);
+    } catch (err: any) {
+      alert(err.message || "პირდაპირი მიმოწერის გასახსნელად საჭიროა დადასტურებული კავშირი.");
+    }
+  };
+
+  const handleSendStarterToChat = async (starterText: string) => {
+    try {
+      const conv = await API.conversations.createOrGetDirect(targetId);
+      navigate(`/chat/${conv.id}?starter=${encodeURIComponent(starterText)}`);
+    } catch (err: any) {
+      alert(err.message || "პირდაპირი მიმოწერის გასახსნელად საჭიროა დადასტურებული კავშირი.");
+    }
+  };
+
+  // Privacy invariant: If blocked or 404/403, render privacy-safe not-found
+  if (relState === "blocked") {
+    return <PrivacySafeNotFoundState message="პროფილი ან ურთიერთობის მონაცემები ვერ მოიძებნა." />;
+  }
+
+  if (targetProfileError) {
+    const err = targetProfileError as any;
+    if (err.statusCode === 404 || err.statusCode === 403) {
+      return <PrivacySafeNotFoundState message="პროფილი ან ურთიერთობის მონაცემები ვერ მოიძებნა." />;
+    }
+  }
+
+  if (error) {
+    const err = error as any;
+    if (err.statusCode === 404) {
+      return <PrivacySafeNotFoundState message="პროფილი ან ურთიერთობის მონაცემები ვერ მოიძებნა." />;
+    }
+    return <ErrorState error={error as Error} onRetry={refetch} />;
+  }
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", maxWidth: "860px", margin: "0 auto" }}>
+        {/* Header Skeleton */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            border: "1px solid #e2e8f0",
+            borderRadius: "16px",
+            padding: "1.75rem 1.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Skeleton width="120px" height="1.2rem" />
+            <Skeleton width="90px" height="1.5rem" borderRadius="9999px" />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <Skeleton width="56px" height="56px" circle />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              <Skeleton width="160px" height="0.9rem" />
+              <Skeleton width="240px" height="1.4rem" />
+            </div>
+          </div>
+        </div>
+
+        {/* Highlights Skeleton */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <Skeleton width="200px" height="1.2rem" />
+          <Skeleton width="100%" height="80px" borderRadius="12px" />
+          <Skeleton width="100%" height="70px" borderRadius="12px" />
+        </div>
+
+        {/* Dimensions Skeleton */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <Skeleton width="220px" height="1.2rem" />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.85rem" }}>
+            <Skeleton width="100%" height="90px" borderRadius="12px" />
+            <Skeleton width="100%" height="90px" borderRadius="12px" />
+            <Skeleton width="100%" height="90px" borderRadius="12px" />
+            <Skeleton width="100%" height="90px" borderRadius="12px" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
-  const { score, dimensions, signals = [], data_quality } = data;
-
-  const dimensionList = [
-    { key: "emotional_harmony", label: "ემოციური ჰარმონია", value: dimensions.emotional_harmony, icon: "🌊", color: "#3b82f6" },
-    { key: "communication", label: "კომუნიკაცია & ინტელექტი", value: dimensions.communication, icon: "💡", color: "#6366f1" },
-    { key: "attraction", label: "მიზიდულობა & ქიმია", value: dimensions.attraction, icon: "✨", color: "#ec4899" },
-    { key: "growth_long_term", label: "გრძელვადიანი ზრდა", value: dimensions.growth_long_term, icon: "🌱", color: "#10b981" },
-  ];
-
-  const isConnected = myConnection?.status === "accepted";
-  const isPending = myConnection?.status === "pending";
+  const targetName = targetProfile?.display_name || "მომხმარებელი";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ fontSize: "1.5rem" }}>⚖️</span>
-            <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
-              სინასტრიული შედარება (US)
-            </h1>
-          </div>
-          <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
-            დეტერმინისტული Swiss Ephemeris გაანგარიშება და ურთიერთობის 4 განზომილება.
-          </p>
-        </div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.75rem",
+        maxWidth: "860px",
+        margin: "0 auto",
+        paddingBottom: "3rem",
+      }}
+    >
+      {/* A. RELATIONAL HEADER */}
+      <RelationshipHeader
+        targetProfile={targetProfile}
+        viewerProfile={viewerProfile}
+        score={data.score}
+        dataQuality={data.data_quality}
+        interpretation={data.interpretation}
+      />
 
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
-            <Button variant="outline" size="sm">
-              💡 რატომ ეს ადამიანი?
-            </Button>
-          </Link>
-          <Link to={`/people/${targetId}`} style={{ textDecoration: "none" }}>
-            <Button variant="outline" size="sm">
-              ← პროფილი
-            </Button>
-          </Link>
-        </div>
-      </div>
+      {/* B. WHAT STANDS OUT */}
+      <RelationshipHighlights
+        interpretation={data.interpretation}
+        signals={data.signals}
+      />
 
-      {/* Overall Score Banner */}
-      <Card variant="accent" padded style={{ textAlign: "center", padding: "2.5rem 1.5rem" }}>
-        <div style={{ fontSize: "0.85rem", textTransform: "uppercase", color: "#7e22ce", fontWeight: 700, letterSpacing: "0.05em" }}>
-          ურთიერთობის სინერგიის საერთო ქულა
-        </div>
-        <div style={{ fontSize: "3.75rem", fontWeight: 900, color: "#9333ea", margin: "0.5rem 0", lineHeight: 1 }}>
-          {score.toFixed(1)} <span style={{ fontSize: "1.5rem", color: "#a855f7", fontWeight: 600 }}>/ 100</span>
-        </div>
-        <div style={{ display: "inline-block", marginTop: "0.5rem" }}>
-          <Badge variant="brand" size="md">
-            სიზუსტის კოეფიციენტი: {Math.round((data_quality?.confidence ?? 0.85) * 100)}% ({data_quality?.time_precision || "exact"})
-          </Badge>
-        </div>
+      {/* C. FOUR RELATIONSHIP DIMENSIONS */}
+      <DimensionCards dimensions={data.dimensions} />
 
-        {/* CTA: If unconnected, invite connection! "The insight becomes the invitation" */}
-        {!isConnected && (
-          <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #f0abfc" }}>
-            <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", color: "#475569" }}>
-              ინსაითმა ინტერესი გაგიჩინათ? გაუგზავნეთ დაკავშირების მოწვევა:
-            </p>
-            {isPending ? (
-              <Badge variant="warning" size="md">
-                ⏳ მოთხოვნა გაგზავნილია
-              </Badge>
-            ) : (
-              <Button
-                variant="brand"
-                size="md"
-                isLoading={connectMutation.isPending}
-                onClick={() => connectMutation.mutate()}
-                icon={<span>🤝</span>}
-              >
-                დაკავშირების მოწვევა (Connect)
-              </Button>
-            )}
-          </div>
-        )}
-      </Card>
+      {/* D. DEEPER LAYER (Deep Analysis with Progressive Disclosure) */}
+      <DeepAnalysisSection deepAnalysis={data.deep_analysis} />
 
-      {/* 4 Core Dimensions Breakdown */}
-      <div>
-        <h3 style={{ margin: "0 0 0.75rem 0", fontSize: "1.1rem", color: "#0f172a" }}>
-          4-განზომილებიანი ბალანსი
-        </h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
-          {dimensionList.map((d) => (
-            <Card key={d.key} padded>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "#1e293b", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <span>{d.icon}</span> {d.label}
-                </span>
-                <span style={{ fontWeight: 800, fontSize: "1rem", color: d.color }}>
-                  {Math.round(d.value)}%
-                </span>
-              </div>
-              <div style={{ height: "8px", backgroundColor: "#f1f5f9", borderRadius: "9999px", overflow: "hidden" }}>
-                <div
-                  style={{
-                    height: "100%",
-                    width: `${Math.min(100, Math.max(0, d.value))}%`,
-                    backgroundColor: d.color,
-                    borderRadius: "9999px",
-                    transition: "width 0.5s ease",
-                  }}
-                />
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+      {/* E. SHARED TOPICS & CONVERSATION STARTERS */}
+      <ConversationStarters
+        bestTopics={data.best_topics}
+        conversationStarters={data.conversation_starters}
+        isConnected={relState === "accepted"}
+        onSendToChat={handleSendStarterToChat}
+      />
 
-      {/* Relationship Signals (if any) */}
-      {signals.length > 0 && (
-        <Card padded>
-          <h3 style={{ margin: "0 0 0.75rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
-            ასტროლოგიური სიგნალები & ასპექტები
-          </h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {signals.map((sig, i) => (
-              <Badge key={i} variant={sig.category === "harmony" ? "success" : sig.category === "attraction" ? "score" : "default"} size="md">
-                {sig.label || sig.type} ({sig.strength})
-              </Badge>
-            ))}
-          </div>
-        </Card>
-      )}
+      {/* F. TERMINAL ACTION */}
+      <RelationshipAction
+        targetName={targetName}
+        relState={relState}
+        onConnect={() => connectMutation.mutate()}
+        onAccept={() => transitionMutation.mutate("accept")}
+        onDecline={() => transitionMutation.mutate("decline")}
+        onOpenChat={handleOpenChat}
+        isConnecting={connectMutation.isPending}
+        isTransitioning={transitionMutation.isPending}
+      />
     </div>
   );
 };

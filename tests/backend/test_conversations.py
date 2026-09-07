@@ -5,7 +5,7 @@ from httpx import ASGITransport, AsyncClient
 
 from backend.app.main import app
 from tests.backend.test_jwt_verification import generate_test_jwt
-from tests.database.test_database_security import create_test_user, set_auth_context
+from tests.database.test_database_security import clean_db, create_test_user, db_conn, set_auth_context
 
 
 def _create_direct_conversation(cur, conversation_id, first_user, second_user, updated_at):

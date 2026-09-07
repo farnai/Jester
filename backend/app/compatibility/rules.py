@@ -118,6 +118,70 @@ CONVERSATION_STARTER_RULES: dict[str, list[str]] = {
         "What is a book, podcast, or idea that recently changed your perspective?",
         "How do you like to explore new concepts or brainstorm ideas?",
     ],
+    "sun_opposite_moon": [
+        "In what areas of life do you feel you balance logic and emotion best?",
+        "What kind of conversations make you look at things from a completely new angle?",
+    ],
+    "sun_square_moon": [
+        "How do you usually ground yourself when your head and heart want different things?",
+        "What is something you are passionate about that catches people by surprise?",
+    ],
+    "sun_opposite_sun": [
+        "What is a perspective or philosophy that challenges the way you see the world?",
+        "What kind of environment brings out your most focused creative energy?",
+    ],
+    "sun_square_sun": [
+        "What is an ambitious challenge that brought out your strongest resilience?",
+        "What kind of creative debate keeps you most engaged?",
+    ],
+    "sun_trine_mars": [
+        "What exciting venture or project are you most eager to tackle next?",
+        "What kind of shared adventure gives you the biggest boost of momentum?",
+    ],
+    "sun_conjunction_mars": [
+        "What big goal are you pouring your most intense focus into right now?",
+        "What helps you stay fully motivated when building something from scratch?",
+    ],
+    "moon_sextile_venus": [
+        "What is your favorite comfort ritual or calming atmosphere after a busy day?",
+        "What piece of music or art always restores your emotional balance?",
+    ],
+    "sun_sextile_mercury": [
+        "What is an interesting concept or discovery you've been pondering lately?",
+        "What is a question you wish people asked you more often?",
+    ],
+    "venus_trine_jupiter": [
+        "What destination or experience is at the very top of your wish list?",
+        "What is something generous or uplifting someone did that stayed with you?",
+    ],
+    "venus_conjunction_jupiter": [
+        "What is your idea of a truly memorable, celebratory evening?",
+        "What creative vision or aesthetic project brings you pure joy?",
+    ],
+    "venus_trine_pluto": [
+        "What kind of storytelling or art truly moves you to the core?",
+        "What is a personal truth that completely transformed your outlook?",
+    ],
+    "venus_conjunction_pluto": [
+        "What kind of cinema, books, or art leave a lasting mark on you?",
+        "What is an experience that radically shifted your priorities?",
+    ],
+    "venus_opposite_pluto": [
+        "What kind of art or story explores the human psyche best for you?",
+        "How do you uncover what is genuinely authentic beneath the surface?",
+    ],
+    "saturn_trine_sun": [
+        "What long-term foundation or craft are you most dedicated to building?",
+        "What principle has proven most reliable for you over time?",
+    ],
+    "saturn_trine_moon": [
+        "What personal ritual or space gives you the deepest sense of peace and stability?",
+        "What is a life lesson that gave you lasting emotional clarity?",
+    ],
+    "saturn_trine_venus": [
+        "What is an enduring design, architectural space, or artwork you never tire of?",
+        "What does quality and deliberate craftsmanship mean to you?",
+    ],
 }
 
 DEFAULT_CONVERSATION_STARTERS = [
@@ -260,23 +324,204 @@ def extract_signals_from_aspects(active_aspects: list[dict[str, Any]]) -> list[d
     return signals[:6]
 
 
-def extract_best_topics(dominant_element: str | None = None, dominant_aspect_pattern: str | None = None) -> list[str]:
+CANONICAL_TOPICS: set[str] = {
+    "ideas",
+    "philosophy",
+    "books",
+    "creative_work",
+    "travel",
+    "adventure",
+    "fitness",
+    "ambition",
+    "art",
+    "music",
+    "psychology",
+    "cinema",
+    "architecture",
+    "food",
+    "design",
+    "lifestyle",
+}
+
+# Signal-to-topic candidates mapping: signal_type -> list of (topic, base_relevance)
+SIGNAL_TOPIC_CANDIDATES: dict[str, list[tuple[str, float]]] = {
+    # Sun - Moon (Deep emotional resonance, intuitive connection, inner feeling)
+    "sun_trine_moon": [("psychology", 3.0), ("music", 2.0), ("lifestyle", 1.5), ("ideas", 1.0)],
+    "sun_sextile_moon": [("psychology", 3.0), ("music", 2.0), ("ideas", 1.5), ("lifestyle", 1.0)],
+    "sun_conjunction_moon": [("psychology", 3.0), ("music", 2.2), ("lifestyle", 1.5), ("food", 1.0)],
+    "sun_opposite_moon": [("psychology", 3.0), ("philosophy", 2.0), ("lifestyle", 1.5)],
+    "sun_square_moon": [("psychology", 3.0), ("lifestyle", 2.0), ("ambition", 1.5)],
+
+    # Sun - Sun (Core identity harmony, creative drive, life paths)
+    "sun_trine_sun": [("creative_work", 3.0), ("philosophy", 2.2), ("travel", 1.8), ("ambition", 1.2)],
+    "sun_sextile_sun": [("creative_work", 3.0), ("ideas", 2.2), ("philosophy", 1.8), ("lifestyle", 1.2)],
+    "sun_conjunction_sun": [("creative_work", 3.0), ("ambition", 2.2), ("travel", 1.8), ("philosophy", 1.2)],
+    "sun_opposite_sun": [("philosophy", 3.0), ("ideas", 2.2), ("creative_work", 1.8)],
+    "sun_square_sun": [("ambition", 3.0), ("creative_work", 2.0), ("fitness", 1.5)],
+
+    # Venus - Mars (Magnetic chemistry, passion, artistic/sensory spark)
+    "venus_conjunction_mars": [("art", 3.0), ("adventure", 2.2), ("cinema", 1.8), ("music", 1.5)],
+    "venus_opposite_mars": [("art", 3.0), ("cinema", 2.2), ("adventure", 1.8), ("music", 1.5)],
+    "venus_trine_mars": [("art", 3.0), ("adventure", 2.2), ("music", 1.8), ("lifestyle", 1.2)],
+    "venus_sextile_mars": [("art", 3.0), ("adventure", 2.0), ("design", 1.8), ("music", 1.5)],
+    "venus_square_mars": [("art", 3.0), ("cinema", 2.2), ("fitness", 1.8), ("adventure", 1.2)],
+
+    # Sun - Venus (Warm affection, aesthetics, shared enjoyment)
+    "sun_conjunction_venus": [("art", 3.0), ("design", 2.2), ("food", 1.8), ("lifestyle", 1.5)],
+    "sun_trine_venus": [("art", 3.0), ("lifestyle", 2.2), ("travel", 1.8), ("music", 1.5)],
+    "sun_sextile_venus": [("art", 3.0), ("design", 2.2), ("lifestyle", 1.8), ("creative_work", 1.5)],
+
+    # Moon - Venus (Gentle affinity, comfort, cozy intimacy, music & culinary)
+    "moon_conjunction_venus": [("music", 3.0), ("psychology", 2.2), ("food", 2.0), ("design", 1.5)],
+    "moon_trine_venus": [("music", 3.0), ("psychology", 2.2), ("food", 2.0), ("lifestyle", 1.5)],
+    "moon_sextile_venus": [("music", 3.0), ("art", 2.2), ("food", 2.0), ("design", 1.5)],
+
+    # Mercury - Mercury (Intellectual flow, mental wavelength, ideas & literature)
+    "mercury_trine_mercury": [("ideas", 3.0), ("philosophy", 2.5), ("books", 2.2), ("creative_work", 1.5)],
+    "mercury_sextile_mercury": [("ideas", 3.0), ("books", 2.5), ("philosophy", 2.0), ("creative_work", 1.5)],
+    "mercury_conjunction_mercury": [("ideas", 3.0), ("books", 2.5), ("philosophy", 2.2), ("creative_work", 1.5)],
+
+    # Sun - Mercury (Mutual understanding, shared perspectives)
+    "sun_trine_mercury": [("ideas", 3.0), ("books", 2.5), ("creative_work", 1.8), ("philosophy", 1.5)],
+    "sun_sextile_mercury": [("ideas", 3.0), ("books", 2.5), ("creative_work", 1.8), ("lifestyle", 1.5)],
+    "sun_conjunction_mercury": [("ideas", 3.0), ("creative_work", 2.5), ("books", 2.0), ("philosophy", 1.5)],
+
+    # Mars - Saturn & Sun/Moon - Saturn (Pacing, mastery, discipline, ambition)
+    "mars_square_saturn": [("ambition", 3.0), ("fitness", 2.2), ("lifestyle", 1.8), ("architecture", 1.2)],
+    "sun_square_saturn": [("ambition", 3.0), ("lifestyle", 2.2), ("architecture", 1.8), ("philosophy", 1.2)],
+    "moon_square_saturn": [("psychology", 3.0), ("lifestyle", 2.2), ("ambition", 1.8)],
+
+    # Sun - Mars & Mars - Sun (Dynamic spark, high energy, athletic/enterprising)
+    "sun_square_mars": [("ambition", 3.0), ("fitness", 2.5), ("adventure", 2.0)],
+    "mars_square_sun": [("ambition", 3.0), ("fitness", 2.5), ("adventure", 2.0)],
+    "sun_trine_mars": [("adventure", 3.0), ("fitness", 2.5), ("ambition", 2.0), ("travel", 1.5)],
+    "sun_conjunction_mars": [("ambition", 3.0), ("adventure", 2.5), ("fitness", 2.0), ("creative_work", 1.5)],
+
+    # Jupiter Aspects (Shared optimism, broad horizons, travel & philosophy)
+    "sun_trine_jupiter": [("travel", 3.0), ("philosophy", 2.5), ("ideas", 1.8), ("adventure", 1.5)],
+    "sun_conjunction_jupiter": [("travel", 3.0), ("philosophy", 2.5), ("adventure", 1.8), ("ideas", 1.5)],
+    "moon_trine_jupiter": [("travel", 3.0), ("philosophy", 2.2), ("psychology", 2.0), ("lifestyle", 1.5)],
+    "venus_trine_jupiter": [("travel", 3.0), ("art", 2.2), ("food", 2.0), ("lifestyle", 1.5)],
+    "venus_conjunction_jupiter": [("travel", 3.0), ("food", 2.2), ("art", 2.0), ("design", 1.5)],
+
+    # Venus - Pluto (Intense magnetism, psychological depth, transformative cinema/art)
+    "venus_trine_pluto": [("psychology", 3.0), ("art", 2.2), ("cinema", 2.0), ("music", 1.5)],
+    "venus_conjunction_pluto": [("psychology", 3.0), ("cinema", 2.2), ("art", 2.0), ("music", 1.5)],
+    "venus_opposite_pluto": [("psychology", 3.0), ("cinema", 2.2), ("art", 1.8), ("philosophy", 1.5)],
+
+    # Saturn Trines (Long-term grounding, architecture, design, craftsmanship, lifestyle)
+    "saturn_trine_sun": [("lifestyle", 3.0), ("architecture", 2.5), ("ambition", 2.0), ("design", 1.5)],
+    "saturn_trine_moon": [("lifestyle", 3.0), ("design", 2.2), ("food", 2.0), ("psychology", 1.8)],
+    "saturn_trine_venus": [("design", 3.0), ("architecture", 2.5), ("lifestyle", 2.0), ("food", 1.8)],
+}
+
+
+def _get_signal_topic_candidates(sig: dict[str, Any]) -> list[tuple[str, float]]:
+    """
+    Resolves topic candidates and relevance weights for a signal.
+    Uses exact definition mapping if known, or heuristic planet/category breakdown as fallback.
+    """
+    sig_type = sig.get("type", "").lower()
+    if sig_type in SIGNAL_TOPIC_CANDIDATES:
+        return SIGNAL_TOPIC_CANDIDATES[sig_type]
+
+    candidates: list[tuple[str, float]] = []
+    category = sig.get("category", "").lower()
+
+    if "mercury" in sig_type:
+        candidates.extend([("ideas", 2.5), ("books", 2.0), ("creative_work", 1.5)])
+    if "moon" in sig_type:
+        candidates.extend([("psychology", 2.5), ("music", 2.0), ("lifestyle", 1.5)])
+    if "venus" in sig_type:
+        candidates.extend([("art", 2.5), ("design", 2.0), ("cinema", 1.5)])
+    if "mars" in sig_type:
+        candidates.extend([("ambition", 2.5), ("adventure", 2.0), ("fitness", 1.5)])
+    if "jupiter" in sig_type:
+        candidates.extend([("travel", 2.5), ("philosophy", 2.0), ("ideas", 1.5)])
+    if "saturn" in sig_type:
+        candidates.extend([("lifestyle", 2.5), ("architecture", 2.0), ("design", 1.5)])
+    if "pluto" in sig_type:
+        candidates.extend([("psychology", 2.5), ("cinema", 2.0)])
+    if "sun" in sig_type:
+        candidates.extend([("creative_work", 2.0), ("travel", 1.5), ("ambition", 1.5)])
+    if "ascendant" in sig_type:
+        candidates.extend([("lifestyle", 2.0), ("adventure", 1.5)])
+
+    if not candidates:
+        if category == "communication":
+            candidates = [("ideas", 2.5), ("books", 2.0), ("philosophy", 1.5)]
+        elif category == "harmony":
+            candidates = [("psychology", 2.5), ("music", 2.0), ("lifestyle", 1.5)]
+        elif category == "attraction":
+            candidates = [("art", 2.5), ("cinema", 2.0), ("adventure", 1.5)]
+        elif category == "stability":
+            candidates = [("lifestyle", 2.5), ("design", 2.0), ("architecture", 1.5)]
+        else:
+            candidates = [("ambition", 2.0), ("creative_work", 2.0), ("ideas", 1.5)]
+
+    return candidates
+
+
+def extract_best_topics(
+    signals: list[dict[str, Any]] | None = None,
+    dominant_element: str | None = None,
+    dominant_aspect_pattern: str | None = None,
+) -> list[str]:
     """
     Derives up to 4 conversation topics deterministically according to Section 17.
+    Evaluates multiple relationship signals with rank decay and strength weighting.
+    Guarantees symmetry, determinism, deduplication, and bounds to canonical vocabulary.
     """
+    valid_signals = [s for s in (signals or []) if s.get("type") != "insufficient_aspects"]
+
+    if valid_signals:
+        scores: dict[str, float] = {}
+        decay_factors = [1.0, 0.8, 0.6, 0.4, 0.25]
+
+        for idx, sig in enumerate(valid_signals[:5]):
+            rank_mult = decay_factors[idx] if idx < len(decay_factors) else 0.2
+            strength = sig.get("strength", "medium")
+            str_mult = 1.2 if strength == "high" else (0.8 if strength == "low" else 1.0)
+
+            candidates = _get_signal_topic_candidates(sig)
+            for topic, base_weight in candidates:
+                if topic in CANONICAL_TOPICS:
+                    scores[topic] = scores.get(topic, 0.0) + (base_weight * rank_mult * str_mult)
+
+        # Apply elemental bonus if dominant element exists
+        elem = (dominant_element or "").lower()
+        if elem == "air":
+            scores["ideas"] = scores.get("ideas", 0.0) + 1.2
+            scores["books"] = scores.get("books", 0.0) + 0.8
+        elif elem == "fire":
+            scores["travel"] = scores.get("travel", 0.0) + 1.2
+            scores["adventure"] = scores.get("adventure", 0.0) + 0.8
+        elif elem == "water":
+            scores["psychology"] = scores.get("psychology", 0.0) + 1.2
+            scores["art"] = scores.get("art", 0.0) + 0.8
+        elif elem == "earth":
+            scores["lifestyle"] = scores.get("lifestyle", 0.0) + 1.2
+            scores["design"] = scores.get("design", 0.0) + 0.8
+
+        if scores:
+            # Deterministic sorting: highest score first; ties broken alphabetically by topic key
+            ranked = sorted(scores.keys(), key=lambda t: (-round(scores[t], 4), t))
+            return ranked[:4]
+
+    # Legacy / fallback path if signals are not passed, empty, or insufficient
     elem = (dominant_element or "").lower()
     pattern = (dominant_aspect_pattern or "").lower()
 
     if elem == "air" or "mercury" in pattern or "air" in pattern:
-        return ["books", "philosophy", "ideas", "creative_work"]
-    elif elem == "fire" or "mars" in pattern or "sun" in pattern or "fire" in pattern:
+        return ["ideas", "philosophy", "books", "creative_work"]
+    elif elem == "fire" or "mars" in pattern or "fire" in pattern:
         return ["travel", "adventure", "fitness", "ambition"]
-    elif elem == "water" or "moon" in pattern or "venus" in pattern or "water" in pattern:
-        return ["art", "music", "psychology", "cinema"]
+    elif elem == "water" or "moon" in pattern or "water" in pattern:
+        return ["psychology", "art", "music", "cinema"]
     elif elem == "earth" or "saturn" in pattern or "earth" in pattern:
-        return ["architecture", "food", "design", "lifestyle"]
+        return ["lifestyle", "design", "food", "architecture"]
 
-    return ["travel", "books", "creative_work", "lifestyle"]
+    return ["ideas", "lifestyle", "travel", "psychology"]
 
 
 def extract_conversation_starters(signals: list[dict[str, Any]]) -> list[str]:
