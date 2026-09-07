@@ -479,6 +479,130 @@ INTERPRETATION_CONTRACTS: dict[str, InterpretationContract] = {
     ),
 
     # =============================================================
+    # 5B. SELF / ME — COGNITIVE & DEBATE (12 MERCURY SIGNS)
+    # =============================================================
+    "self.cognition.mercury_aries.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_aries.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_aries", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="kinetic_assertiveness",
+            intensity="high",
+            human_meaning=["rapid cognitive processing", "frontal debate style", "impatience with preambles and over-explanation"],
+        ),
+    ),
+    "self.cognition.mercury_taurus.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_taurus.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_taurus", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="deliberate_pragmatism",
+            intensity="high",
+            human_meaning=["methodical information digestion", "conversational immovability", "grounded concrete verification"],
+        ),
+    ),
+    "self.cognition.mercury_gemini.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_gemini.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_gemini", strength=0.92),
+        meaning=InterpretationMeaning(
+            type="high_frequency_agility",
+            intensity="high",
+            human_meaning=["rapid associative processing", "intellectual fencing and banter", "multithreaded mental agility"],
+        ),
+    ),
+    "self.cognition.mercury_cancer.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_cancer.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_cancer", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="intuitive_subtext",
+            intensity="high",
+            human_meaning=["subconscious emotional absorption", "deep conversational memory", "defensive verbal shielding"],
+        ),
+    ),
+    "self.cognition.mercury_leo.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_leo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_leo", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="authoritative_declarations",
+            intensity="high",
+            human_meaning=["theatrical articulation", "commanding rhetoric", "intellectual pride and conviction"],
+        ),
+    ),
+    "self.cognition.mercury_virgo.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_virgo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_virgo", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="diagnostic_precision",
+            intensity="high",
+            human_meaning=["systematic error detection", "precision deconstruction of arguments", "operational troubleshooting"],
+        ),
+    ),
+    "self.cognition.mercury_libra.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_libra.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_libra", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="dialectical_mediation",
+            intensity="high",
+            human_meaning=["dual-perspective processing", "socratic diplomacy", "anticipating counter-arguments"],
+        ),
+    ),
+    "self.cognition.mercury_scorpio.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_scorpio.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_scorpio", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="interrogative_depth",
+            intensity="high",
+            human_meaning=["penetrating subtext interrogation", "surgical verbal economy", "strategic information reserve"],
+        ),
+    ),
+    "self.cognition.mercury_sagittarius.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_sagittarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_sagittarius", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="panoramic_candor",
+            intensity="high",
+            human_meaning=["macro conceptual leaping", "unvarnished candor", "impatience with operational minutiae"],
+        ),
+    ),
+    "self.cognition.mercury_capricorn.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_capricorn.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_capricorn", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="strategic_economy",
+            intensity="high",
+            human_meaning=["structural feasibility evaluation", "sober factual authority", "distrust of speculative hype"],
+        ),
+    ),
+    "self.cognition.mercury_aquarius.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_aquarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_aquarius", strength=0.92),
+        meaning=InterpretationMeaning(
+            type="systems_architecture",
+            intensity="high",
+            human_meaning=["detached systemic synthesis", "principled contrarianism", "unconventional logical frameworks"],
+        ),
+    ),
+    "self.cognition.mercury_pisces.v1": InterpretationContract(
+        interpretation_id="self.cognition.mercury_pisces.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mercury_sign_pisces", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="associative_intuition",
+            intensity="high",
+            human_meaning=["impressionistic non-linear logic", "metaphorical resonance", "permeable conversational empathy"],
+        ),
+    ),
+
+    # =============================================================
     # 6. RELATIONSHIP / SYNASTRY (45 CONTRACTS)
     # =============================================================
     # Core Attraction Dynamics

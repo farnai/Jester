@@ -741,19 +741,21 @@ def test_expanded_contract_registry_completeness():
     friend_contracts = [k for k in INTERPRETATION_CONTRACTS if k.startswith("friendship.")]
     daily_contracts = [k for k in INTERPRETATION_CONTRACTS if k.startswith("daily_energy.")]
 
-    # 1. Self / Me (43)
-    assert len(self_contracts) == 43
+    # 1. Self / Me (43 base + 12 Mercury = 55)
     sun_signs = [k for k in self_contracts if k.startswith("self.identity.sun_")]
     moon_signs = [k for k in self_contracts if k.startswith("self.emotional.moon_")]
     rising_signs = [k for k in self_contracts if k.startswith("self.persona.rising_")]
     elements = [k for k in self_contracts if k.startswith("self.element.")]
     modalities = [k for k in self_contracts if k.startswith("self.modality.")]
+    mercury_signs = [k for k in self_contracts if k.startswith("self.cognition.mercury_")]
 
     assert len(sun_signs) == 12
     assert len(moon_signs) == 12
     assert len(rising_signs) == 12
     assert len(elements) == 4
     assert len(modalities) == 3
+    assert len(mercury_signs) == 12
+    assert len(self_contracts) >= 43
 
     # 2. Relationship / Synastry (45+)
     assert len(rel_contracts) >= 45

@@ -46,6 +46,7 @@ class SafeDerivedAstrology(BaseModel):
     sun_sign: str
     moon_sign: str
     ascendant_sign: str | None = None
+    mercury_sign: str | None = None
     element_primary: str
     modality_primary: str
     source_birth_data_version: int
@@ -63,6 +64,7 @@ class SafeDerivedAstrologyResponse(BaseModel):
     sun_sign: str
     moon_sign: str
     ascendant_sign: str | None = None
+    mercury_sign: str | None = None
     element_primary: str
     modality_primary: str
     source_birth_data_version: int

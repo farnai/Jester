@@ -182,24 +182,25 @@ class InMemoryContentStore(ContentStore):
             self._load_corpus_fixture()
 
     def _load_corpus_fixture(self) -> None:
-        """Ingests large-scale AI content corpus from JSON fixture if present."""
-        fixture_path = Path(__file__).parent / "data" / "content_corpus.json"
-        if fixture_path.exists():
-            try:
-                with open(fixture_path, "r", encoding="utf-8") as f:
-                    raw_items = json.load(f)
-                for item in raw_items:
-                    aid = item.get("asset_id")
-                    if aid and aid not in self._assets:
-                        # Reconstitute datetime fields
-                        if "created_at" in item and isinstance(item["created_at"], str):
-                            item["created_at"] = datetime.fromisoformat(item["created_at"])
-                        if "updated_at" in item and isinstance(item["updated_at"], str):
-                            item["updated_at"] = datetime.fromisoformat(item["updated_at"])
-                        asset = ContentAsset(**item)
-                        self.save_asset(asset)
-            except Exception:
-                pass
+        """Ingests large-scale content corpora from JSON fixtures if present."""
+        for filename in ("content_corpus.json", "mercury_corpus.json"):
+            fixture_path = Path(__file__).parent / "data" / filename
+            if fixture_path.exists():
+                try:
+                    with open(fixture_path, "r", encoding="utf-8") as f:
+                        raw_items = json.load(f)
+                    for item in raw_items:
+                        aid = item.get("asset_id")
+                        if aid and aid not in self._assets:
+                            # Reconstitute datetime fields
+                            if "created_at" in item and isinstance(item["created_at"], str):
+                                item["created_at"] = datetime.fromisoformat(item["created_at"])
+                            if "updated_at" in item and isinstance(item["updated_at"], str):
+                                item["updated_at"] = datetime.fromisoformat(item["updated_at"])
+                            asset = ContentAsset(**item)
+                            self.save_asset(asset)
+                except Exception:
+                    pass
 
     def get_asset(self, asset_id: str) -> ContentAsset | None:
         with self._lock:
