@@ -10,7 +10,7 @@ export interface AuthContextType {
   hasBirthData: boolean | null;
   setHasBirthData: (val: boolean) => void;
   signOut: () => Promise<void>;
-  refreshBirthDataCheck: () => Promise<boolean>;
+  refreshBirthDataCheck: (explicitUserId?: string) => Promise<boolean>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -71,9 +71,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const refreshBirthDataCheck = async () => {
-    if (!user) return false;
-    return checkBirthData(user.id);
+  const refreshBirthDataCheck = async (explicitUserId?: string) => {
+    const targetId = explicitUserId || user?.id;
+    if (!targetId) return false;
+    return checkBirthData(targetId);
   };
 
   const signOut = async () => {

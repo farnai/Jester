@@ -1,138 +1,239 @@
 # AGENTS.md — Primary AI Coding Agent Instructions for Jester
 
-Welcome to **Jester**. This document is the primary instruction guide for all AI coding agents (Codex, Gemini, Claude, Cursor) operating within this repository.
+## What is JESTER?
 
----
+JESTER is a **People Discovery and Relationship Intelligence** engine. It is not primarily an astrology, horoscope, dating, or generic compatibility application. Astrology is its deterministic intelligence layer for helping people understand themselves, other people, and relationships.
 
-## 🃏 What is Jester?
+Core product loop:
 
-**Jester** is a **People Discovery and Relationship Intelligence** engine. 
+```text
+ME → YOU → US → MORE PEOPLE
+```
 
-While built with **Python 3.11+**, **FastAPI**, **PySwissEph (Swiss Ephemeris)**, and **Supabase (PostgreSQL 15+)**, **JESTER is not positioned as an astrology app**. Astrology serves strictly as the underlying, deterministic intelligence layer. The consumer-facing product is about people, connection, and relationship dynamics:
-> **"They show the match. JESTER explains the connection."**
+Product axioms:
 
-The platform follows a strict **Privacy by Design** architecture:
-- Raw birth data and exact astronomical placements are kept strictly private (`birth_data` and `astro_private`).
-- Derived public astrology (Zodiac signs, primary element/modality) is separated into a safe profile view (`astro_safe_profile`).
-- Security is enforced at both the FastAPI layer (JWT validation) and the PostgreSQL database layer (Row-Level Security policies and SECURITY DEFINER helpers).
+- **Score creates curiosity. Interpretation creates value.**
+- **The insight becomes the invitation.**
 
----
+Agents must preserve these principles, but must not independently invent or redefine product strategy, user flows, scoring philosophy, relationship semantics, privacy policy, astrology methodology, monetization, or positioning. Surface unspecified product decisions to the human/product owner.
 
-## 🏛️ Repository Overview & Architecture Map
+## Repository / Architecture Map
 
-- **Backend Application**: `backend/app/`
-  - `api/`: API router aggregation (`/v1`) & system health endpoints (`/healthz`, `/v1/health`)
-  - `astrology/`: PySwissEph integration, Julian Day, planetary calculation, natal orchestration, validation, and angular aspects (`aspects.py`)
-  - `auth/`: Supabase JWT verification (JWKS in production, HS256 in dev/test), bearer dependencies
-  - `comparisons/`: Synastry & compatibility endpoints (`/v1/compare`, `/v1/people/{id}/why`) powered by Synastry V1
-  - `compatibility/`: Deterministic Synastry V1 engine (`synastry.py`), rules, models, and orchestration (`engine.py`)
-  - `connections/`: Friendship request lifecycle (pending -> accepted / declined / blocked / removed)
-  - `conversations/`: Direct messaging threads & chat message endpoints
-  - `core/`: Database pool (`psycopg3`), custom exception models, global exception handlers
-  - `interpretation/`: [STUB] LLM / Jester voice interpretation stubs (`engine.py`, `jester.py`, `prompts.py`)
-  - `jobs/`: Background job handlers (daily energy generation stub)
-  - `notifications/`: User in-app notifications
-  - `profiles/`: User profile management (`/v1/profiles/me`)
-  - `users/`: Account details endpoint (`/v1/users/me`)
-- **Database Migrations**: `supabase/migrations/` (21 SQL migrations: schema, RLS, triggers, grants)
-- **Documentation**: `docs/`
-  - `JESTER_STRATEGIC_MARKETING_FOUNDATION.md`: Authoritative marketing foundation, positioning, JTBD, voice, and viral loop
-  - `PROJECT_CONTEXT.md`: Product vision, current stage, and philosophy
-  - `ARCHITECTURE.md`: Technical architecture, request lifecycle, subsystem flows
-  - `ASTROLOGY_ENGINE.md`: Detailed Swiss Ephemeris engine math, limitations, status
-  - `SYNASTRY_V1_SPEC.md`: Authoritative mathematical specification for Synastry V1 (`synastry-v1.0.0`)
-  - `DATABASE.md`: Complete database migration guide, data classification, schema
-  - `SECURITY.md`: Auth model, RLS policies, JWT rules, data isolation invariants
-  - `API.md`: Comprehensive API endpoints map, request/response models, errors
-  - `TESTING.md`: Test suite documentation (74 passing tests) and test gaps
-  - `AI.md`: Current state of AI/LLM stubs and prompt architecture
-  - `PROJECT_STATE.md`: Subsystem status matrix and active roadmap
-  - `FRONTEND_ARCHITECTURE_SPECIFICATION.md`: Frontend architecture & state machines
-  - `FRONTEND_CAPABILITY_SPECIFICATION.md`: Frontend functional capabilities & UI states
-- **Test Suite**: `tests/` (`astrology/`, `backend/`, `compatibility/`, `database/`) — 74 passing tests
+Primary backend areas live under `backend/app/`:
 
----
+- `api/`: router aggregation, `/healthz`, `/v1/health`.
+- `astrology/`: Swiss Ephemeris integration, Julian-day calculation, validation, natal orchestration, and aspects.
+- `auth/`: Supabase JWT verification and bearer dependencies. Production uses JWKS/asymmetric JWTs; HS256 is allowed only in development/test.
+- `comparisons/`: `/v1/compare` and `/v1/people/{id}/why` orchestration.
+- `compatibility/`: deterministic, versioned Synastry engine, rules, models, and evidence.
+- `connections/`: canonical connection lifecycle and transitions.
+- `conversations/`: direct conversations and message endpoints.
+- `core/`: database connection access, errors, and global handlers.
+- `interpretation/`: deterministic interpretation contracts, resolver/corpus infrastructure, and orchestration. External LLM generation is not assumed to be implemented.
+- `jobs/`: background-job helpers; a schema/helper does not prove a scheduled product feature exists.
+- `notifications/`: notification read/list API.
+- `profiles/` and `users/`: profile and current-account APIs.
 
-## 🛑 Rule #1: Source-of-Truth Hierarchy
+Other important areas:
 
-**DO NOT TRUST DOCUMENTATION OVER CODE.**
+- `supabase/migrations/`: schema, RLS, grants, triggers, helper functions, storage, and realtime.
+- `frontend/`: React/Vite web client using Supabase Auth and React Query.
+- `tests/`: astrology, compatibility, backend, database-security, and interpretation tests.
+- `scripts/`: demo seed, corpus generation/audit, and analysis utilities.
+- `docs/`: product, architecture, API, security, database, astrology, frontend, content, and audit documentation.
 
-If documentation conflicts with the codebase, the hierarchy of truth is:
+Inspect the actual tree before changing a subsystem; this map is orientation, not a substitute for current source.
 
-1. **Actual Source Code** (`backend/app/`)
-2. **Database Migrations & Schema** (`supabase/migrations/`)
-3. **Automated Test Suite** (`tests/`)
-4. **Documentation Files** (`docs/*.md`, `README.md`)
+## Source of Truth
 
-*Rule*: Whenever implementation changes or a conflict is discovered, **the documentation must be updated immediately to reflect reality.**
+Use authority by question:
 
----
+1. **Implementation behavior:** source code, configuration, and runtime wiring.
+2. **Persistence and security:** migrations, schema, RLS policies, grants, constraints, functions, and triggers.
+3. **Verified behavior:** tests and reproducible runtime behavior.
+4. **Product intent:** explicitly approved product specifications, UX decisions, and owner decisions.
+5. **Mathematical behavior:** frozen Synastry/astrology specifications, implementation, and relevant tests.
+6. **Audits:** time-bound evidence, not permanent truth.
 
-## 📋 Before Modifying Code
+When sources conflict: identify the discrepancy, inspect code/schema, determine whether it is stale or intentional, preserve privacy/security, and surface unresolved product or architecture choices. Do not silently rewrite behavior merely to make documents agree. Do not let an old audit override current code.
 
-Agents MUST follow this checklist before making changes:
+## Before Modifying Code
 
-1. Read this `AGENTS.md`.
-2. Identify the relevant subsystem (e.g. `astrology`, `auth`, `connections`, `compatibility`).
-3. Read the corresponding documentation file under `docs/` (e.g. `docs/ASTROLOGY_ENGINE.md`, `docs/SYNASTRY_V1_SPEC.md`, `docs/SECURITY.md`).
-4. Inspect the actual source implementation file(s).
-5. Inspect related test files in `tests/`.
-6. Inspect relevant database migrations in `supabase/migrations/` if database, schema, or security behavior is involved.
-7. Make the **smallest appropriate change** required to accomplish the task.
-8. Run the test suite: `python -m pytest`.
-9. Update `docs/` if architecture, API contracts, or project state changed.
+Before changing a subsystem:
 
----
+1. Read this file and identify the exact requested behavior.
+2. Read relevant product/technical documentation.
+3. Inspect source implementation and relevant frontend consumers.
+4. Inspect migrations, RLS, grants, and constraints when data/security is involved.
+5. Inspect relevant tests.
+6. Trace the cross-layer request/data flow when applicable.
+7. Identify existing contracts and invariants.
+8. Make the smallest coherent change.
+9. Run targeted tests, then broader tests when risk warrants them.
+10. Update documentation only when a documented contract, architecture, security invariant, or supported capability changes.
 
-## 🔒 Security & Privacy Invariants
+Do not implement from documentation alone when source can answer the question. Do not reset, discard, or modify unrelated worktree changes.
 
-These security invariants must **NEVER** be violated:
+## Scope Control
 
-1. **Birth Data Privacy**: Raw birth date, exact birth time, latitude, and longitude in `public.birth_data` are strictly **owner-only**. RLS policy `birth_data_select_own` restricts read access to `auth.uid()`.
-2. **Astro Private Isolation**: `public.astro_private` contains exact server-calculated planet longitudes and houses. It has `REVOKE ALL` for `authenticated` and `anon` roles. Client applications must NEVER be granted access to `astro_private`.
-3. **Production JWT Security**: In `ENV=production`, only asymmetric JWT algorithms (`RS256`, `ES256`, `EdDSA`) via Supabase JWKS are allowed. Symmetric `HS256` is strictly prohibited in production.
-4. **Canonical Pair Constraint**: User connection pairs are stored as `(user_a_id, user_b_id)` where `user_a_id < user_b_id`. Connections can never be updated directly by authenticated clients (`REVOKE UPDATE`). State changes MUST use `/v1/connections/{id}/transition`.
-5. **Mutual Block Hiding**: If User A blocks User B (or vice versa), mutual discovery of profiles, safe astrology, compatibility results, and chat messages MUST return 404 Privacy-Safe Not Found.
+Prefer the smallest change that correctly solves the requested problem. Avoid unrelated refactors, speculative abstractions, broad renames, dependency additions without justification, accidental public API changes, and unrelated product-flow edits. If adjacent work is needed for safety, explain why and keep scope explicit.
 
----
+## Security & Privacy Invariants
 
-## 🔮 Astrology & Content Pipeline Rules
+These are hard invariants unless an approved architecture decision explicitly changes them.
 
-1. **Deterministic Calculations**: Astronomical math must rely strictly on `pyswisseph` and standard IANA timezone handling via `zoneinfo.ZoneInfo`.
-2. **Unknown Birth Time Handling**: When birth time is unknown (`birth_time_precision = 'unknown'`), Ascendant and Houses MUST be set to `None`. Planetary longitudes are calculated for 12:00 UTC mean noon.
-3. **Polar Region Error Handling**: Placidus house calculations fail mathematically at latitudes $> 66.5^\circ$. These cases must raise `placidus_polar_error` (HTTP 400).
-4. **Separation of Signal and Voice**:
-   ```text
-   ASTROLOGICAL DATA → SIGNAL / ASPECT → MEANING → RELATIONSHIP / PERSONAL INTERPRETATION → JESTER VOICE → USER-FACING INSIGHT
-   ```
-   JESTER does not invent astrological meaning; calculation provides the signal, and JESTER translates it into human-readable voice.
-5. **Do Not Claim Features That Do Not Exist**:
-   - Chiron, Lilith, and Lunar Nodes are NOT calculated in `calculator.py`.
-   - Daily Transits (`transits.py`) is an empty stub.
-   - AI / LLM interpretation pipeline (`interpretation/`) contains empty stubs.
-   - Synastry V1 (`compatibility/synastry.py`) and Aspect calculations (`astrology/aspects.py`) ARE implemented and verified with 74 tests.
+### Birth data
 
----
+`public.birth_data` contains private user-owned date, time, timezone, latitude, longitude, and place information. It is owner-only. It must never become broadly readable through profiles, discovery, cards, previews, compatibility responses, client metadata, logs, tests, or accidental serialization.
 
-## 🎯 Product & Strategic Invariants
+### Private astrology
 
-1. **Category**: People Discovery + Relationship Intelligence (not a horoscope or dating app).
-2. **Core Growth Model**: `ME → YOU → US → MORE PEOPLE`.
-3. **Viral Axiom**: **The insight becomes the invitation**.
-4. **Comparison Axiom**: **Score creates curiosity. Interpretation creates value.**
+`public.astro_private` contains exact server-calculated longitudes, houses, and retrogrades. It remains server-controlled; do not expose it directly to clients or grant it to client roles. Clients receive only API-approved safe DTOs such as `astro_safe_profile`.
 
----
+### JWT/JWKS
 
-## 📝 Documentation Maintenance Rule
+In `ENV=production`, use only the repository-approved asymmetric JWT/JWKS path, including RS256, ES256, or EdDSA. HS256 is never a production shortcut. HS256 may be used only in development/test under the existing contract. Do not weaken verification, CORS, host restrictions, RLS, grants, or service-role boundaries for convenience.
 
-**Documentation is part of the architecture.**
+### Canonical connections and blocking
 
-Whenever a significant implementation change occurs:
-- Update `docs/PROJECT_STATE.md` subsystem status.
-- Update `docs/API.md` if API contracts, paths, or schemas changed.
-- Update `docs/SECURITY.md` if security models or RLS policies changed.
-- Update `docs/ARCHITECTURE.md` if subsystem boundaries or dependencies changed.
-- Update `docs/TESTING.md` if new test suites or testing strategies were added.
+Connection pairs are canonical unordered pairs: the same users must not create different records due to request order. Preserve the established transition API, authorization, and state machine; do not add ad-hoc direct mutations.
 
-Documentation must **never** claim a feature is implemented when it is only a stub or placeholder.
+Blocked or hidden resources must not leak existence. Where the established contract requires it, profiles, safe astrology, compatibility, discovery, and chat must resolve as privacy-safe `404`, not an existence oracle.
 
+## Demo / Preview Boundary
+
+Demo, smoke-test, preview, seed, and development routes are not automatically production product behavior. Before using or changing one, determine authentication, real-data exposure, connection/privacy rules, intended environment, and production reachability.
+
+Never use a demo fallback, hardcoded viewer, optional-auth preview, or seed identity to bypass production privacy. Do not promote preview behavior into the normal flow without explicit product/architecture approval.
+
+## Direct Supabase / Database Access
+
+Do not bypass backend authorization by adding arbitrary client-to-Supabase queries for protected data. Direct frontend Supabase access is acceptable only where the existing architecture explicitly permits it and RLS/grants support the intended client-owned flow. Protected business logic needs server authorization and database-level enforcement where applicable. Frontend hiding is never a security boundary.
+
+## Database / Migration Discipline
+
+Make database changes through ordered migrations. Before changing tables, columns, indexes, constraints, RLS, grants, database functions, or triggers, inspect related migrations and security tests. Do not casually rewrite historical migrations that may have been applied. A migration must be safe for the intended deployment model. Schema changes affecting APIs require matching contracts, consumers, tests, and docs.
+
+## API Contract Discipline
+
+For endpoint changes inspect request, response, and error schemas; auth/authorization; nullable fields; identifiers; pagination; status codes; frontend consumers; and tests. Do not casually rename response fields.
+
+```text
+Backend contract → API schema → frontend API client → UI state
+```
+
+Any mismatch is an integration defect. If backend returns a structured error envelope, frontend must consume that actual envelope rather than assume a different one.
+
+## Astrology Engine Rules
+
+Swiss Ephemeris / PySwissEph is the deterministic engine. Do not replace it with generic libraries, LLM-generated calculations, hand-written approximations, or client-side astronomy without approval.
+
+- Use IANA timezones through Python `zoneinfo`; do not hard-code offsets or infer DST manually.
+- Unknown birth time is valid. Do not invent a time. Ascendant and Houses must remain `None`; preserve the repository-defined longitude fallback.
+- Preserve the established Placidus polar contract: `placidus_polar_error`, HTTP 400. Do not silently substitute another house system.
+- Chiron, Lilith, Lunar Nodes, minor aspects, and house-overlay synastry must not be presented as implemented unless code/specification actually supports them.
+
+## Signal vs Interpretation
+
+Preserve this boundary:
+
+```text
+Birth Data → Swiss Ephemeris → deterministic signals → semantic meaning → resolver/corpus → user-facing JESTER voice
+```
+
+Do not alter deterministic math to improve wording, hard-code product voice into calculation modules, or invent astrological meaning beyond supported signals. If AI-generated language is introduced, clearly preserve the boundary between deterministic facts and generated language.
+
+## Interpretation / Content Lifecycle
+
+The deterministic interpretation contracts, signal mappings, resolver, and repository corpus exist. Do not label the whole interpretation layer a stub. Conversely, do not claim external LLM generation, persistent CMS/content management, automated authoring, transit-generated narrative, or production editorial lifecycle unless implemented.
+
+Repository-backed or in-memory content is not automatically a CMS. Before implementing editable, versioned, localized, published, rollback-capable, or generated content, identify the required persistence and lifecycle architecture.
+
+## Synastry / Compatibility Discipline
+
+Synastry is versioned product and technical behavior. Do not casually alter scoring weights, aspect/orb rules, category semantics, normalization, aggregation, confidence rules, signal extraction, or interpretation mapping. Treat such change as engine/spec/version work, preserve stored/API compatibility, and add regression coverage. Never silently alter user scores because of an unrelated refactor.
+
+## Product Loop and Product Decisions
+
+Keep work aligned to `ME → YOU → US → MORE PEOPLE`:
+
+- ME: safe self understanding, not merely raw/debug astrology.
+- YOU: safe person data; never raw birth data.
+- US: deterministic signals/score plus authorized interpretation; never invent meaning from score alone.
+- MORE PEOPLE: authenticated, block-aware, privacy-safe discovery with approved eligibility/ranking.
+
+Do not treat UUID lookup, smoke-test lists, hardcoded IDs, or preview endpoints as production Discover. Do not invent discovery ranking, compatibility visibility, score calibration, daily-energy commitment, content persistence, or other unresolved product policy.
+
+## Conversations, Notifications, and Daily Energy
+
+For chat work inspect creation, listing, participant authorization, connection requirements, message permissions, realtime, unread state, notifications, and starter-to-chat handoff. `/chat/:conversation_id` alone does not prove a complete messaging product.
+
+Notification contracts must agree across database, backend, realtime events, frontend DTOs, and UI. Verify event producers separately from tables/read endpoints.
+
+Time-based features require more than schemas/helpers: date/time, transit calculation, deterministic signals, interpretation, persistence, scheduler/worker, delivery, and user experience. Do not claim a production Daily Energy system or invent transit/scheduler behavior without approved specification.
+
+## Secrets / Configuration
+
+Never commit or log API keys, JWT secrets, private keys, service-role keys, database passwords, tokens, or production credentials. Use established environment configuration. Development defaults and demo credentials must not become production behavior.
+
+## Testing and Runtime Verification
+
+Run tests proportionate to risk: targeted tests first; broader/full tests for shared infrastructure, auth, privacy/security, migrations, public contracts, cross-layer work, multiple product surfaces, or release readiness. A targeted passing test is not proof of complete behavior.
+
+When practical, verify runtime request/auth/response/error/persistence/authorization. Frontend work must consider loading, success, empty, error, auth, authorization, responsive behavior, navigation, cache/realtime invalidation, subscription lifecycle, and logout cache reset. Do not leave debug bars, hardcoded IDs, smoke controls, developer routes, or placeholder copy in production surfaces unless explicitly intended.
+
+## Documentation Map
+
+Use docs as a routing system, not as equally authoritative copies of reality:
+
+- Product/UX: approved product and frontend specifications.
+- Backend/API: `ARCHITECTURE.md`, `API.md`, source routes/models.
+- Astrology/Synastry: `ASTROLOGY_ENGINE.md`, `SYNASTRY_V1_SPEC.md`, engine/tests.
+- Database/security: `DATABASE.md`, `SECURITY.md`, migrations.
+- Interpretation: `AI.md`, interpretation/content documents, source.
+- Audits: `docs/audits/` and other audit reports as evidence snapshots.
+
+Documentation should describe durable contracts. Update it when public behavior, privacy, architecture, schema, capability, or mathematical behavior changes; avoid mutable test counts and unsupported “complete” or “production-ready” claims.
+
+## Preflight Checklist
+
+```text
+[ ] I understand the requested behavior.
+[ ] I found the governing product/technical contract.
+[ ] I inspected the implementation and relevant consumers.
+[ ] I inspected applicable schema, RLS, and security rules.
+[ ] I checked relevant tests.
+[ ] I know the applicable privacy boundary.
+[ ] I know whether this is production or demo/preview behavior.
+[ ] I am not inventing a missing product decision.
+[ ] I am not changing unrelated work.
+[ ] I know how the change will be verified.
+```
+
+## Completion Checklist
+
+```text
+[ ] Implementation matches the intended contract.
+[ ] Security/privacy invariants remain intact.
+[ ] API contracts remain consistent.
+[ ] Relevant tests pass; broader tests ran when warranted.
+[ ] No secrets, demo bypasses, or stale hardcoded IDs were introduced.
+[ ] Documentation changed if a durable contract changed.
+[ ] The result was actually verified.
+```
+
+## What Agents Must NOT Claim
+
+Do not claim a capability exists merely because a table, route, helper, schema, fixture, placeholder, or demo exists. A Daily Energy table is not a transit product; a chat route is not a complete messaging product; a resolver is not an external LLM system; a notification table is not event production; a UUID endpoint is not production Discover; and a unit test is not end-to-end proof.
+
+Use precise terms: implemented, partially implemented, infrastructure exists, endpoint exists, frontend scaffold exists, not integrated, not productionized, or not implemented. Use “complete” only after relevant end-to-end verification.
+
+## Conflict Protocol
+
+When instructions/evidence conflict: inspect current source and schema, read relevant approved docs, determine staleness, preserve security/privacy, surface conflicts that change product or architecture, and resolve only objectively established implementation conflicts. Record decisions that create durable architectural knowledge.
+
+## Final Principle
+
+JESTER is a real product, not a collection of demos. Protect product clarity, user privacy, deterministic astrology, correct relationship semantics, stable contracts, small reversible changes, verified behavior, facts/interpretation/presentation separation, and the rule against invented product decisions.
+
+> Inspect the real system. Preserve the contract. Make the smallest correct change. Verify it. Ask before inventing.

@@ -2,7 +2,16 @@
 Seeds realistic discovery users and the default demo user with real birth data
 and calculates exact Swiss Ephemeris placements for smoke-testing the UX/content flow.
 """
+import sys
 import uuid
+from pathlib import Path
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 import psycopg
 from psycopg.rows import dict_row
 

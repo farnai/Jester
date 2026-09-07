@@ -20,8 +20,11 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    const trimmed = email.trim();
+    const loginEmail = trimmed.includes("@") ? trimmed : `${trimmed}@jester.app`;
+
     const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: loginEmail,
       password,
     });
 
@@ -77,15 +80,17 @@ export const LoginPage: React.FC = () => {
       <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <div>
           <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "bold", fontSize: "0.85rem" }}>
-            Email Address
+            Email or Username
           </label>
           <input
-            type="email"
+            type="text"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{ width: "100%", padding: "0.5rem", boxSizing: "border-box" }}
-            placeholder="user@example.com"
+            placeholder="farna or user@jester.app"
+            autoCapitalize="none"
+            autoCorrect="off"
           />
         </div>
 

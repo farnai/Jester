@@ -94,23 +94,62 @@ export const AppShell: React.FC = () => {
           </nav>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+          {user?.email && (
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: "#555",
+                backgroundColor: "#f5f5f5",
+                padding: "0.3rem 0.6rem",
+                borderRadius: "12px",
+                border: "1px solid #e0e0e0",
+                maxWidth: "200px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={user.email}
+            >
+              👤 {user.email}
+            </span>
+          )}
+
+          <Link
+            to="/smoke-test"
+            style={{
+              fontSize: "0.8rem",
+              color: "#722ed1",
+              backgroundColor: "#f9f0ff",
+              padding: "0.35rem 0.6rem",
+              borderRadius: "4px",
+              textDecoration: "none",
+              border: "1px solid #d3adf7",
+              fontWeight: 500,
+            }}
+            title="ქართული კონტენტის ტესტირება"
+          >
+            🧪 Smoke Test
+          </Link>
+
           <Link
             to="/notifications"
             style={{
               textDecoration: "none",
               color: "#333",
               position: "relative",
-              padding: "0.3rem 0.6rem",
+              padding: "0.35rem 0.6rem",
               borderRadius: "4px",
               background: "#f5f5f5",
+              fontSize: "0.85rem",
+              border: "1px solid #e8e8e8",
             }}
           >
-            🔔 Notifications
+            🔔
             {unreadCount > 0 && (
               <span
                 style={{
-                  marginLeft: "0.4rem",
+                  marginLeft: "0.3rem",
                   backgroundColor: "#ff4d4f",
                   color: "#fff",
                   padding: "0.1rem 0.4rem",
@@ -123,17 +162,25 @@ export const AppShell: React.FC = () => {
               </span>
             )}
           </Link>
+
           <button
             onClick={handleSignOut}
             style={{
-              padding: "0.4rem 0.8rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.35rem 0.75rem",
               cursor: "pointer",
-              border: "1px solid #d9d9d9",
-              background: "#fff",
+              border: "1px solid #ffa39e",
+              background: "#fff1f0",
+              color: "#cf1322",
               borderRadius: "4px",
+              fontWeight: 600,
+              fontSize: "0.85rem",
             }}
+            title="სისტემიდან გასვლა"
           >
-            Sign Out
+            🚪 გასვლა
           </button>
         </div>
       </header>

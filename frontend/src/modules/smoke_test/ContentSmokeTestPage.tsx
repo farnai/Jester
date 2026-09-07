@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
+import { useAuth } from "../../core/auth/useAuth";
 import {
   DailyEnergyResponse,
   DiscoveryPerson,
@@ -13,6 +15,8 @@ import { LoadingState, ErrorState } from "../../shared/StatusState";
 type TabMode = "me" | "discovery" | "you" | "us";
 
 export const ContentSmokeTestPage: React.FC = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabMode>("me");
   const [selectedEnergyType, setSelectedEnergyType] = useState<string>("confidence");
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
@@ -132,12 +136,92 @@ export const ContentSmokeTestPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+          <Link
+            to="/self/astrology"
+            style={{
+              padding: "0.4rem 0.8rem",
+              background: "#1890ff",
+              color: "#fff",
+              textDecoration: "none",
+              borderRadius: "4px",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            🃏 მთავარ აპლიკაციაში გადასვლა
+          </Link>
+
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.8rem", color: "#555", background: "#f0f0f0", padding: "0.25rem 0.6rem", borderRadius: "12px" }}>
+                👤 {user.email}
+              </span>
+              <button
+                onClick={async () => {
+                  await signOut();
+                  navigate("/auth/login");
+                }}
+                style={{
+                  padding: "0.35rem 0.75rem",
+                  background: "#fff1f0",
+                  color: "#cf1322",
+                  border: "1px solid #ffa39e",
+                  borderRadius: "4px",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                }}
+                title="სისტემიდან გასვლა"
+              >
+                🚪 გასვლა
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <Link
+                to="/auth/login"
+                style={{
+                  padding: "0.35rem 0.7rem",
+                  background: "#fafafa",
+                  color: "#333",
+                  border: "1px solid #d9d9d9",
+                  borderRadius: "4px",
+                  fontSize: "0.85rem",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
+              >
+                🔑 შესვლა
+              </Link>
+              <Link
+                to="/auth/register"
+                style={{
+                  padding: "0.35rem 0.7rem",
+                  background: "#52c41a",
+                  color: "#fff",
+                  borderRadius: "4px",
+                  fontSize: "0.85rem",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                }}
+              >
+                ✨ რეგისტრაცია
+              </Link>
+            </div>
+          )}
+
           <button
             className={`inspector-toggle-btn ${showInspector ? "active" : ""}`}
             onClick={() => setShowInspector(!showInspector)}
           >
-            {showInspector ? "👁️ აუდიტის პანელი: ჩართული" : "🙈 აუდიტის პანელი: გამორთული"}
+            {showInspector ? "👁️ აუდიტი: ჩართული" : "🙈 აუდიტი: გამორთული"}
           </button>
         </div>
       </header>

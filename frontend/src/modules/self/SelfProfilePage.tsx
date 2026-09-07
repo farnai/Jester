@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, Link } from "react-router-dom";
 import { API } from "../../core/api/endpoints";
 import { ProfileUpdate } from "../../core/api/types";
+import { useAuth } from "../../core/auth/useAuth";
 import { LoadingState, ErrorState } from "../../shared/StatusState";
 
 export const SelfProfilePage: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["profile", "me"],
@@ -183,6 +187,82 @@ export const SelfProfilePage: React.FC = () => {
           {updateMutation.isPending ? "Saving..." : "Save Profile"}
         </button>
       </form>
+
+      {/* Account & Session Management */}
+      <div
+        style={{
+          marginTop: "2.5rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid #e8e8e8",
+        }}
+      >
+        <h3 style={{ margin: "0 0 1rem 0", fontSize: "1.05rem" }}>ანგარიში და სესია</h3>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "1rem",
+            backgroundColor: "#fff",
+            border: "1px solid #e8e8e8",
+            borderRadius: "6px",
+            gap: "1rem",
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+              {user?.email || "მიმდინარე მომხმარებელი"}
+            </div>
+            <div style={{ fontSize: "0.8rem", color: "#666", marginTop: "0.2rem" }}>
+              სისტემიდან გასვლა და ავტორიზაციის ეკრანზე დაბრუნება
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <Link
+              to="/onboarding/birth-data"
+              style={{
+                padding: "0.45rem 0.9rem",
+                borderRadius: "4px",
+                border: "1px solid #d9d9d9",
+                background: "#f5f5f5",
+                color: "#333",
+                textDecoration: "none",
+                fontSize: "0.85rem",
+                fontWeight: 500,
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              ⚙️ დაბადების მონაცემები
+            </Link>
+
+            <button
+              type="button"
+              onClick={async () => {
+                await signOut();
+                navigate("/auth/login");
+              }}
+              style={{
+                padding: "0.45rem 1rem",
+                background: "#ff4d4f",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+              }}
+            >
+              🚪 გასვლა (Sign Out)
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
