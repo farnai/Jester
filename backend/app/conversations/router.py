@@ -6,9 +6,82 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.core.database import get_db
 from backend.app.core.errors import ForbiddenException, PrivacySafeNotFoundException
-from backend.app.conversations.models import ConversationResponse, DirectConversationCreate, MessageCreate, MessageResponse
+from backend.app.conversations.models import (
+    ConversationInboxResponse,
+    ConversationResponse,
+    DirectConversationCreate,
+    MessageCreate,
+    MessageResponse,
+)
 
 router = APIRouter(prefix="/conversations", tags=["conversations"])
+
+
+@router.get("", response_model=list[ConversationInboxResponse])
+async def list_my_conversations(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> list[ConversationInboxResponse]:
+    """Lists active direct conversations for the caller's Messages inbox.
+
+    The current schema has no per-member read-state representation, so
+    ``unread_count`` is deliberately returned as 0 for every conversation.
+    """
+    with db.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                c.id,
+                other_member.user_id AS other_member_id,
+                c.updated_at,
+                latest_message.id AS last_message_id,
+                latest_message.conversation_id AS last_message_conversation_id,
+                latest_message.sender_user_id AS last_message_sender_user_id,
+                latest_message.body AS last_message_body,
+                latest_message.created_at AS last_message_created_at
+            FROM public.conversations c
+            JOIN public.conversation_members current_member
+              ON current_member.conversation_id = c.id
+             AND current_member.user_id = %s
+            JOIN public.conversation_members other_member
+              ON other_member.conversation_id = c.id
+             AND other_member.user_id <> %s
+            LEFT JOIN LATERAL (
+                SELECT id, conversation_id, sender_user_id, body, created_at
+                FROM public.messages
+                WHERE conversation_id = c.id
+                ORDER BY created_at DESC, id DESC
+                LIMIT 1
+            ) latest_message ON TRUE
+            WHERE c.conversation_type = 'direct'
+              AND public.is_active_direct_conversation(c.id, %s)
+            ORDER BY COALESCE(latest_message.created_at, c.updated_at) DESC, c.id DESC;
+            """,
+            (current_user.id, current_user.id, current_user.id),
+        )
+        rows = cur.fetchall()
+
+    result: list[ConversationInboxResponse] = []
+    for row in rows:
+        last_message = None
+        if row["last_message_id"] is not None:
+            last_message = MessageResponse(
+                id=row["last_message_id"],
+                conversation_id=row["last_message_conversation_id"],
+                sender_user_id=row["last_message_sender_user_id"],
+                body=row["last_message_body"],
+                created_at=row["last_message_created_at"],
+            )
+        result.append(
+            ConversationInboxResponse(
+                id=row["id"],
+                other_member_id=row["other_member_id"],
+                last_message=last_message,
+                unread_count=0,
+                updated_at=row["updated_at"],
+            )
+        )
+    return result
 
 
 @router.post("", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)

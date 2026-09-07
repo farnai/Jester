@@ -1,187 +1,199 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
-import { LoadingState, ErrorState } from "../../shared/StatusState";
+import { useAuth } from "../../core/auth/useAuth";
+import { Card, Button, Badge, LoadingState, ErrorState } from "../../shared/ui";
 
 export const ComparePage: React.FC = () => {
-  const { target_id } = useParams<{ target_id: string }>();
-  const targetId = target_id || "";
+  const { id, target_id } = useParams<{ id?: string; target_id?: string }>();
+  const targetId = (id || target_id || "").trim();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["compatibility", targetId],
-    queryFn: () => API.compatibility.compare(targetId),
+    queryFn: async () => {
+      try {
+        return await API.compatibility.compare(targetId);
+      } catch (err: any) {
+        // Fallback to safe preview for unconnected users per Product Decision #2
+        if (err.statusCode === 403) {
+          const preview = await API.interpretations.comparePreview({
+            target_user_id: targetId,
+            locale: "ka",
+          });
+          return {
+            id: `preview-${targetId}`,
+            target_user_id: targetId,
+            score: preview.score,
+            dimensions: preview.dimensions,
+            signals: preview.signals || [],
+            best_topics: preview.best_topics || [],
+            conversation_starters: preview.conversation_starters || [],
+            data_quality: preview.data_quality,
+            engine_version: preview.engine_version,
+            calculated_at: preview.calculated_at,
+          };
+        }
+        throw err;
+      }
+    },
     enabled: !!targetId,
     retry: false,
   });
 
-  if (isLoading) return <LoadingState message="Calculating Synastry V1 compatibility..." />;
-  if (error) {
-    const err = error as any;
-    if (err.statusCode === 403) {
-      return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <h3>Active Connection Required</h3>
-          <p style={{ color: "#666" }}>
-            You must have an active, accepted connection with this person to run Synastry compatibility calculations.
-          </p>
-          <Link to={`/people/${targetId}`} style={{ color: "#1890ff", fontWeight: "bold" }}>
-            Go to Person Profile
-          </Link>
-        </div>
-      );
-    }
-    return <ErrorState error={error as Error} onRetry={refetch} />;
-  }
+  // Check connection status
+  const { data: connections } = useQuery({
+    queryKey: ["connections"],
+    queryFn: API.connections.list,
+  });
 
+  const myConnection = connections?.find(
+    (c) =>
+      (c.user_a_id === user?.id && c.user_b_id === targetId) ||
+      (c.user_b_id === user?.id && c.user_a_id === targetId)
+  );
+
+  const connectMutation = useMutation({
+    mutationFn: () => API.connections.create(targetId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+    },
+  });
+
+  if (isLoading) return <LoadingState message="სინასტრიული რუკებისა და 4 განზომილების გამოთვლა..." />;
+  if (error) return <ErrorState error={error as Error} onRetry={refetch} />;
   if (!data) return null;
 
-  const { score, dimensions, signals, data_quality, engine_version, calculated_at } = data;
+  const { score, dimensions, signals = [], data_quality } = data;
 
-  const categoryColors: Record<string, string> = {
-    harmony: "#52c41a",
-    attraction: "#eb2f96",
-    communication: "#1890ff",
-    growth: "#722ed1",
-    stability: "#fa8c16",
-    notice: "#faad14",
-  };
+  const dimensionList = [
+    { key: "emotional_harmony", label: "ემოციური ჰარმონია", value: dimensions.emotional_harmony, icon: "🌊", color: "#3b82f6" },
+    { key: "communication", label: "კომუნიკაცია & ინტელექტი", value: dimensions.communication, icon: "💡", color: "#6366f1" },
+    { key: "attraction", label: "მიზიდულობა & ქიმია", value: dimensions.attraction, icon: "✨", color: "#ec4899" },
+    { key: "growth_long_term", label: "გრძელვადიანი ზრდა", value: dimensions.growth_long_term, icon: "🌱", color: "#10b981" },
+  ];
+
+  const isConnected = myConnection?.status === "accepted";
+  const isPending = myConnection?.status === "pending";
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
         <div>
-          <h2 style={{ margin: 0 }}>Synastry Compatibility</h2>
-          <div style={{ color: "#666", fontSize: "0.85rem", marginTop: "0.2rem" }}>
-            Deterministic cross-chart comparison with Person (<code>{targetId.slice(0, 8)}...</code>)
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.5rem" }}>⚖️</span>
+            <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+              სინასტრიული შედარება (US)
+            </h1>
           </div>
+          <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
+            დეტერმინისტული Swiss Ephemeris გაანგარიშება და ურთიერთობის 4 განზომილება.
+          </p>
         </div>
-        <Link
-          to={`/why/${targetId}`}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#722ed1",
-            color: "#fff",
-            textDecoration: "none",
-            borderRadius: "4px",
-            fontWeight: "bold",
-            fontSize: "0.9rem",
-          }}
-        >
-          🔍 Why This Person
-        </Link>
+
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
+            <Button variant="outline" size="sm">
+              💡 რატომ ეს ადამიანი?
+            </Button>
+          </Link>
+          <Link to={`/people/${targetId}`} style={{ textDecoration: "none" }}>
+            <Button variant="outline" size="sm">
+              ← პროფილი
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Overall Score Banner */}
-      <div
-        style={{
-          padding: "2rem",
-          border: "1px solid #d9d9d9",
-          borderRadius: "8px",
-          backgroundColor: "#fff",
-          textAlign: "center",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div style={{ fontSize: "0.9rem", textTransform: "uppercase", color: "#888", letterSpacing: "1px" }}>
-          Overall Relationship Compatibility
+      <Card variant="accent" padded style={{ textAlign: "center", padding: "2.5rem 1.5rem" }}>
+        <div style={{ fontSize: "0.85rem", textTransform: "uppercase", color: "#7e22ce", fontWeight: 700, letterSpacing: "0.05em" }}>
+          ურთიერთობის სინერგიის საერთო ქულა
         </div>
-        <div style={{ fontSize: "3.5rem", fontWeight: "bold", color: "#722ed1", margin: "0.5rem 0" }}>
-          {score.toFixed(1)} <span style={{ fontSize: "1.5rem", color: "#888" }}>/ 100</span>
+        <div style={{ fontSize: "3.75rem", fontWeight: 900, color: "#9333ea", margin: "0.5rem 0", lineHeight: 1 }}>
+          {score.toFixed(1)} <span style={{ fontSize: "1.5rem", color: "#a855f7", fontWeight: 600 }}>/ 100</span>
         </div>
-        <div style={{ display: "inline-block", padding: "0.2rem 0.8rem", background: "#f0f5ff", border: "1px solid #adc6ff", borderRadius: "12px", fontSize: "0.8rem", color: "#1d39c4" }}>
-          Confidence: {(data_quality.confidence * 100).toFixed(0)}% ({data_quality.time_precision} birth time)
-        </div>
-      </div>
-
-      {/* 4 Core Dimensions */}
-      <h3 style={{ marginBottom: "0.8rem" }}>4-Dimensional Breakdown</h3>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-        <div style={{ padding: "1rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
-          <div style={{ fontSize: "0.85rem", color: "#666" }}>🌸 Emotional Harmony</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginTop: "0.3rem" }}>{dimensions.emotional_harmony.toFixed(1)}</div>
+        <div style={{ display: "inline-block", marginTop: "0.5rem" }}>
+          <Badge variant="brand" size="md">
+            სიზუსტის კოეფიციენტი: {Math.round((data_quality?.confidence ?? 0.85) * 100)}% ({data_quality?.time_precision || "exact"})
+          </Badge>
         </div>
 
-        <div style={{ padding: "1rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
-          <div style={{ fontSize: "0.85rem", color: "#666" }}>💡 Communication</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginTop: "0.3rem" }}>{dimensions.communication.toFixed(1)}</div>
-        </div>
-
-        <div style={{ padding: "1rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
-          <div style={{ fontSize: "0.85rem", color: "#666" }}>⚡ Attraction & Chemistry</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginTop: "0.3rem" }}>{dimensions.attraction.toFixed(1)}</div>
-        </div>
-
-        <div style={{ padding: "1rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
-          <div style={{ fontSize: "0.85rem", color: "#666" }}>🌱 Growth & Resilience</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold", marginTop: "0.3rem" }}>{dimensions.growth_long_term.toFixed(1)}</div>
-        </div>
-      </div>
-
-      {/* Top Signals */}
-      <h3 style={{ marginBottom: "0.8rem" }}>Key Relationship Signals (Max 6)</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "2rem" }}>
-        {signals.length === 0 ? (
-          <div style={{ color: "#888", fontStyle: "italic" }}>No active significant aspects detected.</div>
-        ) : (
-          signals.map((sig, idx) => (
-            <div
-              key={idx}
-              style={{
-                padding: "1rem",
-                border: "1px solid #e8e8e8",
-                borderRadius: "6px",
-                backgroundColor: "#fff",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <div style={{ fontWeight: "bold", fontSize: "1rem" }}>{sig.label}</div>
-                <div style={{ color: "#666", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                  {sig.source_aspects.join(" • ")}
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <span
-                  style={{
-                    padding: "0.2rem 0.6rem",
-                    borderRadius: "4px",
-                    fontSize: "0.75rem",
-                    textTransform: "uppercase",
-                    fontWeight: "bold",
-                    color: "#fff",
-                    backgroundColor: categoryColors[sig.category] || "#888",
-                  }}
-                >
-                  {sig.category}
-                </span>
-                <span
-                  style={{
-                    padding: "0.2rem 0.5rem",
-                    borderRadius: "4px",
-                    fontSize: "0.75rem",
-                    background: "#f5f5f5",
-                    color: "#555",
-                    border: "1px solid #d9d9d9",
-                  }}
-                >
-                  {sig.strength}
-                </span>
-              </div>
-            </div>
-          ))
+        {/* CTA: If unconnected, invite connection! "The insight becomes the invitation" */}
+        {!isConnected && (
+          <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid #f0abfc" }}>
+            <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.9rem", color: "#475569" }}>
+              ინსაითმა ინტერესი გაგიჩინათ? გაუგზავნეთ დაკავშირების მოწვევა:
+            </p>
+            {isPending ? (
+              <Badge variant="warning" size="md">
+                ⏳ მოთხოვნა გაგზავნილია
+              </Badge>
+            ) : (
+              <Button
+                variant="brand"
+                size="md"
+                isLoading={connectMutation.isPending}
+                onClick={() => connectMutation.mutate()}
+                icon={<span>🤝</span>}
+              >
+                დაკავშირების მოწვევა (Connect)
+              </Button>
+            )}
+          </div>
         )}
+      </Card>
+
+      {/* 4 Core Dimensions Breakdown */}
+      <div>
+        <h3 style={{ margin: "0 0 0.75rem 0", fontSize: "1.1rem", color: "#0f172a" }}>
+          4-განზომილებიანი ბალანსი
+        </h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+          {dimensionList.map((d) => (
+            <Card key={d.key} padded>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "#1e293b", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <span>{d.icon}</span> {d.label}
+                </span>
+                <span style={{ fontWeight: 800, fontSize: "1rem", color: d.color }}>
+                  {Math.round(d.value)}%
+                </span>
+              </div>
+              <div style={{ height: "8px", backgroundColor: "#f1f5f9", borderRadius: "9999px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${Math.min(100, Math.max(0, d.value))}%`,
+                    backgroundColor: d.color,
+                    borderRadius: "9999px",
+                    transition: "width 0.5s ease",
+                  }}
+                />
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
 
-      {/* Engine & Calculation Metadata */}
-      <div style={{ padding: "1rem", background: "#fafafa", borderRadius: "4px", fontSize: "0.8rem", color: "#666" }}>
-        <div><strong>Engine Version:</strong> {engine_version}</div>
-        <div><strong>Calculated At:</strong> {new Date(calculated_at).toLocaleString()}</div>
-        <div><strong>Ascendant Factored:</strong> {data_quality.ascendant_used ? "Yes" : "No (Unknown/Missing)"}</div>
-        <div><strong>Houses Factored:</strong> {data_quality.houses_used ? "Yes" : "No"}</div>
-      </div>
+      {/* Relationship Signals (if any) */}
+      {signals.length > 0 && (
+        <Card padded>
+          <h3 style={{ margin: "0 0 0.75rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
+            ასტროლოგიური სიგნალები & ასპექტები
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {signals.map((sig, i) => (
+              <Badge key={i} variant={sig.category === "harmony" ? "success" : sig.category === "attraction" ? "score" : "default"} size="md">
+                {sig.label || sig.type} ({sig.strength})
+              </Badge>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

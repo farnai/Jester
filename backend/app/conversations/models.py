@@ -30,3 +30,17 @@ class ConversationResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     other_member_id: uuid.UUID | None = None
+
+
+class ConversationInboxResponse(BaseModel):
+    """Privacy-safe summary used by the authenticated user's messages inbox."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    other_member_id: uuid.UUID
+    last_message: MessageResponse | None = None
+    # Read receipts are not represented in the current schema. This remains 0
+    # until a dedicated read-state feature is introduced.
+    unread_count: int = 0
+    updated_at: datetime

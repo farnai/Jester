@@ -106,7 +106,14 @@ Authorization: Bearer <supabase_jwt_token>
 - **Response 201**: `ConversationResponse`
 - **Errors**: `403 Forbidden` if active connection does not exist.
 
-#### 15. List Messages — `GET /v1/conversations/{conversation_id}/messages`
+#### 15. List My Conversations — `GET /v1/conversations`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[ConversationInboxResponse]`, where each item contains `id`, `other_member_id`, `last_message` (`MessageResponse | null`), `unread_count`, and `updated_at`.
+- **Visibility**: Returns only the caller's active direct conversations. Conversations that are unrelated, blocked, removed, or no longer accepted are omitted.
+- **Ordering**: Most recent message activity first; conversations without messages fall back to `conversations.updated_at`.
+- **Unread limitation**: `unread_count` is currently always `0`, because the database does not yet represent per-member message read state. Proper read tracking is a future backend capability.
+
+#### 16. List Messages — `GET /v1/conversations/{conversation_id}/messages`
 - **Auth**: Bearer JWT
 - **Response 200**: `list[MessageResponse]`
 - **Errors**: `404 PrivacySafeNotFoundException` if not member or blocked.
@@ -184,5 +191,4 @@ Authorization: Bearer <supabase_jwt_token>
 - **Body**: `{"score": float, "signals": list[dict], "confidence": float, "context"?: str, "locale"?: str, "tone"?: str, "seed"?: str}`
 - **Response 200**: `DeepAnalysisPayload(overall_score: float, primary_interpretation: ResolvedInterpretation, blocks: list[DeepAnalysisBlock], data_confidence: float)`
 - **Description**: Compiles verified signals into structured thematic narrative blocks grounded in aspect evidence trace.
-
 

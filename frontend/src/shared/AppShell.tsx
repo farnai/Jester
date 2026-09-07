@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../core/auth/useAuth";
 import { API } from "../core/api/endpoints";
 import { supabase } from "../core/realtime/supabase";
@@ -50,112 +50,92 @@ export const AppShell: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      }}
-    >
-      {/* Global Header */}
-      <header
-        style={{
-          borderBottom: "1px solid #e8e8e8",
-          padding: "0.75rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backgroundColor: "#fff",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+    <div className="app-container">
+      {/* Global Desktop & Mobile Top Header */}
+      <header className="desktop-nav-header">
+        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
           <Link
-            to="/self/astrology"
+            to="/"
             style={{
-              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              fontWeight: 800,
               fontSize: "1.25rem",
               textDecoration: "none",
-              color: "#111",
+              color: "#0f172a",
+              letterSpacing: "0.02em",
             }}
           >
-            🃏 JESTER
+            <span style={{ fontSize: "1.4rem" }}>🃏</span>
+            <span>JESTER</span>
           </Link>
-          <nav style={{ display: "flex", gap: "1rem" }}>
-            <Link to="/self/astrology" style={{ textDecoration: "none", color: "#1890ff" }}>
-              Self
-            </Link>
-            <Link to="/connections" style={{ textDecoration: "none", color: "#1890ff" }}>
-              Connections
-            </Link>
-            <Link to="/self/profile" style={{ textDecoration: "none", color: "#1890ff" }}>
-              Profile
-            </Link>
+
+          {/* Desktop Primary Navigation (HOME | DISCOVER | MESSAGES | ME) */}
+          <nav className="desktop-nav-links">
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
+            >
+              <span>🏠</span>
+              <span>HOME</span>
+            </NavLink>
+            <NavLink
+              to="/discover"
+              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
+            >
+              <span>🧭</span>
+              <span>DISCOVER</span>
+            </NavLink>
+            <NavLink
+              to="/messages"
+              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
+            >
+              <span>💬</span>
+              <span>MESSAGES</span>
+            </NavLink>
+            <NavLink
+              to="/me"
+              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
+            >
+              <span>👤</span>
+              <span>ME</span>
+            </NavLink>
           </nav>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-          {user?.email && (
-            <span
-              style={{
-                fontSize: "0.8rem",
-                color: "#555",
-                backgroundColor: "#f5f5f5",
-                padding: "0.3rem 0.6rem",
-                borderRadius: "12px",
-                border: "1px solid #e0e0e0",
-                maxWidth: "200px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-              title={user.email}
-            >
-              👤 {user.email}
-            </span>
-          )}
-
-          <Link
-            to="/smoke-test"
-            style={{
-              fontSize: "0.8rem",
-              color: "#722ed1",
-              backgroundColor: "#f9f0ff",
-              padding: "0.35rem 0.6rem",
-              borderRadius: "4px",
-              textDecoration: "none",
-              border: "1px solid #d3adf7",
-              fontWeight: 500,
-            }}
-            title="ქართული კონტენტის ტესტირება"
-          >
-            🧪 Smoke Test
-          </Link>
-
+        {/* Right Header Area: Notifications, Dev Tools, Account */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          {/* Notifications Indicator (Not a primary pillar, accessible utility) */}
           <Link
             to="/notifications"
             style={{
               textDecoration: "none",
-              color: "#333",
+              color: "#334155",
               position: "relative",
-              padding: "0.35rem 0.6rem",
-              borderRadius: "4px",
-              background: "#f5f5f5",
-              fontSize: "0.85rem",
-              border: "1px solid #e8e8e8",
+              padding: "0.4rem 0.65rem",
+              borderRadius: "8px",
+              backgroundColor: "#f1f5f9",
+              border: "1px solid #e2e8f0",
+              fontSize: "0.9rem",
+              display: "flex",
+              alignItems: "center",
             }}
+            title="შეტყობინებები / Notifications"
           >
             🔔
             {unreadCount > 0 && (
               <span
                 style={{
-                  marginLeft: "0.3rem",
-                  backgroundColor: "#ff4d4f",
-                  color: "#fff",
+                  marginLeft: "0.35rem",
+                  backgroundColor: "#ef4444",
+                  color: "#ffffff",
                   padding: "0.1rem 0.4rem",
-                  borderRadius: "10px",
+                  borderRadius: "9999px",
                   fontSize: "0.75rem",
-                  fontWeight: "bold",
+                  fontWeight: 700,
+                  lineHeight: 1,
                 }}
               >
                 {unreadCount}
@@ -163,43 +143,110 @@ export const AppShell: React.FC = () => {
             )}
           </Link>
 
+          {/* User Email Badge */}
+          {user?.email && (
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: "#475569",
+                backgroundColor: "#f8fafc",
+                padding: "0.35rem 0.65rem",
+                borderRadius: "9999px",
+                border: "1px solid #e2e8f0",
+                maxWidth: "180px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                display: "none", // Hidden on small screens, visible via CSS media query
+              }}
+              className="user-badge"
+              title={user.email}
+            >
+              {user.email}
+            </span>
+          )}
+
+          {/* Developer Smoke Test Link */}
+          <Link
+            to="/smoke-test"
+            style={{
+              fontSize: "0.775rem",
+              color: "#6366f1",
+              backgroundColor: "#eef2ff",
+              padding: "0.35rem 0.6rem",
+              borderRadius: "6px",
+              textDecoration: "none",
+              border: "1px solid #c7d2fe",
+              fontWeight: 600,
+            }}
+            title="ქართული კონტენტის აუდიტი (Developer Surface)"
+          >
+            🧪 Smoke
+          </Link>
+
+          {/* Sign Out Button */}
           <button
             onClick={handleSignOut}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "0.3rem",
-              padding: "0.35rem 0.75rem",
+              padding: "0.4rem 0.75rem",
               cursor: "pointer",
               border: "1px solid #ffa39e",
-              background: "#fff1f0",
+              backgroundColor: "#fff1f0",
               color: "#cf1322",
-              borderRadius: "4px",
+              borderRadius: "6px",
               fontWeight: 600,
-              fontSize: "0.85rem",
+              fontSize: "0.825rem",
+              minHeight: "36px",
             }}
-            title="სისტემიდან გასვლა"
+            title="სისტემიდან გასვლა / Sign Out"
           >
-            🚪 გასვლა
+            🚪 <span className="signout-label">გასვლა</span>
           </button>
         </div>
       </header>
 
-      {/* Main Viewport */}
-      <main
-        style={{
-          flex: 1,
-          maxWidth: "960px",
-          width: "100%",
-          margin: "0 auto",
-          padding: "1.5rem",
-          boxSizing: "border-box",
-        }}
-      >
+      {/* Main Responsive Viewport */}
+      <main className="app-main-viewport">
         <Outlet />
       </main>
 
-      {/* Persistent Debug Bar */}
+      {/* Mobile Bottom Navigation Bar (HOME | DISCOVER | MESSAGES | ME) */}
+      <nav className="mobile-bottom-nav">
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
+        >
+          <span className="tab-icon">🏠</span>
+          <span>HOME</span>
+        </NavLink>
+        <NavLink
+          to="/discover"
+          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
+        >
+          <span className="tab-icon">🧭</span>
+          <span>DISCOVER</span>
+        </NavLink>
+        <NavLink
+          to="/messages"
+          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
+        >
+          <span className="tab-icon">💬</span>
+          <span>MESSAGES</span>
+        </NavLink>
+        <NavLink
+          to="/me"
+          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
+        >
+          <span className="tab-icon">👤</span>
+          <span>ME</span>
+        </NavLink>
+      </nav>
+
+      {/* Persistent Developer Debug Bar (Development Only) */}
       <DebugBar />
     </div>
   );

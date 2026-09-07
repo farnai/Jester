@@ -1,15 +1,17 @@
 import React, { useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { RegisterPage } from "../modules/auth/RegisterPage";
 import { BirthDataOnboardingPage } from "../modules/onboarding/BirthDataOnboardingPage";
-import { SelfAstrologyPage } from "../modules/self/SelfAstrologyPage";
-import { SelfProfilePage } from "../modules/self/SelfProfilePage";
+import { HomePage } from "../modules/home/HomePage";
+import { DiscoverPage } from "../modules/discover/DiscoverPage";
 import { PersonProfilePage } from "../modules/people/PersonProfilePage";
-import { ConnectionsPage } from "../modules/connections/ConnectionsPage";
-import { ComparePage } from "../modules/compatibility/ComparePage";
 import { WhyPage } from "../modules/compatibility/WhyPage";
+import { ComparePage } from "../modules/compatibility/ComparePage";
+import { ConnectionsPage } from "../modules/connections/ConnectionsPage";
+import { MessagesPage } from "../modules/messages/MessagesPage";
 import { ChatPage } from "../modules/chat/ChatPage";
+import { MePage } from "../modules/me/MePage";
 import { NotificationsPage } from "../modules/notifications/NotificationsPage";
 import { ContentSmokeTestPage } from "../modules/smoke_test/ContentSmokeTestPage";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -30,10 +32,16 @@ export const LogoutHandler: React.FC = () => {
   return <LoadingState message="გამოსვლა / Logging out..." />;
 };
 
+// Redirect helper for legacy /why/:target_id to /people/:id/why
+const LegacyWhyRedirect: React.FC = () => {
+  const { target_id } = useParams<{ target_id: string }>();
+  return <Navigate to={`/people/${target_id}/why`} replace />;
+};
+
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Primary UX & Content Smoke Test Route (Direct Inspection) */}
+      {/* Primary UX & Content Smoke Test Route (Developer Audit Surface) */}
       <Route path="/smoke-test" element={<ContentSmokeTestPage />} />
       <Route path="/ux-test" element={<ContentSmokeTestPage />} />
 
@@ -53,7 +61,7 @@ export const AppRoutes: React.FC = () => {
         }
       />
 
-      {/* Authenticated Application Shell */}
+      {/* Authenticated Application Shell (V1 Route Structure) */}
       <Route
         path="/"
         element={
@@ -62,16 +70,39 @@ export const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/self/astrology" replace />} />
-        <Route path="self/astrology" element={<SelfAstrologyPage />} />
-        <Route path="self/profile" element={<SelfProfilePage />} />
-        <Route path="people" element={<PersonProfilePage />} />
+        {/* 1. HOME */}
+        <Route index element={<HomePage />} />
+
+        {/* 2. DISCOVER */}
+        <Route path="discover" element={<DiscoverPage />} />
+
+        {/* 3. PERSON & WHY */}
         <Route path="people/:id" element={<PersonProfilePage />} />
-        <Route path="connections" element={<ConnectionsPage />} />
+        <Route path="people/:id/why" element={<WhyPage />} />
+
+        {/* 4. US / COMPARISON */}
+        <Route path="compare/:id" element={<ComparePage />} />
         <Route path="compare/:target_id" element={<ComparePage />} />
-        <Route path="why/:target_id" element={<WhyPage />} />
+
+        {/* 5. CONNECTIONS */}
+        <Route path="connections" element={<ConnectionsPage />} />
+
+        {/* 6. MESSAGES & CHAT */}
+        <Route path="messages" element={<MessagesPage />} />
         <Route path="chat/:conversation_id" element={<ChatPage />} />
+
+        {/* 7. ME */}
+        <Route path="me" element={<MePage />} />
+
+        {/* 8. NOTIFICATIONS */}
         <Route path="notifications" element={<NotificationsPage />} />
+
+        {/* Compatibility Redirects for Previous Scaffold URLs */}
+        <Route path="people" element={<Navigate to="/discover" replace />} />
+        <Route path="why/:target_id" element={<LegacyWhyRedirect />} />
+        <Route path="self/astrology" element={<Navigate to="/me" replace />} />
+        <Route path="self/profile" element={<Navigate to="/me" replace />} />
+        <Route path="self" element={<Navigate to="/me" replace />} />
       </Route>
 
       {/* Route Aliases */}
@@ -82,4 +113,3 @@ export const AppRoutes: React.FC = () => {
     </Routes>
   );
 };
-

@@ -2,18 +2,43 @@ import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
-import { LoadingState, ErrorState } from "../../shared/StatusState";
+import { Card, Button, Badge, LoadingState, ErrorState } from "../../shared/ui";
 
 export const WhyPage: React.FC = () => {
-  const { target_id } = useParams<{ target_id: string }>();
-  const targetId = target_id || "";
+  const { id, target_id } = useParams<{ id?: string; target_id?: string }>();
+  const targetId = (id || target_id || "").trim();
   const navigate = useNavigate();
 
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["why", targetId],
-    queryFn: () => API.compatibility.why(targetId),
+    queryFn: async () => {
+      try {
+        return await API.compatibility.why(targetId);
+      } catch (err: any) {
+        // Safe preview for unconnected discovery users per Product Decision #2
+        if (err.statusCode === 403) {
+          const preview = await API.interpretations.comparePreview({
+            target_user_id: targetId,
+            locale: "ka",
+          });
+          return {
+            id: `preview-${targetId}`,
+            target_user_id: targetId,
+            score: preview.score,
+            best_topics: preview.best_topics || [],
+            conversation_starters: preview.conversation_starters || [],
+            dimensions: preview.dimensions,
+            signals: preview.signals || [],
+            data_quality: preview.data_quality,
+            engine_version: preview.engine_version,
+            calculated_at: preview.calculated_at,
+          };
+        }
+        throw err;
+      }
+    },
     enabled: !!targetId,
     retry: false,
   });
@@ -23,7 +48,7 @@ export const WhyPage: React.FC = () => {
       const conv = await API.conversations.createOrGetDirect(targetId);
       navigate(`/chat/${conv.id}?starter=${encodeURIComponent(starterText)}`);
     } catch (err: any) {
-      alert(err.message || "Failed to start conversation.");
+      alert(err.message || "Failed to start direct conversation. Make sure connection is active.");
     }
   };
 
@@ -33,129 +58,128 @@ export const WhyPage: React.FC = () => {
     setTimeout(() => setCopiedIndex(null), 2500);
   };
 
-  if (isLoading) return <LoadingState message="Loading relationship dynamics and conversation starters..." />;
+  if (isLoading) return <LoadingState message="ურთიერთობის დინამიკისა და თემების გამოთვლა..." />;
   if (error) return <ErrorState error={error as Error} onRetry={refetch} />;
   if (!data) return null;
 
-  const { score, best_topics, conversation_starters } = data;
+  const { score, best_topics = [], conversation_starters = [] } = data;
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {/* Header & Back Action */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
         <div>
-          <h2 style={{ margin: 0 }}>Why This Person?</h2>
-          <div style={{ color: "#666", fontSize: "0.85rem", marginTop: "0.2rem" }}>
-            Astrological relationship dynamics and actionable conversation themes.
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "1.5rem" }}>💡</span>
+            <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+              რატომ ეს ადამიანი? (Why?)
+            </h1>
           </div>
+          <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
+            ურთიერთობის დინამიკა, საერთო წერტილები და საუბრის დასაწყები თემები.
+          </p>
         </div>
-        <Link
-          to={`/compare/${targetId}`}
-          style={{
-            padding: "0.4rem 0.8rem",
-            background: "#f0f2f5",
-            color: "#333",
-            textDecoration: "none",
-            borderRadius: "4px",
-            border: "1px solid #d9d9d9",
-            fontSize: "0.85rem",
-          }}
-        >
-          ← Back to Compare
-        </Link>
-      </div>
 
-      {/* Relationship Summary Banner */}
-      <div style={{ padding: "1.5rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff", marginBottom: "1.5rem" }}>
-        <h3 style={{ marginTop: 0 }}>Core Synergy Index: {score.toFixed(1)} / 100</h3>
-        <p style={{ color: "#444", fontSize: "0.95rem", lineHeight: "1.5" }}>
-          This compatibility profile is driven by mutual planetary alignments and elemental balances. Use these suggested themes to connect on common ground and spark natural conversational chemistry.
-        </p>
-      </div>
-
-      {/* Recommended Conversation Topics (Max 4) */}
-      <div style={{ padding: "1.5rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff", marginBottom: "1.5rem" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "0.5rem" }}>Recommended Topics (Max 4)</h3>
-        <p style={{ color: "#666", fontSize: "0.85rem", marginBottom: "1rem" }}>
-          Derived deterministically from Mercury communication patterns and dominant element synergies.
-        </p>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-          {best_topics.map((topic, i) => (
-            <span
-              key={i}
-              style={{
-                padding: "0.4rem 0.9rem",
-                background: "#f0f5ff",
-                border: "1px solid #adc6ff",
-                color: "#1d39c4",
-                borderRadius: "16px",
-                fontWeight: "bold",
-                fontSize: "0.85rem",
-                textTransform: "capitalize",
-              }}
-            >
-              🏷️ {topic.replace("_", " ")}
-            </span>
-          ))}
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Link to={`/people/${targetId}`} style={{ textDecoration: "none" }}>
+            <Button variant="outline" size="sm">
+              ← პროფილი
+            </Button>
+          </Link>
+          <Link to={`/compare/${targetId}`} style={{ textDecoration: "none" }}>
+            <Button variant="brand" size="sm">
+              ⚖️ სრული შედარება (US) →
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Actionable Conversation Starters (Max 3) */}
-      <div style={{ padding: "1.5rem", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "0.5rem" }}>Astrological Conversation Starters (Max 3)</h3>
-        <p style={{ color: "#666", fontSize: "0.85rem", marginBottom: "1.2rem" }}>
-          High-resonance questions derived from your active planetary interactions.
+      {/* Relationship Synergy Card */}
+      <Card variant="accent" padded>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+          <Badge variant="score" size="md">
+            სინერგიის ინდექსი
+          </Badge>
+          <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#9333ea" }}>
+            {score.toFixed(1)} / 100
+          </span>
+        </div>
+        <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.6 }}>
+          ეს თანხვედრა ეფუძნება თქვენი პლანეტარული პოზიციებისა და სტიქიების ურთიერთქმედებას.
+          ქვემოთ მოცემული თემები დაგეხმარებათ პირველი კონტაქტის ბუნებრივად და საინტერესოდ დაწყებაში.
         </p>
+      </Card>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {conversation_starters.map((starter, idx) => (
-            <div
-              key={idx}
-              style={{
-                padding: "1rem",
-                border: "1px solid #e8e8e8",
-                borderRadius: "6px",
-                backgroundColor: "#fafafa",
-              }}
-            >
-              <div style={{ fontSize: "1rem", fontStyle: "italic", marginBottom: "0.8rem", color: "#222" }}>
-                "{starter}"
+      {/* Recommended Topics */}
+      {best_topics.length > 0 && (
+        <Card padded>
+          <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
+            რეკომენდებული სასაუბრო თემები
+          </h3>
+          <p style={{ margin: "0 0 1rem 0", color: "#64748b", fontSize: "0.85rem" }}>
+            თემები, სადაც კომუნიკაცია ყველაზე მარტივად და დინამიკურად ვითარდება:
+          </p>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {best_topics.map((topic, i) => (
+              <Badge key={i} variant="brand" size="md">
+                🏷️ {topic.replace("_", " ")}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Actionable Conversation Starters */}
+      {conversation_starters.length > 0 && (
+        <Card padded>
+          <h3 style={{ margin: "0 0 0.5rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
+            საუბრის დასაწყები ფრაზები (Icebreakers)
+          </h3>
+          <p style={{ margin: "0 0 1rem 0", color: "#64748b", fontSize: "0.85rem" }}>
+            პირდაპირი, ცნობისმოყვარე კითხვები, რომლებიც შეგიძლიათ გამოიყენოთ პირველი შეტყობინებისთვის:
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            {conversation_starters.map((starter, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: "0.85rem 1rem",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                <div style={{ fontStyle: "italic", fontSize: "0.9rem", color: "#334155" }}>
+                  "{starter}"
+                </div>
+
+                <div style={{ display: "flex", gap: "0.4rem", flexShrink: 0 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopy(starter, i)}
+                  >
+                    {copiedIndex === i ? "✓ კოპირებულია" : "📋 კოპირება"}
+                  </Button>
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={() => handleSendStarterToChat(starter)}
+                  >
+                    💬 ჩატში გაგზავნა
+                  </Button>
+                </div>
               </div>
-
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  onClick={() => handleSendStarterToChat(starter)}
-                  style={{
-                    padding: "0.4rem 0.8rem",
-                    background: "#1890ff",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  💬 Send into Chat
-                </button>
-                <button
-                  onClick={() => handleCopy(starter, idx)}
-                  style={{
-                    padding: "0.4rem 0.8rem",
-                    background: "#fff",
-                    border: "1px solid #d9d9d9",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  {copiedIndex === idx ? "✅ Copied!" : "📋 Copy"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

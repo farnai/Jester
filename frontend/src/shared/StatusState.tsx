@@ -1,10 +1,25 @@
 import React from "react";
+import { Button } from "./ui/Button";
 
 export const LoadingState: React.FC<{ message?: string }> = ({
-  message = "Loading...",
+  message = "იტვირთება / Loading...",
 }) => (
-  <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>
-    <div style={{ marginBottom: "0.5rem", fontWeight: "bold" }}>⏳ {message}</div>
+  <div
+    style={{
+      padding: "3rem 1.5rem",
+      textAlign: "center",
+      color: "#64748b",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "0.75rem",
+    }}
+  >
+    <div style={{ fontSize: "1.75rem", animation: "pulse 1.5s infinite" }}>⏳</div>
+    <div style={{ fontSize: "0.95rem", fontWeight: 600, color: "#475569" }}>
+      {message}
+    </div>
   </div>
 );
 
@@ -15,37 +30,32 @@ export const ErrorState: React.FC<{
   const msg =
     typeof error === "string"
       ? error
-      : error?.message || "An unexpected error occurred.";
+      : error?.message || "დაფიქსირდა მოულოდნელი შეცდომა.";
 
   return (
     <div
       style={{
         padding: "1.5rem",
         margin: "1rem 0",
-        border: "1px solid #ff4d4f",
-        backgroundColor: "#fff1f0",
-        borderRadius: "4px",
-        color: "#cf1322",
+        border: "1px solid #fecaca",
+        backgroundColor: "#fef2f2",
+        borderRadius: "12px",
+        color: "#b91c1c",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
       }}
     >
-      <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-        ⚠️ Error: {msg}
+      <div style={{ fontWeight: 700, fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <span>⚠️</span> შეცდომა (Error)
       </div>
+      <div style={{ fontSize: "0.9rem", color: "#991b1b" }}>{msg}</div>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          style={{
-            marginTop: "0.5rem",
-            padding: "0.4rem 0.8rem",
-            cursor: "pointer",
-            background: "#cf1322",
-            color: "#fff",
-            border: "none",
-            borderRadius: "3px",
-          }}
-        >
-          Retry
-        </button>
+        <div style={{ marginTop: "0.5rem" }}>
+          <Button variant="danger" size="sm" onClick={onRetry}>
+            🔄 განმეორება / Retry
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -56,46 +66,60 @@ export const EmptyState: React.FC<{
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
-}> = ({ title, description, actionLabel, onAction }) => (
+  icon?: string;
+}> = ({ title, description, actionLabel, onAction, icon = "📭" }) => (
   <div
     style={{
-      padding: "2.5rem 1rem",
+      padding: "3rem 1.5rem",
       textAlign: "center",
-      border: "1px dashed #ccc",
-      borderRadius: "4px",
-      margin: "1rem 0",
-      backgroundColor: "#fafafa",
+      border: "1px dashed #cbd5e1",
+      borderRadius: "12px",
+      margin: "1.5rem 0",
+      backgroundColor: "#f8fafc",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "0.5rem",
     }}
   >
-    <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "0.4rem" }}>
+    <div style={{ fontSize: "2.5rem", marginBottom: "0.25rem" }}>{icon}</div>
+    <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "#1e293b" }}>
       {title}
     </div>
     {description && (
-      <div style={{ color: "#666", marginBottom: "1rem" }}>{description}</div>
+      <div style={{ color: "#64748b", fontSize: "0.9rem", maxWidth: "400px", lineHeight: 1.5 }}>
+        {description}
+      </div>
     )}
     {actionLabel && onAction && (
-      <button
-        onClick={onAction}
-        style={{
-          padding: "0.5rem 1rem",
-          cursor: "pointer",
-          background: "#1890ff",
-          color: "#fff",
-          border: "none",
-          borderRadius: "3px",
-        }}
-      >
-        {actionLabel}
-      </button>
+      <div style={{ marginTop: "1rem" }}>
+        <Button variant="brand" size="md" onClick={onAction}>
+          {actionLabel}
+        </Button>
+      </div>
     )}
   </div>
 );
 
-export const PrivacySafeNotFoundState: React.FC = () => (
-  <div style={{ padding: "2rem", textAlign: "center" }}>
-    <h3>Resource Not Found</h3>
-    <p style={{ color: "#666" }}>
-      The requested profile or connection is unavailable.
+export const PrivacySafeNotFoundState: React.FC<{
+  message?: string;
+}> = ({
+  message = "მოთხოვნილი გვერდი ან პროფილი მიუწვდომელია / Resource not found or unavailable.",
+}) => (
+  <div
+    style={{
+      padding: "3.5rem 1.5rem",
+      textAlign: "center",
+      border: "1px solid #e2e8f0",
+      borderRadius: "12px",
+      backgroundColor: "#ffffff",
+      margin: "1.5rem 0",
+    }}
+  >
+    <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🔒</div>
+    <h3 style={{ margin: "0 0 0.5rem 0", color: "#1e293b" }}>რესურსი მიუწვდომელია</h3>
+    <p style={{ color: "#64748b", fontSize: "0.9rem", margin: 0 }}>
+      {message}
     </p>
   </div>
 );
