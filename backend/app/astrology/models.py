@@ -48,6 +48,7 @@ class SafeDerivedAstrology(BaseModel):
     ascendant_sign: str | None = None
     mercury_sign: str | None = None
     venus_sign: str | None = None
+    mars_sign: str | None = None
     element_primary: str
     modality_primary: str
     source_birth_data_version: int
@@ -67,6 +68,7 @@ class SafeDerivedAstrologyResponse(BaseModel):
     ascendant_sign: str | None = None
     mercury_sign: str | None = None
     venus_sign: str | None = None
+    mars_sign: str | None = None
     element_primary: str
     modality_primary: str
     source_birth_data_version: int

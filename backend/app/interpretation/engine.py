@@ -278,6 +278,8 @@ for _s in SIGNS:
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"mercury_{_s}"] = f"self.cognition.mercury_{_s}.v1"
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"venus_sign_{_s}"] = f"self.relation.venus_{_s}.v1"
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"venus_{_s}"] = f"self.relation.venus_{_s}.v1"
+    SIGNAL_TYPE_TO_INTERPRETATION_ID[f"mars_sign_{_s}"] = f"self.action.mars_{_s}.v1"
+    SIGNAL_TYPE_TO_INTERPRETATION_ID[f"mars_{_s}"] = f"self.action.mars_{_s}.v1"
 
 for _e in ELEMENTS:
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"element_dominant_{_e}"] = f"self.element.{_e}_dominant.v1"

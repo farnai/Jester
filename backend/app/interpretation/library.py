@@ -183,7 +183,7 @@ class InMemoryContentStore(ContentStore):
 
     def _load_corpus_fixture(self) -> None:
         """Ingests large-scale content corpora from JSON fixtures if present."""
-        for filename in ("content_corpus.json", "mercury_corpus.json", "venus_corpus.json"):
+        for filename in ("content_corpus.json", "mercury_corpus.json", "venus_corpus.json", "mars_corpus.json"):
             fixture_path = Path(__file__).parent / "data" / filename
             if fixture_path.exists():
                 try:

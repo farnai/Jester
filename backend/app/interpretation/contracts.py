@@ -727,6 +727,130 @@ INTERPRETATION_CONTRACTS: dict[str, InterpretationContract] = {
     ),
 
     # =============================================================
+    # 5D. SELF / ME — ACTION & ASSERTION (12 MARS SIGNS)
+    # =============================================================
+    "self.action.mars_aries.v1": InterpretationContract(
+        interpretation_id="self.action.mars_aries.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_aries", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="kinetic_frontal",
+            intensity="high",
+            human_meaning=["kinetic frontal initiative", "combative impatience", "high velocity burnout"],
+        ),
+    ),
+    "self.action.mars_taurus.v1": InterpretationContract(
+        interpretation_id="self.action.mars_taurus.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_taurus", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="relentless_inertia",
+            intensity="high",
+            human_meaning=["relentless grinding momentum", "immovable resistance torque", "inertia friction"],
+        ),
+    ),
+    "self.action.mars_gemini.v1": InterpretationContract(
+        interpretation_id="self.action.mars_gemini.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_gemini", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="tactical_maneuver",
+            intensity="high",
+            human_meaning=["tactical multi track maneuver", "evasive flanking strategy", "energy dispersion"],
+        ),
+    ),
+    "self.action.mars_cancer.v1": InterpretationContract(
+        interpretation_id="self.action.mars_cancer.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_cancer", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="protective_surge",
+            intensity="high",
+            human_meaning=["protective defensive surge", "indirect sideways advance", "tenacious emotional clamp"],
+        ),
+    ),
+    "self.action.mars_leo.v1": InterpretationContract(
+        interpretation_id="self.action.mars_leo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_leo", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="sovereign_assertion",
+            intensity="high",
+            human_meaning=["sovereign theatrical assertion", "pride driven perseverance", "status vulnerability stalemate"],
+        ),
+    ),
+    "self.action.mars_virgo.v1": InterpretationContract(
+        interpretation_id="self.action.mars_virgo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_virgo", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="surgical_precision",
+            intensity="high",
+            human_meaning=["surgical precision execution", "systematic defect correction", "micro perfectionist friction"],
+        ),
+    ),
+    "self.action.mars_libra.v1": InterpretationContract(
+        interpretation_id="self.action.mars_libra.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_libra", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="strategic_diplomacy",
+            intensity="high",
+            human_meaning=["strategic diplomatic leverage", "calibrated reciprocal pressure", "indecisive arbitration hesitation"],
+        ),
+    ),
+    "self.action.mars_scorpio.v1": InterpretationContract(
+        interpretation_id="self.action.mars_scorpio.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_scorpio", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="subterranean_resolve",
+            intensity="high",
+            human_meaning=["subterranean strategic resolve", "unrelenting psychological stamina", "scorched earth fixation"],
+        ),
+    ),
+    "self.action.mars_sagittarius.v1": InterpretationContract(
+        interpretation_id="self.action.mars_sagittarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_sagittarius", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="expansive_momentum",
+            intensity="high",
+            human_meaning=["expansive visionary momentum", "uninhibited candid pursuit", "restless overextension"],
+        ),
+    ),
+    "self.action.mars_capricorn.v1": InterpretationContract(
+        interpretation_id="self.action.mars_capricorn.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_capricorn", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="architectural_siege",
+            intensity="high",
+            human_meaning=["disciplined architectural execution", "authoritative siege persistence", "rigid pragmatic exhaustion"],
+        ),
+    ),
+    "self.action.mars_aquarius.v1": InterpretationContract(
+        interpretation_id="self.action.mars_aquarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_aquarius", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="systemic_disruption",
+            intensity="high",
+            human_meaning=["unconventional systemic disruption", "stubborn ideological autonomy", "contrarian friction"],
+        ),
+    ),
+    "self.action.mars_pisces.v1": InterpretationContract(
+        interpretation_id="self.action.mars_pisces.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="mars_sign_pisces", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="permeable_flow",
+            intensity="high",
+            human_meaning=["permeable intuitive flow", "indirect elusive adaptation", "passive paralysis drift"],
+        ),
+    ),
+
+    # =============================================================
     # 6. RELATIONSHIP / SYNASTRY (45 CONTRACTS)
     # =============================================================
     # Core Attraction Dynamics

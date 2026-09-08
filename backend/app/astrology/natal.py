@@ -175,6 +175,7 @@ def recalculate_user_astrology(
             ascendant_sign=safe_row["ascendant_sign"],
             mercury_sign=mercury_sign,
             venus_sign=venus_sign,
+            mars_sign=mars_sign,
             element_primary=safe_row["element_primary"],
             modality_primary=safe_row["modality_primary"],
             source_birth_data_version=safe_row["source_birth_data_version"],
