@@ -603,6 +603,130 @@ INTERPRETATION_CONTRACTS: dict[str, InterpretationContract] = {
     ),
 
     # =============================================================
+    # 5C. SELF / ME — RELATIONAL & AESTHETIC (12 VENUS SIGNS)
+    # =============================================================
+    "self.relation.venus_aries.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_aries.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_aries", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="kinetic_attraction",
+            intensity="high",
+            human_meaning=["rapid relational initiative", "competitive playful spark", "impatience with relational games"],
+        ),
+    ),
+    "self.relation.venus_taurus.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_taurus.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_taurus", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="sensory_anchor",
+            intensity="high",
+            human_meaning=["tangible sensory loyalty", "unhurried relational pacing", "stubborn comfort zones"],
+        ),
+    ),
+    "self.relation.venus_gemini.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_gemini.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_gemini", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="intellectual_curiosity",
+            intensity="high",
+            human_meaning=["conversational chemistry", "need for mental spaciousness", "fickle novelty craving"],
+        ),
+    ),
+    "self.relation.venus_cancer.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_cancer.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_cancer", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="protective_sanctuary",
+            intensity="high",
+            human_meaning=["protective nurturing instinct", "emotional security checkpoint", "defensive relational retreat"],
+        ),
+    ),
+    "self.relation.venus_leo.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_leo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_leo", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="celebratory_magnificence",
+            intensity="high",
+            human_meaning=["generous royal courtship", "pride and public devotion", "validation vulnerability"],
+        ),
+    ),
+    "self.relation.venus_virgo.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_virgo.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_virgo", strength=0.85),
+        meaning=InterpretationMeaning(
+            type="devoted_craftsmanship",
+            intensity="high",
+            human_meaning=["acts of service currency", "attentive micro observation", "relational quality control"],
+        ),
+    ),
+    "self.relation.venus_libra.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_libra.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_libra", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="harmonious_equilibrium",
+            intensity="high",
+            human_meaning=["aesthetic diplomacy", "reciprocal partnership ideal", "conflict avoidant courtesy"],
+        ),
+    ),
+    "self.relation.venus_scorpio.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_scorpio.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_scorpio", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="transformative_depth",
+            intensity="high",
+            human_meaning=["uncompromising emotional depth", "fierce protective loyalty", "relational trust audit"],
+        ),
+    ),
+    "self.relation.venus_sagittarius.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_sagittarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_sagittarius", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="expansive_camaraderie",
+            intensity="high",
+            human_meaning=["relational adventurism", "unvarnished romantic candor", "allergic reaction to clinginess"],
+        ),
+    ),
+    "self.relation.venus_capricorn.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_capricorn.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_capricorn", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="structural_devotion",
+            intensity="high",
+            human_meaning=["architectural loyalty", "sober affectional reserve", "transactional caution"],
+        ),
+    ),
+    "self.relation.venus_aquarius.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_aquarius.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_aquarius", strength=0.88),
+        meaning=InterpretationMeaning(
+            type="unconventional_solidarity",
+            intensity="high",
+            human_meaning=["friendship first attraction", "fierce respect for autonomy", "aloof emotional distance"],
+        ),
+    ),
+    "self.relation.venus_pisces.v1": InterpretationContract(
+        interpretation_id="self.relation.venus_pisces.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="venus_sign_pisces", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="permeable_resonance",
+            intensity="high",
+            human_meaning=["soulful empathic attunement", "romantic idealism", "diffuse boundary vulnerability"],
+        ),
+    ),
+
+    # =============================================================
     # 6. RELATIONSHIP / SYNASTRY (45 CONTRACTS)
     # =============================================================
     # Core Attraction Dynamics
