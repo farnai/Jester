@@ -37,6 +37,9 @@ export interface SafeDerivedAstrologyResponse {
   sun_sign: string;
   moon_sign: string;
   ascendant_sign: string | null;
+  mercury_sign?: string | null;
+  venus_sign?: string | null;
+  mars_sign?: string | null;
   element_primary: string;
   modality_primary: string;
   source_birth_data_version: number;
@@ -178,6 +181,9 @@ export interface NatalResolveRequest {
   sun_sign: string;
   moon_sign?: string | null;
   ascendant_sign?: string | null;
+  mercury_sign?: string | null;
+  venus_sign?: string | null;
+  mars_sign?: string | null;
   element_primary?: string | null;
   modality_primary?: string | null;
   locale?: string;

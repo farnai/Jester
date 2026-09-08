@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../core/auth/useAuth";
 import { API } from "../../core/api/endpoints";
 import { BirthDataPayload } from "../../core/api/types";
@@ -23,6 +24,7 @@ const CITY_PRESETS: CityPreset[] = [
 ];
 
 export const BirthDataOnboardingPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const { user, setHasBirthData } = useAuth();
   const navigate = useNavigate();
 
@@ -101,6 +103,12 @@ export const BirthDataOnboardingPage: React.FC = () => {
       };
 
       await API.astrology.saveBirthData(user.id, payload);
+      // Invalidate dependent queries immediately so frontend does not display stale astrology
+      await queryClient.invalidateQueries({ queryKey: ["astrology"] });
+      await queryClient.invalidateQueries({ queryKey: ["birth-data"] });
+      await queryClient.invalidateQueries({ queryKey: ["natal-observations"] });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+
       setHasBirthData(true);
       navigate("/me");
     } catch (err: any) {

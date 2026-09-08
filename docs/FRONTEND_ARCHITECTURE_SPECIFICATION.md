@@ -1,33 +1,71 @@
-# JESTER V1 — FRONTEND ARCHITECTURE SPECIFICATION
+# JESTER — FRONTEND ARCHITECTURE SPECIFICATION
 
-**Document Version:** `1.0.0`  
-**System Role:** Lead Product Architect & Senior Frontend Systems Architect  
-**Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 74/74 passing tests)  
+**Document Version:** `1.1.0`  
+**System Roles:** Lead Product Architect, Senior Frontend Systems Architect, React Native / Expo Architect, Design Systems Architect  
+**Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 188/188 passing tests)  
 **Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_CAPABILITY_SPECIFICATION.md)  
-**Status:** Authoritative Frontend Architectural Blueprint  
+**Parent Product Spec:** [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md)  
+**Status:** Authoritative Frontend Architectural Blueprint (Cross-Platform / Universal Target Architecture)  
 
 ---
 
 ## 1. Architectural Principles
 
-The JESTER frontend is designed as a high-integrity, deterministic, privacy-first client application. The following core principles govern all frontend architectural decisions:
+The JESTER frontend is designed as a deterministic, privacy-first, human-first client application engineered to run across **iOS, Android, and Desktop/Mobile Web** from a single unified codebase.
 
-1. **Backend as the Single Source of Truth**: The frontend is a presentation and interaction layer. It never computes or derives astronomical coordinates, aspect geometries, synastry dimensions, or compatibility scores.
-2. **Deterministic Rendering**: All compatibility representations (scores, dimensions, signals, topics, starters) are direct, reproducible renderings of backend JSON payloads.
-3. **Privacy by Design**: The frontend strictly prevents the exposure, storage, or transmission of private astronomical data (`astro_private`), raw coordinate degrees of other users, or internal mathematical audit traces (`evidence_trace`).
-4. **State-Driven Information Architecture**: UI states (loading, empty, ready, stale, blocked, low evidence) are derived deterministically from server state, authentication claims, and relationship status.
-5. **Decoupled Server & Local State**: Server state (profiles, connections, compatibility, chat history) is managed via an asynchronous query caching layer; local transient state (form inputs, active modal tabs, optimistic message drafts) is strictly isolated.
-6. **Graceful Privacy Degradation**: Blocked users or non-discoverable resources return standardized privacy-safe `404 Not Found` exceptions, which the frontend renders as standard "Resource Not Found" without leaking existence oracles.
-7. **Calm, Non-Defective Edge Presentation**: Missing birth times (`unknown` precision) and low aspect densities ($< 2.0$ active weight) are represented as valid, transparent astrological realities, never as system bugs or red error states.
-8. **Realtime-Synchronized Communication**: Direct messaging and notifications maintain seamless, bi-directional synchronization between local query caches and Supabase Realtime WebSocket streams.
-9. **Zero Business Logic Duplication**: Validation rules, connection transition invariants, and access guards live on the server; the frontend adheres strictly to server-provided error codes and status transitions.
-10. **Device-Agnostic Capability Parity**: The functional architecture, state machines, and API interactions remain identical across Desktop Web, Mobile Web, and Native Mobile (React Native) runtimes.
-11. **Data Layer vs. Consumer Experience**: The current technical screen exposing raw signs (Sun, Moon, Ascendant, Element, Modality) verifies data layer availability, but is NOT the final consumer UX. The production client translates rich underlying astrological computations into a human-first, witty JESTER experience (`ME → YOU → US → MORE PEOPLE`). Rich astrological data is strictly preserved in the backend/data layer.
-
+1. **Backend as the Single Source of Truth `[FROZEN]`**: The frontend is strictly a presentation, interaction, and state-orchestration layer. It never computes, derives, or approximates astronomical coordinates, aspect geometries, synastry dimensions, or compatibility scores.
+2. **Deterministic Rendering `[FROZEN]`**: All compatibility representations (scores, dimensions, signals, topics, conversation starters) are direct, reproducible renderings of backend JSON payloads.
+3. **Strict Privacy Invariants `[FROZEN]`**: The client strictly prevents exposure, caching, or accidental logging of private astronomical data (`astro_private`), raw coordinate degrees of other users, or internal mathematical audit traces (`evidence_trace`).
+4. **Human-First JESTER Persona `[FROZEN]`**: JESTER is not a raw technical astrology dashboard, nor a generic dating swipe app. Astrological signals serve as the deterministic intelligence layer that fuels sharp, witty, penetrating relationship observations (`Score creates curiosity. Interpretation creates value.`).
+5. **Universal Cross-Platform Architecture `[RECOMMENDED]`**: A single unified component and business logic tree targets iOS, Android, and Web using React Native primitives (`View`, `Text`, `Pressable`), NativeWind utility styling, and universal platform abstractions (`platform/`), eliminating dual-codebase divergence.
+6. **Decoupled Server and Local UI State `[FROZEN]`**: Server state (profiles, connections, compatibility, chat history, notifications) is managed exclusively by an asynchronous query caching layer (TanStack Query); local transient UI state (active tabs, modal sheets, draft text, interaction animations) is kept strictly isolated.
+7. **Graceful Privacy Degradation `[FROZEN]`**: Blocked users or non-discoverable resources return standardized privacy-safe `404 Not Found` responses, which the client renders as standard "Resource Not Found" without leaking existence oracles.
+8. **Realtime-Synchronized Caching `[FROZEN]`**: Direct messaging and notifications maintain bidirectional synchronization between local TanStack query caches and Supabase Realtime WebSocket streams, with automatic channel cleanup and message deduplication.
+9. **Zero Business Logic Duplication `[FROZEN]`**: Validation rules, connection state machine transitions, and access guards live on the server; the frontend adheres strictly to server-provided error codes and status transitions.
+10. **Platform Abstraction Boundary `[RECOMMENDED]`**: Hardware and OS-specific features (SecureStore, Push Notifications, Haptics, Share Sheets, Deep Links) are wrapped behind universal facade interfaces (`platform/`) to preserve 100% shared business logic.
 
 ---
 
-## 2. Application Shell
+## 2. Platform Strategy
+
+### 2.1 Strategic Decision: Universal Expo / React Native Stack
+To fulfill JESTER's multi-platform mandate (iOS, Android, Desktop Web, Mobile Web) without requiring a future rewrite of the mobile application from scratch, JESTER adopts the **Universal Expo Architecture** as its target platform standard:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        JESTER CLIENT APPLICATION                       │
+├────────────────────────────────────────────────────────────────────────┤
+│                       SHARED APPLICATION LAYER                         │
+│   • Domain Features: ME, YOU, WHY, US, CONNECT, CHAT, NOTIFICATIONS    │
+│   • Universal Navigation: Expo Router / Universal Stack & Tabs        │
+│   • Universal State: TanStack Query v5 + Auth Context                 │
+│   • Universal Design System: UI Primitives + NativeWind v4 Tokens      │
+├────────────────────────────────────────────────────────────────────────┤
+│                      PLATFORM ABSTRACTION LAYER                        │
+│   [platform/storage] [platform/haptics] [platform/notifications]      │
+│   [platform/share]   [platform/linking] [platform/clipboard]          │
+├──────────────────────────┬─────────────────────────────────────────────┤
+│      NATIVE RUNTIME      │                 WEB RUNTIME                 │
+│  • React Native (0.76+)  │  • React Native Web (RNW)                   │
+│  • iOS (Swift / JSC/Hermes) • Desktop Web (Chrome, Safari, Firefox, Edge)│
+│  • Android (Kotlin/Hermes) • Mobile Web (iOS Safari, Android Chrome)    │
+│  • Expo SDK 52+ Modules  │  • Static / SSR / Responsive Shell          │
+└──────────────────────────┴─────────────────────────────────────────────┘
+```
+
+### 2.2 Platform Evaluation & Decision Status
+- **Core Framework**: Expo SDK 52+ with React Native 0.76+ `[RECOMMENDED]`
+- **Web Bundler / Engine**: Expo Web / Metro with React Native Web `[RECOMMENDED]`
+- **Navigation Runtime**: Expo Router v4 (Universal File-Based Routing) `[RECOMMENDED]`
+- **Styling Compiler**: NativeWind v4 (Tailwind CSS for React Native & Web) `[RECOMMENDED]`
+- **Server State**: TanStack Query v5 `[FROZEN]`
+- **Authentication & Realtime**: Supabase JS v2 client `[FROZEN]`
+- **Current Scaffold State**: Vite 8.2 + React DOM 19 + React Router v7 + Vanilla CSS `[IMPLEMENTED - RUNNING]`
+- **Migration Plan**: Phased, non-disruptive migration from Vite/DOM to Universal Expo `[NOT YET IMPLEMENTED]`
+
+---
+
+## 3. Application Shell
 
 The Application Shell provides the persistent frame, authentication gating, layout boundaries, and global notification subscriptions.
 
@@ -41,486 +79,572 @@ The Application Shell provides the persistent frame, authentication gating, layo
          ▼                                                   ▼
 ┌──────────────────────────────────┐        ┌──────────────────────────────────┐
 │       UNAUTHENTICATED SHELL      │        │        AUTHENTICATED SHELL       │
-│  • Public Marketing / Welcome    │        │  • Global Top Navigation / Header│
-│  • Login / Register Container    │        │  • Persistent Bottom Nav (Mobile)│
-│  • Password Recovery             │        │  • Active Subscriptions Listener │
-│  • Auth Redirect Watchdog        │        │  • Route Viewport / Sub-Routes   │
+│  • Welcome / Brand Narrative     │        │  • Adaptive Top Header (Desktop) │
+│  • Login / Register Container    │        │  • Persistent Bottom Bar (Mobile)│
+│  • Password Reset / Recovery     │        │  • Realtime Notification Manager │
+│  • Deep Link Return Watchdog     │        │  • Adaptive Content Viewport     │
 └──────────────────────────────────┘        └──────────────────────────────────┘
 ```
 
-### 2.1 Unauthenticated Shell
-- **Role**: Gated container for `/auth/login`, `/auth/register`, and session recovery.
-- **Responsibilities**:
-  - Catches unauthenticated deep links and preserves the intended redirect target (`return_to`).
-  - Clears all stale local user state, query caches, and active WebSocket subscriptions upon entry.
+### 3.1 Unauthenticated Shell `[FROZEN]`
+- Gated container for `/auth/login`, `/auth/register`, and session recovery.
+- Catches unauthenticated deep links and preserves the intended redirect target (`return_to`).
+- Clears all stale local user state, query caches, and active WebSocket subscriptions upon entry.
 
-### 2.2 Authenticated Shell
-- **Role**: Persistent application cockpit for verified users.
-- **Responsibilities**:
-  - **Global Header**: Displays current route title, notifications bell with unread badge counter, and user profile avatar shortcut.
-  - **Primary Navigation**:
-    - **Desktop**: Persistent side navigation drawer or top menu bar (`Discover`, `Connections`, `Messages`, `Self`).
-    - **Mobile**: Persistent bottom tab bar (`Discover`, `Connections`, `Messages`, `Self`) plus floating contextual action triggers.
-  - **Global Notification & Realtime Listener**: Maintains an active WebSocket channel to `public:notifications:user_id=eq.{my_id}`.
-  - **Onboarding Interceptor**: Evaluates `birth_data` presence; redirects incomplete accounts to `/onboarding/birth-data`.
+### 3.2 Authenticated Shell `[FROZEN]`
+- **Desktop**: Persistent top header navigation (`HOME`, `DISCOVER`, `MESSAGES`, `ME`), notification indicator with unread count badge, and user identity chip.
+- **Mobile**: Persistent bottom tab bar (`HOME`, `DISCOVER`, `MESSAGES`, `ME`) optimized for thumb navigation and 48px+ touch targets.
+- **Realtime Listener**: Maintains active WebSocket channel to `public:notifications:user_id=eq.{my_id}`.
+- **Onboarding Interceptor**: Evaluates `birth_data` presence; redirects incomplete accounts to `/onboarding/birth-data`.
 
 ---
 
-## 3. Information Architecture
+## 4. Information Architecture & Navigation
 
-JESTER's information hierarchy maps directly to the 8-stage Product Loop:
+### 4.1 Product Loop: ME → YOU → US → MORE PEOPLE `[FROZEN]`
+JESTER's information hierarchy maps directly to the relationship intelligence loop:
 
 ```
 JESTER V1
 │
-├── 1. AUTHENTICATION
+├── 1. AUTHENTICATION & ONBOARDING
 │   ├── Login (/auth/login)
-│   └── Register (/auth/register)
+│   ├── Register (/auth/register)
+│   └── Birth Data Onboarding (/onboarding/birth-data)
 │
-├── 2. ONBOARDING
-│   └── Birth Data Wizard (/onboarding/birth-data)
+├── 2. ME (Astrological Self-Understanding & Dossier)
+│   ├── Personal Astrology & Insights (/me)
+│   └── Profile Settings (/me/settings)
 │
-├── 3. SELF (Astrological Identity & Personal Profile)
-│   ├── Personal Astrology (/self/astrology) [Sun/Moon/Asc signs, Element, Modality]
-│   └── Profile Settings (/self/profile) [Bio, City, Occupation, Discoverability]
+├── 3. YOU / DISCOVER (People & Curiosity)
+│   ├── Discover Feed (/discover)
+│   └── Person Profile (/people/{id})
 │
-├── 4. DISCOVER (People & Public Profiles)
-│   └── Person View (/people/{id}) [Public Profile, Safe Signs, Connect Action]
+├── 4. WHY & US (Relationship Intelligence & Synastry)
+│   ├── Comparison Overview (/compare/{id}) [Score, 4 Dimensions, Signals]
+│   └── Deep-Dive Explanation (/people/{id}/why) [Dynamics, Topics, Starters]
 │
-├── 5. CONNECTIONS (Relationship Management)
+├── 5. CONNECTIONS (Social Graph Management)
 │   ├── Active Connections (/connections?tab=active)
 │   └── Pending Requests (/connections?tab=pending)
 │
-├── 6. COMPATIBILITY & RELATIONSHIP UNDERSTANDING
-│   ├── Synastry Overview (/compare/{target_id}) [Score, 4 Dimensions, Signals]
-│   └── Deep-Dive Explanation (/why/{target_id}) [Dynamics, Topics, Starters]
+├── 6. MESSAGES & CHAT (Direct Realtime Communication)
+│   ├── Conversations List (/messages)
+│   └── Active Chat Thread (/chat/{conversation_id}) [Realtime, Starters Injection]
 │
-├── 7. CONVERSATIONS (Direct Messaging)
-│   ├── Conversations List (/conversations)
-│   └── Active Chat (/chat/{conversation_id}) [Realtime Messages, Starters Insertion]
-│
-└── 8. NOTIFICATIONS
+└── 7. NOTIFICATIONS
     └── Notification Center (/notifications) [Requests, Accepts, Daily Sync]
 ```
 
+### 4.2 Route Architecture Specification `[FROZEN]`
+
+| Route | Platform URL | Purpose & Data Contract | Access Guard | Primary Action |
+| :--- | :--- | :--- | :--- | :--- |
+| **Login** | `/auth/login` | Supabase credentials auth | Public | Sign in, navigate to app |
+| **Register** | `/auth/register` | New account registration | Public | Sign up, navigate to onboarding |
+| **Onboarding** | `/onboarding/birth-data` | Collect birth parameters | Auth Required | Submit birth data -> calculate natal |
+| **Home** | `/` (Index) | Daily energy, active pulse | Onboarded | Jump into ME or DISCOVER |
+| **Discover** | `/discover` | Discoverable people feed | Onboarded | Browse cards, initiate connect |
+| **Person** | `/people/:id` | View public profile & safe signs | Onboarded | Send connect request, view why |
+| **Why Person** | `/people/:id/why` | Deep synastry dynamics & starters | Onboarded | Copy/send starter to chat |
+| **Compare** | `/compare/:id` | Score (10-98), 4 dimensions, signals | Connected | Analyze compatibility |
+| **Connections**| `/connections` | Active & pending relationship graph| Onboarded | Accept, decline, remove, block |
+| **Messages** | `/messages` | Conversation threads list | Onboarded | Open chat thread |
+| **Chat** | `/chat/:id` | Realtime messaging with starters | Connected | Send message, insert starter |
+| **Me** | `/me` | Personal placements & insights | Onboarded | Read personal dossier, edit profile |
+| **Notifications**| `/notifications`| In-app alert feed | Onboarded | Mark read, navigate to trigger |
+
 ---
 
-## 4. Route Architecture
+## 5. Design System Architecture
 
-| Route | Purpose & Required Data | Entry Points | Allowed Actions | Next Destinations | Failure Handling |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **`/auth/login`** | Authenticate user via Supabase Auth. | App Launch, Session Expired redirect. | Submit credentials, OAuth login. | `/self/astrology` (if onboarded) or `/onboarding/birth-data`. | Invalid credentials alert. |
-| **`/auth/register`** | Create new user account. | `/auth/login`. | Submit email/password. | `/onboarding/birth-data`. | Email already in use error. |
-| **`/onboarding/birth-data`** | Collect birth parameters (date, time, precision, tz, location). | Post-registration, incomplete profile. | Set date, toggle precision, select timezone/city, submit. | `/self/astrology`. | Validation error toast; retry on calculation error. |
-| **`/self/astrology`** | Display own natal signs, element, and modality. Requires `GET /v1/astrology/profile/safe-astro`. | Bottom Nav ("Self"), Onboarding complete. | View placements, trigger recalculate. | `/self/profile`, `/connections`. | Missing birth data redirects to `/onboarding/birth-data`. |
-| **`/self/profile`** | Edit display name, bio, city, occupation, discoverability. Requires `GET /v1/profiles/me`. | `/self/astrology`, Header Avatar. | Edit fields, toggle `is_discoverable`, save. | `/self/astrology`. | Network error toast. |
-| **`/people/{id}`** | View discoverable profile and public safe signs. Requires `GET /v1/profiles/{id}` + `GET /v1/astrology/people/{id}/safe-astro`. | Discovery list, Direct deep link. | Send connection request, Block user. | `/compare/{id}` (if accepted), `/connections`. | `404 Not Found` if private or blocked. |
-| **`/connections`** | View active connections and incoming/outgoing pending requests. Requires `GET /v1/connections`. | Bottom Nav ("Connections"). | Accept, Decline, Block, Remove, Navigate to Chat/Compare. | `/compare/{id}`, `/chat/{id}`. | Empty state with "Discover People" prompt. |
-| **`/compare/{target_id}`** | View normalized compatibility score ($10-98$), 4 dimensions, and top signals. Requires `POST /v1/compare`. | `/connections`, `/people/{id}`, `/chat/{id}`. | View breakdown, Navigate to Why, Start Conversation. | `/why/{target_id}`, `/chat/{conv_id}`. | `403 Forbidden` if not accepted; redirects to connection flow. |
-| **`/why/{target_id}`** | Deep-dive relationship dynamics, topics, and conversation starters. Requires `GET /v1/people/{target_id}/why`. | `/compare/{target_id}`. | Copy starter, Send starter to chat, View topic tags. | `/chat/{conv_id}`. | `403 Forbidden` if connection lost. |
-| **`/chat/{conversation_id}`** | Realtime direct messaging. Requires `GET/POST /v1/conversations/{id}/messages`. | `/connections`, `/why/{id}`, Notifications. | Send text, insert starter, view connection profile. | `/compare/{target_id}`, `/connections`. | `404 Not Found` if connection blocked or removed. |
-| **`/notifications`** | In-app activity feed. Requires `GET/PATCH /v1/notifications`. | Header Bell Icon. | Mark read, Tap notification to navigate. | Deep links to `/connections`, `/chat/{id}`, or `/self/astrology`. | Empty state ("All caught up"). |
+### 5.1 Design System Philosophy `[FROZEN]`
+JESTER is an engine of **insight, wit, and provocative psychological clarity**. It rejects generic, colorful horoscope aesthetics, pastel spiritual clichés, and gamified dating swipe cards. The design language expresses:
+- **Depth & Contrast**: High-contrast, sleek surfaces with purposeful elevation.
+- **Editorial Precision**: Monospace accents for astrological coordinates/aspect metrics paired with refined sans-serif for sharp JESTER prose.
+- **Tactile Weight**: Distinct tactile feedback for state changes, connection locks, and score reveals.
 
----
-
-## 5. User Journey Architecture
+### 5.2 Layered System Hierarchy `[FROZEN]`
 
 ```
-[Register Account]
-       │
-       ▼
-[Enter Birth Data (Date, Time, Precision, City, Timezone)]
-       │
-       ▼ (Backend calculates Swiss Ephemeris natal placements)
-[Understand Self (/self/astrology: Sun, Moon, Ascendant, Element, Modality)]
-       │
-       ▼
-[Discover People (/people/{id}: View Public Profile & Safe Signs)]
-       │
-       ▼ (User taps "Connect")
-[Connection State = PendingOut]
-       │
-       ▼ (Target User taps "Accept" on /connections)
-[Connection State = Accepted]
-       │
-       ▼ (User taps "Compare")
-[Synastry Engine calculates cross-chart aspects & dimensions]
-       │
-       ▼
-[View Compatibility (/compare/{id}: Score 84.2, Dimensions, Signals)]
-       │
-       ▼ (User taps "Why This Person")
-[Deep Dive (/why/{id}: Mutual dynamics, Topics, Starters)]
-       │
-       ▼ (User taps "Send Starter to Chat")
-[Start Conversation (/chat/{conv_id}: Realtime message dispatch)]
-       │
-       ▼
-[Relationship Maintenance via In-App Notifications & Daily Sync]
+┌─────────────────────────────────────────────────────────────┐
+│                    1. DESIGN TOKENS                         │
+│  (Colors, Typography, Spacing, Radii, Shadows, Motion)      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    2. TAILWIND THEME                        │
+│  (NativeWind tailwind.config.js token mappings)             │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    3. UI PRIMITIVES                         │
+│  (Box, Text, Button, Card, Badge, Input, Avatar, Skeleton)  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 4. JESTER PRODUCT COMPONENTS                │
+│  (InsightCard, PersonCard, ScoreGauge, StarterChip, etc.)   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 5. FEATURE MODULE SCREENS                   │
+│  (MeScreen, DiscoverScreen, WhyScreen, ChatScreen, etc.)    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 6. State Architecture
+## 6. Design Token Architecture `[RECOMMENDED]`
+
+Design tokens are structured as immutable TypeScript constants (`ui/tokens/`):
+
+### 6.1 Color Tokens (`tokens/colors.ts`)
+```typescript
+export const colors = {
+  // Brand & Accent
+  brand: {
+    DEFAULT: "#6366f1", // Indigo 500
+    hover: "#4f46e5",   // Indigo 600
+    subtle: "#eef2ff",  // Indigo 50
+    border: "#c7d2fe",  // Indigo 200
+  },
+  // Compatibility & Score Highlights
+  score: {
+    DEFAULT: "#9333ea", // Purple 600
+    bg: "#fdf4ff",      // Purple 50
+    border: "#f0abfc",  // Purple 300
+  },
+  // Background Surfaces
+  bg: {
+    page: "#f8fafc",     // Slate 50
+    surface: "#ffffff",  // White
+    subtle: "#f1f5f9",   // Slate 100
+    muted: "#e2e8f0",    // Slate 200
+    inverse: "#0f172a",  // Slate 900
+  },
+  // Typography Colors
+  text: {
+    main: "#0f172a",     // Slate 900
+    muted: "#64748b",    // Slate 500
+    subtle: "#94a3b8",   // Slate 400
+    inverse: "#ffffff",  // White
+    accent: "#6366f1",   // Indigo 500
+  },
+  // Astrological Element Palette
+  element: {
+    fire: "#ea580c",     // Orange 600
+    earth: "#16a34a",    // Green 600
+    air: "#0284c7",      // Sky 600
+    water: "#0891b2",    // Cyan 600
+  },
+  // Semantic State
+  state: {
+    success: "#16a34a",
+    warning: "#d97706",
+    error: "#dc2626",
+    info: "#2563eb",
+  },
+};
+```
+
+### 6.2 Typography Tokens (`tokens/typography.ts`)
+```typescript
+export const typography = {
+  fonts: {
+    sans: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    mono: "'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace",
+    georgian: "'Sylfaen', 'Noto Sans Georgian', sans-serif",
+  },
+  sizes: {
+    xs: { fontSize: 12, lineHeight: 16 },
+    sm: { fontSize: 14, lineHeight: 20 },
+    base: { fontSize: 16, lineHeight: 24 },
+    lg: { fontSize: 18, lineHeight: 28 },
+    xl: { fontSize: 20, lineHeight: 28 },
+    "2xl": { fontSize: 24, lineHeight: 32 },
+    "3xl": { fontSize: 30, lineHeight: 36 },
+  },
+  weights: {
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+    heavy: "800",
+  },
+};
+```
+
+### 6.3 Spacing, Radii, and Elevation Tokens
+- **Spacing Grid**: 4px baseline (`0: 0, 1: 4px, 2: 8px, 3: 12px, 4: 16px, 5: 20px, 6: 24px, 8: 32px, 10: 40px, 12: 48px, 16: 64px`).
+- **Radii**: `sm: 6px, md: 10px, lg: 16px, xl: 24px, full: 9999px`.
+- **Elevation / Shadows**:
+  - `none`: 0
+  - `sm`: `{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }`
+  - `md`: `{ shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 }`
+  - `lg`: `{ shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 16, elevation: 6 }`
+
+---
+
+## 7. NativeWind / Styling Architecture `[RECOMMENDED]`
+
+### 7.1 Styling Engine Specification
+JESTER adopts **NativeWind v4** for universal component styling:
+1. **Utility-First**: Styles are applied via Tailwind classes compiled at build time into native `StyleSheet` objects on iOS/Android, and into CSS class rules on Web.
+2. **Deterministic Pre-compilation**: Zero runtime CSS-in-JS overhead; full support for the new React Native Architecture (Hermes & Fabric).
+3. **Responsive Variants**: Full support for Tailwind breakpoints (`sm:`, `md:`, `lg:`) mapping seamlessly across mobile screens and desktop browser viewports.
+
+### 7.2 Boundaries: What NOT to Express with Utility Classes
+- **Complex Gesture Physics**: Handled via `react-native-reanimated` worklets and `react-native-gesture-handler`.
+- **Astronomical Aspect Visualizations**: Rendered via pure declarative SVG primitives (`react-native-svg`), not HTML/CSS tricks.
+- **Dynamic Computed Scores**: Gauge arc geometry and fill calculations are passed as explicit numeric props to SVG wrappers.
+
+---
+
+## 8. Component Architecture
+
+### 8.1 UI Primitives (Universal Presentation Building Blocks)
+All primitives live in `ui/primitives/` and expose cross-platform interfaces:
+
+| Primitive | Universal Props | Responsibility |
+| :--- | :--- | :--- |
+| **`Box`** | `className, style, children` | Universal layout container mapping to `View` (Native) / `div` (Web). |
+| **`Text`** | `variant, weight, color, children` | Enforces typography scale and system font fallbacks. |
+| **`Button`** | `variant, size, isLoading, icon, onPress` | Accessible touchable button with 44px+ minimum touch target and tactile haptic trigger. |
+| **`Card`** | `variant, elevation, className, children` | Contained surface with border and subtle elevation. |
+| **`Input`** | `label, error, value, onChangeText, ...` | Cross-platform text entry with focus ring and error label. |
+| **`Badge`** | `variant, size, children` | Compact tag for astrological elements, signs, or status flags. |
+| **`Avatar`** | `src, fallback, size, isOnline` | User profile avatar with initials fallback. |
+| **`Skeleton`**| `width, height, radius` | Shimmer loading placeholder for data fetching states. |
+| **`Modal`** | `isOpen, onClose, title, children` | Responsive dialog: bottom-sheet on mobile, centered modal on desktop. |
+
+### 8.2 JESTER Product Components
+Located in `ui/components/`:
+- **`InsightCard`**: Renders a single JESTER interpretation unit (`title, text, tone_tag, depth, signal_label`).
+- **`PersonCard`**: Discovery feed card displaying avatar, display name, sun/moon/rising badges, and connection CTA.
+- **`ScoreGauge`**: Circular / arc score visualizer rendering normalized score ($10–98$), confidence, and tier label.
+- **`RelationshipSignal`**: Top synastry dynamic with icon, category, and tension/harmony indicator.
+- **`TopicChip`**: Interactive pill displaying a discussion topic with mutual interest relevance.
+- **`ConversationStarter`**: Shareable opening line with one-tap "Send to Chat" handoff.
+- **`ConnectionAction`**: State-machine driven button group (Connect, Pending, Accept/Decline, Compare/Chat).
+- **`ChatBubble`**: Direct message bubble with status indicators and starter injection callout.
+
+---
+
+## 9. Feature Module Architecture
+
+Code is strictly organized by business capability inside `src/features/`:
+
+```
+src/
+├── features/
+│   ├── auth/              # Login, Register, Password Reset
+│   │   ├── components/    # LoginForm, RegisterForm
+│   │   ├── hooks/         # useAuthSession, useAuthActions
+│   │   └── types.ts
+│   ├── onboarding/        # Birth data wizard
+│   │   ├── components/    # BirthDateStep, PrecisionToggle, CitySearchStep
+│   │   └── hooks/         # useBirthDataForm, useGeocoding
+│   ├── self/              # ME — Personal astrology & dossier
+│   │   ├── components/    # PlacementCard, InsightSection, DossierViewer
+│   │   └── hooks/         # useMySafeAstro, useNatalObservations
+│   ├── discover/          # Discover people & feed
+│   │   ├── components/    # DiscoveryCard, FeedList, FilterSheet
+│   │   └── hooks/         # useDiscoverFeed, useDiscoveryActions
+│   ├── people/            # Public profiles
+│   │   ├── components/    # PublicProfileHeader, SafeSignsGrid
+│   │   └── hooks/         # usePersonProfile
+│   ├── connections/       # Social graph
+│   │   ├── components/    # ConnectionList, PendingRequests, ConnectionActionButtons
+│   │   └── hooks/         # useConnections, useConnectionTransition
+│   ├── compatibility/     # US — Compare & Why
+│   │   ├── components/    # ScoreGauge, DimensionsGrid, DynamicsList, StartersSection
+│   │   └── hooks/         # useCompatibility, useWhyPerson
+│   ├── chat/              # Direct messaging
+│   │   ├── components/    # MessageThread, ChatInputBar, StarterInsertionSheet
+│   │   └── hooks/         # useChatThread, useSendMessage, useChatRealtime
+│   └── notifications/     # In-app alerts
+│       ├── components/    # NotificationList, NotificationItem, UnreadBadge
+│       └── hooks/         # useNotifications, useNotificationRealtime
+```
+
+---
+
+## 10. Platform Abstraction Architecture `[RECOMMENDED]`
+
+Hardware, device, and OS capabilities are abstracted into universal interfaces (`platform/`) to isolate platform discrepancies:
+
+```
+src/platform/
+├── storage.ts         # Secure persistent key-value storage
+├── notifications.ts   # Push token registration & local notification handling
+├── haptics.ts         # Tactile vibration feedback
+├── share.ts           # Native OS share sheet vs Web Share API
+├── clipboard.ts       # Copy-to-clipboard functionality
+├── linking.ts         # Deep link resolution & external browser opening
+└── keyboard.ts        # Soft-keyboard spacing & avoidance
+```
+
+### 10.1 Storage Facade Contract
+- **Native (iOS/Android)**: Backed by `expo-secure-store` with hardware encryption (iOS Keychain / Android Keystore).
+- **Web**: Backed by secure, partition-isolated browser storage (`localStorage` with fallback to in-memory).
+
+### 10.2 Haptics Facade Contract
+- **Native**: Calls `expo-haptics` (`impactAsync(ImpactFeedbackStyle.Light)`, `notificationAsync(NotificationFeedbackType.Success)`).
+- **Web**: Calls `navigator.vibrate` if supported, otherwise performs a clean no-op.
+
+---
+
+## 11. State & Data Flow Architecture
+
+### 11.1 Canonical Data Flow `[FROZEN]`
+```
+UI Component (Tap Action)
+       │
+       ▼
+Feature Custom Hook
+       │
+       ▼
+TanStack Query / Mutation (`useQuery` / `useMutation`)
+       │
+       ▼
+API Service Client (`services/api/`)
+       │
+       ▼ [Bearer JWT via Supabase Session]
+FastAPI Endpoint (`https://api.jester.app/v1/...`)
+       │
+       ▼ [Structured JSON Response]
+Query Cache Invalidation / Optimistic Update
+       │
+       ▼
+UI Component Re-renders Deterministically
+```
+
+### 11.2 Invalidation & Caching Strategy `[FROZEN]`
+
+| Cache Key | Data Entity | Stale Time | Invalidation Triggers |
+| :--- | :--- | :--- | :--- |
+| `["profile", "me"]` | Current User Profile | 10 mins | Profile update mutation |
+| `["astrology", "me"]` | Safe Natal Astrology | 60 mins | Recalculate mutation / Birth data update |
+| `["astrology", targetId]` | Target Safe Astrology | 30 mins | Target profile refresh |
+| `["connections"]` | Social Connections Graph | 30 secs | Any `/transition` mutation or Realtime event |
+| `["compatibility", targetId]`| Synastry Comparison | 120 mins | Invalidate if either birth data version bumps |
+| `["messages", convId]` | Chat Message History | Instant | Realtime `INSERT` event or send mutation |
+| `["notifications"]` | User Alerts Feed | 15 secs | Mark read mutation or Realtime event |
+
+---
+
+## 12. Supabase & Realtime Architecture `[FROZEN]`
+
+1. **Authentication Interceptor**:
+   - Every outbound API request retrieves the active JWT via `supabase.auth.getSession()`.
+   - On HTTP 401: Clears tokens, terminates query caches, and redirects to `/auth/login`.
+2. **Channel Lifecycle Management**:
+   - `public:notifications:user_id=eq.{id}`: Opened once upon authenticated shell entry; stays open until sign out.
+   - `public:messages:conversation_id=eq.{id}`: Opened when navigating into `/chat/:id`; immediately unsubscribed on unmount.
+3. **Deduplication & Optimistic Messages**:
+   - Optimistic outgoing messages are assigned a client UUID `client_id`.
+   - When the backend broadcast arrives, the client replaces the optimistic entry without visual flicker or double-bubble duplication.
+
+---
+
+## 13. Responsive & Adaptive Architecture `[RECOMMENDED]`
+
+Responsive layouts adapt presentation while keeping business logic and state 100% identical:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                              STATE LAYER                               │
+│                        VIEWPORT ADAPTATION                             │
+├───────────────────┬────────────────────────────┬───────────────────────┤
+│ MOBILE (< 768px)  │ TABLET (768px - 1023px)    │ DESKTOP (≥ 1024px)    │
+├───────────────────┼────────────────────────────┼───────────────────────┤
+│ • Bottom Tab Bar  │ • Collapsible Rail Nav     │ • Persistent Top Nav  │
+│ • Stacked Screens │ • Master-Detail Panels     │ • Multi-Column Canvas │
+│ • Bottom Sheets   │ • Split Chat Thread        │ • Modal Side-Drawers  │
+│ • 100% Full Width │ • Max-width 720px Content  │ • Max-width 1024px    │
+└───────────────────┴────────────────────────────┴───────────────────────┘
+```
+
+---
+
+## 14. Accessibility Architecture `[RECOMMENDED]`
+
+1. **Minimum Touch Targets**: 44×44px on mobile touchscreens; 36×36px with keyboard focus rings on web.
+2. **Dynamic Text Scaling**: All typography scales with iOS Dynamic Type and Android font scale settings.
+3. **Screen Reader Semantics**:
+   - Every interactive primitive specifies `accessibilityRole` (`button`, `link`, `header`, `alert`).
+   - Astrological glyphs and badges include descriptive `accessibilityLabel` (e.g., `accessibilityLabel="მზე ვერძში / Sun in Aries"`).
+4. **Contrast Compliance**: Text contrast meets WCAG AA standards (minimum 4.5:1 for normal text, 3:1 for large display headers).
+5. **Reduced Motion**: All animations respect `prefers-reduced-motion` / system accessibility motion preferences.
+
+---
+
+## 15. Performance Architecture `[RECOMMENDED]`
+
+1. **List Recycling**: Use `@shopify/flash-list` for the Discover feed, Connections list, and Chat message threads to eliminate memory leaks and frame drops.
+2. **Asset Optimization**: Local image assets are served in WebP format with `expo-image` aggressive memory and disk caching.
+3. **Memoized Computations**: Heavy view formatting and complex astrological badge layouts are guarded with `React.memo` and `useMemo`.
+4. **Fast Initial Load**: Code-splitting per route on Web; lazy loading for non-critical bottom sheets and settings screens.
+
+---
+
+## 16. Testing Architecture `[RECOMMENDED]`
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        TESTING PYRAMID LAYERS                          │
 ├────────────────────────────────────────────────────────────────────────┤
-│ 1. GLOBAL AUTH STATE (Persisted in SecureStorage / LocalStorage)       │
-│    • session: { access_token, refresh_token, user_id, role }          │
-│    • status: "authenticated" | "unauthenticated" | "loading"           │
+│ 1. UNIT TESTS (Vitest / Jest)                                          │
+│    • Domain formatters, date/timezone parsers, DTO normalizers         │
 ├────────────────────────────────────────────────────────────────────────┤
-│ 2. SERVER QUERY STATE (Managed by Query Cache with TTL & Invalidation) │
-│    • user_profile (Key: ["profile", "me"])                             │
-│    • safe_astrology (Key: ["astrology", "me"])                         │
-│    • connections_list (Key: ["connections"])                           │
-│    • compatibility_result (Key: ["compatibility", target_user_id])     │
-│    • conversation_messages (Key: ["messages", conversation_id])        │
-│    • notifications_list (Key: ["notifications"])                       │
+│ 2. COMPONENT TESTS (React Native Testing Library + Jest Native)        │
+│    • Primitives (Button, Input, Card, Badge)                          │
+│    • JESTER UI components (ScoreGauge, InsightCard, ConnectionAction) │
 ├────────────────────────────────────────────────────────────────────────┤
-│ 3. LOCAL UI STATE (Component-Scoped / Non-Persisted)                   │
-│    • birth_data_form: { date, time, precision, timezone, coordinates } │
-│    • active_connection_tab: "active" | "pending"                       │
-│    • chat_input_draft: string                                          │
-│    • modal_visibility: { block_confirm, why_drawer }                   │
+│ 3. INTEGRATION TESTS (Mock Service Worker / MSW)                       │
+│    • Query hooks, mutation transitions, auth state changes            │
+├────────────────────────────────────────────────────────────────────────┤
+│ 4. E2E TESTS (Playwright for Web / Maestro for Mobile)                 │
+│    • Registration -> Birth Data -> ME Dossier                         │
+│    • Discover -> Connect -> Accept -> Compare -> Why -> Chat           │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 7. API / Data Flow Architecture
+## 17. Security & Privacy Invariants `[FROZEN]`
 
-```
-User Action (e.g. Tap "Accept Connection")
-    │
-    ▼
-UI Component dispatches Mutation
-    │
-    ▼
-HTTP Client Interceptor (Attaches Bearer JWT, handles refresh on 401)
-    │
-    ▼
-FastAPI Backend Endpoint (`POST /v1/connections/{id}/transition`)
-    │
-    ▼
-Database Execution & Validation
-    │
-    ▼
-Response 200 OK -> Normalizes into Typed DTO
-    │
-    ▼
-Query Cache Invalidation (Marks `["connections"]` stale)
-    │
-    ▼
-UI Automatically Re-renders with Updated State
-```
+- **Zero Astronomical Leaks**: Under no circumstances will raw degrees, exact house cusps, or `evidence_trace` data be rendered or logged in the client.
+- **Safe DTO Binding**: The client binds strictly to `SafeDerivedAstrologyResponse`, `ProfileResponse`, and `CompatibilityResponse`.
+- **Existence Oracle Prevention**: Navigating to private, deleted, or blocked profiles renders a uniform `404 Not Found` view.
 
 ---
 
-## 8. Client Caching Strategy
+## 18. Content Rendering Architecture `[FROZEN]`
 
-| Resource | Cache Category | Cache Key | Stale Time (TTL) | Invalidation Triggers |
+The frontend renders content generated by the deterministic JESTER Content Engine:
+1. **Insight Units**: Renders Micro (100–250 chars) and Medium (400–750 chars) assets without altering semantic meaning.
+2. **Tone Presentation**: Displays tone tags (`Cocky`, `Snarky`, `Dramatic`, `Conversational`, `Unfiltered`, `Mocking`, `Playful`, `Unexpected`) as subtle personality indicators.
+3. **Structured Synthesis**: As the backend introduces multi-placement synthesis (Sun×Moon, Cognitive Drive), the UI renders composite insight cards rather than hardcoded individual paragraphs.
+
+---
+
+## 19. Current Implementation Gap Report
+
+| Architecture Area | Current State (Vite Web Scaffold) | Target Architecture (Universal Expo) | Gap Severity | Action Required |
 | :--- | :--- | :--- | :--- | :--- |
-| **Own Profile** | Query Cache | `["profile", "me"]` | 10 minutes | `PATCH /v1/profiles/me` success. |
-| **Own Safe Astrology** | Query Cache | `["astrology", "me"]` | 60 minutes | `POST /profile/recalculate` or birth data update. |
-| **Target Safe Astrology** | Query Cache | `["astrology", target_id]` | 30 minutes | Target profile reload or connection change. |
-| **Connections List** | Query Cache | `["connections"]` | 30 seconds | Any `/connections/transition` or incoming Realtime event. |
-| **Compatibility Result** | Canonical Cache | `["compatibility", target_id]` | 120 minutes | Invalidate if either user's `birth_data_version` bumps. |
-| **Chat Messages** | Realtime Cache | `["messages", conv_id]` | Instant / Realtime | Appended immediately on Realtime `INSERT` event. |
-| **Notifications** | Realtime Cache | `["notifications"]` | 15 seconds | Updated on `PATCH /notifications/{id}/read` or Realtime alert. |
+| **Framework** | Vite 8.2 + React 19 DOM | Expo SDK 52+ / React Native 0.76+ | High | Transition to Expo Universal project |
+| **Platform Scope** | Web Only (Desktop & Mobile Browser) | iOS, Android, Desktop Web, Mobile Web | High | Universal primitives & bundling |
+| **Navigation** | `react-router-dom` v7 | `expo-router` v4 (Universal file routing) | Medium | Map route definitions to app folder |
+| **Styling** | Vanilla CSS (1,273 lines `index.css`) | NativeWind v4 (Tailwind tokens) | Medium | Migrate CSS variables to design tokens |
+| **UI Primitives** | Custom DOM elements (`div`, `button`) | Universal RN primitives (`View`, `Pressable`)| Medium | Re-implement primitives with RN/NW |
+| **State Layer** | TanStack Query v5 + React Context | TanStack Query v5 + React Context | **ZERO (MATCH)**| 100% reusable directly |
+| **API Client** | Fetch + Bearer JWT (`client.ts`) | Fetch / Axios + Bearer JWT | **ZERO (MATCH)**| 100% reusable directly |
+| **Auth Flow** | Supabase JS client v2 | Supabase JS client + SecureStore | Low | Add `expo-secure-store` adapter |
+| **Realtime** | Supabase WSS notifications | Supabase WSS notifications + Chat | Low | Add background channel handlers |
+| **Hardware APIs** | Browser `alert()`, `confirm()` | Platform facades (`haptics`, `share`) | Medium | Replace browser alerts with UI sheets |
 
 ---
 
-## 9. Realtime Architecture
+## 20. Platform Decision Matrix
 
-Realtime updates are powered by **Supabase Realtime WebSockets**:
+| Evaluation Dimension | Option A: Keep Vite Web Only | Option B: Universal Expo (RN + RNW) | Option C: Monorepo (Vite Web + Expo Native) |
+| :--- | :---: | :---: | :---: |
+| **iOS / Android Readiness** | 1 / 5 (Must rewrite from scratch) | **5 / 5 (First-class native)** | 5 / 5 (First-class native) |
+| **Desktop Web Readiness** | 5 / 5 (Native DOM) | **4 / 5 (High with RNW)** | 5 / 5 (Native DOM) |
+| **Code Reuse** | 0% for mobile | **85–95% UI, 100% logic** | 40% (Logic only, UI duplicated) |
+| **Developer Velocity** | Fast for web, zero for mobile | **Very High (One unified stack)**| Slow (Dual component trees) |
+| **Design Consistency** | Diverges when mobile starts | **Single source of design truth**| High divergence risk |
+| **Haptics / Push / Deep Links**| Zero native support | **Full native support via Expo** | Full native support |
+| **Maintenance Burden** | Moderate now, double later | **Low (Single universal codebase)**| High (Two apps to maintain) |
+| **Long-Term Architectural Health**| Poor (Tech debt accumulation) | **Excellent (Future-proof)** | Good but resource-heavy |
+| **TOTAL SCORE (out of 40)** | 18 / 40 | **36 / 40 (WINNER)** | 29 / 40 |
 
-```
-                              ┌─────────────────────────────┐
-                              │    Supabase Realtime WSS    │
-                              └──────────────┬──────────────┘
-                                             │
-                      ┌──────────────────────┴──────────────────────┐
-                      ▼                                             ▼
-       Channel: `public:messages:...`                Channel: `public:notifications:...`
-                      │                                             │
-                      ▼                                             ▼
-        [New Message Event Received]                  [Notification Event Received]
-                      │                                             │
-                      ▼                                             ▼
-    Append to `["messages", conv_id]`              Update unread badge counter +
-      cache with deduplication                      invalidate `["notifications"]`
-```
-
-### Realtime Lifecycle Rules:
-1. **Connect**: Initiated upon entering authenticated shell.
-2. **Conversation Channel**: Subscribes to `public:messages:conversation_id=eq.{id}` upon entering `/chat/{id}`.
-3. **Unsubscribe / Cleanup**: Destroys conversation channel immediately upon navigating away from chat.
-4. **Deduplication**: Messages sent locally via optimistic dispatch use client UUID tracking to prevent duplicate message bubbles when the server broadcast arrives.
+**Architectural Recommendation:** **Option B: Universal Expo (React Native + React Native Web with NativeWind v4)** is the definitive architecture for JESTER v1.1.
 
 ---
 
-## 10. Loading / Empty / Error Architecture
+## 21. Phased Migration Plan
 
-```
-┌───────────────────────────┐     Loading      ┌───────────────────────────┐
-│       INITIALIZING        ├─────────────────►│      SKELETON LOADER      │
-└─────────────┬─────────────┘                  └───────────────────────────┘
-              │
-              │ Data Fetched Successfully
-              ▼
-┌───────────────────────────┐     No Records   ┌───────────────────────────┐
-│     CONTENT AVAILABLE     ├─────────────────►│        EMPTY STATE        │
-└─────────────┬─────────────┘                  │ (Custom CTA for each view)│
-              │                                └───────────────────────────┘
-              │ API Returns Error
-              ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                             ERROR HANDLER                                │
-│  • 401 Unauthorized    ──► Clear Session & Redirect to /auth/login       │
-│  • 403 Forbidden       ──► Render "Active Connection Required" State     │
-│  • 404 Privacy Not Found──► Render Standard "Profile Not Found" (No Leak)│
-│  • 400 Polar Error     ──► Render Friendly Geolocation Warning Modal     │
-│  • Network / 500       ──► Render "Retry Connection" Toast Banner        │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+To ensure continuous development stability without breaking current verification workflows:
 
----
+### Phase A: Universal Foundation & Design Tokens `[NEXT IMPLEMENTATION PHASE]`
+- Initialize the target Expo Universal structure alongside existing code.
+- Extract all design tokens from `frontend/src/index.css` into typed TypeScript constants in `ui/tokens/`.
+- Configure `tailwind.config.js` and NativeWind v4.
 
-## 11. Auth Architecture
+### Phase B: UI Primitives & Platform Facades
+- Implement universal primitives (`Box`, `Text`, `Button`, `Card`, `Badge`, `Input`, `Avatar`, `Skeleton`).
+- Implement platform abstraction facades (`platform/storage.ts`, `platform/haptics.ts`, `platform/share.ts`).
 
-1. **Token Persistence**: JWT and Refresh Token are stored in OS-secure storage (Keychain/Keystore on mobile, Secure LocalStorage on Web).
-2. **Automatic Refresh**: HTTP interceptor intercepts expiring JWTs and requests refreshed credentials from Supabase Auth before dispatching protected API requests.
-3. **Logout Cascade**:
-   - Clears tokens.
-   - Cleans up and disconnects all Realtime WebSocket channels.
-   - Wipes all in-memory query caches to guarantee zero data leakage between user sessions on shared devices.
+### Phase C: State & API Client Shared Core
+- Migrate `core/api/`, `core/auth/`, and `core/realtime/` directly into universal `services/` and `features/auth/`.
+- Wire `expo-secure-store` to Supabase client storage adapter.
 
----
+### Phase D: Feature Screen Migration (ME & Onboarding)
+- Port Birth Data Onboarding wizard using universal primitives.
+- Port ME screen (Placements, Insight Cards, Dossier viewer).
 
-## 12. Onboarding Architecture
+### Phase E: Feature Screen Migration (YOU, WHY, US)
+- Port Discover feed with FlashList virtualization.
+- Port Person Profile and Why Person deep-dive views.
+- Port Compare screen (ScoreGauge, Dimensions, Signals).
 
-```
-[User Registers] ──► Route Guard checks birth data ──► Redirects to `/onboarding/birth-data`
-                                                                  │
-┌─────────────────────────────────────────────────────────────────┴──────────────────┐
-│                                                                                    │
-│  Step 1: Date of Birth (YYYY-MM-DD)                                                │
-│  Step 2: Time Precision Toggle: [ Exact | Approximate | Unknown ]                  │
-│          • If Exact/Approximate ──► Time Picker (HH:MM)                            │
-│          • If Unknown           ──► Time Picker Disabled (Informs: Mean Noon UTC)  │
-│  Step 3: Birth City / Location Search (Derives IANA Timezone, Lat, Long)           │
-│  Step 4: Review & Confirm Submission                                               │
-│                                                                                    │
-└─────────────────────────────────┬──────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-                     [Save Birth Data & Trigger Recalculate]
-                                  │
-                     ┌────────────┴────────────┐
-                     ▼                         ▼
-              [Calculation 200 OK]       [Polar Error 400]
-                     │                         │
-                     ▼                         ▼
-           Navigate to `/self/astrology`  Show Polar Fallback Alert
-```
+### Phase F: Feature Screen Migration (Connect, Chat, Notifications)
+- Port Connections management screen.
+- Port Realtime Chat screen with starter insertion sheet.
+- Port Notifications center.
+
+### Phase G: Universal Navigation & Route Freeze
+- Mount Expo Router universal file-tree.
+- Verify identical responsive layout execution on Desktop Web, iOS Simulator, and Android Emulator.
+
+### Phase H: Native Build Packaging & Store Readiness
+- Configure `app.json` / `app.config.ts` for iOS & Android bundle IDs, splash screens, and icons.
+- Configure Expo EAS Build pipelines.
+- Decommission legacy Vite single-platform scaffold.
 
 ---
 
-## 13. Relationship Architecture
+## 22. Implementation Readiness & Decision Summary
 
-The frontend renders connection states through explicit action buttons and contextual indicators:
-
-```
-┌──────────────┬───────────────────────────────┬───────────────────────────────┐
-│ State        │ UI Action Controls            │ Compare & Chat Accessibility  │
-├──────────────┼───────────────────────────────┼───────────────────────────────┤
-│ **None**     │ [ Connect ] button            │ Disabled (Locked)             │
-│ **PendingOut**│ "Request Sent" (Cancel / Block)| Disabled (Locked)             │
-│ **PendingIn** │ [ Accept ] [ Decline ] [Block]│ Disabled (Locked)             │
-│ **Accepted** │ [ Compare ] [ Chat ] [ Remove]│ ✅ Full Access Enabled        │
-│ **Blocked**  │ [ Unblock ] (in Blocked List) │ Disabled (Target Hidden)      │
-└──────────────┴───────────────────────────────┴───────────────────────────────┘
-```
+### Status Legend:
+- `[FROZEN]`: Canonical product or technical invariant. Cannot be changed without Architecture Board approval.
+- `[RECOMMENDED]`: Approved target architectural path.
+- `[PENDING PRODUCT / UX DECISION]`: Requires user/product owner confirmation before coding.
+- `[NOT YET IMPLEMENTED]`: Documented target state awaiting scheduled migration phase.
 
 ---
 
-## 14. Compare → Why → Chat Architecture
-
 ```
-                                  ┌─────────────────────────────┐
-                                  │   /compare/{target_user_id} │
-                                  │ • Overall Score (84.2)      │
-                                  │ • 4 Dimension Gauges        │
-                                  │ • Top 6 Signals List        │
-                                  └──────────────┬──────────────┘
-                                                 │
-                                                 │ Tap "Why This Person"
-                                                 ▼
-                                  ┌─────────────────────────────┐
-                                  │     /why/{target_user_id}   │
-                                  │ • Deep Dynamics Breakdown   │
-                                  │ • Best Topics Tags (Max 4)  │
-                                  │ • Conversation Starters(M3) │
-                                  └──────────────┬──────────────┘
-                                                 │
-                                                 │ Tap "Send Starter to Chat"
-                                                 ▼
-                                  ┌─────────────────────────────┐
-                                  │   /chat/{conversation_id}   │
-                                  │ • Starter pre-filled in box │
-                                  │ • One-tap send into stream  │
-                                  └─────────────────────────────┘
+════════════════════════════════════════════════════════════════
+             JESTER FRONTEND ARCHITECTURE DECISION
+════════════════════════════════════════════════════════════════
+Framework:       Universal Expo (SDK 52+) / React Native (0.76+)
+Runtime:         Hermes Engine (iOS & Android) + React Native Web
+Web:             Universal React Native Web (RNW)
+Mobile:          iOS Native & Android Native (Single Codebase)
+Navigation:      Expo Router v4 (Universal File-Based Routing)
+Styling:         NativeWind v4 (Tailwind Utility Engine)
+Design System:   Structured Design Tokens (TS) -> UI Primitives
+Server State:    TanStack Query v5 (Shared Cache & Keys)
+API Client:      Typed Fetch / Axios + Bearer JWT + FastAPI
+Auth & Realtime: Supabase JS Client v2 + SecureStore
+Hardware APIs:   Universal Facades (platform/*)
+Animation:       React Native Reanimated v3 + Gesture Handler v2
+Testing:         Vitest (Unit) + RNTL (Components) + Playwright/Maestro (E2E)
+
+Primary Architectural Choice:
+UNIVERSAL EXPO (REACT NATIVE + REACT NATIVE WEB + NATIVEWIND)
+
+Migration Required:
+YES (Phased migration from current Vite scaffold to Universal Expo)
+
+Immediate Next Implementation Phase:
+PHASE 4.1 — UNIVERSAL FOUNDATION, DESIGN TOKENS & UI PRIMITIVES
+════════════════════════════════════════════════════════════════
 ```
-
-*Data Efficiency*: `/why/{id}` shares the identical query cache entity as `/compare/{id}`, avoiding redundant API roundtrips.
-
----
-
-## 15. Responsive Architecture
-
-- **Desktop (Viewport $\ge 1024\text{px}$)**:
-  - Persistent left sidebar navigation.
-  - Multi-column layout: Connections on the left, Active Chat or Compatibility View in the main panel.
-  - Contextual "Why This Person" slides in as an interactive side-drawer.
-- **Tablet (Viewport $768\text{px} - 1023\text{px}$)**:
-  - Collapsible icon-rail navigation.
-  - Two-pane master-detail views for Connections and Messaging.
-- **Mobile (Viewport $< 768\text{px}$)**:
-  - Persistent bottom tab bar (4 primary tabs: `Discover`, `Connections`, `Chat`, `Self`).
-  - Full-screen stacked page transitions for `/compare/{id}`, `/why/{id}`, and `/chat/{id}`.
-
----
-
-## 16. Privacy Architecture
-
-The frontend enforces strict data boundaries:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 ALLOWED CLIENT DATA ACCESS                  │
-│  • Own Birth Date, Time & Coordinates (Owner View Only)     │
-│  • Public Tropical Signs (Sun, Moon, Ascendant)             │
-│  • Primary Element & Modality Strings                       │
-│  • Computed Compatibility Score & 4 Dimension Values        │
-│  • Signal Labels & Starter Text Strings                     │
-└─────────────────────────────────────────────────────────────┘
-                              ▲
-                       STRICT ISOLATION
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 FORBIDDEN CLIENT DATA ACCESS                │
-│  • Another User's Raw Birth Coordinates or Birth Time       │
-│  • `public.astro_private` Database Tables                   │
-│  • Raw Mathematical `evidence_trace` Array                  │
-│  • Internal Planet Longitude Floating-Point Values          │
-│  • Confirmation of Existence for Blocked Accounts           │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 17. Backend Gap Assessment
-
-| Gap Identified | Impact on Frontend | Required Backend Work | Status / Workaround |
-| :--- | :--- | :--- | :--- |
-| **1. `PUT /v1/birth-data`** | Moderate | Add dedicated FastAPI endpoint to persist birth data and trigger natal recalculation in one roundtrip. | **Can begin with PostgREST / Supabase Client SDK in the interim.** |
-| **2. Discovery Feed** | High | Add `GET /v1/people/discover?limit=20` to allow general user browsing beyond direct ID search. | **Can begin with direct profile ID lookup & connections list.** |
-| **3. Typing & Presence** | Low | Implement Supabase Realtime Presence channel for typing state. | **Frontend can integrate Supabase Presence without DB changes.** |
-
----
-
-## 18. Architectural Diagrams
-
-### 18.1 Client-Side Application Data Flow
-```
-User Action (Tap/Type)
-         │
-         ▼
-[UI View Component] ◄──────────────┐
-         │                         │
-         ▼                         │
-[Query Cache / Store] ─────────────┤
-         │                         │
-         ▼ (Cache Miss / Mutation) │
-[API Client Module]                │
-         │                         │
-         ▼ (Bearer JWT HTTP)       │
-[FastAPI /v1 Backend]              │
-         │                         │
-         ▼                         │
-[PostgreSQL DB] ───────────────────┘
-```
-
-### 18.2 Realtime Subscription Data Flow
-```
-[Supabase Realtime WebSocket Server]
-         │
-         ▼ (New Message / Notification Event)
-[Realtime Subscription Manager]
-         │
-         ▼
-[Query Cache Update (Append / Invalidate)]
-         │
-         ▼
-[UI Component Auto-Rerenders in Realtime]
-```
-
----
-
-## 19. Feature Module Structure
-
-The frontend codebase is organized into modular domain packages:
-
-```
-frontend/src/
-├── core/                  # Network client, Auth interceptor, Storage, Config
-├── modules/
-│   ├── auth/              # Login, Register, Session Watchdog
-│   ├── onboarding/        # Birth data form, Timezone search, Precision toggle
-│   ├── self/              # Personal astrology view, Profile editor
-│   ├── people/            # Discoverable profile view, Public safe astro cards
-│   ├── connections/       # Social graph lists, State transition buttons
-│   ├── compatibility/     # Score gauge, 4D charts, Signals, Topics, Starters
-│   ├── chat/              # Realtime message thread, Input bar, Starter injection
-│   └── notifications/     # In-app alerts list, Badge counter, Realtime toast
-├── navigation/            # Router definitions, Auth guards, Deep link handlers
-└── shared/                # Layout containers, Error boundaries, Skeletons
-```
-
----
-
-## 20. Architecture Risks & Mitigations
-
-| Identified Risk | Potential Impact | Architecture Mitigation |
-| :--- | :--- | :--- |
-| **1. Business Logic Duplication** | Inconsistent scoring or orb math between web/mobile and backend. | **Strict Rule**: Zero astrology or scoring calculations in frontend; frontend purely renders server outputs. |
-| **2. Stale Compatibility Caches** | Users see outdated compatibility after birth data update. | Backend returns `source_birth_data_version`; frontend invalidates cache when version differs. |
-| **3. Realtime Event Duplication** | Double message bubbles displayed when sending chat messages. | Client assigns UUID `client_id` to pending messages, deduplicating upon server ACK. |
-| **4. Privacy Leakage** | Exposing raw degrees or blocked user existence. | Strict Pydantic response models on server; frontend error handler treats 404 uniformly. |
-| **5. Over-Centralized State** | Excessive re-renders and bloated bundle size. | Separation between Query Cache (server data) and local React component state. |
-
----
-
-## 21. Implementation Readiness
-
-### ✅ READY NOW (Immediate Frontend Development)
-- Authentication flows (`/auth/login`, `/auth/register`).
-- Onboarding & birth data collection wizard (`/onboarding/birth-data`).
-- Personal astrology profile display (`/self/astrology`).
-- Profile viewing and editing (`/self/profile`, `/people/{id}`).
-- Social connection management (`/connections`).
-- Deterministic compatibility scoring and breakdown (`/compare/{id}`, `/why/{id}`).
-- Realtime direct messaging (`/chat/{id}`).
-- In-app notification center (`/notifications`).
-
-### ⚠️ PARTIALLY BLOCKED / PENDING BACKEND CONVENIENCES
-- Paginated People Discovery feed (`GET /v1/people/discover` endpoint to be added).
-
-### 🔒 DECISIONS FROZEN BEFORE UI/UX DESIGN
-1. Compatibility is strictly connection-gated (no comparing strangers).
-2. Unknown birth times gracefully hide Ascendant/Houses without erroring.
-3. Re-connections after decline/removal have zero cooldown period.
-4. Technical `evidence_trace` math is hidden from standard consumer UI.
-5. All 5 aspects, 4 dimensions, 6 signals, 4 topics, and 3 starters are fully specified and frozen.

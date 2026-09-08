@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../realtime/supabase";
 import { API } from "../api/endpoints";
 
@@ -24,6 +25,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -62,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await checkBirthData(session.user.id);
       } else {
         setHasBirthData(null);
+        queryClient.clear();
       }
       setIsLoading(false);
     });
@@ -69,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
   const refreshBirthDataCheck = async (explicitUserId?: string) => {
     const targetId = explicitUserId || user?.id;
@@ -79,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    queryClient.clear();
     setSession(null);
     setUser(null);
     setHasBirthData(null);

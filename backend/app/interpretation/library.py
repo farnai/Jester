@@ -197,6 +197,15 @@ class InMemoryContentStore(ContentStore):
                                 item["created_at"] = datetime.fromisoformat(item["created_at"])
                             if "updated_at" in item and isinstance(item["updated_at"], str):
                                 item["updated_at"] = datetime.fromisoformat(item["updated_at"])
+                            # If context is not explicitly specified in fixture, infer from interpretation_id prefix
+                            if "context" not in item:
+                                interp_id = item.get("interpretation_id", "")
+                                if interp_id.startswith("self."):
+                                    item["context"] = "self"
+                                elif interp_id.startswith("relationship."):
+                                    item["context"] = "relationship"
+                                elif interp_id.startswith("daily_energy."):
+                                    item["context"] = "daily_energy"
                             asset = ContentAsset(**item)
                             self.save_asset(asset)
                 except Exception:

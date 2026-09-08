@@ -223,6 +223,9 @@ class NatalResolveRequest(BaseModel):
     sun_sign: str
     moon_sign: str | None = None
     ascendant_sign: str | None = None
+    mercury_sign: str | None = None
+    venus_sign: str | None = None
+    mars_sign: str | None = None
     element_primary: str | None = None
     modality_primary: str | None = None
     locale: str = "ka"
@@ -320,6 +323,9 @@ async def resolve_natal_profile_interpretations(
         "self.identity": "იდენტობა და არსი",
         "self.emotional": "ემოციური სამყარო",
         "self.persona": "სოციალური ნიღაბი და პირველი შთაბეჭდილება",
+        "self.cognition": "აზროვნება და კომუნიკაცია (მერკური)",
+        "self.relation": "მიზიდულობა და ურთიერთობა (ვენერა)",
+        "self.action": "ენერგია და მოქმედება (მარსი)",
         "self.element": "დომინანტური სტიქია",
         "self.modality": "ცხოვრების დინამიკა და მოდალობა",
     }

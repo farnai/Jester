@@ -434,6 +434,42 @@ class InterpretationEngine:
             if res:
                 results.append(res)
 
+        mercury = data.get("mercury_sign")
+        if mercury:
+            res = self.library.resolve(
+                interpretation_id=f"self.cognition.mercury_{mercury.lower()}.v1",
+                context="self",
+                locale=locale,
+                tone=tone,
+                seed=seed,
+            )
+            if res:
+                results.append(res)
+
+        venus = data.get("venus_sign")
+        if venus:
+            res = self.library.resolve(
+                interpretation_id=f"self.relation.venus_{venus.lower()}.v1",
+                context="self",
+                locale=locale,
+                tone=tone,
+                seed=seed,
+            )
+            if res:
+                results.append(res)
+
+        mars = data.get("mars_sign")
+        if mars:
+            res = self.library.resolve(
+                interpretation_id=f"self.action.mars_{mars.lower()}.v1",
+                context="self",
+                locale=locale,
+                tone=tone,
+                seed=seed,
+            )
+            if res:
+                results.append(res)
+
         elem = data.get("element_primary")
         if elem:
             res = self.library.resolve(

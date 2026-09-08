@@ -44,6 +44,9 @@ export const MePage: React.FC = () => {
       astro?.sun_sign,
       astro?.moon_sign,
       astro?.ascendant_sign,
+      astro?.mercury_sign,
+      astro?.venus_sign,
+      astro?.mars_sign,
       astro?.element_primary,
       astro?.modality_primary,
     ],
@@ -52,6 +55,9 @@ export const MePage: React.FC = () => {
         sun_sign: astro!.sun_sign,
         moon_sign: astro?.moon_sign,
         ascendant_sign: astro?.ascendant_sign,
+        mercury_sign: astro?.mercury_sign,
+        venus_sign: astro?.venus_sign,
+        mars_sign: astro?.mars_sign,
         element_primary: astro?.element_primary,
         modality_primary: astro?.modality_primary,
         locale: "ka",
@@ -113,6 +119,12 @@ export const MePage: React.FC = () => {
         return "🌙";
       case "self.persona":
         return "🌅";
+      case "self.cognition":
+        return "🧠";
+      case "self.relation":
+        return "💖";
+      case "self.action":
+        return "⚔️";
       case "self.element":
         return "🔥";
       case "self.modality":
@@ -135,6 +147,12 @@ export const MePage: React.FC = () => {
         ) : (
           <Badge variant="outline" size="sm">ასცენდენტი: უცნობი დრო</Badge>
         );
+      case "self.cognition":
+        return <Badge variant="default" size="sm">მერკურის ნიშანი: {astro.mercury_sign}</Badge>;
+      case "self.relation":
+        return <Badge variant="default" size="sm">ვენერას ნიშანი: {astro.venus_sign}</Badge>;
+      case "self.action":
+        return <Badge variant="default" size="sm">მარსის ნიშანი: {astro.mars_sign}</Badge>;
       case "self.element":
         return <Badge variant="default" size="sm">სტიქია: {astro.element_primary}</Badge>;
       case "self.modality":
@@ -336,6 +354,7 @@ export const MePage: React.FC = () => {
 
                     {/* Metadata footer */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "0.6rem", fontSize: "0.75rem", color: "#94a3b8" }}>
+                      <span>ID: <code>{obs.interpretation?.id}</code></span>
                       <span>ტონი: <code>{obs.interpretation?.tone || "witty"}</code></span>
                       <span>სტატუსი: <code>{obs.interpretation?.content_status || "approved"}</code></span>
                     </div>

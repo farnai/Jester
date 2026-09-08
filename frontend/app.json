@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Jester",
+    "slug": "jester",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./public/favicon.ico",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#f8fafc"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.jester.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#f8fafc"
+      },
+      "package": "app.jester.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./public/favicon.ico"
+    },
+    "scheme": "jester"
+  }
+}

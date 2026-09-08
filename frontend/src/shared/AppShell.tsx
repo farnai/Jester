@@ -184,6 +184,42 @@ export const AppShell: React.FC = () => {
             🧪 Smoke
           </Link>
 
+          {/* Universal Design System Visual Lab */}
+          <Link
+            to="/visual-lab"
+            style={{
+              fontSize: "0.775rem",
+              color: "#9333ea",
+              backgroundColor: "#fdf4ff",
+              padding: "0.35rem 0.6rem",
+              borderRadius: "6px",
+              textDecoration: "none",
+              border: "1px solid #f0abfc",
+              fontWeight: 600,
+            }}
+            title="უნივერსალური დიზაინ სისტემის ლაბორატორია (Visual Lab)"
+          >
+            🎨 Lab
+          </Link>
+
+          {/* Forensic Backend -> Registered User Data Integrity Audit */}
+          <Link
+            to="/__debug/backend-audit"
+            style={{
+              fontSize: "0.775rem",
+              color: "#0284c7",
+              backgroundColor: "#f0f9ff",
+              padding: "0.35rem 0.6rem",
+              borderRadius: "6px",
+              textDecoration: "none",
+              border: "1px solid #bae6fd",
+              fontWeight: 600,
+            }}
+            title="მონაცემთა მთლიანობის აუდიტი (Backend Data Integrity Audit)"
+          >
+            🔬 Audit
+          </Link>
+
           {/* Sign Out Button */}
           <button
             onClick={handleSignOut}

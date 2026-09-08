@@ -49,7 +49,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v02",
@@ -101,7 +102,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v03",
@@ -153,7 +155,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v04",
@@ -205,7 +208,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v05",
@@ -257,7 +261,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v06",
@@ -309,7 +314,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v07",
@@ -361,7 +367,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aries.v1.aries_action_v08",
@@ -413,7 +420,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v01",
@@ -465,7 +473,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v02",
@@ -517,7 +526,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v03",
@@ -569,7 +579,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v04",
@@ -621,7 +632,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v05",
@@ -673,7 +685,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v06",
@@ -725,7 +738,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v07",
@@ -777,7 +791,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_taurus.v1.taurus_action_v08",
@@ -829,7 +844,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v01",
@@ -881,7 +897,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v02",
@@ -933,7 +950,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v03",
@@ -985,7 +1003,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v04",
@@ -1037,7 +1056,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v05",
@@ -1089,7 +1109,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v06",
@@ -1141,7 +1162,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v07",
@@ -1193,7 +1215,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_gemini.v1.gemini_action_v08",
@@ -1245,7 +1268,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v01",
@@ -1297,7 +1321,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v02",
@@ -1349,7 +1374,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v03",
@@ -1401,7 +1427,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v04",
@@ -1453,7 +1480,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v05",
@@ -1505,7 +1533,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v06",
@@ -1557,7 +1586,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v07",
@@ -1609,7 +1639,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_cancer.v1.cancer_action_v08",
@@ -1661,7 +1692,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v01",
@@ -1713,7 +1745,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v02",
@@ -1765,7 +1798,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v03",
@@ -1817,7 +1851,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v04",
@@ -1869,7 +1904,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v05",
@@ -1921,7 +1957,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v06",
@@ -1973,7 +2010,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v07",
@@ -2025,7 +2063,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_leo.v1.leo_action_v08",
@@ -2077,7 +2116,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v01",
@@ -2129,7 +2169,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v02",
@@ -2181,7 +2222,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v03",
@@ -2233,7 +2275,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v04",
@@ -2285,7 +2328,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v05",
@@ -2337,7 +2381,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v06",
@@ -2389,7 +2434,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v07",
@@ -2441,7 +2487,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_virgo.v1.virgo_action_v08",
@@ -2493,7 +2540,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v01",
@@ -2545,7 +2593,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v02",
@@ -2597,7 +2646,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v03",
@@ -2649,7 +2699,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v04",
@@ -2701,7 +2752,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v05",
@@ -2753,7 +2805,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v06",
@@ -2805,7 +2858,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v07",
@@ -2857,7 +2911,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_libra.v1.libra_action_v08",
@@ -2909,7 +2964,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v01",
@@ -2961,7 +3017,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v02",
@@ -3013,7 +3070,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v03",
@@ -3065,7 +3123,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v04",
@@ -3117,7 +3176,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v05",
@@ -3169,7 +3229,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v06",
@@ -3221,7 +3282,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v07",
@@ -3273,7 +3335,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_scorpio.v1.scorpio_action_v08",
@@ -3325,7 +3388,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v01",
@@ -3377,7 +3441,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v02",
@@ -3429,7 +3494,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v03",
@@ -3481,7 +3547,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v04",
@@ -3533,7 +3600,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v05",
@@ -3585,7 +3653,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v06",
@@ -3637,7 +3706,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v07",
@@ -3689,7 +3759,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_sagittarius.v1.sagittarius_action_v08",
@@ -3741,7 +3812,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v01",
@@ -3793,7 +3865,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v02",
@@ -3845,7 +3918,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v03",
@@ -3897,7 +3971,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v04",
@@ -3949,7 +4024,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v05",
@@ -4001,7 +4077,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v06",
@@ -4053,7 +4130,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v07",
@@ -4105,7 +4183,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_capricorn.v1.capricorn_action_v08",
@@ -4157,7 +4236,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v01",
@@ -4209,7 +4289,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v02",
@@ -4261,7 +4342,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v03",
@@ -4313,7 +4395,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v04",
@@ -4365,7 +4448,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v05",
@@ -4417,7 +4501,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v06",
@@ -4469,7 +4554,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v07",
@@ -4521,7 +4607,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_aquarius.v1.aquarius_action_v08",
@@ -4573,7 +4660,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v01",
@@ -4625,7 +4713,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v02",
@@ -4677,7 +4766,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v03",
@@ -4729,7 +4819,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v04",
@@ -4781,7 +4872,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v05",
@@ -4833,7 +4925,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v06",
@@ -4885,7 +4978,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v07",
@@ -4937,7 +5031,8 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   },
   {
     "asset_id": "astrology.self.action.mars_pisces.v1.pisces_action_v08",
@@ -4989,6 +5084,7 @@
     "archived": false,
     "weight": 1.0,
     "created_at": "2026-09-08T00:00:00Z",
-    "updated_at": "2026-09-08T00:00:00Z"
+    "updated_at": "2026-09-08T00:00:00Z",
+    "context": "self"
   }
 ]

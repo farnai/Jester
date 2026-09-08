@@ -8,4 +8,22 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
+  resolve: {
+    alias: {
+      "react-native": "react-native-web",
+    },
+    extensions: [
+      ".web.tsx",
+      ".web.ts",
+      ".web.jsx",
+      ".web.js",
+      ".tsx",
+      ".ts",
+      ".jsx",
+      ".js",
+    ],
+  },
+  define: {
+    global: "window",
+  },
 });

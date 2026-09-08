@@ -14,6 +14,8 @@ import { ChatPage } from "../modules/chat/ChatPage";
 import { MePage } from "../modules/me/MePage";
 import { NotificationsPage } from "../modules/notifications/NotificationsPage";
 import { ContentSmokeTestPage } from "../modules/smoke_test/ContentSmokeTestPage";
+import { VisualLab } from "../ui/VisualLab";
+import { BackendAuditDebugPage } from "../ui/BackendAuditDebugPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppShell } from "../shared/AppShell";
 import { useAuth } from "../core/auth/useAuth";
@@ -41,6 +43,15 @@ const LegacyWhyRedirect: React.FC = () => {
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* Universal Design System Visual Foundation Lab */}
+      <Route path="/visual-lab" element={<VisualLab />} />
+      <Route path="/__lab" element={<VisualLab />} />
+
+      {/* Forensic Backend -> Registered User -> Frontend Data Integrity Audit Lab */}
+      <Route path="/__debug/backend-audit" element={<BackendAuditDebugPage />} />
+      <Route path="/__lab/backend-audit" element={<BackendAuditDebugPage />} />
+      <Route path="/debug/backend-audit" element={<BackendAuditDebugPage />} />
+
       {/* Primary UX & Content Smoke Test Route (Developer Audit Surface) */}
       <Route path="/smoke-test" element={<ContentSmokeTestPage />} />
       <Route path="/ux-test" element={<ContentSmokeTestPage />} />
