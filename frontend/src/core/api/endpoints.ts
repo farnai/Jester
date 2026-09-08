@@ -145,7 +145,7 @@ export const API = {
 
   // Interpretation Architecture V2 & Content Exposure
   interpretations: {
-    getDailyEnergy: (energyType: string = "confidence", locale: string = "ka", tone?: string) => {
+    getDailyEnergy: (energyType: string = "auto", locale: string = "ka", tone?: string) => {
       const params = new URLSearchParams({ energy_type: energyType, locale });
       if (tone) params.append("tone", tone);
       return apiRequest<DailyEnergyResponse>(`/v1/interpretations/daily-energy?${params.toString()}`);

@@ -3,6 +3,7 @@ FastAPI Router exposing Interpretation Contract and Content Architecture V2 endp
 Supports multi-asset authoring, status transitions, inventory inspection, and deterministic resolution.
 """
 import uuid
+from datetime import datetime, timezone
 from typing import Any
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel, Field
@@ -258,23 +259,67 @@ DEFAULT_DEMO_USER_ID = uuid.UUID("26098ac8-f8f0-4cd3-9bbb-78dc8467ba07")
 compatibility_engine_instance = CompatibilityEngine()
 
 
+SIGN_TO_DAILY_ENERGY: dict[str, str] = {
+    "Aries": "confidence",        # sun_mars_transit: თავდაჯერება და მოქმედება
+    "Taurus": "discipline",       # sun_saturn_transit: მყარი დისციპლინა
+    "Gemini": "communication",    # mercury_transit: პირდაპირი კომუნიკაცია
+    "Cancer": "receptivity",      # moon_transit_soft: ემოციური პაუზა
+    "Leo": "social",              # sun_venus_transit: სოციალური მაგნეტიზმი
+    "Virgo": "clarity",           # mercury_saturn_transit: სტრატეგიული სიცხადე
+    "Libra": "creativity",        # venus_neptune_transit: შემოქმედებითი ძიება
+    "Scorpio": "introspection",   # sun_pluto_transit: შინაგანი გადატვირთვა
+    "Sagittarius": "vitality",    # mars_jupiter_transit: ენერგიის მოზღვავება
+    "Capricorn": "discipline",    # sun_saturn_transit: მყარი დისციპლინა
+    "Aquarius": "curiosity",      # mercury_uranus_transit: სპონტანური ცნობისმოყვარეობა
+    "Pisces": "creativity",       # venus_neptune_transit: შემოქმედებითი ძიება
+}
+
+
 # =============================================================================
 # Resolution Endpoints
 # =============================================================================
 @router.get("/interpretations/daily-energy", response_model=dict[str, Any])
 async def get_daily_energy_interpretation(
-    energy_type: str = "confidence",
+    energy_type: str = "auto",
     locale: str = "ka",
     tone: str | None = None,
     current_user: AuthenticatedUser | None = Depends(get_optional_user),
+    db: psycopg.Connection = Depends(get_db),
 ) -> dict[str, Any]:
     """
     Returns the resolved Daily Energy / Day Vibe interpretation in Georgian,
-    along with available energy archetypes.
+    personalized to the user's active astrological profile and birth data version.
     """
-    seed = str(current_user.id) if current_user else "daily-seed"
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    seed = f"daily-seed:{today_str}"
+    effective_energy_type = energy_type
+
+    if current_user:
+        with db.cursor() as cur:
+            cur.execute(
+                """
+                SELECT s.sun_sign, s.element_primary, b.data_version
+                FROM public.birth_data b
+                LEFT JOIN public.astro_safe_profile s ON b.user_id = s.user_id
+                WHERE b.user_id = %s;
+                """,
+                (current_user.id,),
+            )
+            row = cur.fetchone()
+            if row:
+                sun_sign = row["sun_sign"] or ""
+                data_ver = row["data_version"] or 1
+                seed = f"{current_user.id}:{sun_sign}:{data_ver}:{today_str}"
+                if energy_type in [None, "", "auto", "confidence"]:
+                    effective_energy_type = SIGN_TO_DAILY_ENERGY.get(sun_sign, "confidence")
+            else:
+                seed = f"{current_user.id}:{today_str}"
+
+    if effective_energy_type in [None, "", "auto"]:
+        effective_energy_type = "confidence"
+
     resolved = interpretation_engine.resolve_daily_energy(
-        energy_type=energy_type,
+        energy_type=effective_energy_type,
         locale=locale,
         tone=tone,
         seed=seed,
@@ -290,10 +335,10 @@ async def get_daily_energy_interpretation(
     contract = interpretation_engine.get_contract(resolved.id) if resolved else None
 
     # Find current archetype info
-    curr_arch = next((a for a in DAILY_ENERGY_ARCHETYPES if a["id"] == energy_type), DAILY_ENERGY_ARCHETYPES[0])
+    curr_arch = next((a for a in DAILY_ENERGY_ARCHETYPES if a["id"] == effective_energy_type), DAILY_ENERGY_ARCHETYPES[0])
 
     return {
-        "energy_type": energy_type,
+        "energy_type": effective_energy_type,
         "label": curr_arch["label_ka"],
         "interpretation": resolved.model_dump() if resolved else None,
         "contract": contract.model_dump() if contract else None,
@@ -379,20 +424,20 @@ async def get_discovery_people(
         viewer_placements = None
         viewer_bd = {"birth_time_precision": "exact", "data_version": 1}
         if has_bd:
+            cur.execute("SELECT birth_time_precision, data_version FROM public.birth_data WHERE user_id = %s;", (calculation_viewer_id,))
+            row_bd = cur.fetchone()
+            if row_bd:
+                viewer_bd = row_bd
+
             cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
             viewer_placements = cur.fetchone()
-            if not viewer_placements:
+            if not viewer_placements or viewer_placements.get("source_birth_data_version") != viewer_bd["data_version"]:
                 try:
                     recalculate_user_astrology(calculation_viewer_id, db)
                     cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
                     viewer_placements = cur.fetchone()
                 except Exception:
                     viewer_placements = None
-
-            cur.execute("SELECT birth_time_precision, data_version FROM public.birth_data WHERE user_id = %s;", (calculation_viewer_id,))
-            row_bd = cur.fetchone()
-            if row_bd:
-                viewer_bd = row_bd
 
         # Query all discoverable people except viewer, strictly excluding blocked users
         cur.execute(
@@ -430,7 +475,8 @@ async def get_discovery_people(
         sun = r["sun_sign"] or "Taurus"
 
         target_placements = placements_map.get(pid)
-        if not target_placements:
+        target_bd = bd_map.get(pid, {"birth_time_precision": "exact", "data_version": 1})
+        if not target_placements or target_placements.get("source_birth_data_version") != target_bd["data_version"]:
             try:
                 recalculate_user_astrology(pid, db)
                 with db.cursor() as cur:
@@ -439,8 +485,6 @@ async def get_discovery_people(
                     placements_map[pid] = target_placements
             except Exception:
                 target_placements = None
-
-        target_bd = bd_map.get(pid, {"birth_time_precision": "exact", "data_version": 1})
 
         # Calculate real Synastry V1 compatibility
         score = 60.0
@@ -460,7 +504,7 @@ async def get_discovery_people(
                 score = round(calc.score, 1)
 
                 # Relationship-level hook (ME -> YOU synastry signal / dynamic) with feed deduplication
-                pair_seed = f"{min(str(calculation_viewer_id), str(pid))}:{max(str(calculation_viewer_id), str(pid))}"
+                pair_seed = f"{min(str(calculation_viewer_id), str(pid))}:{max(str(calculation_viewer_id), str(pid))}:{viewer_bd['data_version']}:{target_bd['data_version']}"
                 hook_res = interpretation_engine.get_primary_relationship_interpretation(
                     score=score,
                     signals=calc.signals,
@@ -585,20 +629,28 @@ async def compare_preview(
         cur.execute("SELECT user_id, data_version, birth_time_precision FROM public.birth_data WHERE user_id IN (%s, %s);", (source_id, target_id))
         bd_map = {r["user_id"]: r for r in cur.fetchall()}
 
-    if source_id not in placements_map:
+    bd_s = bd_map.get(source_id, {"data_version": 1, "birth_time_precision": "exact"})
+    bd_t = bd_map.get(target_id, {"data_version": 1, "birth_time_precision": "exact"})
+
+    if (
+        source_id not in placements_map
+        or placements_map[source_id] is None
+        or placements_map[source_id].get("source_birth_data_version") != bd_s["data_version"]
+    ):
         recalculate_user_astrology(source_id, db)
         with db.cursor() as cur:
             cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (source_id,))
             placements_map[source_id] = cur.fetchone()
 
-    if target_id not in placements_map:
+    if (
+        target_id not in placements_map
+        or placements_map[target_id] is None
+        or placements_map[target_id].get("source_birth_data_version") != bd_t["data_version"]
+    ):
         recalculate_user_astrology(target_id, db)
         with db.cursor() as cur:
             cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (target_id,))
             placements_map[target_id] = cur.fetchone()
-
-    bd_s = bd_map.get(source_id, {"data_version": 1, "birth_time_precision": "exact"})
-    bd_t = bd_map.get(target_id, {"data_version": 1, "birth_time_precision": "exact"})
 
     calc_result = compatibility_engine_instance.calculate(
         person_a_id=source_id,
@@ -611,7 +663,7 @@ async def compare_preview(
         person_b_placements=placements_map[target_id],
     )
 
-    pair_seed = f"{min(str(source_id), str(target_id))}:{max(str(source_id), str(target_id))}"
+    pair_seed = f"{min(str(source_id), str(target_id))}:{max(str(source_id), str(target_id))}:{bd_s['data_version']}:{bd_t['data_version']}"
 
     enriched_signals = interpretation_engine.resolve_signals(
         calc_result.signals,

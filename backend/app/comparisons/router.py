@@ -78,6 +78,7 @@ async def compare_users(
         )
         existing = cur.fetchone()
 
+        pair_seed = f"{user_a}:{user_b}:{ver_a}:{ver_b}"
         if (
             existing
             and existing["user_a_birth_data_version"] == ver_a
@@ -96,10 +97,10 @@ async def compare_users(
             }
 
             raw_signals = existing["signals"] if isinstance(existing["signals"], list) else []
-            enriched_signals = interpretation_engine.resolve_signals(raw_signals)
+            enriched_signals = interpretation_engine.resolve_signals(raw_signals, seed=pair_seed)
             cached_score = float(existing["score"])
             primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
-                cached_score, raw_signals
+                cached_score, raw_signals, seed=pair_seed
             )
             cached_dimensions = existing.get("dimensions") if isinstance(existing.get("dimensions"), dict) else {}
             deep_payload = interpretation_engine.build_deep_analysis_payload(
@@ -107,7 +108,7 @@ async def compare_users(
                 signals=raw_signals,
                 evidence_trace=existing.get("evidence_trace") or [],
                 confidence=confidence,
-                seed=str(current_user.id),
+                seed=pair_seed,
             )
 
             return StructuredCompatibilityResponse(
@@ -132,12 +133,12 @@ async def compare_users(
         )
         astro_rows = {r["user_id"]: r for r in cur.fetchall()}
 
-        if user_a not in astro_rows:
+        if user_a not in astro_rows or astro_rows[user_a] is None or astro_rows[user_a].get("source_birth_data_version") != ver_a:
             recalculate_user_astrology(user_a, db)
             cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (user_a,))
             astro_rows[user_a] = cur.fetchone()
 
-        if user_b not in astro_rows:
+        if user_b not in astro_rows or astro_rows[user_b] is None or astro_rows[user_b].get("source_birth_data_version") != ver_b:
             recalculate_user_astrology(user_b, db)
             cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (user_b,))
             astro_rows[user_b] = cur.fetchone()
@@ -192,16 +193,16 @@ async def compare_users(
         )
         saved_row = cur.fetchone()
 
-        enriched_signals = interpretation_engine.resolve_signals(calc_result.signals)
+        enriched_signals = interpretation_engine.resolve_signals(calc_result.signals, seed=pair_seed)
         primary_interpretation = interpretation_engine.get_primary_relationship_interpretation(
-            calc_result.score, calc_result.signals
+            calc_result.score, calc_result.signals, seed=pair_seed
         )
         deep_payload = interpretation_engine.build_deep_analysis_payload(
             score=calc_result.score,
             signals=calc_result.signals,
             evidence_trace=calc_result.evidence_trace,
             confidence=calc_result.data_quality.get("confidence", 1.0),
-            seed=str(current_user.id),
+            seed=pair_seed,
         )
 
         return StructuredCompatibilityResponse(

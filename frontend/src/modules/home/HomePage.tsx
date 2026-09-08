@@ -23,8 +23,8 @@ export const HomePage: React.FC = () => {
     error: errorDaily,
     refetch: refetchDaily,
   } = useQuery<DailyEnergyResponse>({
-    queryKey: ["daily-energy"],
-    queryFn: () => API.interpretations.getDailyEnergy("confidence", "ka"),
+    queryKey: ["daily-energy", user?.id],
+    queryFn: () => API.interpretations.getDailyEnergy("auto", "ka"),
   });
 
   // 3. People Worth Discovering (Top Matches)

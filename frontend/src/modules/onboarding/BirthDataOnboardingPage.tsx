@@ -103,11 +103,18 @@ export const BirthDataOnboardingPage: React.FC = () => {
       };
 
       await API.astrology.saveBirthData(user.id, payload);
-      // Invalidate dependent queries immediately so frontend does not display stale astrology
+      // Invalidate dependent queries immediately so frontend does not display stale astrology, daily energy, or comparisons
       await queryClient.invalidateQueries({ queryKey: ["astrology"] });
       await queryClient.invalidateQueries({ queryKey: ["birth-data"] });
       await queryClient.invalidateQueries({ queryKey: ["natal-observations"] });
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["daily-energy"] });
+      await queryClient.invalidateQueries({ queryKey: ["discovery-people"] });
+      await queryClient.invalidateQueries({ queryKey: ["compare-preview"] });
+      await queryClient.invalidateQueries({ queryKey: ["why-experience"] });
+      await queryClient.invalidateQueries({ queryKey: ["compatibility-us"] });
+      await queryClient.invalidateQueries({ queryKey: ["compatibility"] });
+      await queryClient.invalidateQueries({ queryKey: ["connections"] });
 
       setHasBirthData(true);
       navigate("/me");

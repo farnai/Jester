@@ -222,3 +222,124 @@ async def test_compare_preview_respects_discoverability_and_privacy(db_conn, cle
         )
         assert res_self.status_code == 400
         assert res_self.json()["error"]["code"] == "self_comparison_not_allowed"
+
+
+@pytest.mark.asyncio
+async def test_daily_energy_and_compare_dynamic_update_on_birth_date_change(db_conn, clean_db):
+    """
+    Verifies that changing birth date dynamically updates:
+    1. Daily Energy archetype (e.g., Aries -> confidence, Scorpio -> introspection)
+    2. Comparison preview score and interpretation texts against another user.
+    """
+    u1 = str(uuid.uuid4())
+    u2 = str(uuid.uuid4())
+    em1 = f"dynamic_u1_{uuid.uuid4().hex[:6]}@test.jester.app"
+    em2 = f"dynamic_u2_{uuid.uuid4().hex[:6]}@test.jester.app"
+
+    create_test_user(db_conn, u1, em1, "User Dynamic 1")
+    create_test_user(db_conn, u2, em2, "User Dynamic 2")
+
+    token_u1 = generate_test_jwt(user_id=u1, email=em1)
+    token_u2 = generate_test_jwt(user_id=u2, email=em2)
+
+    # 1. Seed birth data for User 2 (Cancer: July 10, 1992)
+    with db_conn.cursor() as cur:
+        set_auth_context(cur, None, "admin")
+        cur.execute(
+            """
+            INSERT INTO public.birth_data (user_id, birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude)
+            VALUES (%s, '1992-07-10', '12:00:00', 'exact', 'UTC', 41.7151, 44.8271);
+            """,
+            (u2,),
+        )
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # Calculate u2 natal astrology
+        res_calc2 = await ac.post(
+            "/v1/astrology/profile/recalculate",
+            headers={"Authorization": f"Bearer {token_u2}"},
+        )
+        assert res_calc2.status_code == 200
+
+        # 2. User 1 initially has Aries birth date (April 10, 1990)
+        with db_conn.cursor() as cur:
+            set_auth_context(cur, None, "admin")
+            cur.execute(
+                """
+                INSERT INTO public.birth_data (user_id, birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude)
+                VALUES (%s, '1990-04-10', '12:00:00', 'exact', 'UTC', 41.7151, 44.8271);
+                """,
+                (u1,),
+            )
+
+        res_calc1 = await ac.post(
+            "/v1/astrology/profile/recalculate",
+            headers={"Authorization": f"Bearer {token_u1}"},
+        )
+        assert res_calc1.status_code == 200
+
+        # 3. Check Daily Energy for User 1 (Aries -> confidence / თავდაჯერება და მოქმედება)
+        res_daily1 = await ac.get(
+            "/v1/interpretations/daily-energy?energy_type=auto&locale=ka",
+            headers={"Authorization": f"Bearer {token_u1}"},
+        )
+        assert res_daily1.status_code == 200
+        daily1 = res_daily1.json()
+        assert daily1["energy_type"] == "confidence"
+        assert "თავდაჯერება და მოქმედება" in daily1["label"]
+
+        # 4. Check Compare Preview against User 2 (State A: Aries vs Cancer)
+        res_prev1 = await ac.post(
+            "/v1/interpretations/compare-preview",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"target_user_id": u2, "locale": "ka"},
+        )
+        assert res_prev1.status_code == 200
+        prev1 = res_prev1.json()
+        score1 = prev1["score"]
+        interp1 = prev1["interpretation"]["text"]
+
+        # 5. User 1 changes birth date to Scorpio (November 10, 1990)
+        with db_conn.cursor() as cur:
+            set_auth_context(cur, None, "admin")
+            cur.execute(
+                """
+                UPDATE public.birth_data
+                SET birth_date = '1990-11-10', updated_at = NOW()
+                WHERE user_id = %s;
+                """,
+                (u1,),
+            )
+
+        res_calc1_update = await ac.post(
+            "/v1/astrology/profile/recalculate",
+            headers={"Authorization": f"Bearer {token_u1}"},
+        )
+        assert res_calc1_update.status_code == 200
+
+        # 6. Daily Energy MUST immediately change to Scorpio archetype (introspection / შინაგანი გადატვირთვა)
+        res_daily2 = await ac.get(
+            "/v1/interpretations/daily-energy?energy_type=auto&locale=ka",
+            headers={"Authorization": f"Bearer {token_u1}"},
+        )
+        assert res_daily2.status_code == 200
+        daily2 = res_daily2.json()
+        assert daily2["energy_type"] == "introspection"
+        assert "შინაგანი გადატვირთვა" in daily2["label"]
+        assert daily2["interpretation"]["text"] != daily1["interpretation"]["text"]
+
+        # 7. Compare Preview MUST immediately update score and interpretation
+        res_prev2 = await ac.post(
+            "/v1/interpretations/compare-preview",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"target_user_id": u2, "locale": "ka"},
+        )
+        assert res_prev2.status_code == 200
+        prev2 = res_prev2.json()
+        score2 = prev2["score"]
+        interp2 = prev2["interpretation"]["text"]
+
+        assert score1 != score2, f"Expected score to change, but both were {score1}"
+        assert interp1 != interp2, f"Expected interpretation text to change, but both were {interp1}"
+
+
