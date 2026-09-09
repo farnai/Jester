@@ -1,40 +1,69 @@
-# 🃏 Jester — People Discovery & Relationship Intelligence Engine
+# 🃏 JESTER — People Discovery & Relationship Intelligence Engine
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-19.2%2B-61DAFB.svg)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.2%2B-646CFF.svg)](https://vite.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E.svg)](https://supabase.com/)
+[![Tests](https://img.shields.io/badge/Tests-193%20Passed-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-74%20Passed-brightgreen.svg)]()
 
-> **"They show the match. JESTER explains the connection."**
+> **"Score creates curiosity. Interpretation creates value. The insight becomes the invitation."**
 
-**Jester** is a high-performance **People Discovery and Relationship Intelligence** platform built with **FastAPI**, **Swiss Ephemeris (`pyswisseph`)**, and **Supabase (PostgreSQL + Auth + RLS)**. 
+**JESTER** is a high-performance **People Discovery and Relationship Intelligence** platform. It is not a generic horoscope, dating, or astrology app. Astrology serves strictly as JESTER's deterministic intelligence layer to help people understand themselves, each other, and their interpersonal dynamics across romance, friendships, and creative collaborations.
 
-Astrology is the underlying mathematical intelligence layer, not the product identity. JESTER is designed to help humans understand why they click, clash, challenge, or complement each other across friendships, collaborations, and romance.
-
----
-
-## ✨ Features
-
-- 🔮 **Precision Astrological Engine**: Utilizes the C-backed Swiss Ephemeris (`pyswisseph`) library to compute high-accuracy planetary positions (10 core planets: Sun to Pluto), Placidus house systems, and angular cross-aspects (Conjunction, Sextile, Square, Trine, Opposition) with quadratic orb decay. *(Chiron, Lilith, and Nodes are planned future additions).*
-- 💫 **Deterministic Synastry V1 Engine (`synastry-v1.0.0`)**: Comprehensive compatibility analysis across 4 sub-scores (Emotional Harmony, Communication, Attraction/Chemistry, Growth/Dynamics), normalized overall scoring ($10.0 - 98.0$), deterministic relationship signals, topics, and conversation starters.
-- 🔒 **Privacy by Design & RLS Security**: Strict JWT verification middleware integrated with Supabase Authentication and database Row Level Security (RLS) policies. Raw birth data and exact astronomical placements (`astro_private`) are completely protected; other users only see safe derived profiles (`astro_safe_profile`).
-- 👥 **Social & Connection System**: Canonical pair connection requests, friend graphs, and mutual block hiding (HTTP 404 Privacy-Safe Not Found).
-- 💬 **Messaging & Conversations**: Real-time social messaging foundation between connected users with connection-gated authorization.
-- ⚡ **Daily Transits & Day Vibe Infrastructure**: Architectural pipeline for calculating personal daily transits and translating them into sharp, witty JESTER daily insights (*transit calculation engine currently a stub*).
-- 🤖 **JESTER Voice & Interpretation Pipeline**: Architectural framework translating deterministic signals into human, witty, slightly sarcastic JESTER language (*LLM integration currently a stub*).
-- 🧪 **Comprehensive Test Suite**: 74 automated unit, API, synastry, and database security tests passing.
+Core Product Loop:
+$$\mathbf{ME} \longrightarrow \mathbf{YOU} \longrightarrow \mathbf{US} \longrightarrow \mathbf{MORE\ PEOPLE}$$
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ System Capabilities & Architecture
 
-- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (ASGI, OpenAPI, Pydantic v2)
-- **Astrology Engine**: [PySwissEph](https://pypi.org/project/pyswisseph/) (Swiss Ephemeris Python bindings)
-- **Database & Auth**: [Supabase](https://supabase.com/) / PostgreSQL 15+ with Row Level Security (RLS)
-- **HTTP Client & Async**: `httpx`, `asyncio`, `uvicorn`
-- **Security**: `pyjwt`, `cryptography`, Pydantic Settings
-- **Testing**: `pytest`, `pytest-asyncio`
+### 1. Deterministic Astrological Intelligence Layer
+- **Swiss Ephemeris (`pyswisseph`) Integration:** Deterministic calculation of celestial longitudes (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto) and Placidus houses.
+- **6 Core Personality Placements:** Full semantic modeling for **Sun** (`self.identity`), **Moon** (`self.emotional`), **Ascendant** (`self.persona`), **Mercury** (`self.cognition`), **Venus** (`self.relation`), and **Mars** (`self.action`).
+- **Precision Timezone Handling:** IANA timezones via Python `zoneinfo` with exact Julian Day computation. Unknown birth time is supported cleanly (Ascendant/Houses remain `None`).
+
+### 2. Synastry V1 Compatibility Engine (`synastry-v1.0.0`)
+- **Multi-Dimensional Relationship Scoring:** Deterministic synastry normalized into an overall score ($10.0 - 98.0$) across 4 distinct dimensions:
+  - Emotional Harmony
+  - Communication & Intellectual Flow
+  - Attraction & Chemistry
+  - Long-Term Growth & Dynamics
+- **Deterministic Signal Extraction:** Quadratic orb decay for major cross-aspects (Conjunction, Trine, Sextile, Square, Opposition) with harmonic category classifications (`harmony`, `attraction`, `communication`, `growth`, `stability`, `notice`).
+- **Deep Analysis:** Structured evidence trace, conversation starters, and discussion topics.
+
+### 3. Interpretation Architecture V2 & Georgian Content Layer
+- **Contract-Based Interpretation:** Decoupled semantic contracts (`InterpretationContract`) resolved deterministically from calculated signals.
+- **Approved Georgian Copywriter Corpus:** Handcrafted, witty, slightly sarcastic JESTER voice in Georgian (`locale: "ka"`), with support for multi-asset authoring and editorial provenance (`copywriter` vs `ai_draft`).
+- **Multi-Context Resolution:** Context-aware interpretations across `self` (natal profile), `relationship` (romantic synastry), `friendship`, and `daily_energy`.
+- **Transitional Daily Energy (Day Vibe):** Daily energetic archetype mapping (e.g. Aries $\to$ `confidence`, Scorpio $\to$ `introspection`) with approved Georgian copy (*dynamic transit engine planned for Phase 5*).
+
+### 4. Privacy by Design & Security Invariants
+- **Birth Data Isolation:** User birth dates, times, coordinates, and places are stored exclusively in owner-only `public.birth_data` protected by PostgreSQL Row Level Security (RLS). They are never exposed to other users, cards, or discovery previews.
+- **Private Astrology Protection:** Exact astronomical degrees and houses reside in server-only `public.astro_private`. Other users and client applications only ever receive sanitized, safe DTOs (`astro_safe_profile`).
+- **Canonical Connection States:** Canonical unordered pair logic for connections, friend requests, and mutual block hiding (HTTP 404 Privacy-Safe Not Found).
+
+### 5. Frontend Client & Visual Foundation Lab
+- **Client Stack:** React 19, Vite 8, TypeScript, TanStack React Query, React Router v7.
+- **Forensic Backend $\to$ Frontend Inspector (`/__debug/backend-audit`):** Comprehensive developer lab inspecting the live end-to-end pipeline:
+  $$\text{PostgreSQL} \longrightarrow \text{Swiss Ephemeris} \longrightarrow \text{Safe Astro API} \longrightarrow \text{React Query Cache} \longrightarrow \text{Georgian Content UI}$$
+  Includes live deterministic A/B state switching (London Aries vs Tbilisi Scorpio), full un-truncated Georgian texts for all 6 planets, and pipeline verification matrices.
+- **Social Surfaces:** Discovery cards, Person profiles, Why compatibility breakdowns, Us comparison views, Connections, and direct Messaging.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Backend Framework** | [FastAPI](https://fastapi.tiangolo.com/) (Python 3.11+, ASGI, Pydantic v2) |
+| **Astrology Engine** | [PySwissEph](https://pypi.org/project/pyswisseph/) (Swiss Ephemeris C-bindings) |
+| **Database & Auth** | [Supabase](https://supabase.com/) / PostgreSQL 15+ with Row Level Security (RLS) |
+| **Frontend Web Client** | [React 19](https://react.dev/), [Vite 8](https://vite.dev/), [TypeScript](https://www.typescriptlang.org/) |
+| **Data Fetching & Cache**| [@tanstack/react-query v5](https://tanstack.com/query/latest) |
+| **Testing** | `pytest`, `pytest-asyncio`, `httpx` (193 automated tests) |
 
 ---
 
@@ -44,74 +73,79 @@ Astrology is the underlying mathematical intelligence layer, not the product ide
 Jester/
 ├── backend/
 │   ├── app/
-│   │   ├── api/             # Main API routers & system health endpoints
-│   │   ├── astrology/       # Swiss Ephemeris calculator, natal charts, transits
-│   │   ├── auth/            # Supabase JWT authentication & verification middleware
-│   │   ├── comparisons/     # Synastry & compatibility computation logic
-│   │   ├── connections/     # User friendship & social connection routers
-│   │   ├── conversations/   # Messaging & chat functionality
-│   │   ├── core/            # Error handling, global exceptions, logging
-│   │   ├── interpretation/ # Rule-based & AI interpretation generator
-│   │   ├── jobs/            # Scheduled background jobs & transit updates
-│   │   ├── notifications/   # In-app and push notification handling
-│   │   ├── profiles/        # User profile & birth data endpoints
-│   │   ├── users/           # User account management
-│   │   ├── config.py        # Pydantic environment configuration
+│   │   ├── api/             # Aggregated API router & system health checks (/healthz, /v1/health)
+│   │   ├── astrology/       # Swiss Ephemeris calculator, natal placements, developer debug router
+│   │   ├── auth/            # Supabase JWT/JWKS verification & bearer dependencies
+│   │   ├── comparisons/     # /v1/compare and /v1/people/{id}/why orchestration
+│   │   ├── compatibility/   # Versioned Synastry V1 engine, models, and scoring logic
+│   │   ├── connections/     # Canonical connection state machine & transitions
+│   │   ├── conversations/   # Realtime conversations and message endpoints
+│   │   ├── core/            # Database pooling, error handlers, and global exceptions
+│   │   ├── interpretation/  # Content Architecture V2, resolver, contracts, and Georgian corpus
+│   │   ├── jobs/            # Background jobs & daily energy worker stubs
+│   │   ├── notifications/   # In-app notification endpoints
+│   │   ├── profiles/        # User profiles & discoverability endpoints
+│   │   ├── users/           # Authenticated user account API
+│   │   ├── config.py        # Pydantic Settings & environment validation
 │   │   └── main.py          # FastAPI application factory
-│   └── .env.example         # Environment template
+│   └── .env.example         # Backend environment template
+├── frontend/
+│   ├── src/
+│   │   ├── core/            # API client, typed DTOs, Supabase client, auth context
+│   │   ├── modules/         # Feature modules (home, discover, people, compatibility, me, auth)
+│   │   ├── navigation/      # React Router routing table & ProtectedRoute guards
+│   │   ├── shared/          # Universal UI design system (Card, Button, Badge, Skeleton)
+│   │   └── ui/              # Developer tools (BackendAuditDebugPage, VisualLab)
+│   ├── package.json         # Frontend dependencies & scripts
+│   └── vite.config.ts       # Vite configuration
 ├── supabase/
 │   ├── config.toml          # Supabase CLI configuration
-│   └── migrations/          # SQL database schema, RLS policies, triggers (001-020)
+│   └── migrations/          # 20 ordered SQL migrations (schema, RLS, triggers, functions)
 ├── tests/
-│   ├── astrology/           # Calculator & calculation validation unit tests
-│   ├── backend/             # API endpoint, CORS, JWT & health tests
-│   └── database/            # Database schema & security / RLS policy tests
-├── .env                     # Local environment file (gitignored)
-├── requirements.txt         # Python dependency list
+│   ├── astrology/           # Swiss Ephemeris validation, aspects, and calculation tests
+│   ├── backend/             # API routes, CORS, JWT auth, self-healing, and preview tests
+│   ├── compatibility/       # Synastry V1 engine, scoring formulas, and topics tests
+│   ├── database/            # Database security, RLS enforcement, and isolation tests
+│   └── interpretation/      # Content V2, contracts, and Mars/Mercury/Venus corpus tests
+├── docs/                    # Architecture, API specs, database docs, and semantic audits
+├── requirements.txt         # Python backend dependencies
 └── README.md                # Project documentation
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### Prerequisites
+### 1. Prerequisites
+- **Python:** `3.11+`
+- **Node.js:** `18+` or `20+` (npm / npx)
+- **Supabase CLI:** (Optional for local PostgreSQL execution) [Install Guide](https://supabase.com/docs/guides/cli)
 
-- **Python**: `3.11+`
-- **Supabase CLI** (optional for local database execution): [Install Guide](https://supabase.com/docs/guides/cli)
-- **Git**
+---
 
-### Installation Steps
+### 2. Backend Setup
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/Jester.git
-   cd Jester
+1. **Create and Activate Virtual Environment:**
+   ```powershell
+   # Windows (PowerShell)
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+
+   # macOS / Linux
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 
-2. **Create and Activate Virtual Environment**
-   - **Windows (PowerShell):**
-     ```powershell
-     python -m venv .venv
-     .\.venv\Scripts\Activate.ps1
-     ```
-   - **Linux / macOS:**
-     ```bash
-     python3 -m venv .venv
-     source .venv/bin/activate
-     ```
-
-3. **Install Dependencies**
+2. **Install Python Dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configure Environment Variables**
-   Copy `.env.example` to `.env` in the root directory:
+3. **Configure Environment Variables:**
    ```bash
    cp backend/.env.example .env
    ```
-   Update `.env` values as needed:
+   Ensure `.env` contains your Supabase URL, anon key, and database connection string:
    ```env
    ENV=development
    PROJECT_NAME="Jester API"
@@ -119,88 +153,64 @@ Jester/
    SUPABASE_URL=http://127.0.0.1:54321
    SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   SUPABASE_JWT_SECRET=your_supabase_jwt_secret
    DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
    ```
 
-5. **Start Supabase (Optional Local Database)**
-   If running Supabase locally:
-   ```bash
-   supabase start
-   ```
-
-6. **Run the FastAPI Development Server**
+4. **Start the FastAPI Backend:**
    ```bash
    uvicorn backend.app.main:app --reload --port 8000
    ```
+   The backend API will be available at:
+   - **Interactive API Docs (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
+   - **Health Check:** [http://localhost:8000/healthz](http://localhost:8000/healthz)
 
 ---
 
-## 📖 Interactive API Documentation
+### 3. Frontend Setup
 
-Once the server is running, explore the interactive documentation:
+1. **Navigate to the frontend directory & install dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
-- **OpenAPI Schema**: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
-
-### Health Check Endpoints
-
-- `GET /healthz` — System health check
-- `GET /v1/health` — API v1 health check
+2. **Start the Vite Development Server:**
+   ```bash
+   npm run dev
+   ```
+   The web application will be live at:
+   - **Main Client:** [http://localhost:5173/](http://localhost:5173/)
+   - **Forensic Data & Content Inspector:** [http://localhost:5173/debug/backend-audit](http://localhost:5173/debug/backend-audit)
+   - **Visual Foundation Lab:** [http://localhost:5173/visual-lab](http://localhost:5173/visual-lab)
 
 ---
 
-## 🗄️ Database & Migrations
+## 🧪 Testing & Verification
 
-The database is built on Supabase PostgreSQL with 20 modular migration files (`supabase/migrations/`):
-
-| Migration | Scope / Functionality |
-|---|---|
-| `001` - `003` | System extensions, custom Enums, and base `profiles` table |
-| `004` - `006` | `birth_data`, `astro_private`, and secure `astro_safe_profile` views |
-| `007` - `009` | `connections` (friendships), `compatibility_results`, `daily_energies` |
-| `010` - `013` | Social `conversations`, `members`, `messages`, and `notifications` |
-| `014` - `016` | Performance indexes, automated triggers, helper procedures |
-| `017` - `020` | Database grants, Row Level Security (RLS), storage, Realtime |
-
-To apply migrations locally using Supabase CLI:
-```bash
-supabase db reset
+### Run the Backend Test Suite (193 Tests)
+```powershell
+.venv\Scripts\python.exe -m pytest tests
 ```
+Runs the complete suite covering:
+- Mathematical accuracy of Swiss Ephemeris and coordinate conversions
+- Synastry V1 calculations and orb decay formulas
+- Content V2 resolution, multi-context fallback, and contract matching
+- JWT verification, RLS policies, and owner birth data security
+
+### Verify Frontend TypeScript & Production Bundle
+```bash
+cd frontend
+npm run build
+```
+Executes `tsc` type checking and `vite build` to guarantee zero compile-time errors.
 
 ---
 
-## 🧪 Running Tests
+## 🔒 Security & Privacy Invariants
 
-The test suite includes calculation accuracy verification, JWT auth checks, API route tests, and database security validations.
-
-To run the complete test suite:
-
-```bash
-pytest
-```
-
-Or run specific test modules:
-
-```bash
-# Astrology calculation engine tests
-pytest tests/astrology/
-
-# Backend API & Auth tests
-pytest tests/backend/
-
-# Database security & RLS policy tests
-pytest tests/database/
-```
-
----
-
-## 🔒 Security & Privacy
-
-- **Birth Data Protection**: User exact birth dates, times, and locations are stored in restricted schemas (`astro_private`) and accessed exclusively through secure database functions or RLS rules.
-- **JWT Authorization**: Requests to protected `/v1/` endpoints require a valid Supabase `Bearer <token>`.
-- **CORS Protection**: Configurable allowed origins via Pydantic settings (`CORS_ORIGINS`).
+- **Zero Raw Data Exposure:** `public.birth_data` contains private, user-owned birth parameters. It is never exposed in profile views, compatibility payloads, or public discovery.
+- **Server-Controlled Astrology:** `public.astro_private` exact degrees and houses are accessed exclusively by server calculation logic. Clients only receive the safe `SafeDerivedAstrologyResponse`.
+- **Production JWT Verification:** Production mode strictly enforces asymmetric JWT/JWKS verification. HS256 is restricted to development/test fixtures.
 
 ---
 
