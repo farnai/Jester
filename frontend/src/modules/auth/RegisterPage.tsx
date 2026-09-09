@@ -82,19 +82,37 @@ export const RegisterPage: React.FC = () => {
 
     try {
       // 1. Create account via Supabase Auth
+      let activeUser: any = null;
+      let activeSession: any = null;
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
       });
 
       if (authError) {
-        throw new Error(authError.message);
+        // If user was already registered in a previous attempt, sign in directly
+        const errMsg = authError.message.toLowerCase();
+        if (errMsg.includes("already registered") || errMsg.includes("exists")) {
+          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          if (signInErr) {
+            throw new Error(signInErr.message);
+          }
+          activeUser = signInData.user;
+          activeSession = signInData.session;
+        } else {
+          throw new Error(authError.message);
+        }
+      } else {
+        activeUser = authData.user;
+        activeSession = authData.session;
       }
 
-      let activeUser = authData.user;
-
-      // In case session wasn't returned directly, sign in
-      if (!authData.session) {
+      // If session wasn't returned directly, sign in to acquire access token
+      if (!activeSession) {
         const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
@@ -103,10 +121,19 @@ export const RegisterPage: React.FC = () => {
           throw new Error(signInErr.message);
         }
         activeUser = signInData.user;
+        activeSession = signInData.session;
       }
 
       if (!activeUser) {
         throw new Error("მომხმარებლის შექმნა ვერ მოხერხდა.");
+      }
+
+      // Explicitly set session on Supabase client to ensure storage is populated
+      if (activeSession) {
+        await supabase.auth.setSession({
+          access_token: activeSession.access_token,
+          refresh_token: activeSession.refresh_token,
+        });
       }
 
       // 2. Save public profile
@@ -135,14 +162,18 @@ export const RegisterPage: React.FC = () => {
         place_label: placeLabel || null,
       };
 
-      await API.astrology.saveBirthData(activeUser.id, birthPayload);
+      await API.astrology.saveBirthData(
+        activeUser.id,
+        birthPayload,
+        activeSession?.access_token
+      );
 
       // 4. Update auth state and refresh
       setHasBirthData(true);
       await refreshBirthDataCheck(activeUser.id);
 
-      // 5. Navigate straight to personal natal astrology profile
-      navigate("/self/astrology", { replace: true });
+      // 5. Navigate straight to ME page
+      navigate("/me", { replace: true });
     } catch (err: any) {
       setError(err.message || "რეგისტრაციისას დაფიქსირდა შეცდომა.");
       setLoading(false);
