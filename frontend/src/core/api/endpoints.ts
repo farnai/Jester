@@ -84,7 +84,7 @@ export const API = {
     getBirthData: async (userId: string): Promise<BirthDataPayload | null> => {
       const { data, error } = await supabase
         .from("birth_data")
-        .select("birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label")
+        .select("birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label, data_version")
         .eq("user_id", userId)
         .maybeSingle();
       if (error || !data) return null;

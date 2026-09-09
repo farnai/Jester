@@ -465,6 +465,7 @@ class ContentResolver:
             tone=chosen.tone,
             persona=chosen.persona,
             variant_key=chosen.variant_key,
+            source=chosen.source,
         )
 
 
@@ -542,6 +543,8 @@ class ContentLibrary:
                     language="ka",
                     locale="ka",
                     context="relationship",
+                    source="copywriter",
+                    content_asset_id=f"legacy_final_{interpretation_id}",
                 )
 
             # If legacy record exists and final status is not approved, fallback cleanly to AI Draft
@@ -560,6 +563,8 @@ class ContentLibrary:
                     language="ka",
                     locale="ka",
                     context="relationship",
+                    source="ai",
+                    content_asset_id=f"legacy_draft_{interpretation_id}",
                 )
 
             return None

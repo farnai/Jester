@@ -55,6 +55,7 @@ export interface BirthDataPayload {
   latitude?: number | null;
   longitude?: number | null;
   place_label?: string | null;
+  data_version?: number;
 }
 
 export type ConnectionStatus = "pending" | "accepted" | "declined" | "blocked" | "removed";
@@ -161,6 +162,7 @@ export interface ResolvedInterpretationModel {
   variant_key?: string;
   title?: string;
   hook?: string;
+  source?: string;
 }
 
 export interface DailyEnergyArchetype {

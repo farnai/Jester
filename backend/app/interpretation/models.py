@@ -152,6 +152,7 @@ class ResolvedInterpretation(BaseModel):
     tone: str = "witty"
     persona: str = "jester"
     variant_key: str | None = None
+    source: str | None = None
 
 
 class ContentUpdatePayload(BaseModel):
