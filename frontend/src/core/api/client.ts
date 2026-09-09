@@ -23,26 +23,7 @@ export async function apiRequest<T>(
   // Only resolve from Supabase if Authorization header was not explicitly supplied
   if (!headers.has("Authorization")) {
     const session = (await supabase.auth.getSession()).data.session;
-    let token = session?.access_token;
-
-    // Fallback: check localStorage directly in case getSession hasn't resolved
-    if (!token && typeof window !== "undefined" && window.localStorage) {
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && key.startsWith("sb-") && key.endsWith("-auth-token")) {
-            const item = JSON.parse(localStorage.getItem(key) || "{}");
-            if (item?.access_token) {
-              token = item.access_token;
-              break;
-            }
-          }
-        }
-      } catch {
-        // ignore parse error
-      }
-    }
-
+    const token = session?.access_token;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }

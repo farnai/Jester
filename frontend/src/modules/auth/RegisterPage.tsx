@@ -162,11 +162,7 @@ export const RegisterPage: React.FC = () => {
         place_label: placeLabel || null,
       };
 
-      await API.astrology.saveBirthData(
-        activeUser.id,
-        birthPayload,
-        activeSession?.access_token
-      );
+      await API.astrology.saveBirthData(activeUser.id, birthPayload);
 
       // 4. Update auth state and refresh
       setHasBirthData(true);

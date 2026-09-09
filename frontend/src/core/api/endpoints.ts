@@ -51,7 +51,7 @@ export const API = {
         `/v1/astrology/people/${targetUserId}/safe-astro`
       ),
     // Direct birth data persistence through Supabase client with owner RLS
-    saveBirthData: async (userId: string, data: BirthDataPayload, token?: string) => {
+    saveBirthData: async (userId: string, data: BirthDataPayload) => {
       const { error } = await supabase.from("birth_data").upsert({
         user_id: userId,
         birth_date: data.birth_date,
@@ -66,14 +66,10 @@ export const API = {
       if (error) {
         throw new Error(error.message);
       }
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
       // Trigger Swiss Ephemeris recalculation immediately after saving birth data
       return apiRequest<SafeDerivedAstrologyResponse>(
         "/v1/astrology/profile/recalculate",
-        { method: "POST", headers }
+        { method: "POST" }
       );
     },
     checkHasBirthData: async (userId: string): Promise<boolean> => {
