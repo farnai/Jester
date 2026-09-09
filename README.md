@@ -211,6 +211,7 @@ Executes `tsc` type checking and `vite build` to guarantee zero compile-time err
 - **Zero Raw Data Exposure:** `public.birth_data` contains private, user-owned birth parameters. It is never exposed in profile views, compatibility payloads, or public discovery.
 - **Server-Controlled Astrology:** `public.astro_private` exact degrees and houses are accessed exclusively by server calculation logic. Clients only receive the safe `SafeDerivedAstrologyResponse`.
 - **Production JWT Verification:** Production mode strictly enforces asymmetric JWT/JWKS verification. HS256 is restricted to development/test fixtures.
+- **Comprehensive Policy:** For full architectural details, role privilege matrices, existence oracle elimination, and vulnerability disclosure, see [**SECURITY.md**](SECURITY.md).
 
 ---
 

@@ -40,7 +40,7 @@ JESTER enforces a zero-trust, stateless token validation architecture powered by
 ### 2. Subject & Claims Validation
 - Decodes the `sub` claim and verifies that it is a valid UUID (`user_id`).
 - Extracts tenant roles (`authenticated`, `copywriter`, `admin`, `service_role`).
-- Populates the trusted `AuthenticatedUser` dependency for downstream route authorization.
+- Populates the trusted [`AuthenticatedUser`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/auth/models.py) dependency for downstream route authorization.
 
 ---
 
@@ -99,7 +99,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
   Any attempt by a client or standard database role to query `astro_private` raises an immediate `InsufficientPrivilege` PostgreSQL error.
 
 ### 3. Safe Profile Derivation (6 Core Planets)
-- **Invariant:** Other users and discovery cards only receive safe, non-inverting derived profiles (`SafeDerivedAstrologyResponse`).
+- **Invariant:** Other users and discovery cards only receive safe, non-inverting derived profiles ([`SafeDerivedAstrologyResponse`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/frontend/src/core/api/types.ts#L35)).
 - **Planetary Protection:** All 6 core personality planets (**Sun**, **Moon**, **Ascendant**, **Mercury**, **Venus**, **Mars**) expose only their categorical zodiac sign (e.g. `Aries`, `Scorpio`) and dominant element/modality. Raw numerical degrees are never serialized to the client.
 
 ### 4. Elimination of Existence Oracles (Block & Privacy Semantics)
@@ -153,13 +153,13 @@ To prevent search path hijacking and privilege escalation in PostgreSQL function
 
 Security policies are tested continuously in the automated test suite (`193 passed tests`):
 
-1. **Database RLS & Isolation Suite (`tests/database/test_database_security.py`):**
+1. **Database RLS & Isolation Suite ([`tests/database/test_database_security.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/database/test_database_security.py)):**
    - Verifies that User A cannot select, insert, or update User B's `public.birth_data`.
    - Confirms that direct `SELECT` on `public.astro_private` from authenticated client roles fails with `InsufficientPrivilege`.
    - Validates that blocking masks profiles, compatibility records, and direct messages as 404s.
    - Tests that canonical connections cannot be modified by arbitrary SQL updates.
 
-2. **JWT & Auth Verification Suite (`tests/backend/test_jwt_verification.py`):**
+2. **JWT & Auth Verification Suite ([`tests/backend/test_jwt_verification.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/backend/test_jwt_verification.py)):**
    - Asserts asymmetric JWKS key fetching in production.
    - Verifies that HS256 tokens are rejected in production mode.
    - Verifies expiration, invalid signature, and malformed header rejections.
