@@ -13,7 +13,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "ამ ადამიანის გარშემო ისეთი პირდაპირი მუხტი ტრიალებს, თითქოს მოთმინება პირადი შეურაცხყოფა იყოს. გაიგეთ, რა იმალება ამ შეუჩერებელი იმპულსის მიღმა."
+    "text": "ამ ადამიანის გარშემო ისეთი პირდაპირი მუხტი ტრიალებს, თითქოს მოთმინება პირადი შეურაცხყოფა იყოს. ნახეთ, როგორ უმკლავდება ეს დაუღალავი ტემპი რეალურ კონტაქტს."
   },
   {
     "asset_id": "discovery.person.presence.taurus.v1",
@@ -29,7 +29,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "შთამბეჭდავი სიმშვიდე და ურყევი მზერა, რომელსაც ოთახში აჩქარებული ქაოსი ვერაფერს აკლებს. გაიგეთ, რაზე დგას ეს ურყევი თავდაჯერება."
+    "text": "შთამბეჭდავი სიმშვიდე და ურყევი მზერა, რომელსაც ოთახში აჩქარებული ქაოსი ვერაფერს აკლებს. ნახეთ, როგორ ჩანს ეს მყარი, ძნელად შესარყევი მანერა უშუალო კონტაქტში."
   },
   {
     "asset_id": "discovery.person.presence.gemini.v1",
@@ -45,7 +45,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "მოუსვენარი ინტელექტუალური ცნობისმოყვარეობა და მზერა, რომელიც სივრცეში ყველაფერს ერთდროულად აკვირდება. გაიგეთ, რა იდეები ტრიალებს ამ გონებაში."
+    "text": "მოუსვენარი მზერა და ელვისებური რიტმი, რომელიც სივრცეში ყველაფერს ერთდროულად იჭერს. ნახეთ, რამდენად შეძლებს ეს მოფარფატე ყურადღება ერთ წერტილზე გაჩერებას."
   },
   {
     "asset_id": "discovery.person.presence.cancer.v1",
@@ -61,7 +61,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "ფრთხილი და დაკვირვებული დისტანცია, რომლის მიღმაც საოცრად მკვეთრი ინტუიცია იმალება. გაიგეთ, ვის უშვებს ეს ადამიანი საკუთარ სამყაროში."
+    "text": "ფრთხილი დისტანცია და უსიტყვო დაკვირვება, თითქოს ოთახში ტემპერატურას ზომავდეს. ნახეთ, როგორ იცვლება ეს თავდაცვითი პოზა, როცა დიალოგი ახლოვდება."
   },
   {
     "asset_id": "discovery.person.presence.leo.v1",
@@ -77,7 +77,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, აქ შემოსვლისთანავე მთელი ოთახის ყურადღება მოითხოვება. გაიგეთ, რამდენად შეესაბამება ეს ბუნებრივი თეატრალურობა შინაგან რეალობას."
+    "text": "დიდებულო მბრძანებელო, აქ შემოსვლისთანავე მთელი სივრცის ყურადღება მოითხოვება. ნახეთ, რამდენად ეყოფა ამ თეატრალურ ბრწყინვალებას ენერგია, როცა სცენის განათება ჩაქრება."
   },
   {
     "asset_id": "discovery.person.presence.virgo.v1",
@@ -93,7 +93,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "ქირურგიულად ზუსტი მზერა, რომელიც ნებისმიერ ზედაპირულ თამაშს პირველივე წამიდან შიფრავს. გაიგეთ, რა სტანდარტებს იცავს ეს თავშეკავებული იერი."
+    "text": "ქირურგიულად ზუსტი მზერა და გაწონასწორებული იერი, რომელიც ნებისმიერ ზედაპირულობას მომენტალურად შენიშნავს. ნახეთ, როგორ მუშაობს ეს უნაკლო ფილტრი უშუალო ურთიერთობაში."
   },
   {
     "asset_id": "discovery.person.presence.libra.v1",
@@ -109,7 +109,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "უზადო ესთეტიკა და დიპლომატიური ღიმილი, რომლის მიღმაც მკაცრი შინაგანი სასწორი მუშაობს. გაიგეთ, სინამდვილეში რა იზიდავს ამ ადამიანს."
+    "text": "უზადო ესთეტიკა და დახვეწილი ღიმილი, რომელიც სივრცეში ნებისმიერ უხეშ კუთხეს წამებში ასწორებს. ნახეთ, როგორ იქცევა ეს გაპრიალებული დიპლომატია, როცა მკაფიო პოზიციაა ასარჩევი."
   },
   {
     "asset_id": "discovery.person.presence.scorpio.v1",
@@ -125,7 +125,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "გამჭოლი და შეუბრალებელი მზერა, რომელიც ოთახში მყოფთა განზრახვებს უსიტყვოდ სკანირებს. გაიგეთ, რა იმალება ამ დაძაბული სიჩუმის მიღმა."
+    "text": "გამჭოლი, მძიმე მზერა და დაძაბული სიჩუმე, რომელიც ოთახში შემოსვლისთანავე ჰაერს ამძიმებს. ნახეთ, რა რეაქცია ექნება ამ უკომპრომისო მანერას, როცა ვინმე თვალს არ აარიდებს."
   },
   {
     "asset_id": "discovery.person.presence.sagittarius.v1",
@@ -141,7 +141,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "ინფექციური აზარტი და თავისუფალი სივრცის მუდმივი ძიება, რომელსაც საზღვრები ვერ აკავებს. გაიგეთ, საით მიემართება ეს ამოუწურავი ენერგია."
+    "text": "ინფექციური აზარტი და გადამდები ხმაური, რომელსაც ოთახის კედლები აშკარად ევიწროება. ნახეთ, საით გადაისვრის ეს დაუმორჩილებელი ენერგია, თუ პირისპირ აღმოჩნდებით."
   },
   {
     "asset_id": "discovery.person.presence.capricorn.v1",
@@ -157,7 +157,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "მკაცრი თავშეკავება და მიზანმიმართული სიმშვიდე, რომელიც უსიტყვო ავტორიტეტს ასხივებს. გაიგეთ, რა ამბიცია წარმართავს ამ თავშეკავებულ ძალას."
+    "text": "მკაცრი თავშეკავება და მიზანმიმართული სიმშვიდე, რომელიც უსიტყვო დისტანციას მომენტალურად აწესებს. ნახეთ, რამდენად გაუძლებს ეს გაყინული ავტორიტეტი ცოცხალ, თავხედურ საუბარს."
   },
   {
     "asset_id": "discovery.person.presence.aquarius.v1",
@@ -173,7 +173,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, ეს ადამიანი ნაცნობ ჩარჩოებს უბრალოდ უგულებელყოფს. გაიგეთ, რა მოულოდნელი ხედვა იმალება ამ დამოუკიდებელი აურის მიღმა."
+    "text": "დიდებულო მბრძანებელო, ეს ადამიანი ნაცნობ სოციალურ წესებს ისე უყურებს, თითქოს უცხო პლანეტის რიტუალები იყოს. ნახეთ, რამდენად ეყოფა ეს გამომწვევი უცნაურობა რეალურ დიალოგს."
   },
   {
     "asset_id": "discovery.person.presence.pisces.v1",
@@ -189,7 +189,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": false,
-    "text": "ამოუცნობი მზერა და იდუმალი დისტანცია, თითქოს ფიქრებით ყოველთვის სხვა განზომილებაში იყოს. გაიგეთ, რა იმალება ამ ამოუხსნელი აურის მიღმა."
+    "text": "ამოუცნობი მზერა და ნახევრად არმყოფი იერი, თითქოს საუბრისას პარალელურ რეალობას უსმენდეს. ნახეთ, როგორ იგრძნობა ეს რბილი, მოუხელთებელი მანერა უშუალო საუბარში."
   },
   {
     "asset_id": "connection.invitation.communication.v1",
@@ -237,7 +237,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "authentic_resonance_invitation",
     "false_respect_used": false,
-    "text": "თქვენ შორის იშვიათი შინაგანი თანხვედრა და ემოციური უსაფრთხოება იკვეთება. გაუგზავნეთ მოთხოვნა, რათა ზედმეტი ნიღბების გარეშე დაიწყოთ ნამდვილი, გულწრფელი საუბარი."
+    "text": "თქვენ შორის საოცრად მშვიდი, უპრეტენზიო თანხვედრა ჩანს. დაუკავშირდით, თუ გაინტერესებთ, რამდენად ბუნებრივად იმუშავებს ეს სიმარტივე პირისპირ საუბარში."
   },
   {
     "asset_id": "connection.invitation.harmony.v2",
@@ -253,7 +253,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "disarmed_ease_invitation",
     "false_respect_used": false,
-    "text": "ასეთი ბუნებრივი გაგება იშვიათია — თქვენს თავდაცვის მექანიზმებს აქ დასვენების შანსი აქვთ. დაუკავშირდით, რომ ეს უსიტყვო რეზონანსი რეალურ კავშირად აქციოთ."
+    "text": "ურთიერთგაგების ასეთი იშვიათი, უდარდელი სიმსუბუქე ხშირად არ გვხვდება. გაუგზავნეთ მოწვევა, თუ გაინტერესებთ, როგორ გამოჩნდება ეს სიმარტივე რეალურ საუბარში."
   },
   {
     "asset_id": "connection.invitation.attraction.v1",
@@ -269,7 +269,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "creative_momentum_invitation",
     "false_respect_used": false,
-    "text": "თქვენი დინამიკა პირდაპირ საერთო მოძრაობას, შემოქმედებით მუხტსა და ქიმიას ითხოვს. გაუგზავნეთ მოთხოვნა, რათა ეს ცოცხალი ენერგია გაცნობის მომენტშივე გააქტიურდეს."
+    "text": "თქვენ შორის ცოცხალი შემოქმედებითი ნაპერწკალი და საერთო ტემპი ჩანს. გაუგზავნეთ მოწვევა, თუ გაინტერესებთ, რამდენად აინთება ეს ქიმია რეალურ დიალოგში."
   },
   {
     "asset_id": "connection.invitation.attraction.v2",
@@ -301,7 +301,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "grounded_partnership_invitation",
     "false_respect_used": false,
-    "text": "თქვენს კავშირში იგრძნობა სიმშვიდე, საიმედო საყრდენი და ურთიერთპატივისცემა. გაუგზავნეთ მოთხოვნა, რათა დაიწყოთ არსებითი, მყარი და გრძელვადიანი ურთიერთობა."
+    "text": "თქვენს დინამიკაში გაწონასწორებული სიმშვიდე და ურთიერთპატივისცემა ჩანს. დაუკავშირდით, თუ გსურთ შეამოწმოთ, რამდენად საიმედოა ეს საძირკველი საუბრისას."
   },
   {
     "asset_id": "connection.invitation.stability.v2",
@@ -317,7 +317,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "substantive_contact_invitation",
     "false_respect_used": false,
-    "text": "აქ არავინ აპირებს ქაოსის შექმნას — ეს არის იშვიათი წონასწორობა. დაუკავშირდით, თუ ეძებთ ადამიანს, ვისთანაც დიალოგი მყარ, გააზრებულ საძირკველზე აიგება."
+    "text": "აქ უსარგებლო დრამისა და ზედმეტი ხმაურის გარეშე ურთიერთობის შანსი იკვეთება. გაუგზავნეთ მოწვევა, თუ აუჩქარებელი და გააზრებული კომუნიკაცია გაინტერესებთ."
   },
   {
     "asset_id": "connection.invitation.friction.v1",
@@ -589,7 +589,7 @@
     "aspect_modifier": "soft",
     "relational_mechanism": "playful_spark_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა არის ისეთი მარტივი ესთეტიკური დეტალი, რაც მომენტალურად გიპყრობს ყურადღებას?"
+    "text": "დიდებულო მბრძანებელო, როცა ორ ადამიანს შორის ნაპერწკალი ჩნდება, ინიციატივის აღება გირჩევნია თუ თამაშში ჩათრევას ელოდები?"
   },
   {
     "asset_id": "relationship.attraction.strong_chemistry.starter.tense.v1",
@@ -637,7 +637,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "aesthetic_pleasure_prompt",
     "false_respect_used": false,
-    "text": "რა არის ისეთი მარტივი, ყოველდღიური სიამოვნება, რომელიც შენთვის ყოველთვის უცვლელად მუშაობს?"
+    "text": "რა უფრო მარტივად გიქმნის ადამიანთან სიმყუდროვეს — უსიტყვო საერთო რიტმი თუ მუდმივი ყურადღების ჟესტები?"
   },
   {
     "asset_id": "relationship.attraction.warm_affection.starter.v2",
@@ -653,7 +653,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "comfort_ambiance_prompt",
     "false_respect_used": false,
-    "text": "როგორი ესთეტიკა ან გარემო გაძლევს განცდას, რომ დრო შეგიძლია შეაჩერო და უბრალოდ დატკბე?"
+    "text": "ადამიანთან ურთიერთობისას რა განიჭებს მეტ სითბოს — როცა შენს გემოვნებას უსიტყვოდ იზიარებს, თუ როცა ახალ სიამოვნებას გაზიარებს?"
   },
   {
     "asset_id": "relationship.harmony.gentle_affinity.starter.v1",
@@ -669,7 +669,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "emotional_equilibrium_prompt",
     "false_respect_used": false,
-    "text": "როგორი მუსიკა, ხელოვნება ან გარემო გიბრუნებს ხოლმე შინაგან წონასწორობას ყველაზე მარტივად?"
+    "text": "რა უფრო სწრაფად გიხსნის დაძაბულობას ადამიანთან — მშვიდი, უსიტყვო თანაარსებობა თუ გულწრფელი, თბილი საუბარი?"
   },
   {
     "asset_id": "relationship.harmony.gentle_affinity.starter.v2",
@@ -925,7 +925,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "festive_joy_prompt",
     "false_respect_used": false,
-    "text": "როგორია შენი წარმოდგენით მართლაც გულუხვი, დაუვიწყარი და თავისუფალი დღე?"
+    "text": "ადამიანთან ურთიერთობაში რა უფრო მეტად გაძლევს გულუხვობის სურვილს — როცა სითბოს თავისუფლად ცვლით, თუ როცა ერთად რაღაც განსაკუთრებულს უზიარებთ?"
   },
   {
     "asset_id": "relationship.harmony.generous_affection.starter.v2",
@@ -941,7 +941,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "pure_delight_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა არის ისეთი გამოცდილება, რომელიც ყოველთვის წმინდა სიხარულს განიჭებს?"
+    "text": "დიდებულო მბრძანებელო, რა უფრო გიხალისებს ადამიანთან ურთიერთობას — ერთობლივი აბსურდული იუმორი თუ გრანდიოზული, გულუხვი ჟესტები?"
   },
   {
     "asset_id": "relationship.attraction.intense_magnetism.starter.v1",
@@ -957,7 +957,7 @@
     "aspect_modifier": "intensity",
     "relational_mechanism": "psychological_depth_prompt",
     "false_respect_used": false,
-    "text": "როგორი ისტორიები ან ხელოვნება ახერხებს შენი ემოციების ყველაზე ღრმა შრეებამდე შეღწევას?"
+    "text": "რა სახის მზერა ან უსიტყვო დაძაბულობა გაგრძნობინებს, რომ ადამიანთან ზედაპირული თამაში აღარ გამოვა?"
   },
   {
     "asset_id": "relationship.attraction.intense_magnetism.starter.v2",
@@ -973,7 +973,7 @@
     "aspect_modifier": "intensity",
     "relational_mechanism": "fundamental_truth_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, როგორ არჩევ ხოლმე ადამიანში ნამდვილ, ფუნდამენტურ სიმართლეს ზედაპირული იმიჯისგან?"
+    "text": "დიდებულო მბრძანებელო, რა უფრო გაგრძნობინებს, რომ ადამიანთან ზედაპირული თამაში აღარ გამოგივა — ძლიერი მზიდულობა თუ ის განცდა, რომ ერთმანეთის დანახვა ზედმეტად მარტივად გამოგდით?"
   },
   {
     "asset_id": "relationship.stability.long_term_grounding.starter.v1",
@@ -989,7 +989,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "patient_mastery_prompt",
     "false_respect_used": false,
-    "text": "რა გრძელვადიანი საქმის ან ოსტატობის შენებას უთმობ ყველაზე დიდ მოთმინებას?"
+    "text": "ადამიანთან ნდობის შენებისას რა არის შენთვის მთავარი საზომი — სიტყვის ურყევობა თუ დროით გამოცდილი ქცევა?"
   },
   {
     "asset_id": "relationship.stability.long_term_grounding.starter.v2",
