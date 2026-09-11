@@ -267,6 +267,7 @@ export interface ComparePreviewResponse {
     interpretation_id?: string;
   }>;
   interpretation: ResolvedInterpretationModel;
+  connection_invitation?: ResolvedInterpretationModel;
   best_topics: string[];
   conversation_starters: string[];
   data_quality: {

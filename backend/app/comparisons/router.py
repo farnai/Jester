@@ -111,6 +111,10 @@ async def compare_users(
                 seed=pair_seed,
             )
 
+            cached_starters = interpretation_engine.resolve_conversation_starters(
+                raw_signals, seed=pair_seed
+            ) or (existing["conversation_starters"] if isinstance(existing["conversation_starters"], list) else [])
+
             return StructuredCompatibilityResponse(
                 id=existing["id"],
                 target_user_id=payload.target_user_id,
@@ -119,7 +123,7 @@ async def compare_users(
                 signals=enriched_signals,
                 interpretation=primary_interpretation,
                 best_topics=existing["best_topics"] if isinstance(existing["best_topics"], list) else [],
-                conversation_starters=existing["conversation_starters"] if isinstance(existing["conversation_starters"], list) else [],
+                conversation_starters=cached_starters,
                 data_quality=data_quality,
                 deep_analysis=deep_payload,
                 engine_version=existing["engine_version"],
@@ -155,6 +159,10 @@ async def compare_users(
             person_b_placements=astro_rows[user_b],
         )
 
+        starters = interpretation_engine.resolve_conversation_starters(
+            calc_result.signals, seed=pair_seed
+        )
+
         # Upsert result into public.compatibility_results
         cur.execute(
             """
@@ -187,7 +195,7 @@ async def compare_users(
                 Jsonb(calc_result.dimensions),
                 Jsonb(calc_result.signals),
                 Jsonb(calc_result.best_topics),
-                Jsonb(calc_result.conversation_starters),
+                Jsonb(starters),
                 Jsonb(calc_result.evidence_trace),
             ),
         )
@@ -213,7 +221,7 @@ async def compare_users(
             signals=enriched_signals,
             interpretation=primary_interpretation,
             best_topics=calc_result.best_topics,
-            conversation_starters=calc_result.conversation_starters,
+            conversation_starters=starters,
             data_quality=calc_result.data_quality,
             deep_analysis=deep_payload,
             engine_version=calc_result.engine_version,

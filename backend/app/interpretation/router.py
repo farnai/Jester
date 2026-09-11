@@ -502,33 +502,23 @@ async def get_discovery_people(
                     person_b_placements=target_placements,
                 )
                 score = round(calc.score, 1)
-
-                # Relationship-level hook (ME -> YOU synastry signal / dynamic) with feed deduplication
-                pair_seed = f"{min(str(calculation_viewer_id), str(pid))}:{max(str(calculation_viewer_id), str(pid))}:{viewer_bd['data_version']}:{target_bd['data_version']}"
-                hook_res = interpretation_engine.get_primary_relationship_interpretation(
-                    score=score,
-                    signals=calc.signals,
-                    context="discovery",
-                    locale="ka",
-                    seed=pair_seed,
-                    used_interpretation_ids=feed_used_interpretation_ids,
-                    used_signal_types=feed_used_signal_types,
-                    used_asset_ids=feed_used_asset_ids,
-                )
             except Exception:
                 score = 60.0
 
-        # Fallback to natal hook if synastry or relationship hook was unavailable
-        if not hook_res:
-            hook_res = content_library.resolve(
-                interpretation_id=f"self.identity.sun_{sun.lower()}.v1",
-                context="discovery",
-                locale="ka",
-                seed=str(pid),
-                exclude_asset_ids=feed_used_asset_ids,
-            ) or content_library.resolve_text(f"self.identity.sun_{sun.lower()}.v1")
-            if hook_res and hook_res.content_asset_id:
-                feed_used_asset_ids.add(hook_res.content_asset_id)
+        # Batch 7 Discovery Presence Hook:
+        # 1. Candidate Ascendant sign
+        # 2. If Ascendant unavailable, candidate Sun sign
+        # 3. Fallback to established default sign
+        candidate_asc = r.get("ascendant_sign")
+        candidate_sun = r.get("sun_sign")
+        target_sign = (candidate_asc or candidate_sun or sun or "aries").strip().lower()
+        discovery_interp_id = f"discovery.person.presence.{target_sign}.v1"
+        hook_res = content_library.resolve(
+            interpretation_id=discovery_interp_id,
+            context="discovery",
+            locale="ka",
+            seed=str(pid),
+        )
 
         people_list.append({
             "id": str(pid),
@@ -672,12 +662,26 @@ async def compare_preview(
         seed=pair_seed,
     )
 
+    calc_seed = f"{pair_seed}:{calc_result.score}:{calc_result.signals[0]['type'] if calc_result.signals else 'none'}"
+
     primary_interp = interpretation_engine.get_primary_relationship_interpretation(
         score=calc_result.score,
         signals=calc_result.signals,
         locale=payload.locale,
         tone=payload.tone,
-        seed=pair_seed,
+        seed=calc_seed,
+    )
+
+    conn_invitation = interpretation_engine.resolve_connection_invitation(
+        signals=calc_result.signals,
+        seed=calc_seed,
+        locale=payload.locale or "ka",
+    )
+
+    conversation_starters = interpretation_engine.resolve_conversation_starters(
+        signals=calc_result.signals,
+        seed=calc_seed,
+        locale=payload.locale or "ka",
     )
 
     deep_payload = interpretation_engine.build_deep_analysis_payload(
@@ -697,8 +701,9 @@ async def compare_preview(
         "dimensions": calc_result.dimensions,
         "signals": enriched_signals,
         "interpretation": primary_interp.model_dump(),
+        "connection_invitation": conn_invitation.model_dump() if conn_invitation else None,
         "best_topics": calc_result.best_topics,
-        "conversation_starters": calc_result.conversation_starters,
+        "conversation_starters": conversation_starters,
         "data_quality": calc_result.data_quality,
         "deep_analysis": deep_payload.model_dump(),
         "engine_version": calc_result.engine_version,

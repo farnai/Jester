@@ -6,6 +6,7 @@ Decouples astronomical truth from user-facing copy.
 import hashlib
 from typing import Any
 
+from backend.app.compatibility.rules import DEFAULT_CONVERSATION_STARTERS
 from backend.app.interpretation.contracts import INTERPRETATION_CONTRACTS
 from backend.app.interpretation.library import content_library
 from backend.app.interpretation.models import (
@@ -781,6 +782,143 @@ class InterpretationEngine:
             tone=tone,
             seed=seed,
         ) or self.library.resolve_text(interp_id)
+
+    def resolve_connection_invitation(
+        self,
+        signals: list[dict[str, Any]],
+        seed: str | None = None,
+        locale: str = "ka",
+    ) -> ResolvedInterpretation | None:
+        """
+        Resolves a Batch 7 connection invitation based on the dominant Batch 6 synastry signal.
+        Category mapping:
+        - communication -> connection.invitation.communication.v1
+        - harmony -> connection.invitation.harmony.v1
+        - attraction -> connection.invitation.attraction.v1
+        - stability -> connection.invitation.stability.v1
+        - growth / friction -> connection.invitation.friction.v1
+        - notice / insufficient_aspects -> connection.invitation.independent.v1
+        """
+        dominant_cat = None
+        for sig in signals:
+            sig_type = sig.get("type", "")
+            if sig_type == "insufficient_aspects":
+                dominant_cat = "notice"
+                break
+            cat = sig.get("category", "").lower()
+            if cat:
+                dominant_cat = cat
+                break
+
+        if not dominant_cat or dominant_cat in ("notice", "insufficient_aspects"):
+            invitation_interp_id = "connection.invitation.independent.v1"
+        elif dominant_cat == "communication":
+            invitation_interp_id = "connection.invitation.communication.v1"
+        elif dominant_cat == "harmony":
+            invitation_interp_id = "connection.invitation.harmony.v1"
+        elif dominant_cat == "attraction":
+            invitation_interp_id = "connection.invitation.attraction.v1"
+        elif dominant_cat == "stability":
+            invitation_interp_id = "connection.invitation.stability.v1"
+        elif dominant_cat in ("growth", "friction"):
+            invitation_interp_id = "connection.invitation.friction.v1"
+        else:
+            invitation_interp_id = "connection.invitation.independent.v1"
+
+        return self.library.resolve(
+            interpretation_id=invitation_interp_id,
+            context="connection",
+            locale=locale,
+            seed=seed,
+        )
+
+    def resolve_conversation_starters(
+        self,
+        signals: list[dict[str, Any]],
+        seed: str | None = None,
+        locale: str = "ka",
+    ) -> list[str]:
+        """
+        Resolves up to 3 conversation starters from Batch 7 chat starter assets
+        corresponding to active relational signals.
+        If fewer than 3 starters exist from active signals, fills up with Batch 7 fallback starters.
+        """
+        starters: list[str] = []
+        seen_texts: set[str] = set()
+        used_asset_ids: set[str] = set()
+
+        # Pass 1: Select primary starter from each active signal in order
+        for idx, sig in enumerate(signals):
+            if len(starters) >= 3:
+                break
+            sig_type = sig.get("type", "")
+            interp_id = self.signal_to_interpretation_id(sig_type)
+            if not interp_id:
+                continue
+
+            sig_seed = f"{seed}:starter:{idx}:{interp_id}" if seed else None
+            resolved = self.library.resolve(
+                interpretation_id=interp_id,
+                context="chat",
+                locale=locale,
+                seed=sig_seed,
+                exclude_asset_ids=used_asset_ids,
+            )
+            if resolved and resolved.text and resolved.text not in seen_texts:
+                starters.append(resolved.text)
+                seen_texts.add(resolved.text)
+                if resolved.content_asset_id:
+                    used_asset_ids.add(resolved.content_asset_id)
+
+        # Pass 2: If < 3, check if active signals have additional unused variants
+        if len(starters) < 3:
+            for idx, sig in enumerate(signals):
+                if len(starters) >= 3:
+                    break
+                sig_type = sig.get("type", "")
+                interp_id = self.signal_to_interpretation_id(sig_type)
+                if not interp_id:
+                    continue
+
+                candidates = self.library.store.list_assets(
+                    interpretation_id=interp_id,
+                    locale=locale,
+                    context="chat",
+                    include_archived=False,
+                )
+                for cand in candidates:
+                    if cand.asset_id not in used_asset_ids and cand.text and cand.text not in seen_texts:
+                        starters.append(cand.text)
+                        seen_texts.add(cand.text)
+                        used_asset_ids.add(cand.asset_id)
+                        if len(starters) >= 3:
+                            break
+
+        # Pass 3: If still < 3, use frozen Batch 7 fallback starters
+        if len(starters) < 3:
+            for fallback_aid in (
+                "chat.starter.fallback.v1",
+                "chat.starter.fallback.v2",
+                "chat.starter.fallback.v3",
+            ):
+                if len(starters) >= 3:
+                    break
+                asset = self.library.store.get_asset(fallback_aid)
+                if asset and asset.text and asset.text not in seen_texts:
+                    starters.append(asset.text)
+                    seen_texts.add(asset.text)
+                    used_asset_ids.add(asset.asset_id)
+
+        # Isolated fallback branch for non-Batch-7 legacy test environments
+        if len(starters) < 3:
+            for fallback in DEFAULT_CONVERSATION_STARTERS:
+                if fallback not in seen_texts:
+                    starters.append(fallback)
+                    seen_texts.add(fallback)
+                    if len(starters) >= 3:
+                        break
+
+        return starters[:3]
 
 
 # Global singleton engine

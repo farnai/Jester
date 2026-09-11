@@ -211,6 +211,34 @@ class InMemoryContentStore(ContentStore):
                 except Exception:
                     pass
 
+        # Ingest Batch 7 surface rendering corpus (discovery presence, connection invitation, chat starters)
+        batch_7_path = Path(__file__).parent / "data" / "batches" / "batch_7_discovery_connection_chat.json"
+        if batch_7_path.exists():
+            try:
+                with open(batch_7_path, "r", encoding="utf-8") as f:
+                    batch_7_items = json.load(f)
+                for item in batch_7_items:
+                    aid = item.get("asset_id")
+                    if aid and aid not in self._assets:
+                        surface = item.get("surface", "relationship")
+                        item["context"] = surface
+                        item.setdefault("status", "approved")
+                        item.setdefault("priority", 100)
+                        item.setdefault("locale", "ka")
+                        tags = [
+                            "batch_7",
+                            f"surface:{surface}",
+                            f"layer:{item.get('layer', '')}",
+                            f"category:{item.get('category', '')}",
+                        ]
+                        if item.get("aspect_modifier"):
+                            tags.append(f"aspect:{item['aspect_modifier']}")
+                        item["tags"] = tags
+                        asset = ContentAsset(**item)
+                        self.save_asset(asset)
+            except Exception:
+                pass
+
     def get_asset(self, asset_id: str) -> ContentAsset | None:
         with self._lock:
             asset = self._assets.get(asset_id)
@@ -293,6 +321,8 @@ INTERPERSONAL_CONTEXTS = {
     "onboarding",
     "share",
     "notification",
+    "chat",
+    "connection",
 }
 PERSONAL_CONTEXTS = {"daily_energy", "self", "natal"}
 
@@ -360,7 +390,7 @@ class ContentResolver:
 
         # 3. Context matching & safe fallback within compatible domain family
         context_candidates = [c for c in candidates if c.context == req_context]
-        if not context_candidates and candidates:
+        if not context_candidates and candidates and req_context not in ("chat", "connection", "discovery"):
             if is_contract_relational:
                 # Fall back to canonical relationship context
                 context_candidates = [c for c in candidates if c.context == "relationship"]
@@ -493,8 +523,13 @@ class ContentLibrary:
                 interp_id,
                 "საინტერესო კავშირია — დაკვირვება და ურთიერთგაგება საუკეთესო შედეგს მოიტანს.",
             )
-            # Find any approved asset in the store
-            assets = self.store.list_assets(interpretation_id=interp_id, locale="ka")
+            # Find any approved asset in the store matching contract's context
+            contract_context = contract.context if contract else "relationship"
+            assets = self.store.list_assets(
+                interpretation_id=interp_id,
+                context=contract_context,
+                locale="ka",
+            )
             approved = next((a for a in assets if a.status == "approved" and not a.archived), None)
             final_text = approved.text if approved else None
             final_status: ContentStatus = "approved" if approved else "not_reviewed"

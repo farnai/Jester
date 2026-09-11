@@ -18,6 +18,8 @@ SignalContext = Literal[
     "onboarding",
     "self",
     "natal",
+    "chat",
+    "connection",
 ]
 
 

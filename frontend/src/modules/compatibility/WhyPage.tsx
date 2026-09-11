@@ -95,6 +95,7 @@ export const WhyPage: React.FC = () => {
           return {
             score: preview.score,
             interpretation: preview.interpretation,
+            connection_invitation: preview.connection_invitation,
             signals: preview.signals || [],
             best_topics: preview.best_topics || [],
             conversation_starters: preview.conversation_starters || [],
@@ -465,7 +466,7 @@ export const WhyPage: React.FC = () => {
                 ? "მოთხოვნის დადასტურების შემდეგ გაიხსნება პირადი ჩატი."
                 : relState === "pending_in"
                 ? "დაადასტურეთ მოთხოვნა სასაუბროდ."
-                : "გაგზავნეთ მოთხოვნა, რომ ინსაითი გადაიქცეს რეალურ საუბრად."}
+                : data.connection_invitation?.text || "გაგზავნეთ მოთხოვნა, რომ ინსაითი გადაიქცეს რეალურ საუბრად."}
             </div>
           </div>
 
