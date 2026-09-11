@@ -56,6 +56,7 @@ def verify_supabase_jwt(token: str) -> AuthenticatedUser:
                 signing_key.key,
                 algorithms=[alg],
                 options={"verify_exp": True, "verify_aud": False},
+                leeway=2,
             )
         except PyJWKClientError as e:
             # Under NO circumstances fall back to HS256 for asymmetric tokens
@@ -84,6 +85,7 @@ def verify_supabase_jwt(token: str) -> AuthenticatedUser:
                 secret,
                 algorithms=["HS256"],
                 options={"verify_exp": True, "verify_aud": False},
+                leeway=2,
             )
         except ExpiredSignatureError:
             raise UnauthorizedException(message="Token has expired", error_code="token_expired")
