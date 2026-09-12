@@ -420,6 +420,13 @@ async def get_daily_energy_interpretation(
     curr_arch = next((a for a in DAILY_ENERGY_ARCHETYPES if a["id"] == effective_energy_type), DAILY_ENERGY_ARCHETYPES[0])
     guidance = get_daily_guidance(effective_energy_type, locale=locale)
 
+    if primary_transit:
+        detection_mode = "real_transit"
+    elif effective_energy_type == "neutral":
+        detection_mode = "neutral_baseline"
+    else:
+        detection_mode = "fallback_sun_sign"
+
     return {
         "date": calc_date.isoformat(),
         "archetype": effective_energy_type,
@@ -430,6 +437,7 @@ async def get_daily_energy_interpretation(
         "available_archetypes": DAILY_ENERGY_ARCHETYPES,
         "primary_transit": primary_transit,
         "supporting_transits": supporting_transits,
+        "detection_mode": detection_mode,
         "do": guidance["do"],
         "dont": guidance["dont"],
     }
@@ -626,6 +634,8 @@ async def get_discovery_people(
             },
             "compatibility_score": score,
             "hook_observation": hook_res.model_dump() if hook_res else None,
+            "presence_sign_source": "ascendant" if candidate_asc else ("sun" if candidate_sun else "fallback"),
+            "presence_sign": target_sign,
         })
 
     return people_list
@@ -774,6 +784,12 @@ async def compare_preview(
         locale=payload.locale or "ka",
     )
 
+    conversation_starter_details = interpretation_engine.resolve_conversation_starter_details(
+        signals=calc_result.signals,
+        seed=calc_seed,
+        locale=payload.locale or "ka",
+    )
+
     deep_payload = interpretation_engine.build_deep_analysis_payload(
         score=calc_result.score,
         signals=calc_result.signals,
@@ -794,6 +810,7 @@ async def compare_preview(
         "connection_invitation": conn_invitation.model_dump() if conn_invitation else None,
         "best_topics": calc_result.best_topics,
         "conversation_starters": conversation_starters,
+        "conversation_starter_details": conversation_starter_details,
         "data_quality": calc_result.data_quality,
         "deep_analysis": deep_payload.model_dump(),
         "engine_version": calc_result.engine_version,

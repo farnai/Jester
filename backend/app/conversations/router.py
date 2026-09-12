@@ -140,6 +140,38 @@ async def create_or_get_direct_conversation(
         )
 
 
+@router.get("/{conversation_id}", response_model=ConversationResponse)
+async def get_conversation_details(
+    conversation_id: uuid.UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> ConversationResponse:
+    with db.cursor() as cur:
+        cur.execute("SELECT public.is_active_direct_conversation(%s, %s) as is_active;", (conversation_id, current_user.id))
+        res = cur.fetchone()
+        if not res or not res["is_active"]:
+            raise PrivacySafeNotFoundException("Conversation not found")
+
+        cur.execute("""
+            SELECT c.*, cm.user_id as other_id
+            FROM public.conversations c
+            JOIN public.conversation_members cm ON cm.conversation_id = c.id AND cm.user_id <> %s
+            WHERE c.id = %s;
+        """, (current_user.id, conversation_id))
+        row = cur.fetchone()
+        if not row:
+            raise PrivacySafeNotFoundException("Conversation not found")
+
+        return ConversationResponse(
+            id=row["id"],
+            conversation_type=row["conversation_type"],
+            created_by=row["created_by"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+            other_member_id=row["other_id"],
+        )
+
+
 @router.get("/{conversation_id}/messages", response_model=list[MessageResponse])
 async def list_messages(
     conversation_id: uuid.UUID,

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { DiscoveryPerson } from "../../core/api/types";
 import { Card, Button, Badge, Avatar } from "../../shared/ui";
+import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 export interface PersonCardProps {
   person: DiscoveryPerson;
@@ -111,12 +112,12 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
           </div>
         </div>
 
-        {/* 2. JESTER Human-First Hook / Observation */}
+        {/* 2. JESTER Human-First Hook / Observation & Discovery Signal Metadata */}
         {hookText ? (
           <div
             style={{
               padding: "0.875rem 1rem",
-              backgroundColor: "rgba(248, 250, 252, 0.85)",
+              backgroundColor: "rgba(248, 250, 252, 0.9)",
               borderLeft: "3px solid #9333ea",
               borderRadius: "0 10px 10px 0",
               fontSize: "0.875rem",
@@ -134,13 +135,23 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
                 letterSpacing: "0.06em",
                 marginBottom: "0.3rem",
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
+                flexWrap: "wrap",
                 gap: "0.3rem",
               }}
             >
-              <span>💡 JESTER-ის ხედვა</span>
+              <span>💡 JESTER-ის ხედვა (Discovery Presence)</span>
+              <span style={{ fontSize: "0.65rem", color: "#64748b", fontFamily: "ui-monospace, monospace" }}>
+                Source: {person.presence_sign_source || (ascendantSign ? "ascendant" : "sun")} ({person.presence_sign || ascendantSign || sunSign || "aries"})
+              </span>
             </div>
-            <div style={{ fontStyle: "normal" }}>{hookText}</div>
+            <div style={{ fontStyle: "normal", marginBottom: "0.4rem" }}>{hookText}</div>
+            {person.hook_observation?.content_asset_id && (
+              <div style={{ fontSize: "0.7rem", color: "#64748b", fontFamily: "ui-monospace, monospace", borderTop: "1px dashed #e2e8f0", paddingTop: "0.25rem" }}>
+                Asset: <code>{person.hook_observation.content_asset_id}</code> | Status: <span style={{ color: "#059669", fontWeight: 600 }}>{person.hook_observation.content_status || "approved"}</span>
+              </div>
+            )}
           </div>
         ) : person.bio ? (
           <p
@@ -206,6 +217,8 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
           </Button>
         </Link>
       </div>
+
+      <RuntimeJson data={person} label={`Pipeline Data (${person.display_name})`} />
     </Card>
   );
 };

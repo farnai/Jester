@@ -15,6 +15,10 @@ import { DimensionCards } from "./components/DimensionCards";
 import { DeepAnalysisSection } from "./components/DeepAnalysisSection";
 import { ConversationStarters } from "./components/ConversationStarters";
 import { RelationshipAction } from "./components/RelationshipAction";
+import { RuntimeInfoBlock } from "../../shared/runtime/RuntimeInfoBlock";
+import { SignalBlock } from "../../shared/runtime/SignalBlock";
+import { StartersInspectionBlock } from "../../shared/runtime/StartersInspectionBlock";
+import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -80,11 +84,14 @@ export const ComparePage: React.FC = () => {
           score: res.score,
           dimensions: res.dimensions,
           interpretation: res.interpretation,
+          connection_invitation: res.connection_invitation,
           signals: (res.signals || []) as unknown as Signal[],
           best_topics: res.best_topics || [],
           conversation_starters: res.conversation_starters || [],
+          conversation_starter_details: res.conversation_starter_details,
           data_quality: res.data_quality,
           deep_analysis: res.deep_analysis,
+          raw: res,
           isFullComparison: true,
         };
       } catch (err: any) {
@@ -97,11 +104,14 @@ export const ComparePage: React.FC = () => {
             score: preview.score,
             dimensions: preview.dimensions,
             interpretation: preview.interpretation,
+            connection_invitation: preview.connection_invitation,
             signals: (preview.signals || []) as unknown as Signal[],
             best_topics: preview.best_topics || [],
             conversation_starters: preview.conversation_starters || [],
+            conversation_starter_details: preview.conversation_starter_details,
             data_quality: preview.data_quality,
             deep_analysis: preview.deep_analysis,
+            raw: preview,
             isFullComparison: false,
           };
         }
@@ -245,11 +255,29 @@ export const ComparePage: React.FC = () => {
         interpretation={data.interpretation}
       />
 
+      {/* A.1 RUNTIME: RELATIONSHIP INTELLIGENCE OVERVIEW */}
+      <RuntimeInfoBlock
+        title="Runtime: Relationship Intelligence Overview"
+        badge="Synastry V1 Engine"
+        items={[
+          { label: "Synastry Score", value: `${Math.round(data.score)} / 100` },
+          { label: "Confidence", value: `${Math.round((data.data_quality?.confidence || 0) * 100)}%` },
+          { label: "Primary Category", value: data.interpretation?.category || (data.signals?.[0]?.category) || "harmony" },
+          { label: "Primary Signal Rule", value: data.signals?.[0]?.rule_id || data.signals?.[0]?.type || "synastry_v1" },
+          { label: "Interpretation ID", value: data.interpretation?.id || "N/A" },
+          { label: "Asset ID", value: data.interpretation?.content_asset_id || data.interpretation?.asset_id || "N/A" },
+          { label: "Comparison Mode", value: data.isFullComparison ? "Authenticated Match (Canonical)" : "Safe Preview" },
+        ]}
+      />
+
       {/* B. WHAT STANDS OUT */}
       <RelationshipHighlights
         interpretation={data.interpretation}
         signals={data.signals}
       />
+
+      {/* B.1 RUNTIME: COMPLETE ACTIVE SIGNALS */}
+      <SignalBlock signals={data.signals} />
 
       {/* C. FOUR RELATIONSHIP DIMENSIONS */}
       <DimensionCards dimensions={data.dimensions} />
@@ -265,6 +293,13 @@ export const ComparePage: React.FC = () => {
         onSendToChat={handleSendStarterToChat}
       />
 
+      {/* E.1 RUNTIME: STARTERS INSPECTION */}
+      <StartersInspectionBlock
+        starters={data.conversation_starters}
+        starterDetails={data.conversation_starter_details}
+        onSelectStarter={relState === "accepted" ? handleSendStarterToChat : undefined}
+      />
+
       {/* F. TERMINAL ACTION */}
       <RelationshipAction
         targetName={targetName}
@@ -276,6 +311,23 @@ export const ComparePage: React.FC = () => {
         isConnecting={connectMutation.isPending}
         isTransitioning={transitionMutation.isPending}
       />
+
+      {/* G. RUNTIME: BIRTH DATA CONFIDENCE QA */}
+      {data.data_quality && (
+        <RuntimeInfoBlock
+          title="Runtime: Birth Data Confidence & Precision"
+          badge="Astro Engine QA"
+          items={[
+            { label: "Confidence Score", value: `${Math.round(data.data_quality.confidence * 100)}%` },
+            { label: "Time Precision", value: data.data_quality.time_precision },
+            { label: "Ascendant Used", value: data.data_quality.ascendant_used ? "YES" : "NO (Unknown Time fallback)" },
+            { label: "Houses Used", value: data.data_quality.houses_used ? "YES" : "NO" },
+          ]}
+        />
+      )}
+
+      {/* H. RUNTIME: RAW API PAYLOAD */}
+      <RuntimeJson data={data.raw} label="Compare Raw Payload" />
     </div>
   );
 };

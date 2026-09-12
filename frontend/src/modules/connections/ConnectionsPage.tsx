@@ -5,6 +5,7 @@ import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { ConnectionResponse } from "../../core/api/types";
 import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
+import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 export const ConnectionsPage: React.FC = () => {
   const { user } = useAuth();
@@ -152,6 +153,11 @@ export const ConnectionsPage: React.FC = () => {
                       <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
                         Connected since {new Date(conn.updated_at).toLocaleDateString()}
                       </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#64748b", marginTop: "0.35rem" }}>
+                        <span>Status: <strong style={{ color: "#059669" }}>{conn.status}</strong></span>
+                        <span>Direction: <strong>{conn.initiated_by === user?.id ? "Outgoing (Initiated by You)" : "Incoming"}</strong></span>
+                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
+                      </div>
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -235,6 +241,12 @@ export const ConnectionsPage: React.FC = () => {
                       <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
                         Received {new Date(conn.created_at).toLocaleDateString()}
                       </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#b45309", marginTop: "0.35rem" }}>
+                        <span>Status: <strong>{conn.status}</strong></span>
+                        <span>Direction: <strong>Incoming</strong></span>
+                        <span>Initiated by: <code>{conn.initiated_by.slice(0, 8)}...</code></span>
+                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
+                      </div>
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -316,6 +328,11 @@ export const ConnectionsPage: React.FC = () => {
                       <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
                         Sent on {new Date(conn.created_at).toLocaleDateString()}
                       </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#64748b", marginTop: "0.35rem" }}>
+                        <span>Status: <strong>{conn.status}</strong></span>
+                        <span>Direction: <strong>Outgoing (You)</strong></span>
+                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
+                      </div>
                     </div>
 
                     <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -344,6 +361,11 @@ export const ConnectionsPage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Runtime Raw Payload */}
+      <div style={{ marginTop: "1.5rem" }}>
+        <RuntimeJson data={connections} label="Connections Raw API Payload" />
+      </div>
     </div>
   );
 };

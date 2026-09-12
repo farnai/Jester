@@ -853,24 +853,23 @@ class InterpretationEngine:
             seed=seed,
         )
 
-    def resolve_conversation_starters(
+    def resolve_conversation_starter_details(
         self,
         signals: list[dict[str, Any]],
         seed: str | None = None,
         locale: str = "ka",
-    ) -> list[str]:
+    ) -> list[dict[str, Any]]:
         """
-        Resolves up to 3 conversation starters from Batch 7 chat starter assets
-        corresponding to active relational signals.
-        If fewer than 3 starters exist from active signals, fills up with Batch 7 fallback starters.
+        Resolves up to 3 conversation starters with full metadata (contract, category, source signal, asset_id)
+        from Batch 7 chat starter assets corresponding to active relational signals.
         """
-        starters: list[str] = []
+        starter_details: list[dict[str, Any]] = []
         seen_texts: set[str] = set()
         used_asset_ids: set[str] = set()
 
         # Pass 1: Select primary starter from each active signal in order
         for idx, sig in enumerate(signals):
-            if len(starters) >= 3:
+            if len(starter_details) >= 3:
                 break
             sig_type = sig.get("type", "")
             interp_id = self.signal_to_interpretation_id(sig_type)
@@ -886,15 +885,23 @@ class InterpretationEngine:
                 exclude_asset_ids=used_asset_ids,
             )
             if resolved and resolved.text and resolved.text not in seen_texts:
-                starters.append(resolved.text)
+                starter_details.append({
+                    "text": resolved.text,
+                    "contract_id": interp_id,
+                    "category": sig.get("category") or "relationship",
+                    "source_signal": sig_type,
+                    "asset_id": resolved.content_asset_id or interp_id,
+                    "variant_key": resolved.variant_key,
+                    "selection_mode": "active_signal_match",
+                })
                 seen_texts.add(resolved.text)
                 if resolved.content_asset_id:
                     used_asset_ids.add(resolved.content_asset_id)
 
         # Pass 2: If < 3, check if active signals have additional unused variants
-        if len(starters) < 3:
+        if len(starter_details) < 3:
             for idx, sig in enumerate(signals):
-                if len(starters) >= 3:
+                if len(starter_details) >= 3:
                     break
                 sig_type = sig.get("type", "")
                 interp_id = self.signal_to_interpretation_id(sig_type)
@@ -909,37 +916,74 @@ class InterpretationEngine:
                 )
                 for cand in candidates:
                     if cand.asset_id not in used_asset_ids and cand.text and cand.text not in seen_texts:
-                        starters.append(cand.text)
+                        starter_details.append({
+                            "text": cand.text,
+                            "contract_id": interp_id,
+                            "category": sig.get("category") or "relationship",
+                            "source_signal": sig_type,
+                            "asset_id": cand.asset_id,
+                            "variant_key": cand.variant_key,
+                            "selection_mode": "active_signal_variant",
+                        })
                         seen_texts.add(cand.text)
                         used_asset_ids.add(cand.asset_id)
-                        if len(starters) >= 3:
+                        if len(starter_details) >= 3:
                             break
 
         # Pass 3: If still < 3, use frozen Batch 7 fallback starters
-        if len(starters) < 3:
+        if len(starter_details) < 3:
             for fallback_aid in (
                 "chat.starter.fallback.v1",
                 "chat.starter.fallback.v2",
                 "chat.starter.fallback.v3",
             ):
-                if len(starters) >= 3:
+                if len(starter_details) >= 3:
                     break
                 asset = self.library.store.get_asset(fallback_aid)
                 if asset and asset.text and asset.text not in seen_texts:
-                    starters.append(asset.text)
+                    starter_details.append({
+                        "text": asset.text,
+                        "contract_id": "chat.starter.fallback",
+                        "category": "icebreaker",
+                        "source_signal": "fallback",
+                        "asset_id": asset.asset_id,
+                        "variant_key": asset.variant_key,
+                        "selection_mode": "batch7_fallback",
+                    })
                     seen_texts.add(asset.text)
                     used_asset_ids.add(asset.asset_id)
 
         # Isolated fallback branch for non-Batch-7 legacy test environments
-        if len(starters) < 3:
+        if len(starter_details) < 3:
             for fallback in DEFAULT_CONVERSATION_STARTERS:
                 if fallback not in seen_texts:
-                    starters.append(fallback)
+                    starter_details.append({
+                        "text": fallback,
+                        "contract_id": "legacy.fallback",
+                        "category": "icebreaker",
+                        "source_signal": "legacy_default",
+                        "asset_id": "legacy_fallback",
+                        "variant_key": None,
+                        "selection_mode": "legacy_default",
+                    })
                     seen_texts.add(fallback)
-                    if len(starters) >= 3:
+                    if len(starter_details) >= 3:
                         break
 
-        return starters[:3]
+        return starter_details[:3]
+
+    def resolve_conversation_starters(
+        self,
+        signals: list[dict[str, Any]],
+        seed: str | None = None,
+        locale: str = "ka",
+    ) -> list[str]:
+        """
+        Resolves up to 3 conversation starters from Batch 7 chat starter assets
+        corresponding to active relational signals.
+        """
+        details = self.resolve_conversation_starter_details(signals=signals, seed=seed, locale=locale)
+        return [s["text"] for s in details]
 
 
 # Global singleton engine

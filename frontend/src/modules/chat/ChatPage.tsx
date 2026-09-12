@@ -6,6 +6,8 @@ import { useAuth } from "../../core/auth/useAuth";
 import { supabase } from "../../core/realtime/supabase";
 import { MessageResponse } from "../../core/api/types";
 import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
+import { StartersInspectionBlock } from "../../shared/runtime/StartersInspectionBlock";
+import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 export const ChatPage: React.FC = () => {
   const { conversation_id } = useParams<{ conversation_id: string }>();
@@ -24,6 +26,32 @@ export const ChatPage: React.FC = () => {
       setMessageText(starterParam);
     }
   }, [searchParams]);
+
+  // Fetch conversation metadata (to get other participant)
+  const { data: conversation } = useQuery({
+    queryKey: ["conversation", conversationId],
+    queryFn: () => API.conversations.get(conversationId),
+    enabled: !!conversationId,
+  });
+
+  const otherMemberId = conversation?.other_member_id;
+
+  // Fetch starters & relationship intelligence for this partner
+  const { data: whyData } = useQuery({
+    queryKey: ["why-starters", otherMemberId],
+    queryFn: async () => {
+      if (!otherMemberId) return null;
+      try {
+        return await API.compatibility.why(otherMemberId);
+      } catch {
+        return await API.interpretations.comparePreview({
+          target_user_id: otherMemberId,
+          locale: "ka",
+        });
+      }
+    },
+    enabled: !!otherMemberId,
+  });
 
   // Fetch initial message history
   const { data: messages, isLoading, error } = useQuery({
@@ -115,7 +143,8 @@ export const ChatPage: React.FC = () => {
   const msgList = messages || [];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "75vh", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", height: "75vh", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
       {/* Chat Header */}
       <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fafafa" }}>
         <div>
@@ -167,6 +196,18 @@ export const ChatPage: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Runtime: Conversation Starters Inspection */}
+      {((whyData?.conversation_starters && whyData.conversation_starters.length > 0) || (whyData?.conversation_starter_details && whyData.conversation_starter_details.length > 0)) && (
+        <div style={{ padding: "0.5rem 0.75rem", borderTop: "1px solid #e8e8e8", backgroundColor: "#f8fafc", maxHeight: "220px", overflowY: "auto" }}>
+          <StartersInspectionBlock
+            starters={whyData.conversation_starters || []}
+            starterDetails={whyData.conversation_starter_details}
+            onSelectStarter={(text) => setMessageText(text)}
+            title="Conversation Starters (Click to pre-fill input)"
+          />
+        </div>
+      )}
+
       {/* Chat Input Bar */}
       <form onSubmit={handleSend} style={{ padding: "0.75rem", borderTop: "1px solid #e8e8e8", display: "flex", gap: "0.5rem", backgroundColor: "#fff" }}>
         <input
@@ -193,5 +234,9 @@ export const ChatPage: React.FC = () => {
         </button>
       </form>
     </div>
+
+    {/* Runtime: Raw Chat & Context Payload */}
+    <RuntimeJson data={{ conversation, messages, whyData }} label="Chat & Messaging Raw Payload" />
+  </div>
   );
 };

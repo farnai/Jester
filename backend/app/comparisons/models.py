@@ -29,8 +29,10 @@ class StructuredCompatibilityResponse(BaseModel):
     dimensions: dict[str, float] = Field(default_factory=dict)
     signals: list[dict[str, Any]] = Field(default_factory=list)
     interpretation: ResolvedInterpretation | None = None
+    connection_invitation: ResolvedInterpretation | None = None
     best_topics: list[str] = Field(default_factory=list)
     conversation_starters: list[str] = Field(default_factory=list)
+    conversation_starter_details: list[dict[str, Any]] = Field(default_factory=list)
     data_quality: dict[str, Any] = Field(default_factory=dict)
     deep_analysis: DeepAnalysisPayload | None = None
     engine_version: str = "synastry-v1.0.0"

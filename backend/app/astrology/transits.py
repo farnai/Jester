@@ -121,6 +121,7 @@ class ActiveTransitSignal:
             "is_applying": self.is_applying,
             "transit_retrograde": self.transit_retrograde,
             "archetype_id": self.archetype_id,
+            "ranking_score": self.ranking_score,
             "context_label_ka": self.context_label_ka,
         }
 

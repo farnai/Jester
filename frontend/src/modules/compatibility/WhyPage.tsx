@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
@@ -12,6 +12,10 @@ import {
   ErrorState,
   PrivacySafeNotFoundState,
 } from "../../shared/ui";
+import { RuntimeInfoBlock } from "../../shared/runtime/RuntimeInfoBlock";
+import { SignalBlock } from "../../shared/runtime/SignalBlock";
+import { StartersInspectionBlock } from "../../shared/runtime/StartersInspectionBlock";
+import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 import { getTopicLabel } from "./components/ConversationStarters";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -31,8 +35,6 @@ export const WhyPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const isValidUUID = UUID_REGEX.test(targetId);
 
@@ -81,9 +83,13 @@ export const WhyPage: React.FC = () => {
         return {
           score: res.score,
           interpretation: res.interpretation,
+          connection_invitation: res.connection_invitation,
+          conversation_starter_details: res.conversation_starter_details,
+          data_quality: res.data_quality,
           signals: res.signals || [],
           best_topics: res.best_topics || [],
           conversation_starters: res.conversation_starters || [],
+          raw: res,
           isFullComparison: true,
         };
       } catch (err: any) {
@@ -96,10 +102,13 @@ export const WhyPage: React.FC = () => {
             score: preview.score,
             interpretation: preview.interpretation,
             connection_invitation: preview.connection_invitation,
+            conversation_starter_details: preview.conversation_starter_details,
+            data_quality: preview.data_quality,
             signals: preview.signals || [],
             best_topics: preview.best_topics || [],
             conversation_starters: preview.conversation_starters || [],
             deepAnalysis: preview.deep_analysis,
+            raw: preview,
             isFullComparison: false,
           };
         }
@@ -139,12 +148,6 @@ export const WhyPage: React.FC = () => {
     } catch (err: any) {
       alert(err.message || "პირდაპირი მიმოწერის გასახსნელად საჭიროა დადასტურებული კავშირი.");
     }
-  };
-
-  const handleCopy = (text: string, index: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2500);
   };
 
   // Privacy invariant: If blocked or 404/403, render privacy-safe not-found
@@ -273,10 +276,44 @@ export const WhyPage: React.FC = () => {
         </p>
 
         {data.interpretation?.tone && (
-          <div style={{ fontSize: "0.75rem", color: "#7e22ce", fontWeight: 600 }}>
+          <div style={{ fontSize: "0.75rem", color: "#7e22ce", fontWeight: 600, marginBottom: "0.75rem" }}>
             ტონი: <code>{data.interpretation.tone}</code> • დეტერმინისტული სინასტრიული ანალიზი
           </div>
         )}
+
+        <RuntimeInfoBlock
+          title="Runtime: Primary Interpretation Metadata"
+          badge="Insight Engine"
+          items={[
+            { label: "Category", value: data.interpretation?.category || (data.signals?.[0]?.category) || "harmony" },
+            { label: "Signal / Contract ID", value: data.signals?.[0]?.rule_id || data.signals?.[0]?.source_aspect || "synastry_v1" },
+            { label: "Source Aspects", value: data.signals?.[0]?.aspect ? `${data.signals[0].planet_pair} (${data.signals[0].aspect})` : "N/A" },
+            { label: "Score / Confidence", value: `${score} / 100` },
+            { label: "Tone", value: data.interpretation?.tone || "direct" },
+          ]}
+        />
+      </Card>
+
+      {/* 2.5 Dedicated Connection Invitation: The insight becomes the invitation */}
+      <Card padded style={{ padding: "1.25rem 1.5rem", borderLeft: "4px solid #8b5cf6" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+          <span style={{ fontSize: "1.1rem" }}>✉️</span>
+          <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 800, color: "#4c1d95" }}>
+            Connection Invitation (The insight becomes the invitation)
+          </h3>
+        </div>
+        <p style={{ margin: "0 0 0.85rem 0", color: "#334155", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
+          "{data.connection_invitation?.text || "ინსაითი მოგეწონათ? გაუგზავნეთ კავშირის მოთხოვნა საუბრის დასაწყებად."}"
+        </p>
+        <RuntimeInfoBlock
+          title="Runtime: Invitation Asset Metadata"
+          badge="Invitation Engine"
+          items={[
+            { label: "Invitation Category", value: data.connection_invitation?.category || "invitation" },
+            { label: "Invitation Asset ID", value: data.connection_invitation?.asset_id || "invitation.v1" },
+            { label: "Target User", value: targetId },
+          ]}
+        />
       </Card>
 
       {/* 3. Supporting Relationship Dynamics (2–4 Human-Readable Signals) */}
@@ -339,6 +376,9 @@ export const WhyPage: React.FC = () => {
         </div>
       )}
 
+      {/* 3.5 Runtime: Complete Active Signals Inspection */}
+      <SignalBlock signals={data.signals} />
+
       {/* 4. Actionable Conversation Starters & Topics */}
       {(bestTopics.length > 0 || conversationStarters.length > 0) && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -367,49 +407,12 @@ export const WhyPage: React.FC = () => {
             </Card>
           )}
 
-          {/* Conversation Starters (Icebreakers) */}
-          {conversationStarters.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {conversationStarters.map((starter, idx) => (
-                <Card
-                  key={idx}
-                  padded
-                  style={{
-                    padding: "1rem 1.25rem",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "0.85rem",
-                    backgroundColor: "#f8fafc",
-                  }}
-                >
-                  <div style={{ fontStyle: "italic", fontSize: "0.925rem", color: "#334155", flex: 1, minWidth: "220px", lineHeight: 1.5 }}>
-                    "{starter}"
-                  </div>
-
-                  <div style={{ display: "flex", gap: "0.45rem", flexShrink: 0 }}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCopy(starter, idx)}
-                    >
-                      {copiedIndex === idx ? "✓ კოპირებულია" : "📋 კოპირება"}
-                    </Button>
-                    {relState === "accepted" && (
-                      <Button
-                        variant="brand"
-                        size="sm"
-                        onClick={() => handleSendStarterToChat(starter)}
-                      >
-                        💬 ჩატში გაგზავნა
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
+          {/* Runtime Starters Inspection */}
+          <StartersInspectionBlock
+            starters={conversationStarters}
+            starterDetails={data.conversation_starter_details}
+            onSelectStarter={relState === "accepted" ? handleSendStarterToChat : undefined}
+          />
         </div>
       )}
 
@@ -527,6 +530,23 @@ export const WhyPage: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* 7. Runtime: Birth Data Confidence / QA Block */}
+      {data.data_quality && (
+        <RuntimeInfoBlock
+          title="Runtime: Birth Data Confidence & QA State"
+          badge="Astro Engine QA"
+          items={[
+            { label: "Confidence", value: `${Math.round((data.data_quality.confidence || 0) * 100)}%` },
+            { label: "Time Precision", value: data.data_quality.time_precision },
+            { label: "Ascendant Used", value: data.data_quality.ascendant_used ? "YES" : "NO (Unknown Time fallback)" },
+            { label: "Houses Used", value: data.data_quality.houses_used ? "YES" : "NO" },
+          ]}
+        />
+      )}
+
+      {/* 8. Runtime Raw API Payload (Safe Collapsible) */}
+      <RuntimeJson data={data.raw} label="Why Relationship Raw API Data" />
     </div>
   );
 };

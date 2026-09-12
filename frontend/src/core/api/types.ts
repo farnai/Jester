@@ -77,10 +77,15 @@ export interface ConnectionTransitionPayload {
 
 export interface Signal {
   type: string;
-  category: "harmony" | "attraction" | "communication" | "growth" | "stability" | "notice";
-  strength: "low" | "medium" | "high";
+  category: "harmony" | "attraction" | "communication" | "growth" | "stability" | "notice" | string;
+  strength: "low" | "medium" | "high" | string;
   source_aspects: string[];
   label: string;
+  importance?: number;
+  planet_pair?: string;
+  aspect?: string;
+  source_aspect?: string;
+  rule_id?: string;
   interpretation?: ResolvedInterpretationModel;
 }
 
@@ -98,6 +103,16 @@ export interface DataQuality {
   ascendant_used: boolean;
 }
 
+export interface ConversationStarterDetail {
+  text: string;
+  contract_id: string;
+  category: string;
+  source_signal: string;
+  asset_id: string;
+  variant_key?: string | null;
+  selection_mode: string;
+}
+
 export interface StructuredCompatibilityResponse {
   id: string;
   target_user_id: string;
@@ -106,10 +121,12 @@ export interface StructuredCompatibilityResponse {
   signals: Signal[];
   best_topics: string[];
   conversation_starters: string[];
+  conversation_starter_details?: ConversationStarterDetail[];
   data_quality: DataQuality;
   engine_version: string;
   calculated_at: string;
   interpretation?: ResolvedInterpretationModel | null;
+  connection_invitation?: ResolvedInterpretationModel | null;
   deep_analysis?: DeepAnalysisPayload | null;
 }
 
@@ -157,6 +174,8 @@ export interface ResolvedInterpretationModel {
   content_status: string;
   language: string;
   content_asset_id?: string;
+  asset_id?: string;
+  category?: string;
   context?: string;
   locale: string;
   tone?: string;
@@ -185,6 +204,7 @@ export interface ActiveTransitSignal {
   is_applying: boolean;
   transit_retrograde: boolean;
   archetype_id: string;
+  ranking_score?: number;
   context_label_ka: string;
 }
 
@@ -198,6 +218,7 @@ export interface DailyEnergyResponse {
   available_archetypes: DailyEnergyArchetype[];
   primary_transit?: ActiveTransitSignal | null;
   supporting_transits?: ActiveTransitSignal[];
+  detection_mode?: string;
   do?: string[] | string;
   dont?: string[] | string;
 }
@@ -238,6 +259,8 @@ export interface DiscoveryPerson {
   };
   compatibility_score: number;
   hook_observation?: ResolvedInterpretationModel | null;
+  presence_sign_source?: string;
+  presence_sign?: string;
 }
 
 export interface ComparePreviewRequest {
@@ -280,19 +303,12 @@ export interface ComparePreviewResponse {
     attraction: number;
     growth_long_term: number;
   };
-  signals: Array<{
-    type: string;
-    category: string;
-    strength: string;
-    source_aspects: string[];
-    label: string;
-    interpretation?: ResolvedInterpretationModel;
-    interpretation_id?: string;
-  }>;
+  signals: Signal[];
   interpretation: ResolvedInterpretationModel;
   connection_invitation?: ResolvedInterpretationModel;
   best_topics: string[];
   conversation_starters: string[];
+  conversation_starter_details?: ConversationStarterDetail[];
   data_quality: {
     confidence: number;
     time_precision: string;

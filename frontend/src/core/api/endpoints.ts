@@ -120,6 +120,8 @@ export const API = {
 
   // Messaging & Conversations
   conversations: {
+    get: (conversationId: string) =>
+      apiRequest<ConversationResponse>(`/v1/conversations/${conversationId}`),
     createOrGetDirect: (targetUserId: string) =>
       apiRequest<ConversationResponse>("/v1/conversations", {
         method: "POST",

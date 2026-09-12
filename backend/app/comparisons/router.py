@@ -114,6 +114,12 @@ async def compare_users(
             cached_starters = interpretation_engine.resolve_conversation_starters(
                 raw_signals, seed=pair_seed
             ) or (existing["conversation_starters"] if isinstance(existing["conversation_starters"], list) else [])
+            cached_starter_details = interpretation_engine.resolve_conversation_starter_details(
+                raw_signals, seed=pair_seed, locale="ka"
+            )
+            cached_invitation = interpretation_engine.resolve_connection_invitation(
+                raw_signals, seed=pair_seed, locale="ka"
+            )
 
             return StructuredCompatibilityResponse(
                 id=existing["id"],
@@ -122,8 +128,10 @@ async def compare_users(
                 dimensions=cached_dimensions,
                 signals=enriched_signals,
                 interpretation=primary_interpretation,
+                connection_invitation=cached_invitation,
                 best_topics=existing["best_topics"] if isinstance(existing["best_topics"], list) else [],
                 conversation_starters=cached_starters,
+                conversation_starter_details=cached_starter_details,
                 data_quality=data_quality,
                 deep_analysis=deep_payload,
                 engine_version=existing["engine_version"],
@@ -213,6 +221,17 @@ async def compare_users(
             seed=pair_seed,
         )
 
+        conn_invitation = interpretation_engine.resolve_connection_invitation(
+            signals=calc_result.signals,
+            seed=pair_seed,
+            locale="ka",
+        )
+        starter_details = interpretation_engine.resolve_conversation_starter_details(
+            signals=calc_result.signals,
+            seed=pair_seed,
+            locale="ka",
+        )
+
         return StructuredCompatibilityResponse(
             id=saved_row["id"],
             target_user_id=payload.target_user_id,
@@ -220,8 +239,10 @@ async def compare_users(
             dimensions=calc_result.dimensions,
             signals=enriched_signals,
             interpretation=primary_interpretation,
+            connection_invitation=conn_invitation,
             best_topics=calc_result.best_topics,
             conversation_starters=starters,
+            conversation_starter_details=starter_details,
             data_quality=calc_result.data_quality,
             deep_analysis=deep_payload,
             engine_version=calc_result.engine_version,
