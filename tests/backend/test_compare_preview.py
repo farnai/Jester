@@ -278,15 +278,16 @@ async def test_daily_energy_and_compare_dynamic_update_on_birth_date_change(db_c
         )
         assert res_calc1.status_code == 200
 
-        # 3. Check Daily Energy for User 1 (Aries -> confidence / თავდაჯერება და მოქმედება)
+        # 3. Check Daily Energy for User 1 (Real transit active archetype + primary_transit)
         res_daily1 = await ac.get(
             "/v1/interpretations/daily-energy?energy_type=auto&locale=ka",
             headers={"Authorization": f"Bearer {token_u1}"},
         )
         assert res_daily1.status_code == 200
         daily1 = res_daily1.json()
-        assert daily1["energy_type"] == "confidence"
-        assert "თავდაჯერება და მოქმედება" in daily1["label"]
+        assert daily1["energy_type"] != ""
+        assert daily1["primary_transit"] is not None
+        assert "context_label_ka" in daily1["primary_transit"]
 
         # 4. Check Compare Preview against User 2 (State A: Aries vs Cancer)
         res_prev1 = await ac.post(
@@ -317,16 +318,16 @@ async def test_daily_energy_and_compare_dynamic_update_on_birth_date_change(db_c
         )
         assert res_calc1_update.status_code == 200
 
-        # 6. Daily Energy MUST immediately change to Scorpio archetype (introspection / შინაგანი გადატვირთვა)
+        # 6. Daily Energy MUST immediately change dynamically when birth date changes
         res_daily2 = await ac.get(
             "/v1/interpretations/daily-energy?energy_type=auto&locale=ka",
             headers={"Authorization": f"Bearer {token_u1}"},
         )
         assert res_daily2.status_code == 200
         daily2 = res_daily2.json()
-        assert daily2["energy_type"] == "introspection"
-        assert "შინაგანი გადატვირთვა" in daily2["label"]
+        assert daily2["energy_type"] != daily1["energy_type"]
         assert daily2["interpretation"]["text"] != daily1["interpretation"]["text"]
+        assert daily2["primary_transit"] is not None
 
         # 7. Compare Preview MUST immediately update score and interpretation
         res_prev2 = await ac.post(

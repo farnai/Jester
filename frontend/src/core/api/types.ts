@@ -173,12 +173,33 @@ export interface DailyEnergyArchetype {
   transit: string;
 }
 
+export interface ActiveTransitSignal {
+  transit_planet: string;
+  natal_point: string;
+  aspect_type: string;
+  actual_distance: number;
+  target_angle: number;
+  orb_diff: number;
+  max_orb: number;
+  aspect_strength: number;
+  is_applying: boolean;
+  transit_retrograde: boolean;
+  archetype_id: string;
+  context_label_ka: string;
+}
+
 export interface DailyEnergyResponse {
+  date?: string;
+  archetype?: string;
   energy_type: string;
   label: string;
   interpretation: ResolvedInterpretationModel | null;
   contract?: Record<string, any>;
   available_archetypes: DailyEnergyArchetype[];
+  primary_transit?: ActiveTransitSignal | null;
+  supporting_transits?: ActiveTransitSignal[];
+  do?: string[] | string;
+  dont?: string[] | string;
 }
 
 export interface NatalResolveRequest {

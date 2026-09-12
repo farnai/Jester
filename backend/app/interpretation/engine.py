@@ -10,6 +10,7 @@ from backend.app.compatibility.rules import DEFAULT_CONVERSATION_STARTERS
 from backend.app.interpretation.contracts import INTERPRETATION_CONTRACTS
 from backend.app.interpretation.library import content_library
 from backend.app.interpretation.models import (
+    ContentStatus,
     DeepAnalysisBlock,
     DeepAnalysisPayload,
     InterpretationContract,
@@ -770,18 +771,38 @@ class InterpretationEngine:
             "sun_saturn_transit": "daily_energy.discipline.grounded_execution.v1",
             "sun_pluto_transit": "daily_energy.introspection.deep_reset.v1",
             "mercury_uranus_transit": "daily_energy.curiosity.spontaneous_pivot.v1",
+            "neutral": "daily_energy.neutral.baseline.v1",
         }
         interp_id = valid_map.get(energy_type.lower())
         if not interp_id:
             return None
 
-        return self.library.resolve(
+        resolved = self.library.resolve(
             interpretation_id=interp_id,
             context="daily_energy",
             locale=locale,
             tone=tone,
             seed=seed,
         ) or self.library.resolve_text(interp_id)
+
+        if not resolved and interp_id == "daily_energy.neutral.baseline.v1":
+            text = (
+                "დღეს ცაზე არცერთი დომინანტური ტრანზიტული წნეხი არ დგას. ეს არც ცუდია და არც კარგი — უბრალოდ კოსმოსი დღეს შენს ნაცვლად არაფერს წყვეტს. მიჰყევი საკუთარ გეგმას ისე, თითქოს პლანეტები საერთოდ არ არსებობდნენ."
+                if locale == "ka"
+                else "No dominant celestial transit exerts active pressure today. The cosmos isn't deciding for you—follow your own plan with complete autonomy."
+            )
+            resolved = ResolvedInterpretation(
+                id=interp_id,
+                text=text,
+                content_status="approved",
+                language=locale,
+                context="daily_energy",
+                locale=locale,
+                tone=tone or "witty",
+                source="rule_engine",
+            )
+
+        return resolved
 
     def resolve_connection_invitation(
         self,

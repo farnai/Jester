@@ -3,13 +3,15 @@ FastAPI Router exposing Interpretation Contract and Content Architecture V2 endp
 Supports multi-asset authoring, status transitions, inventory inspection, and deterministic resolution.
 """
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel, Field
 import psycopg
 
 from backend.app.astrology.natal import recalculate_user_astrology
+from backend.app.astrology.transits import compute_daily_transits, get_daily_guidance
 from backend.app.auth.dependencies import get_current_user, get_optional_user, require_copywriter_or_admin
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.compatibility.engine import CompatibilityEngine
@@ -253,6 +255,7 @@ DAILY_ENERGY_ARCHETYPES = [
     {"id": "receptivity", "label_ka": "ემოციური პაუზა", "transit": "moon_transit_soft"},
     {"id": "restlessness", "label_ka": "იმპულსური მუხტი", "transit": "mars_uranus_transit"},
     {"id": "focus", "label_ka": "გაფანტული ფოკუსი", "transit": "jupiter_mercury_transit"},
+    {"id": "neutral", "label_ka": "სტაბილური ფონი", "transit": "none"},
 ]
 
 DEFAULT_DEMO_USER_ID = uuid.UUID("26098ac8-f8f0-4cd3-9bbb-78dc8467ba07")
@@ -283,37 +286,116 @@ async def get_daily_energy_interpretation(
     energy_type: str = "auto",
     locale: str = "ka",
     tone: str | None = None,
+    target_date: str | None = None,
     current_user: AuthenticatedUser | None = Depends(get_optional_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> dict[str, Any]:
     """
     Returns the resolved Daily Energy / Day Vibe interpretation in Georgian,
-    personalized to the user's active astrological profile and birth data version.
+    personalized to the user's real astrological planetary transits, local timezone day,
+    and birth data version.
     """
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    seed = f"daily-seed:{today_str}"
+    calc_date: date
     effective_energy_type = energy_type
+    primary_transit: dict[str, Any] | None = None
+    supporting_transits: list[dict[str, Any]] = []
+    user_tz_str = "UTC"
+    seed = ""
 
     if current_user:
         with db.cursor() as cur:
             cur.execute(
                 """
-                SELECT s.sun_sign, s.element_primary, b.data_version
+                SELECT 
+                    b.birth_timezone,
+                    b.birth_time_precision,
+                    b.data_version,
+                    p.sun_longitude,
+                    p.moon_longitude,
+                    p.mercury_longitude,
+                    p.venus_longitude,
+                    p.mars_longitude,
+                    p.jupiter_longitude,
+                    p.saturn_longitude,
+                    p.uranus_longitude,
+                    p.neptune_longitude,
+                    p.pluto_longitude,
+                    p.ascendant_longitude,
+                    s.sun_sign
                 FROM public.birth_data b
+                LEFT JOIN public.astro_private p ON b.user_id = p.user_id
                 LEFT JOIN public.astro_safe_profile s ON b.user_id = s.user_id
                 WHERE b.user_id = %s;
                 """,
                 (current_user.id,),
             )
             row = cur.fetchone()
+
             if row:
-                sun_sign = row["sun_sign"] or ""
+                user_tz_str = row["birth_timezone"] or "UTC"
+                if target_date:
+                    try:
+                        calc_date = date.fromisoformat(target_date)
+                    except ValueError:
+                        calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+                else:
+                    try:
+                        calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+                    except Exception:
+                        calc_date = datetime.now(timezone.utc).date()
+
+                # If calculated natal planetary positions exist in astro_private, compute real transits
+                if row["sun_longitude"] is not None:
+                    natal_placements: dict[str, float | None] = {
+                        "sun": row["sun_longitude"],
+                        "moon": row["moon_longitude"],
+                        "mercury": row["mercury_longitude"],
+                        "venus": row["venus_longitude"],
+                        "mars": row["mars_longitude"],
+                        "jupiter": row["jupiter_longitude"],
+                        "saturn": row["saturn_longitude"],
+                        "uranus": row["uranus_longitude"],
+                        "neptune": row["neptune_longitude"],
+                        "pluto": row["pluto_longitude"],
+                        "ascendant": row["ascendant_longitude"],
+                    }
+                    precision = row.get("birth_time_precision") or "unknown"
+
+                    transit_result = compute_daily_transits(
+                        natal_placements=natal_placements,
+                        target_date=calc_date,
+                        user_timezone=user_tz_str,
+                        birth_time_precision=precision,
+                    )
+
+                    if energy_type in [None, "", "auto"]:
+                        effective_energy_type = transit_result.active_archetype
+
+                    if transit_result.dominant_transit:
+                        primary_transit = transit_result.dominant_transit.to_dict()
+                    supporting_transits = [t.to_dict() for t in transit_result.supporting_transits]
+                else:
+                    # Fallback if astro_private hasn't been calculated yet
+                    sun_sign = row["sun_sign"] or ""
+                    if energy_type in [None, "", "auto"]:
+                        effective_energy_type = SIGN_TO_DAILY_ENERGY.get(sun_sign, "confidence")
+
                 data_ver = row["data_version"] or 1
-                seed = f"{current_user.id}:{sun_sign}:{data_ver}:{today_str}"
-                if energy_type in [None, "", "auto", "confidence"]:
-                    effective_energy_type = SIGN_TO_DAILY_ENERGY.get(sun_sign, "confidence")
+                seed = f"{current_user.id}:{effective_energy_type}:{data_ver}:{calc_date.isoformat()}"
             else:
-                seed = f"{current_user.id}:{today_str}"
+                calc_date = datetime.now(timezone.utc).date()
+                seed = f"{current_user.id}:{calc_date.isoformat()}"
+    else:
+        # Unauthenticated / guest session
+        if target_date:
+            try:
+                calc_date = date.fromisoformat(target_date)
+            except ValueError:
+                calc_date = datetime.now(timezone.utc).date()
+        else:
+            calc_date = datetime.now(timezone.utc).date()
+
+        seed = f"daily-seed:{calc_date.isoformat()}"
 
     if effective_energy_type in [None, "", "auto"]:
         effective_energy_type = "confidence"
@@ -336,14 +418,22 @@ async def get_daily_energy_interpretation(
 
     # Find current archetype info
     curr_arch = next((a for a in DAILY_ENERGY_ARCHETYPES if a["id"] == effective_energy_type), DAILY_ENERGY_ARCHETYPES[0])
+    guidance = get_daily_guidance(effective_energy_type, locale=locale)
 
     return {
+        "date": calc_date.isoformat(),
+        "archetype": effective_energy_type,
         "energy_type": effective_energy_type,
         "label": curr_arch["label_ka"],
         "interpretation": resolved.model_dump() if resolved else None,
         "contract": contract.model_dump() if contract else None,
         "available_archetypes": DAILY_ENERGY_ARCHETYPES,
+        "primary_transit": primary_transit,
+        "supporting_transits": supporting_transits,
+        "do": guidance["do"],
+        "dont": guidance["dont"],
     }
+
 
 
 @router.post("/interpretations/resolve-natal", response_model=list[dict[str, Any]])

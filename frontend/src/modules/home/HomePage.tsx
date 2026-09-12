@@ -130,6 +130,68 @@ export const HomePage: React.FC = () => {
                   "დღევანდელი ენერგია ხელს უწყობს პირდაპირ კომუნიკაციას და ახალი კონტაქტების გაცნობას."}
               </p>
 
+              {/* DO / DON'T Behavioral Guidance */}
+              {(dailyEnergy.do || dailyEnergy.dont) && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                  {dailyEnergy.do && (
+                    <div
+                      style={{
+                        padding: "0.75rem 0.9rem",
+                        backgroundColor: "#f0fdf4",
+                        border: "1px solid #bbf7d0",
+                        borderRadius: "10px",
+                        fontSize: "0.85rem",
+                        color: "#166534",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#15803d", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <span>✓</span> DO
+                      </div>
+                      <div>
+                        {Array.isArray(dailyEnergy.do) ? (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            {dailyEnergy.do.map((tag, idx) => (
+                              <span key={idx} style={{ fontWeight: 600 }}>• {tag}</span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div>{dailyEnergy.do}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {dailyEnergy.dont && (
+                    <div
+                      style={{
+                        padding: "0.75rem 0.9rem",
+                        backgroundColor: "#fef2f2",
+                        border: "1px solid #fecaca",
+                        borderRadius: "10px",
+                        fontSize: "0.85rem",
+                        color: "#991b1b",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#b91c1c", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <span>✕</span> DON'T
+                      </div>
+                      <div>
+                        {Array.isArray(dailyEnergy.dont) ? (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            {dailyEnergy.dont.map((tag, idx) => (
+                              <span key={idx} style={{ fontWeight: 600 }}>• {tag}</span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div>{dailyEnergy.dont}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Collapsible "See Why / Context" */}
               <div style={{ borderTop: "1px solid #f5d0fe", paddingTop: "0.75rem" }}>
                 <button
@@ -166,11 +228,19 @@ export const HomePage: React.FC = () => {
                     <div>
                       <strong>ფოკუსი:</strong> {dailyEnergy.label}
                     </div>
-                    {dailyEnergy.available_archetypes?.find((a) => a.id === dailyEnergy.energy_type)?.transit && (
+                    {dailyEnergy.primary_transit ? (
                       <div style={{ marginTop: "0.25rem" }}>
-                        <strong>ასტროლოგიური კონტექსტი:</strong>{" "}
-                        {dailyEnergy.available_archetypes.find((a) => a.id === dailyEnergy.energy_type)?.transit}
+                        <strong>აქტიური ტრანზიტი:</strong>{" "}
+                        {dailyEnergy.primary_transit.context_label_ka} (ორბი: {dailyEnergy.primary_transit.orb_diff}°,{" "}
+                        {dailyEnergy.primary_transit.is_applying ? "უახლოვდება" : "შორდება"})
                       </div>
+                    ) : (
+                      dailyEnergy.available_archetypes?.find((a) => a.id === dailyEnergy.energy_type)?.transit && (
+                        <div style={{ marginTop: "0.25rem" }}>
+                          <strong>ასტროლოგიური კონტექსტი:</strong>{" "}
+                          {dailyEnergy.available_archetypes.find((a) => a.id === dailyEnergy.energy_type)?.transit}
+                        </div>
+                      )
                     )}
                     <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", color: "#94a3b8" }}>
                       ტონი: <code>{dailyEnergy.interpretation?.tone || "witty"}</code>
