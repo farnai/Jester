@@ -133,11 +133,13 @@ export interface MessageResponse {
 export interface NotificationResponse {
   id: string;
   user_id: string;
+  type?: string;
   notification_type: "connection_request" | "connection_accepted" | "message_received" | "daily_energy" | "system";
   payload: Record<string, any>;
   read_at: string | null;
   created_at: string;
 }
+
 
 export interface ApiError {
   status_code: number;

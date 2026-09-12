@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { ConnectionResponse } from "../../core/api/types";
@@ -10,8 +10,11 @@ export const ConnectionsPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<"active" | "incoming" | "outgoing">("active");
+  const tabParam = searchParams.get("tab");
+  const initialTab = (tabParam === "incoming" || tabParam === "outgoing" || tabParam === "active") ? tabParam : "active";
+  const [activeTab, setActiveTab] = useState<"active" | "incoming" | "outgoing">(initialTab);
 
   const { data: connections, isLoading, error, refetch } = useQuery({
     queryKey: ["connections"],
@@ -72,7 +75,7 @@ export const ConnectionsPage: React.FC = () => {
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: "1px solid #d9d9d9", marginBottom: "1rem" }}>
         <button
-          onClick={() => setActiveTab("active")}
+          onClick={() => { setActiveTab("active"); setSearchParams({ tab: "active" }); }}
           style={{
             padding: "0.6rem 1.2rem",
             background: "none",
@@ -86,7 +89,7 @@ export const ConnectionsPage: React.FC = () => {
           Active Connections ({accepted.length})
         </button>
         <button
-          onClick={() => setActiveTab("incoming")}
+          onClick={() => { setActiveTab("incoming"); setSearchParams({ tab: "incoming" }); }}
           style={{
             padding: "0.6rem 1.2rem",
             background: "none",
@@ -100,7 +103,7 @@ export const ConnectionsPage: React.FC = () => {
           Incoming Requests ({incoming.length})
         </button>
         <button
-          onClick={() => setActiveTab("outgoing")}
+          onClick={() => { setActiveTab("outgoing"); setSearchParams({ tab: "outgoing" }); }}
           style={{
             padding: "0.6rem 1.2rem",
             background: "none",

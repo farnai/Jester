@@ -1,3 +1,4 @@
+import json
 import uuid
 from fastapi import APIRouter, Depends, status
 import psycopg
@@ -42,33 +43,64 @@ async def create_connection_request(
 ) -> ConnectionResponse:
     user_a, user_b = get_canonical_pair(current_user.id, payload.target_user_id)
 
-    with db.cursor() as cur:
-        # Check if already blocked
-        cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (user_a, user_b))
-        res = cur.fetchone()
-        if res and res["is_blocked"]:
-            raise ForbiddenException("Cannot create connection with this user")
+    with db.transaction():
+        with db.cursor() as cur:
+            # Check if already blocked
+            cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (user_a, user_b))
+            res = cur.fetchone()
+            if res and res["is_blocked"]:
+                raise ForbiddenException("Cannot create connection with this user")
 
-        # Check existing connection
-        cur.execute("SELECT * FROM public.connections WHERE user_a_id = %s AND user_b_id = %s;", (user_a, user_b))
-        existing = cur.fetchone()
-        if existing:
-            if existing["status"] in ["pending", "accepted"]:
-                return ConnectionResponse(**existing)
-            # Reactivate if previously removed/declined
+            # Check existing connection
+            cur.execute("SELECT * FROM public.connections WHERE user_a_id = %s AND user_b_id = %s;", (user_a, user_b))
+            existing = cur.fetchone()
+            if existing:
+                if existing["status"] in ["pending", "accepted"]:
+                    return ConnectionResponse(**existing)
+                # Reactivate if previously removed/declined
+                cur.execute("""
+                    UPDATE public.connections 
+                    SET status = 'pending', initiated_by = %s, blocked_by = NULL
+                    WHERE id = %s RETURNING *;
+                """, (current_user.id, existing["id"]))
+                conn_row = cur.fetchone()
+            else:
+                cur.execute("""
+                    INSERT INTO public.connections (user_a_id, user_b_id, status, initiated_by)
+                    VALUES (%s, %s, 'pending', %s)
+                    RETURNING *;
+                """, (user_a, user_b, current_user.id))
+                conn_row = cur.fetchone()
+
+            # EVENT 1: Connection request created -> Notification for payload.target_user_id
+            cur.execute("SELECT display_name FROM public.profiles WHERE id = %s;", (current_user.id,))
+            prof = cur.fetchone()
+            actor_name = prof["display_name"] if prof and prof.get("display_name") else None
+
+            notif_payload = {
+                "connection_id": str(conn_row["id"]),
+                "actor_id": str(current_user.id),
+                "other_user_id": str(current_user.id),
+                "actor_name": actor_name or "Someone",
+                "message": f"{actor_name or 'Someone'} გამოგიგზავნათ კავშირის მოთხოვნა",
+            }
+
+            # Check if unread notification already exists to guarantee idempotency
             cur.execute("""
-                UPDATE public.connections 
-                SET status = 'pending', initiated_by = %s, blocked_by = NULL
-                WHERE id = %s RETURNING *;
-            """, (current_user.id, existing["id"]))
-            return ConnectionResponse(**cur.fetchone())
+                SELECT id FROM public.notifications
+                WHERE user_id = %s AND type = 'connection_request'
+                  AND (payload->>'connection_id') = %s
+                  AND read_at IS NULL;
+            """, (payload.target_user_id, str(conn_row["id"])))
+            existing_notif = cur.fetchone()
 
-        cur.execute("""
-            INSERT INTO public.connections (user_a_id, user_b_id, status, initiated_by)
-            VALUES (%s, %s, 'pending', %s)
-            RETURNING *;
-        """, (user_a, user_b, current_user.id))
-        return ConnectionResponse(**cur.fetchone())
+            if not existing_notif:
+                cur.execute("""
+                    INSERT INTO public.notifications (user_id, type, payload)
+                    VALUES (%s, 'connection_request', %s);
+                """, (payload.target_user_id, json.dumps(notif_payload)))
+
+            return ConnectionResponse(**conn_row)
 
 
 @router.post("/{connection_id}/transition", response_model=ConnectionResponse)
@@ -78,46 +110,79 @@ async def transition_connection(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> ConnectionResponse:
-    with db.cursor() as cur:
-        cur.execute("SELECT * FROM public.connections WHERE id = %s;", (connection_id,))
-        conn = cur.fetchone()
-        if not conn:
-            raise PrivacySafeNotFoundException("Connection not found")
+    with db.transaction():
+        with db.cursor() as cur:
+            cur.execute("SELECT * FROM public.connections WHERE id = %s;", (connection_id,))
+            conn = cur.fetchone()
+            if not conn:
+                raise PrivacySafeNotFoundException("Connection not found")
 
-        # Must be participant
-        if current_user.id not in [conn["user_a_id"], conn["user_b_id"]]:
-            raise PrivacySafeNotFoundException("Connection not found")
+            # Must be participant
+            if current_user.id not in [conn["user_a_id"], conn["user_b_id"]]:
+                raise PrivacySafeNotFoundException("Connection not found")
 
-        curr_status = conn["status"]
-        action = payload.action
+            curr_status = conn["status"]
+            action = payload.action
 
-        if action == "accept":
-            if curr_status != "pending" or conn["initiated_by"] == current_user.id:
-                raise JesterAPIException(status_code=400, message="Cannot accept this connection", error_code="invalid_transition")
-            new_status, blocked_by = "accepted", None
+            if action == "accept":
+                if curr_status != "pending" or conn["initiated_by"] == current_user.id:
+                    raise JesterAPIException(status_code=400, message="Cannot accept this connection", error_code="invalid_transition")
+                new_status, blocked_by = "accepted", None
 
-        elif action == "decline":
-            if curr_status != "pending" or conn["initiated_by"] == current_user.id:
-                raise JesterAPIException(status_code=400, message="Cannot decline this connection", error_code="invalid_transition")
-            new_status, blocked_by = "declined", None
+            elif action == "decline":
+                if curr_status != "pending" or conn["initiated_by"] == current_user.id:
+                    raise JesterAPIException(status_code=400, message="Cannot decline this connection", error_code="invalid_transition")
+                new_status, blocked_by = "declined", None
 
-        elif action == "block":
-            new_status, blocked_by = "blocked", current_user.id
+            elif action == "block":
+                new_status, blocked_by = "blocked", current_user.id
 
-        elif action == "unblock":
-            if curr_status != "blocked" or conn["blocked_by"] != current_user.id:
-                raise ForbiddenException("Only the blocker can unblock")
-            # Rule #5: unblock transitions to removed, does not auto-restore accepted
-            new_status, blocked_by = "removed", None
+            elif action == "unblock":
+                if curr_status != "blocked" or conn["blocked_by"] != current_user.id:
+                    raise ForbiddenException("Only the blocker can unblock")
+                # Rule #5: unblock transitions to removed, does not auto-restore accepted
+                new_status, blocked_by = "removed", None
 
-        elif action == "remove":
-            new_status, blocked_by = "removed", None
-        else:
-            raise JesterAPIException(status_code=400, message="Unknown action", error_code="invalid_action")
+            elif action == "remove":
+                new_status, blocked_by = "removed", None
+            else:
+                raise JesterAPIException(status_code=400, message="Unknown action", error_code="invalid_action")
 
-        cur.execute("""
-            UPDATE public.connections 
-            SET status = %s, blocked_by = %s
-            WHERE id = %s RETURNING *;
-        """, (new_status, blocked_by, connection_id))
-        return ConnectionResponse(**cur.fetchone())
+            cur.execute("""
+                UPDATE public.connections 
+                SET status = %s, blocked_by = %s
+                WHERE id = %s RETURNING *;
+            """, (new_status, blocked_by, connection_id))
+            conn_row = cur.fetchone()
+
+            # EVENT 2: Connection accepted -> Notification for initiator (conn["initiated_by"])
+            if action == "accept":
+                cur.execute("SELECT display_name FROM public.profiles WHERE id = %s;", (current_user.id,))
+                prof = cur.fetchone()
+                actor_name = prof["display_name"] if prof and prof.get("display_name") else None
+
+                notif_payload = {
+                    "connection_id": str(connection_id),
+                    "actor_id": str(current_user.id),
+                    "other_user_id": str(current_user.id),
+                    "actor_name": actor_name or "Someone",
+                    "message": f"{actor_name or 'Someone'} დათანხმდა თქვენს კავშირის მოთხოვნას",
+                }
+
+                # Check if unread notification already exists to guarantee idempotency
+                cur.execute("""
+                    SELECT id FROM public.notifications
+                    WHERE user_id = %s AND type = 'connection_accepted'
+                      AND (payload->>'connection_id') = %s
+                      AND read_at IS NULL;
+                """, (conn["initiated_by"], str(connection_id)))
+                existing_notif = cur.fetchone()
+
+                if not existing_notif:
+                    cur.execute("""
+                        INSERT INTO public.notifications (user_id, type, payload)
+                        VALUES (%s, 'connection_accepted', %s);
+                    """, (conn["initiated_by"], json.dumps(notif_payload)))
+
+            return ConnectionResponse(**conn_row)
+

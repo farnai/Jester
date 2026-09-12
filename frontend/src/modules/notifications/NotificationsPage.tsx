@@ -29,17 +29,19 @@ export const NotificationsPage: React.FC = () => {
       markReadMutation.mutate(n.id);
     }
 
-    if (n.notification_type === "connection_request") {
-      navigate("/connections");
-    } else if (n.notification_type === "connection_accepted") {
-      const otherId = n.payload?.other_user_id;
+    const nType = n.notification_type || (n as any).type;
+
+    if (nType === "connection_request") {
+      navigate("/connections?tab=incoming");
+    } else if (nType === "connection_accepted") {
+      const otherId = n.payload?.other_user_id || n.payload?.actor_id;
       if (otherId) navigate(`/compare/${otherId}`);
       else navigate("/connections");
-    } else if (n.notification_type === "message_received") {
+    } else if (nType === "message_received") {
       const convId = n.payload?.conversation_id;
       if (convId) navigate(`/chat/${convId}`);
       else navigate("/connections");
-    } else if (n.notification_type === "daily_energy") {
+    } else if (nType === "daily_energy") {
       navigate("/self/astrology");
     }
   };
@@ -59,6 +61,8 @@ export const NotificationsPage: React.FC = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {list.map((n) => {
             const isUnread = !n.read_at;
+            const nType = n.notification_type || (n as any).type;
+            const displayMessage = n.payload?.message || (n.payload && Object.keys(n.payload).length > 0 ? JSON.stringify(n.payload) : "");
             return (
               <div
                 key={n.id}
@@ -76,16 +80,18 @@ export const NotificationsPage: React.FC = () => {
               >
                 <div>
                   <div style={{ fontWeight: isUnread ? "bold" : "normal", fontSize: "0.95rem" }}>
-                    {n.notification_type === "connection_request" && "🤝 New Connection Request"}
-                    {n.notification_type === "connection_accepted" && "🎉 Connection Accepted"}
-                    {n.notification_type === "message_received" && "💬 New Message Received"}
-                    {n.notification_type === "daily_energy" && "☀️ Daily Astrological Energy"}
-                    {n.notification_type === "system" && "🔔 System Notice"}
+                    {nType === "connection_request" && "🤝 New Connection Request"}
+                    {nType === "connection_accepted" && "🎉 Connection Accepted"}
+                    {nType === "message_received" && "💬 New Message Received"}
+                    {nType === "daily_energy" && "☀️ Daily Astrological Energy"}
+                    {nType === "system" && "🔔 System Notice"}
                   </div>
-                  <div style={{ fontSize: "0.8rem", color: "#666", marginTop: "0.2rem" }}>
-                    {JSON.stringify(n.payload)}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "#999", marginTop: "0.2rem" }}>
+                  {displayMessage && (
+                    <div style={{ fontSize: "0.85rem", color: "#475569", marginTop: "0.25rem" }}>
+                      {displayMessage}
+                    </div>
+                  )}
+                  <div style={{ fontSize: "0.75rem", color: "#999", marginTop: "0.25rem" }}>
                     {new Date(n.created_at).toLocaleString()}
                   </div>
                 </div>
