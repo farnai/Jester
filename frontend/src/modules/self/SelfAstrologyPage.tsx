@@ -94,8 +94,6 @@ export const SelfAstrologyPage: React.FC = () => {
       </div>
 
       <div style={{ marginTop: "1.5rem", padding: "1rem", background: "#fafafa", borderRadius: "4px", fontSize: "0.85rem", color: "#666" }}>
-        <div><strong>Data Version:</strong> {data.source_birth_data_version}</div>
-        <div><strong>Engine Version:</strong> {data.engine_version}</div>
         <div><strong>Last Calculated:</strong> {new Date(data.updated_at).toLocaleString()}</div>
       </div>
     </div>

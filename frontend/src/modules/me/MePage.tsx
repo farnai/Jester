@@ -359,13 +359,6 @@ export const MePage: React.FC = () => {
                     <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.65 }}>
                       {obs.interpretation?.text}
                     </p>
-
-                    {/* Metadata footer */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "0.6rem", fontSize: "0.75rem", color: "#94a3b8" }}>
-                      <span>ID: <code>{obs.interpretation?.id}</code></span>
-                      <span>ტონი: <code>{obs.interpretation?.tone || "witty"}</code></span>
-                      <span>სტატუსი: <code>{obs.interpretation?.content_status || "approved"}</code></span>
-                    </div>
                   </Card>
                 );
               })}
@@ -400,7 +393,7 @@ export const MePage: React.FC = () => {
               {/* Recalculate Natal Placements Action */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
                 <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
-                  ძრავა: {astro.engine_version} • ვერსია: v{astro.source_birth_data_version} • ბოლოს გადათვლილი: {new Date(astro.updated_at).toLocaleDateString("ka-GE")}
+                  ბოლოს გადათვლილი: {new Date(astro.updated_at).toLocaleDateString("ka-GE")}
                 </span>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <Button

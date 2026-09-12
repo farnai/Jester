@@ -12,8 +12,6 @@ import {
   ErrorState,
   PrivacySafeNotFoundState,
 } from "../../shared/ui";
-import { RuntimeInfoBlock } from "../../shared/runtime/RuntimeInfoBlock";
-import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -438,87 +436,6 @@ export const PersonProfilePage: React.FC = () => {
           </div>
         </Card>
       )}
-
-      {/* 6. TEMPORARY RUNTIME VISIBILITY LAYER: Discovery -> Why -> Invitation Pipeline */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "0.5rem" }}>
-        <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          ⚙️ Runtime Pipeline Inspection: Discovery → WHY → Connection Invitation
-        </div>
-
-        {/* Discovery Presence Layer */}
-        <RuntimeInfoBlock
-          title="Layer 1: Discovery Presence Hook"
-          badge="Candidate Surface"
-          badgeColor="#0284c7"
-          items={[
-            { label: "Presence Source", value: astro?.ascendant_sign ? "ascendant" : "sun_sign" },
-            { label: "Presence Sign", value: astro?.ascendant_sign || astro?.sun_sign || "N/A" },
-            {
-              label: "Asset ID",
-              value: `discovery.person.presence.${(astro?.ascendant_sign || astro?.sun_sign || "aries").toLowerCase()}.v1`,
-              monospace: true,
-            },
-          ]}
-        />
-
-        {/* Why This Person Layer */}
-        {preview && (
-          <RuntimeInfoBlock
-            title="Layer 2: Why This Person (Synastry V1 Insight)"
-            badge={`Score: ${score}`}
-            badgeColor="#9333ea"
-            items={[
-              { label: "Contract ID", value: preview.interpretation?.id || preview.interpretation?.content_asset_id || "N/A", monospace: true },
-              { label: "Category", value: preview.interpretation?.context || "relationship" },
-              { label: "Asset ID", value: preview.interpretation?.content_asset_id || preview.interpretation?.id || "N/A", monospace: true },
-              {
-                label: "Source Aspects",
-                value: preview.signals?.flatMap((s: any) => s.source_aspects || []).slice(0, 3).join(", ") || "None",
-                monospace: true,
-              },
-            ]}
-          >
-            <div style={{ marginTop: "0.4rem", padding: "0.5rem", backgroundColor: "#fff", borderRadius: "6px", border: "1px solid #e2e8f0", fontSize: "0.8rem", color: "#334155" }}>
-              "{preview.interpretation?.text}"
-            </div>
-          </RuntimeInfoBlock>
-        )}
-
-        {/* Connection Invitation Layer */}
-        {preview?.connection_invitation && (
-          <RuntimeInfoBlock
-            title="Layer 3: Connection Invitation (Insight → Invitation)"
-            badge="Handoff Copy"
-            badgeColor="#059669"
-            items={[
-              { label: "Category", value: preview.connection_invitation.context || "connection" },
-              { label: "Asset ID", value: preview.connection_invitation.content_asset_id || preview.connection_invitation.id, monospace: true },
-              { label: "Status", value: preview.connection_invitation.content_status || "approved" },
-            ]}
-          >
-            <div style={{ marginTop: "0.4rem", padding: "0.5rem", backgroundColor: "#f0fdf4", borderRadius: "6px", border: "1px solid #bbf7d0", fontSize: "0.8rem", color: "#166534" }}>
-              "{preview.connection_invitation.text}"
-            </div>
-          </RuntimeInfoBlock>
-        )}
-
-        {/* Birth Data Confidence QA Block */}
-        {preview?.data_quality && (
-          <RuntimeInfoBlock
-            title="Birth Data Confidence & Calculation Invariants"
-            badge={preview.data_quality.time_precision}
-            badgeColor={preview.data_quality.time_precision === "exact" ? "#059669" : "#d97706"}
-            items={[
-              { label: "Time Precision", value: preview.data_quality.time_precision },
-              { label: "Synastry Confidence", value: `${Math.round(preview.data_quality.confidence * 100)}%` },
-              { label: "Ascendant Used", value: preview.data_quality.ascendant_used ? "Yes (ზუსტი დრო)" : "No (დრო უცნობია)" },
-              { label: "Houses Used", value: preview.data_quality.houses_used ? "Yes (სახლები ჩართულია)" : "No (დრო უცნობია)" },
-            ]}
-          />
-        )}
-
-        <RuntimeJson data={{ profile, astro, preview, connection: myConnection }} label="Person & Relationship Full Pipeline JSON" />
-      </div>
     </div>
   );
 };

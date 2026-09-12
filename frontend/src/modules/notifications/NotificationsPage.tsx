@@ -4,7 +4,40 @@ import { useNavigate } from "react-router-dom";
 import { API } from "../../core/api/endpoints";
 import { NotificationResponse } from "../../core/api/types";
 import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
-import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
+
+const getNotificationFallbackMessage = (type?: string, payload?: Record<string, any>): string => {
+  if (typeof payload?.message === "string" && payload.message.trim().length > 0) {
+    return payload.message.trim();
+  }
+
+  switch (type) {
+    case "connection_request":
+      return "ახალი კავშირის მოთხოვნა — დააჭირეთ სანახავად";
+    case "connection_accepted":
+      return "თქვენი კავშირის მოთხოვნა მიღებულია — ნახეთ სრული შედარება";
+    case "message_received":
+      return "ახალი შეტყობინება პირად ჩატში";
+    case "daily_energy":
+      return "დღის ასტროლოგიური ენერგია და გზამკვლევი მზად არის";
+    default:
+      return "ახალი შეტყობინება სისტემაში";
+  }
+};
+
+const getNotificationTitle = (type?: string): string => {
+  switch (type) {
+    case "connection_request":
+      return "🤝 ახალი კავშირის მოთხოვნა";
+    case "connection_accepted":
+      return "🎉 კავშირი მიღებულია";
+    case "message_received":
+      return "💬 ახალი შეტყობინება";
+    case "daily_energy":
+      return "☀️ დღის ასტროლოგიური ენერგია";
+    default:
+      return "🔔 შეტყობინება";
+  }
+};
 
 export const NotificationsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -47,7 +80,7 @@ export const NotificationsPage: React.FC = () => {
     }
   };
 
-  if (isLoading) return <LoadingState message="Loading notifications..." />;
+  if (isLoading) return <LoadingState message="შეტყობინებების ჩატვირთვა..." />;
   if (error) return <ErrorState error={error as Error} onRetry={refetch} />;
 
   const list = notifications || [];
@@ -55,23 +88,22 @@ export const NotificationsPage: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div>
-        <h2 style={{ marginTop: 0, marginBottom: "0.25rem" }}>Notifications & Runtime Events</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "0.25rem" }}>შეტყობინებები</h2>
         <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
-          In-app event log for connection lifecycle, messaging, and daily transit updates
+          კავშირების, შეტყობინებებისა და ასტროლოგიური მოვლენების ჟურნალი
         </div>
       </div>
 
       {list.length === 0 ? (
-        <EmptyState title="All Caught Up" description="You have no notifications at this time." />
+        <EmptyState title="შეტყობინებები არ არის" description="თქვენ არ გაქვთ ახალი შეტყობინებები." />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {list.map((n) => {
             const isUnread = !n.read_at;
             const nType = n.notification_type || (n as any).type;
-            const actorId = n.payload?.actor_id || n.payload?.other_user_id;
-            const connectionId = n.payload?.connection_id;
-            const displayMessage = n.payload?.message || (n.payload && Object.keys(n.payload).length > 0 ? JSON.stringify(n.payload) : "");
-            
+            const displayMessage = getNotificationFallbackMessage(nType, n.payload);
+            const title = getNotificationTitle(nType);
+
             return (
               <div
                 key={n.id}
@@ -85,6 +117,7 @@ export const NotificationsPage: React.FC = () => {
                   flexDirection: "column",
                   gap: "0.5rem",
                   cursor: "pointer",
+                  transition: "border-color 0.15s, background-color 0.15s",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
@@ -101,14 +134,10 @@ export const NotificationsPage: React.FC = () => {
                           textTransform: "uppercase",
                         }}
                       >
-                        {isUnread ? "UNREAD" : "READ"}
+                        {isUnread ? "ახალი" : "წაკითხული"}
                       </span>
                       <strong style={{ fontSize: "0.95rem", color: "#0f172a" }}>
-                        {nType === "connection_request" && "🤝 New Connection Request"}
-                        {nType === "connection_accepted" && "🎉 Connection Accepted"}
-                        {nType === "message_received" && "💬 New Message Received"}
-                        {nType === "daily_energy" && "☀️ Daily Astrological Energy"}
-                        {nType === "system" && "🔔 System Notice"}
+                        {title}
                       </strong>
                     </div>
 
@@ -137,26 +166,19 @@ export const NotificationsPage: React.FC = () => {
                         flexShrink: 0,
                       }}
                     >
-                      Mark Read
+                      წაკითხვა
                     </button>
                   )}
                 </div>
 
-                {/* Runtime Metadata Line */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", fontSize: "0.75rem", color: "#64748b", borderTop: "1px dashed #e2e8f0", paddingTop: "0.4rem" }}>
-                  <span>Event: <code>{nType}</code></span>
-                  {actorId && <span>Actor ID: <code>{actorId.slice(0, 8)}...</code></span>}
-                  {connectionId && <span>Connection ID: <code>{connectionId.slice(0, 8)}...</code></span>}
-                  <span>Timestamp: {new Date(n.created_at).toLocaleString()}</span>
+                <div style={{ fontSize: "0.75rem", color: "#94a3b8", borderTop: "1px dashed #f1f5f9", paddingTop: "0.4rem" }}>
+                  {new Date(n.created_at).toLocaleString("ka-GE")}
                 </div>
               </div>
             );
           })}
         </div>
       )}
-
-      {/* Runtime Raw Payload */}
-      <RuntimeJson data={notifications} label="Notifications Raw API Payload" />
     </div>
   );
 };

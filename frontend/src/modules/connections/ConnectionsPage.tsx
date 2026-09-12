@@ -5,7 +5,6 @@ import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { ConnectionResponse } from "../../core/api/types";
 import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
-import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 export const ConnectionsPage: React.FC = () => {
   const { user } = useAuth();
@@ -361,11 +360,6 @@ export const ConnectionsPage: React.FC = () => {
           )}
         </div>
       )}
-
-      {/* Runtime Raw Payload */}
-      <div style={{ marginTop: "1.5rem" }}>
-        <RuntimeJson data={connections} label="Connections Raw API Payload" />
-      </div>
     </div>
   );
 };

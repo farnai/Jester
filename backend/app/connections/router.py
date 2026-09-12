@@ -18,6 +18,17 @@ def get_canonical_pair(u1: uuid.UUID, u2: uuid.UUID) -> tuple[uuid.UUID, uuid.UU
     return (u1, u2) if str(u1) < str(u2) else (u2, u1)
 
 
+def get_canonical_pair_seed(u1: uuid.UUID, ver1: int, u2: uuid.UUID, ver2: int) -> str:
+    """
+    Returns the canonical, symmetric, version-aware relationship pair seed.
+    Ensures identical seed generation regardless of caller/target order.
+    """
+    if str(u1) < str(u2):
+        return f"{u1}:{u2}:{ver1}:{ver2}"
+    else:
+        return f"{u2}:{u1}:{ver2}:{ver1}"
+
+
 @router.get("", response_model=list[ConnectionResponse])
 async def list_my_connections(
     current_user: AuthenticatedUser = Depends(get_current_user),

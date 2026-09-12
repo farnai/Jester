@@ -12,11 +12,7 @@ import {
   ErrorState,
   PrivacySafeNotFoundState,
 } from "../../shared/ui";
-import { RuntimeInfoBlock } from "../../shared/runtime/RuntimeInfoBlock";
-import { SignalBlock } from "../../shared/runtime/SignalBlock";
-import { StartersInspectionBlock } from "../../shared/runtime/StartersInspectionBlock";
-import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
-import { getTopicLabel } from "./components/ConversationStarters";
+import { ConversationStarters } from "./components/ConversationStarters";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -272,27 +268,9 @@ export const WhyPage: React.FC = () => {
             fontWeight: 500,
           }}
         >
-          {primaryInsight}
-        </p>
-
-        {data.interpretation?.tone && (
-          <div style={{ fontSize: "0.75rem", color: "#7e22ce", fontWeight: 600, marginBottom: "0.75rem" }}>
-            ტონი: <code>{data.interpretation.tone}</code> • დეტერმინისტული სინასტრიული ანალიზი
-          </div>
-        )}
-
-        <RuntimeInfoBlock
-          title="Runtime: Primary Interpretation Metadata"
-          badge="Insight Engine"
-          items={[
-            { label: "Category", value: data.interpretation?.category || (data.signals?.[0]?.category) || "harmony" },
-            { label: "Signal / Contract ID", value: data.signals?.[0]?.rule_id || data.signals?.[0]?.source_aspect || "synastry_v1" },
-            { label: "Source Aspects", value: data.signals?.[0]?.aspect ? `${data.signals[0].planet_pair} (${data.signals[0].aspect})` : "N/A" },
-            { label: "Score / Confidence", value: `${score} / 100` },
-            { label: "Tone", value: data.interpretation?.tone || "direct" },
-          ]}
-        />
-      </Card>
+            {primaryInsight}
+          </p>
+        </Card>
 
       {/* 2.5 Dedicated Connection Invitation: The insight becomes the invitation */}
       <Card padded style={{ padding: "1.25rem 1.5rem", borderLeft: "4px solid #8b5cf6" }}>
@@ -302,18 +280,9 @@ export const WhyPage: React.FC = () => {
             Connection Invitation (The insight becomes the invitation)
           </h3>
         </div>
-        <p style={{ margin: "0 0 0.85rem 0", color: "#334155", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
+        <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
           "{data.connection_invitation?.text || "ინსაითი მოგეწონათ? გაუგზავნეთ კავშირის მოთხოვნა საუბრის დასაწყებად."}"
         </p>
-        <RuntimeInfoBlock
-          title="Runtime: Invitation Asset Metadata"
-          badge="Invitation Engine"
-          items={[
-            { label: "Invitation Category", value: data.connection_invitation?.category || "invitation" },
-            { label: "Invitation Asset ID", value: data.connection_invitation?.asset_id || "invitation.v1" },
-            { label: "Target User", value: targetId },
-          ]}
-        />
       </Card>
 
       {/* 3. Supporting Relationship Dynamics (2–4 Human-Readable Signals) */}
@@ -376,45 +345,13 @@ export const WhyPage: React.FC = () => {
         </div>
       )}
 
-      {/* 3.5 Runtime: Complete Active Signals Inspection */}
-      <SignalBlock signals={data.signals} />
-
       {/* 4. Actionable Conversation Starters & Topics */}
-      {(bestTopics.length > 0 || conversationStarters.length > 0) && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800, color: "#0f172a" }}>
-              საუბრის დასაწყები თემები & ფრაზები
-            </h2>
-            <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.15rem" }}>
-              თემები, სადაც კომუნიკაცია ყველაზე მარტივად და დინამიკურად ვითარდება
-            </div>
-          </div>
-
-          {/* Topics Badges */}
-          {bestTopics.length > 0 && (
-            <Card padded style={{ padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#475569", marginBottom: "0.6rem" }}>
-                რეკომენდებული სასაუბრო სფეროები:
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
-                {bestTopics.map((topic, idx) => (
-                  <Badge key={idx} variant="brand" size="md">
-                    🏷️ {getTopicLabel(topic)}
-                  </Badge>
-                ))}
-              </div>
-            </Card>
-          )}
-
-          {/* Runtime Starters Inspection */}
-          <StartersInspectionBlock
-            starters={conversationStarters}
-            starterDetails={data.conversation_starter_details}
-            onSelectStarter={relState === "accepted" ? handleSendStarterToChat : undefined}
-          />
-        </div>
-      )}
+      <ConversationStarters
+        bestTopics={bestTopics}
+        conversationStarters={conversationStarters}
+        isConnected={relState === "accepted"}
+        onSendToChat={relState === "accepted" ? handleSendStarterToChat : undefined}
+      />
 
       {/* 5. US / Compare Transition Card */}
       <Card padded style={{ padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", backgroundColor: "#fdf4ff", border: "1px solid #f5d0fe" }}>
@@ -530,23 +467,6 @@ export const WhyPage: React.FC = () => {
           </div>
         </div>
       </Card>
-
-      {/* 7. Runtime: Birth Data Confidence / QA Block */}
-      {data.data_quality && (
-        <RuntimeInfoBlock
-          title="Runtime: Birth Data Confidence & QA State"
-          badge="Astro Engine QA"
-          items={[
-            { label: "Confidence", value: `${Math.round((data.data_quality.confidence || 0) * 100)}%` },
-            { label: "Time Precision", value: data.data_quality.time_precision },
-            { label: "Ascendant Used", value: data.data_quality.ascendant_used ? "YES" : "NO (Unknown Time fallback)" },
-            { label: "Houses Used", value: data.data_quality.houses_used ? "YES" : "NO" },
-          ]}
-        />
-      )}
-
-      {/* 8. Runtime Raw API Payload (Safe Collapsible) */}
-      <RuntimeJson data={data.raw} label="Why Relationship Raw API Data" />
     </div>
   );
 };

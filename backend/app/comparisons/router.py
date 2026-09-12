@@ -11,7 +11,7 @@ from backend.app.compatibility.engine import CompatibilityEngine
 from backend.app.core.database import get_db
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.comparisons.models import CompareRequest, StructuredCompatibilityResponse
-from backend.app.connections.router import get_canonical_pair
+from backend.app.connections.router import get_canonical_pair, get_canonical_pair_seed
 from backend.app.interpretation.engine import interpretation_engine
 
 router = APIRouter(tags=["compare"])
@@ -39,17 +39,17 @@ async def compare_users(
     user_a, user_b = get_canonical_pair(current_user.id, payload.target_user_id)
 
     with db.cursor() as cur:
+        # Check block status first to preserve privacy-safe 404
+        cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (current_user.id, payload.target_user_id))
+        block_res = cur.fetchone()
+        if block_res and block_res["is_blocked"]:
+            raise PrivacySafeNotFoundException("User not found or unavailable.")
+
         # Check active connection
         cur.execute("SELECT public.has_active_connection(%s, %s) as is_active;", (user_a, user_b))
         res = cur.fetchone()
         if not res or not res["is_active"]:
             raise ForbiddenException("Active connection required to view compatibility")
-
-        # Check block status
-        cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (current_user.id, payload.target_user_id))
-        block_res = cur.fetchone()
-        if block_res and block_res["is_blocked"]:
-            raise PrivacySafeNotFoundException("User not found or unavailable.")
 
         # Load current birth data versions and precision
         cur.execute(
@@ -78,7 +78,7 @@ async def compare_users(
         )
         existing = cur.fetchone()
 
-        pair_seed = f"{user_a}:{user_b}:{ver_a}:{ver_b}"
+        pair_seed = get_canonical_pair_seed(user_a, ver_a, user_b, ver_b)
         if (
             existing
             and existing["user_a_birth_data_version"] == ver_a

@@ -5,7 +5,6 @@ import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { DailyEnergyResponse, DiscoveryPerson, ConnectionResponse, ProfileResponse } from "../../core/api/types";
 import { Card, Button, Badge, Avatar, Skeleton, ErrorState } from "../../shared/ui";
-import { TransitEvidenceBlock } from "../../shared/runtime/TransitEvidenceBlock";
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -243,15 +242,9 @@ export const HomePage: React.FC = () => {
                         </div>
                       )
                     )}
-                    <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", color: "#94a3b8" }}>
-                      ტონი: <code>{dailyEnergy.interpretation?.tone || "witty"}</code>
-                    </div>
                   </div>
                 )}
               </div>
-
-              {/* Runtime Visibility: Transit Evidence & Pipeline Inspection */}
-              <TransitEvidenceBlock daily={dailyEnergy} />
             </div>
           ) : null}
         </Card>

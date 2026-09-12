@@ -6,8 +6,6 @@ import { useAuth } from "../../core/auth/useAuth";
 import { supabase } from "../../core/realtime/supabase";
 import { MessageResponse } from "../../core/api/types";
 import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
-import { StartersInspectionBlock } from "../../shared/runtime/StartersInspectionBlock";
-import { RuntimeJson } from "../../shared/runtime/RuntimeJson";
 
 export const ChatPage: React.FC = () => {
   const { conversation_id } = useParams<{ conversation_id: string }>();
@@ -141,10 +139,13 @@ export const ChatPage: React.FC = () => {
   }
 
   const msgList = messages || [];
+  const availableStarters: string[] =
+    whyData?.conversation_starters && whyData.conversation_starters.length > 0
+      ? whyData.conversation_starters
+      : (whyData?.conversation_starter_details?.map((d: any) => d.text) || []).filter(Boolean);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      <div style={{ display: "flex", flexDirection: "column", height: "75vh", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "75vh", border: "1px solid #d9d9d9", borderRadius: "6px", backgroundColor: "#fff" }}>
       {/* Chat Header */}
       <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e8e8e8", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fafafa" }}>
         <div>
@@ -196,15 +197,55 @@ export const ChatPage: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Runtime: Conversation Starters Inspection */}
-      {((whyData?.conversation_starters && whyData.conversation_starters.length > 0) || (whyData?.conversation_starter_details && whyData.conversation_starter_details.length > 0)) && (
-        <div style={{ padding: "0.5rem 0.75rem", borderTop: "1px solid #e8e8e8", backgroundColor: "#f8fafc", maxHeight: "220px", overflowY: "auto" }}>
-          <StartersInspectionBlock
-            starters={whyData.conversation_starters || []}
-            starterDetails={whyData.conversation_starter_details}
-            onSelectStarter={(text) => setMessageText(text)}
-            title="Conversation Starters (Click to pre-fill input)"
-          />
+      {/* Actionable Conversation Starters (Insight -> Invitation -> Conversation) */}
+      {availableStarters.length > 0 && (
+        <div
+          style={{
+            padding: "0.6rem 0.85rem",
+            borderTop: "1px solid #e8e8e8",
+            backgroundColor: "#f8fafc",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.4rem",
+            maxHeight: "180px",
+            overflowY: "auto",
+          }}
+        >
+          <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600 }}>
+            💡 სასაუბრო ფრაზები (დააწკაპუნეთ ტექსტის ჩასასმელად):
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+            {availableStarters.map((starterText, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setMessageText(starterText)}
+                style={{
+                  padding: "0.35rem 0.65rem",
+                  fontSize: "0.8rem",
+                  backgroundColor: "#ffffff",
+                  color: "#1e3a8a",
+                  border: "1px solid #bfdbfe",
+                  borderRadius: "16px",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  lineHeight: 1.35,
+                  transition: "all 0.15s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#eff6ff";
+                  e.currentTarget.style.borderColor = "#93c5fd";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#ffffff";
+                  e.currentTarget.style.borderColor = "#bfdbfe";
+                }}
+                title="დააწკაპუნეთ ჩატში ჩასასმელად"
+              >
+                „{starterText}“
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -234,9 +275,5 @@ export const ChatPage: React.FC = () => {
         </button>
       </form>
     </div>
-
-    {/* Runtime: Raw Chat & Context Payload */}
-    <RuntimeJson data={{ conversation, messages, whyData }} label="Chat & Messaging Raw Payload" />
-  </div>
   );
 };

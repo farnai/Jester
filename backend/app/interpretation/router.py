@@ -15,6 +15,7 @@ from backend.app.astrology.transits import compute_daily_transits, get_daily_gui
 from backend.app.auth.dependencies import get_current_user, get_optional_user, require_copywriter_or_admin
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.compatibility.engine import CompatibilityEngine
+from backend.app.connections.router import get_canonical_pair, get_canonical_pair_seed
 from backend.app.core.database import get_db, db_manager
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.interpretation.engine import interpretation_engine
@@ -576,7 +577,6 @@ async def get_discovery_people(
 
     for r in people_rows:
         pid = r["id"]
-        sun = r["sun_sign"] or "Taurus"
 
         target_placements = placements_map.get(pid)
         target_bd = bd_map.get(pid, {"birth_time_precision": "exact", "data_version": 1})
@@ -612,10 +612,19 @@ async def get_discovery_people(
         # Batch 7 Discovery Presence Hook:
         # 1. Candidate Ascendant sign
         # 2. If Ascendant unavailable, candidate Sun sign
-        # 3. Fallback to established default sign
+        # 3. Fallback to Aries default sign
         candidate_asc = r.get("ascendant_sign")
         candidate_sun = r.get("sun_sign")
-        target_sign = (candidate_asc or candidate_sun or sun or "aries").strip().lower()
+        if candidate_asc:
+            target_sign = candidate_asc.strip().lower()
+            presence_source = "ascendant"
+        elif candidate_sun:
+            target_sign = candidate_sun.strip().lower()
+            presence_source = "sun"
+        else:
+            target_sign = "aries"
+            presence_source = "fallback"
+
         discovery_interp_id = f"discovery.person.presence.{target_sign}.v1"
         hook_res = content_library.resolve(
             interpretation_id=discovery_interp_id,
@@ -640,7 +649,7 @@ async def get_discovery_people(
             },
             "compatibility_score": score,
             "hook_observation": hook_res.model_dump() if hook_res else None,
-            "presence_sign_source": "ascendant" if candidate_asc else ("sun" if candidate_sun else "fallback"),
+            "presence_sign_source": presence_source,
             "presence_sign": target_sign,
         })
 
@@ -725,41 +734,42 @@ async def compare_preview(
         cur.execute("SELECT user_id, data_version, birth_time_precision FROM public.birth_data WHERE user_id IN (%s, %s);", (source_id, target_id))
         bd_map = {r["user_id"]: r for r in cur.fetchall()}
 
-    bd_s = bd_map.get(source_id, {"data_version": 1, "birth_time_precision": "exact"})
-    bd_t = bd_map.get(target_id, {"data_version": 1, "birth_time_precision": "exact"})
+    user_a, user_b = get_canonical_pair(source_id, target_id)
+    bd_a = bd_map.get(user_a, {"data_version": 1, "birth_time_precision": "exact"})
+    bd_b = bd_map.get(user_b, {"data_version": 1, "birth_time_precision": "exact"})
 
     if (
-        source_id not in placements_map
-        or placements_map[source_id] is None
-        or placements_map[source_id].get("source_birth_data_version") != bd_s["data_version"]
+        user_a not in placements_map
+        or placements_map[user_a] is None
+        or placements_map[user_a].get("source_birth_data_version") != bd_a["data_version"]
     ):
-        recalculate_user_astrology(source_id, db)
+        recalculate_user_astrology(user_a, db)
         with db.cursor() as cur:
-            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (source_id,))
-            placements_map[source_id] = cur.fetchone()
+            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (user_a,))
+            placements_map[user_a] = cur.fetchone()
 
     if (
-        target_id not in placements_map
-        or placements_map[target_id] is None
-        or placements_map[target_id].get("source_birth_data_version") != bd_t["data_version"]
+        user_b not in placements_map
+        or placements_map[user_b] is None
+        or placements_map[user_b].get("source_birth_data_version") != bd_b["data_version"]
     ):
-        recalculate_user_astrology(target_id, db)
+        recalculate_user_astrology(user_b, db)
         with db.cursor() as cur:
-            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (target_id,))
-            placements_map[target_id] = cur.fetchone()
+            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (user_b,))
+            placements_map[user_b] = cur.fetchone()
 
     calc_result = compatibility_engine_instance.calculate(
-        person_a_id=source_id,
-        person_a_version=bd_s["data_version"],
-        person_a_precision=bd_s["birth_time_precision"],
-        person_a_placements=placements_map[source_id],
-        person_b_id=target_id,
-        person_b_version=bd_t["data_version"],
-        person_b_precision=bd_t["birth_time_precision"],
-        person_b_placements=placements_map[target_id],
+        person_a_id=user_a,
+        person_a_version=bd_a["data_version"],
+        person_a_precision=bd_a["birth_time_precision"],
+        person_a_placements=placements_map[user_a],
+        person_b_id=user_b,
+        person_b_version=bd_b["data_version"],
+        person_b_precision=bd_b["birth_time_precision"],
+        person_b_placements=placements_map[user_b],
     )
 
-    pair_seed = f"{min(str(source_id), str(target_id))}:{max(str(source_id), str(target_id))}:{bd_s['data_version']}:{bd_t['data_version']}"
+    pair_seed = get_canonical_pair_seed(user_a, bd_a["data_version"], user_b, bd_b["data_version"])
 
     enriched_signals = interpretation_engine.resolve_signals(
         calc_result.signals,
@@ -768,31 +778,29 @@ async def compare_preview(
         seed=pair_seed,
     )
 
-    calc_seed = f"{pair_seed}:{calc_result.score}:{calc_result.signals[0]['type'] if calc_result.signals else 'none'}"
-
     primary_interp = interpretation_engine.get_primary_relationship_interpretation(
         score=calc_result.score,
         signals=calc_result.signals,
         locale=payload.locale,
         tone=payload.tone,
-        seed=calc_seed,
+        seed=pair_seed,
     )
 
     conn_invitation = interpretation_engine.resolve_connection_invitation(
         signals=calc_result.signals,
-        seed=calc_seed,
+        seed=pair_seed,
         locale=payload.locale or "ka",
     )
 
     conversation_starters = interpretation_engine.resolve_conversation_starters(
         signals=calc_result.signals,
-        seed=calc_seed,
+        seed=pair_seed,
         locale=payload.locale or "ka",
     )
 
     conversation_starter_details = interpretation_engine.resolve_conversation_starter_details(
         signals=calc_result.signals,
-        seed=calc_seed,
+        seed=pair_seed,
         locale=payload.locale or "ka",
     )
 
