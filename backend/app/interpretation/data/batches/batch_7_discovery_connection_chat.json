@@ -173,7 +173,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "observable_persona_hook",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, ეს ადამიანი ნაცნობ სოციალურ წესებს ისე უყურებს, თითქოს უცხო პლანეტის რიტუალები იყოს. ნახეთ, რამდენად ეყოფა ეს გამომწვევი უცნაურობა რეალურ დიალოგს."
+    "text": "ოთახში შემოსვლისთანავე ნაცნობ სოციალურ წესებს ისე უყურებს, თითქოს უცხო პლანეტის რიტუალები იყოს. შეხედეთ მის განყენებულ მზერას და შეამოწმეთ, რამდენად ეყოფა ეს გამომწვევი უცნაურობა რეალურ დიალოგს."
   },
   {
     "asset_id": "discovery.person.presence.pisces.v1",
@@ -221,7 +221,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "mental_sparring_invitation",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, ამ ადამიანთან ზედაპირული საუბარი უბრალოდ შეუძლებელია. დაუკავშირდით, თუ მზად ხართ თქვენი არგუმენტების რეალურ ინტელექტუალურ გამოცდაზე გასატანად."
+    "text": "ამ ადამიანთან ზედაპირული საუბარი უბრალოდ შეუძლებელია. დაუკავშირდით, თუ მზად ხართ თქვენი არგუმენტების რეალურ ინტელექტუალურ გამოცდაზე გასატანად."
   },
   {
     "asset_id": "connection.invitation.harmony.v1",
@@ -285,7 +285,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "magnetic_spark_invitation",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, ამ ნაპერწკლის იგნორირება თვალების დახუჭვას ჰგავს. დაუკავშირდით, სანამ ეს მაგნიტური ცნობისმოყვარეობა უბრალო დაუკმაყოფილებელ ინტერესად დარჩენილა."
+    "text": "ამ ნაპერწკლის იგნორირება თვალების დახუჭვას ჰგავს. დაუკავშირდით, სანამ ეს მაგნიტური ცნობისმოყვარეობა უბრალო დაუკმაყოფილებელ ინტერესად დარჩენილა."
   },
   {
     "asset_id": "connection.invitation.stability.v1",
@@ -349,7 +349,7 @@
     "aspect_modifier": null,
     "relational_mechanism": "contrasting_views_invitation",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, მოსაწყენ ერთსულოვნებას ნამდვილად არ უნდა ელოდოთ — აქ აზრთა შეჯახებაა. დაუკავშირდით, თუ არ გეშინიათ ადამიანის, რომელიც თქვენს შეხედულებებს გამოცდის."
+    "text": "მოსაწყენ ერთსულოვნებას ნამდვილად არ უნდა ელოდოთ — აქ აზრთა შეჯახებაა. დაუკავშირდით, თუ არ გეშინიათ ადამიანის, რომელიც თქვენს შეხედულებებს გამოცდის."
   },
   {
     "asset_id": "connection.invitation.independent.v1",
@@ -525,7 +525,7 @@
     "aspect_modifier": "tension",
     "relational_mechanism": "debate_preference_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა უფრო გაინტერესებს საუბარში — საერთო ხედვის პოვნა თუ საპირისპირო პოზიციის გამოცდა?"
+    "text": "რა უფრო გაინტერესებს საუბარში — საერთო ხედვის პოვნა თუ საპირისპირო პოზიციის გამოცდა?"
   },
   {
     "asset_id": "relationship.growth.ego_friction.starter.v1",
@@ -589,7 +589,7 @@
     "aspect_modifier": "soft",
     "relational_mechanism": "playful_spark_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, როცა ორ ადამიანს შორის ნაპერწკალი ჩნდება, ინიციატივის აღება გირჩევნია თუ თამაშში ჩათრევას ელოდები?"
+    "text": "როცა ორ ადამიანს შორის ნაპერწკალი ჩნდება, ინიციატივის აღება გირჩევნია თუ თამაშში ჩათრევას ელოდები?"
   },
   {
     "asset_id": "relationship.attraction.strong_chemistry.starter.tense.v1",
@@ -717,7 +717,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "mental_sparring_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რომელ თემაზე შეგიძლია საათობით იკამათო ისე, რომ პროცესით წმინდა სიამოვნება მიიღო?"
+    "text": "რომელ თემაზე შეგიძლია საათობით იკამათო ისე, რომ პროცესით წმინდა სიამოვნება მიიღო?"
   },
   {
     "asset_id": "relationship.communication.mutual_understanding.starter.v1",
@@ -813,7 +813,7 @@
     "aspect_modifier": "friction",
     "relational_mechanism": "caution_vs_drive_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა გაღიზიანებს უფრო მეტად — ზედმეტი სიფრთხილე თუ გაუაზრებელი თავდაჯერებულობა?"
+    "text": "რა გაღიზიანებს უფრო მეტად — ზედმეტი სიფრთხილე თუ გაუაზრებელი თავდაჯერებულობა?"
   },
   {
     "asset_id": "relationship.attraction.energized_collaboration.starter.v1",
@@ -845,7 +845,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "adventurous_drive_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, როგორი ერთობლივი მოქმედება ან თავგადასავალი გაძლევს ხოლმე ყველაზე ძლიერ იმპულსს?"
+    "text": "როგორი ერთობლივი მოქმედება ან თავგადასავალი გაძლევს ხოლმე ყველაზე ძლიერ იმპულსს?"
   },
   {
     "asset_id": "relationship.attraction.dynamic_drive.starter.v1",
@@ -909,7 +909,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "unshakable_humor_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა გაძლევს ხოლმე ამოუწურავ ოპტიმიზმს, როცა ირგვლივ ყველა ზედმეტად სერიოზულდება?"
+    "text": "რა გაძლევს ხოლმე ამოუწურავ ოპტიმიზმს, როცა ირგვლივ ყველა ზედმეტად სერიოზულდება?"
   },
   {
     "asset_id": "relationship.harmony.generous_affection.starter.v1",
@@ -941,7 +941,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "pure_delight_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა უფრო გიხალისებს ადამიანთან ურთიერთობას — ერთობლივი აბსურდული იუმორი თუ გრანდიოზული, გულუხვი ჟესტები?"
+    "text": "რა უფრო გიხალისებს ადამიანთან ურთიერთობას — ერთობლივი აბსურდული იუმორი თუ გრანდიოზული, გულუხვი ჟესტები?"
   },
   {
     "asset_id": "relationship.attraction.intense_magnetism.starter.v1",
@@ -973,7 +973,7 @@
     "aspect_modifier": "intensity",
     "relational_mechanism": "fundamental_truth_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რა უფრო გაგრძნობინებს, რომ ადამიანთან ზედაპირული თამაში აღარ გამოგივა — ძლიერი მზიდულობა თუ ის განცდა, რომ ერთმანეთის დანახვა ზედმეტად მარტივად გამოგდით?"
+    "text": "რა უფრო გაგრძნობინებს, რომ ადამიანთან ზედაპირული თამაში აღარ გამოგივა — ძლიერი მიზიდულობა თუ ის განცდა, რომ ერთმანეთის დანახვა ზედმეტად მარტივად გამოგდით?"
   },
   {
     "asset_id": "relationship.stability.long_term_grounding.starter.v1",
@@ -1005,7 +1005,7 @@
     "aspect_modifier": "flow",
     "relational_mechanism": "tested_principle_prompt",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რომელი ცხოვრებისეული პრინციპი აღმოჩნდა შენთვის წლების განმავლობაში ყველაზე სანდო საყრდენი?"
+    "text": "რომელი ცხოვრებისეული პრინციპი აღმოჩნდა შენთვის წლების განმავლობაში ყველაზე სანდო საყრდენი?"
   },
   {
     "asset_id": "chat.starter.fallback.v1",
@@ -1053,6 +1053,6 @@
     "aspect_modifier": null,
     "relational_mechanism": "universal_icebreaker",
     "false_respect_used": true,
-    "text": "დიდებულო მბრძანებელო, რომელი წიგნი, ფილმი ან აღმოჩენა დაგამახსოვრდა ბოლო დროს ყველაზე მკვეთრად?"
+    "text": "რომელი წიგნი, ფილმი ან აღმოჩენა დაგამახსოვრდა ბოლო დროს ყველაზე მკვეთრად?"
   }
 ]
