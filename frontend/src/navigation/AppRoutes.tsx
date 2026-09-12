@@ -16,6 +16,7 @@ import { NotificationsPage } from "../modules/notifications/NotificationsPage";
 import { ContentSmokeTestPage } from "../modules/smoke_test/ContentSmokeTestPage";
 import { VisualLab } from "../ui/VisualLab";
 import { BackendAuditDebugPage } from "../ui/BackendAuditDebugPage";
+import { ContentInspectorPage } from "../modules/inspector/ContentInspectorPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppShell } from "../shared/AppShell";
 import { useAuth } from "../core/auth/useAuth";
@@ -55,6 +56,10 @@ export const AppRoutes: React.FC = () => {
       {/* Primary UX & Content Smoke Test Route (Developer Audit Surface) */}
       <Route path="/smoke-test" element={<ContentSmokeTestPage />} />
       <Route path="/ux-test" element={<ContentSmokeTestPage />} />
+
+      {/* JESTER Content & Logic Inspector (Internal QA Surface) */}
+      <Route path="/content-inspector" element={<ContentInspectorPage />} />
+      <Route path="/inspector" element={<ContentInspectorPage />} />
 
       {/* Public Auth Routes */}
       <Route path="/auth/login" element={<LoginPage />} />

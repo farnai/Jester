@@ -319,3 +319,221 @@ export interface ComparePreviewResponse {
   engine_version: string;
   calculated_at: string;
 }
+
+// =============================================================================
+// Inspector Data Types
+// =============================================================================
+
+export interface InspectorBatchSummary {
+  stem: string;
+  filename: string;
+  count: number;
+  domains: string[];
+  surfaces: string[];
+}
+
+export interface InspectorSummary {
+  expected_frozen_assets: number;
+  actual_frozen_assets: number;
+  status: "OK" | "MISMATCH";
+  note: string;
+  batches: InspectorBatchSummary[];
+  section_counts: {
+    natal: number;
+    synastry: number;
+    discovery: number;
+    connection: number;
+    chat: number;
+    daily_energy: number;
+  };
+}
+
+export interface InspectorSynastryItem {
+  trigger: string;
+  planet_a: string;
+  planet_b: string;
+  aspect: string;
+  rule_id: string;
+  canonical_rule: string;
+  is_canonical_primary: boolean;
+  signal: string;
+  category: string;
+  default_strength: string;
+  label: string;
+  contract_id: string;
+  contract_meaning: {
+    type: string;
+    intensity: string;
+    human_meaning: string[];
+  };
+  why_asset: any | null;
+  us_assets: any[];
+  connection_invitations: any[];
+  conversation_starters: any[];
+  causal_chain: string[];
+  integrity_status: "OK" | "UNRESOLVED";
+}
+
+export interface InspectorNatalSection {
+  key: string;
+  planet: string;
+  source: string;
+  semantic_domain: string;
+  description: string;
+  firewall_rules?: string;
+  firewall_violations?: Array<{ asset_id: string; word: string }>;
+  firewall_status?: string;
+  batch_name: string;
+  count: number;
+  assets: any[];
+}
+
+export interface InspectorDiscoveryItem {
+  asset_id: string;
+  sign: string;
+  source: string;
+  mode: string;
+  interpretation_id: string;
+  category: string;
+  text: string;
+  raw: any;
+}
+
+export interface InspectorConnectionItem {
+  asset_id: string;
+  interpretation_id: string;
+  category: string;
+  variant_key?: string;
+  source_category_mapping: string;
+  selection_mode: string;
+  text: string;
+  raw: any;
+}
+
+export interface InspectorChatItem {
+  asset_id: string;
+  interpretation_id: string;
+  category: string;
+  variant_key?: string;
+  source_signal: string;
+  selection_mode: string;
+  text: string;
+  raw: any;
+}
+
+export interface InspectorDailyEnergyCentralizedSpec {
+  engine_source: string;
+  detection_mode: string;
+  trigger_pairs: string[];
+  key_bodies: Array<{ body: string; max_orb: number; transit_weight?: number; weight?: number }>;
+  aspect_types: string[];
+  applying_multiplier: number;
+  evidence_notice: string;
+}
+
+export interface InspectorDailyEnergyTagItem {
+  tag_id: string;
+  archetype_id: string;
+  archetype_name: string;
+  index: number;
+  text_ka: string;
+  text_en: string;
+}
+
+export interface InspectorDailyEnergyNarrativeAsset {
+  asset_id: string;
+  interpretation_id: string;
+  archetype_id: string;
+  archetype_name: string;
+  locale: string;
+  tone: string;
+  persona?: string;
+  variant_key: string;
+  text: string;
+  status: string;
+  source?: string;
+}
+
+export interface InspectorDailyEnergyArchetype {
+  id: string;
+  name: string;
+  description: string;
+  contract_id: string;
+  narrative_ka: string;
+  narrative_en?: string;
+  qa_status: string;
+  do_tags: string[];
+  dont_tags: string[];
+  do_tags_ka: string[];
+  dont_tags_ka: string[];
+  centralized_spec: InspectorDailyEnergyCentralizedSpec;
+  technical_evidence: {
+    transit_body: string;
+    natal_body: string;
+    aspect: string;
+    max_orb: number;
+    aspect_strength: number;
+    ranking_score: number;
+    archetype_id: string;
+    detection_mode: string;
+    evidence_status: string;
+    is_centralized_spec?: boolean;
+    orb_diff?: number;
+    is_applying?: boolean;
+    transit_retrograde?: boolean;
+  };
+  is_neutral_case: boolean;
+}
+
+export interface InspectorIntegrityReport {
+  overall_status: string;
+  synastry_rules_total: number;
+  synastry_canonical_unique: number;
+  synastry_unresolved_count: number;
+  synastry_unresolved_rules: string[];
+  mars_semantic_firewall: string;
+  discovery_signs_coverage: string;
+  connection_categories_coverage: string;
+  chat_starters_coverage: string;
+  daily_energy_archetypes_coverage: string;
+}
+
+export interface InspectorDataResponse {
+  summary: InspectorSummary;
+  synastry_pipeline: InspectorSynastryItem[];
+  synastry_verdicts_and_notice: any[];
+  natal_sections: InspectorNatalSection[];
+  discovery_items: InspectorDiscoveryItem[];
+  connection_items: InspectorConnectionItem[];
+  chat_items: InspectorChatItem[];
+  daily_energy: {
+    archetypes: InspectorDailyEnergyArchetype[];
+    interpretation_assets: InspectorDailyEnergyNarrativeAsset[];
+    do_tags: InspectorDailyEnergyTagItem[];
+    dont_tags: InspectorDailyEnergyTagItem[];
+    neutral_case: {
+      detection_mode: string;
+      primary_transit: any;
+      supporting_transits: any[];
+      archetype: string;
+      interpretation: string;
+      interpretation_en?: string;
+      qa_status?: string;
+      do_ka: string[];
+      dont_ka: string[];
+      do_en: string[];
+      dont_en: string[];
+      technical_note: string;
+      centralized_spec?: InspectorDailyEnergyCentralizedSpec;
+    };
+    summary?: {
+      archetypes_count: number;
+      interpretation_assets_count: number;
+      do_tags_count: number;
+      dont_tags_count: number;
+      missing_assets_count: number;
+    };
+  };
+  integrity: InspectorIntegrityReport;
+}
+

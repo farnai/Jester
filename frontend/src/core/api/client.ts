@@ -22,10 +22,20 @@ export async function apiRequest<T>(
 
   // Only resolve from Supabase if Authorization header was not explicitly supplied
   if (!headers.has("Authorization")) {
-    const session = (await supabase.auth.getSession()).data.session;
-    const token = session?.access_token;
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
+    try {
+      const authResult = await Promise.race([
+        supabase.auth.getSession(),
+        new Promise<{ data: { session: null } }>((resolve) =>
+          setTimeout(() => resolve({ data: { session: null } }), 1500)
+        ),
+      ]);
+      const session = authResult?.data?.session;
+      const token = session?.access_token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+    } catch {
+      // Ignore auth failure for public or optional endpoints
     }
   }
 

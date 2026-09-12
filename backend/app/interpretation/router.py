@@ -882,6 +882,21 @@ async def generate_deep_analysis(
     return deep_payload.model_dump()
 
 
+@router.get("/interpretations/inspector-data", response_model=dict[str, Any])
+async def get_content_inspector_data(
+    refresh: bool = False,
+    current_user: AuthenticatedUser | None = Depends(get_optional_user),
+) -> dict[str, Any]:
+    """
+    Returns read-only comprehensive content and logic inspection projection
+    encompassing all 11 frozen batch corpora, interpretation contracts,
+    synastry aspect rules, discovery presence, connection invitations,
+    conversation starters, and daily energy transit archetypes.
+    """
+    from backend.app.interpretation.inspector import build_inspector_projection
+    return build_inspector_projection(force_refresh=refresh)
+
+
 @router.get("/interpretations/{interpretation_id}", response_model=dict[str, Any])
 async def get_interpretation_by_id(
     interpretation_id: str,
@@ -952,5 +967,3 @@ async def reset_interpretation_copy(
         raise PrivacySafeNotFoundException(f"Interpretation record '{interpretation_id}' not found")
 
     return content_library.reset_to_draft(interpretation_id)
-
-

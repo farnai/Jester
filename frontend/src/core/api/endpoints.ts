@@ -18,6 +18,7 @@ import {
   SafeDerivedAstrologyResponse,
   StructuredCompatibilityResponse,
   UserResponse,
+  InspectorDataResponse,
 } from "./types";
 
 export const API = {
@@ -168,5 +169,11 @@ export const API = {
       }),
     getContract: (interpretationId: string, locale: string = "ka") =>
       apiRequest<Record<string, any>>(`/v1/interpretations/${interpretationId}?locale=${locale}`),
+  },
+
+  // Content & Logic Inspector (Internal QA)
+  inspector: {
+    getData: (refresh: boolean = false) =>
+      apiRequest<InspectorDataResponse>(`/v1/interpretations/inspector-data${refresh ? "?refresh=true" : ""}`),
   },
 };
