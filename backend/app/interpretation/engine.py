@@ -6,6 +6,7 @@ Decouples astronomical truth from user-facing copy.
 import hashlib
 from typing import Any
 
+from backend.app.astrology.constants import ELEMENT_MAP
 from backend.app.compatibility.rules import DEFAULT_CONVERSATION_STARTERS
 from backend.app.interpretation.contracts import INTERPRETATION_CONTRACTS
 from backend.app.interpretation.library import content_library
@@ -291,6 +292,16 @@ for _m in MODALITIES:
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"modality_dominant_{_m}"] = f"self.modality.{_m}_dominant.v1"
     SIGNAL_TYPE_TO_INTERPRETATION_ID[f"modality_{_m}"] = f"self.modality.{_m}_dominant.v1"
 
+for _se in ELEMENTS:
+    for _me in ELEMENTS:
+        SIGNAL_TYPE_TO_INTERPRETATION_ID[f"synthesis_element_dynamic_{_se}_{_me}"] = f"self.synthesis.element_dynamic_{_se}_{_me}.v1"
+        SIGNAL_TYPE_TO_INTERPRETATION_ID[f"element_dynamic_{_se}_{_me}"] = f"self.synthesis.element_dynamic_{_se}_{_me}.v1"
+
+for _m in MODALITIES:
+    for _e in ELEMENTS:
+        SIGNAL_TYPE_TO_INTERPRETATION_ID[f"verdict_archetype_{_m}_{_e}"] = f"self.verdict.archetype_{_m}_{_e}.v1"
+        SIGNAL_TYPE_TO_INTERPRETATION_ID[f"archetype_{_m}_{_e}"] = f"self.verdict.archetype_{_m}_{_e}.v1"
+
 
 class InterpretationEngine:
     """
@@ -344,8 +355,20 @@ class InterpretationEngine:
         if resolved:
             return resolved
 
-        # Fallback to legacy resolve_text
-        return self.library.resolve_text(interp_id)
+        # Graceful fallback: Check if contract exists in registry
+        contract = self.get_contract(interp_id)
+        if not contract:
+            return None
+
+        meaning_text = contract.meaning.human_meaning[0] if contract.meaning.human_meaning else contract.meaning.type
+        return ResolvedInterpretation(
+            id=contract.interpretation_id,
+            text=f"[{contract.meaning.type.upper()}] {meaning_text}",
+            locale=locale,
+            tone=tone or contract.voice.tone,
+            persona=contract.voice.persona,
+            source="system_fallback",
+        )
 
     def resolve_signals(
         self,
@@ -381,14 +404,12 @@ class InterpretationEngine:
         locale: str = "ka",
         tone: str | None = None,
         seed: str | None = None,
+        depth: str | None = None,
+        variant_key: str | None = None,
     ) -> list[ResolvedInterpretation]:
         """
-        Deterministic resolution of a user's SafeDerivedAstrology profile into Self/Me interpretations:
-        - Sun sign identity
-        - Moon sign emotional processing
-        - Ascendant social persona (if known)
-        - Dominant element
-        - Dominant modality
+        Resolves personal Self/Me profile signals (Sun, Moon, Rising, Element, Modality, Synthesis, Life Verdict)
+        into resolved Georgian JESTER copy.
         """
         # Handle dict or Pydantic model
         if hasattr(profile, "model_dump"):
@@ -492,6 +513,59 @@ class InterpretationEngine:
                 locale=locale,
                 tone=tone,
                 seed=seed,
+            )
+            if res:
+                results.append(res)
+
+        # Batch 5: Luminary Elemental Dynamics (Sun Element x Moon Element Synthesis)
+        # Asymmetry: Sun Element (conscious identity/ego) x Moon Element (instinctive/emotional reactor)
+        def _to_element(val: Any) -> str | None:
+            if not val:
+                return None
+            s = str(val).strip().lower()
+            if s in ELEMENTS:
+                return s
+            return ELEMENT_MAP.get(str(val).strip().capitalize(), "").lower() or None
+
+        sun_el = _to_element(data.get("sun_element")) or _to_element(sun)
+        moon_el = _to_element(data.get("moon_element")) or _to_element(moon)
+
+        if sun_el and moon_el and sun_el in ELEMENTS and moon_el in ELEMENTS:
+            synthesis_id = f"self.synthesis.element_dynamic.{sun_el}_{moon_el}.v1"
+            res = self.library.resolve(
+                interpretation_id=synthesis_id,
+                context="self",
+                locale=locale,
+                tone=tone,
+                seed=seed,
+                variant_key=variant_key or data.get("angle") or data.get("variant_key") or data.get("semantic_angle"),
+                depth=depth or data.get("depth"),
+            )
+            if res:
+                results.append(res)
+
+        # Batch 5B: Life Verdicts (Chart-Level Macro Verdict: modality_primary x element_primary -> 12 Archetypes)
+        def _to_modality(val: Any) -> str | None:
+            if not val:
+                return None
+            m = str(val).strip().lower()
+            if m in MODALITIES:
+                return m
+            return None
+
+        primary_elem = _to_element(data.get("element_primary"))
+        primary_mod = _to_modality(data.get("modality_primary"))
+
+        if primary_elem and primary_mod and primary_elem in ELEMENTS and primary_mod in MODALITIES:
+            verdict_id = f"self.verdict.archetype_{primary_mod}_{primary_elem}.v1"
+            res = self.library.resolve(
+                interpretation_id=verdict_id,
+                context="self",
+                locale=locale,
+                tone=tone,
+                seed=seed,
+                variant_key=variant_key,
+                depth=depth,
             )
             if res:
                 results.append(res)

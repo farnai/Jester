@@ -129,6 +129,10 @@ export const MePage: React.FC = () => {
         return "🔥";
       case "self.modality":
         return "⚡";
+      case "self.synthesis":
+        return "✨";
+      case "self.verdict":
+        return "👑";
       default:
         return "💡";
     }
@@ -157,6 +161,10 @@ export const MePage: React.FC = () => {
         return <Badge variant="default" size="sm">სტიქია: {astro.element_primary}</Badge>;
       case "self.modality":
         return <Badge variant="default" size="sm">მოდალობა: {astro.modality_primary}</Badge>;
+      case "self.synthesis":
+        return <Badge variant="astrology" size="sm">მზე-მთვარის სინთეზი</Badge>;
+      case "self.verdict":
+        return <Badge variant="brand" size="sm">ცხოვრების ვერდიქტი</Badge>;
       default:
         return null;
     }

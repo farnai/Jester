@@ -113,6 +113,7 @@ class ContentAsset(BaseModel):
     variant_key: str | None = None
     weight: float = 1.0
     internal_notes: str | None = None
+    depth: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -155,6 +156,7 @@ class ResolvedInterpretation(BaseModel):
     persona: str = "jester"
     variant_key: str | None = None
     source: str | None = None
+    depth: str | None = None
 
 
 class ContentUpdatePayload(BaseModel):

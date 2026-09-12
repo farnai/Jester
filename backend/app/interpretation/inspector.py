@@ -480,6 +480,7 @@ def build_inspector_projection(force_refresh: bool = False) -> dict[str, Any]:
             "firewall_violations": violations,
             "firewall_status": "FIREWALL_PASSED" if not violations else "FIREWALL_FLAGGED",
             "batch_name": b_name,
+            "runtime_status": "RUNTIME_AVAILABLE",
             "count": len(p_assets),
             "assets": p_assets,
         })
@@ -493,6 +494,7 @@ def build_inspector_projection(force_refresh: bool = False) -> dict[str, Any]:
         "semantic_domain": "structural temperaments & behavioral rhythm",
         "description": "Primary element (Fire, Earth, Air, Water) and modality (Cardinal, Fixed, Mutable) synthesis.",
         "batch_name": "batch_4_elements_modalities",
+        "runtime_status": "RUNTIME_AVAILABLE",
         "count": len(batch_4_assets),
         "assets": batch_4_assets,
     })
@@ -505,6 +507,7 @@ def build_inspector_projection(force_refresh: bool = False) -> dict[str, Any]:
         "semantic_domain": "multidimensional planetary synthesis",
         "description": "Deep psychological intersections across Sun-Moon, Sun-Rising, and planetary stelliums.",
         "batch_name": "batch_5_synthesis",
+        "runtime_status": "RUNTIME_AVAILABLE",
         "count": len(batch_5_assets),
         "assets": batch_5_assets,
     })
@@ -517,6 +520,7 @@ def build_inspector_projection(force_refresh: bool = False) -> dict[str, Any]:
         "semantic_domain": "definitive life archetype verdicts",
         "description": "Uncompromising JESTER macro verdicts on constitutional temperament and life paths.",
         "batch_name": "batch_5b_verdicts",
+        "runtime_status": "RUNTIME_AVAILABLE",
         "count": len(batch_5b_assets),
         "assets": batch_5b_assets,
     })

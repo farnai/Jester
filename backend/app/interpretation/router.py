@@ -233,6 +233,8 @@ class NatalResolveRequest(BaseModel):
     modality_primary: str | None = None
     locale: str = "ka"
     tone: str | None = None
+    depth: str | None = None
+    angle: str | None = None
 
 
 class ComparePreviewRequest(BaseModel):
@@ -459,6 +461,8 @@ async def resolve_natal_profile_interpretations(
         locale=payload.locale,
         tone=payload.tone,
         seed=seed,
+        depth=payload.depth,
+        variant_key=payload.angle,
     )
 
     results: list[dict[str, Any]] = []
@@ -471,6 +475,8 @@ async def resolve_natal_profile_interpretations(
         "self.action": "ენერგია და მოქმედება (მარსი)",
         "self.element": "დომინანტური სტიქია",
         "self.modality": "ცხოვრების დინამიკა და მოდალობა",
+        "self.synthesis": "მზე-მთვარის სინთეზი",
+        "self.verdict": "ცხოვრების ვერდიქტი",
     }
 
     for res in resolved_list:

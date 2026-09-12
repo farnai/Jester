@@ -885,18 +885,20 @@ def test_self_me_natal_profile_resolution():
         "modality_primary": "cardinal",
     }
     resolved_exact = engine.resolve_natal_profile(profile_exact, locale="ka")
-    assert len(resolved_exact) == 5
+    assert len(resolved_exact) == 7
     ids_exact = [r.id for r in resolved_exact]
     assert "self.identity.sun_aries.v1" in ids_exact
     assert "self.emotional.moon_scorpio.v1" in ids_exact
     assert "self.persona.rising_gemini.v1" in ids_exact
     assert "self.element.fire_dominant.v1" in ids_exact
     assert "self.modality.cardinal_dominant.v1" in ids_exact
+    assert "self.synthesis.element_dynamic.fire_water.v1" in ids_exact
+    assert "self.verdict.archetype_cardinal_fire.v1" in ids_exact
 
     for r in resolved_exact:
         assert len(r.text) > 0
         assert r.locale == "ka"
-        assert r.content_status == "ai_draft"
+        assert r.content_status in ("ai_draft", "approved")
 
     # Profile with unknown birth time (ascendant_sign is None)
     profile_unknown_time = {
@@ -907,9 +909,11 @@ def test_self_me_natal_profile_resolution():
         "modality_primary": "fixed",
     }
     resolved_unknown = engine.resolve_natal_profile(profile_unknown_time, locale="ka")
-    assert len(resolved_unknown) == 4
+    assert len(resolved_unknown) == 6
     ids_unknown = [r.id for r in resolved_unknown]
     assert not any("rising" in i for i in ids_unknown)
+    assert "self.synthesis.element_dynamic.earth_water.v1" in ids_unknown
+    assert "self.verdict.archetype_fixed_earth.v1" in ids_unknown
 
 
 def test_friendship_and_daily_energy_domain_resolutions():

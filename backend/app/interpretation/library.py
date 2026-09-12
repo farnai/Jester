@@ -242,6 +242,60 @@ class InMemoryContentStore(ContentStore):
             except Exception:
                 pass
 
+        # Ingest Batch 5 synthesis corpus (Luminary Elemental Dynamics: 16 combinations, 64 assets)
+        batch_5_path = Path(__file__).parent / "data" / "batches" / "batch_5_synthesis.json"
+        if batch_5_path.exists():
+            try:
+                with open(batch_5_path, "r", encoding="utf-8") as f:
+                    batch_5_items = json.load(f)
+                for item in batch_5_items:
+                    aid = item.get("asset_id")
+                    if aid and aid not in self._assets:
+                        item["context"] = "self"
+                        item.setdefault("status", "approved")
+                        item.setdefault("priority", 100)
+                        item.setdefault("locale", "ka")
+                        tags = [
+                            "batch_5",
+                            f"layer:{item.get('layer', 'synthesis')}",
+                            f"depth:{item.get('depth', '')}",
+                            f"angle:{item.get('semantic_angle', '')}",
+                        ]
+                        item["tags"] = tags
+                        if item.get("semantic_angle"):
+                            item["variant_key"] = item["semantic_angle"]
+                        asset = ContentAsset(**item)
+                        self.save_asset(asset)
+            except Exception:
+                pass
+
+        # Ingest Batch 5B life verdicts corpus (12 Archetypes, 60 assets)
+        batch_5b_path = Path(__file__).parent / "data" / "batches" / "batch_5b_verdicts.json"
+        if batch_5b_path.exists():
+            try:
+                with open(batch_5b_path, "r", encoding="utf-8") as f:
+                    batch_5b_items = json.load(f)
+                for item in batch_5b_items:
+                    aid = item.get("asset_id")
+                    if aid and aid not in self._assets:
+                        item["context"] = "self"
+                        item.setdefault("status", "approved")
+                        item.setdefault("priority", 100)
+                        item.setdefault("locale", "ka")
+                        tags = [
+                            "batch_5b",
+                            f"layer:{item.get('layer', 'verdict')}",
+                            f"depth:{item.get('depth', '')}",
+                            f"angle:{item.get('semantic_angle', '')}",
+                        ]
+                        if item.get("metaphor_family"):
+                            tags.append(f"metaphor:{item['metaphor_family']}")
+                        item["tags"] = tags
+                        asset = ContentAsset(**item)
+                        self.save_asset(asset)
+            except Exception:
+                pass
+
     def get_asset(self, asset_id: str) -> ContentAsset | None:
         with self._lock:
             asset = self._assets.get(asset_id)
@@ -354,6 +408,7 @@ class ContentResolver:
         seed: str | None = None,
         include_experimental: bool = False,
         exclude_asset_ids: set[str] | None = None,
+        depth: str | None = None,
     ) -> ResolvedInterpretation | None:
         target_id = interpretation_id
         contract = INTERPRETATION_CONTRACTS.get(target_id)
@@ -463,9 +518,20 @@ class ContentResolver:
         if not eligible_pool:
             return None
 
+        # 6B. Depth matching if requested
+        if depth:
+            depth_matched = [c for c in eligible_pool if getattr(c, "depth", None) == depth or f"depth:{depth}" in c.tags]
+            if depth_matched:
+                eligible_pool = depth_matched
+
         # 7. Exact variant matching if requested
         if variant_key:
-            variant_matched = [c for c in eligible_pool if c.variant_key == variant_key]
+            variant_matched = [
+                c for c in eligible_pool
+                if c.variant_key == variant_key
+                or c.asset_id.endswith(f".{variant_key}")
+                or c.asset_id.split(".")[-1] == variant_key
+            ]
             if variant_matched:
                 eligible_pool = variant_matched
 
@@ -499,6 +565,7 @@ class ContentResolver:
             persona=chosen.persona,
             variant_key=chosen.variant_key,
             source=chosen.source,
+            depth=getattr(chosen, "depth", None),
         )
 
 
@@ -700,6 +767,7 @@ class ContentLibrary:
         seed: str | None = None,
         include_experimental: bool = False,
         exclude_asset_ids: set[str] | None = None,
+        depth: str | None = None,
     ) -> ResolvedInterpretation | None:
         """Primary V2 resolution entry point."""
         return self.resolver.resolve(
@@ -712,6 +780,7 @@ class ContentLibrary:
             seed=seed,
             include_experimental=include_experimental,
             exclude_asset_ids=exclude_asset_ids,
+            depth=depth,
         )
 
     def get_asset(self, asset_id: str) -> ContentAsset | None:

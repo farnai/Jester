@@ -851,6 +851,294 @@ INTERPRETATION_CONTRACTS: dict[str, InterpretationContract] = {
     ),
 
     # =============================================================
+    # 5E. SELF / ME — LUMINARY ELEMENTAL DYNAMICS (16 SYNTHESIS CONTRACTS)
+    # =============================================================
+    "self.synthesis.element_dynamic.fire_fire.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.fire_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_fire_fire", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="kinetic_combustion",
+            intensity="high",
+            human_meaning=["zero internal brake between ego and emotion", "immediate full-throttle impulse", "high burnout risk under resistance"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.fire_earth.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.fire_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_fire_earth", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="conquest_pragmatism",
+            intensity="high",
+            human_meaning=["conquering ambition versus risk-averse security", "bold vision anchored by practical ballast", "friction between speed and stabilization"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.fire_air.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.fire_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_fire_air", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="kinetic_intellectualization",
+            intensity="high",
+            human_meaning=["action impulse channeled through conceptual inquiry", "restless generator of new initiatives", "impatience with routine execution"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.fire_water.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.fire_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_fire_water", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="theatrical_vulnerability",
+            intensity="high",
+            human_meaning=["dramatic external swagger masking deep sensitivity", "instinctive strike guided by emotional subtext", "intense boiling emotional climate"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.earth_fire.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.earth_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_earth_fire", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="disciplined_volcano",
+            intensity="high",
+            human_meaning=["orderly routine hiding restless impatience", "practical execution fueled by intense ambition", "frustration when progress slows down"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.earth_earth.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.earth_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_earth_earth", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="monolithic_stability",
+            intensity="high",
+            human_meaning=["maximum endurance and immunity to drama", "concrete comfort zone and risk aversion", "resistance to external disruption"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.earth_air.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.earth_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_earth_air", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="systemic_rationalization",
+            intensity="high",
+            human_meaning=["practical ambition analyzed through conceptual models", "objective tactical precision", "tendency to optimize rather than feel"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.earth_water.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.earth_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_earth_water", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="protective_anchor",
+            intensity="high",
+            human_meaning=["tangible shelter for deep emotional bonds", "silent absorption of environmental burdens", "stubborn attachment to familiar ties"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.air_fire.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.air_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_air_fire", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="intellectual_combustion",
+            intensity="high",
+            human_meaning=["detached ideas energized by passionate advocacy", "spirited debate driven by pride", "rapid communicative momentum"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.air_earth.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.air_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_air_earth", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="conceptual_architecture",
+            intensity="high",
+            human_meaning=["abstract curiosity disciplined by pragmatic caution", "structuring theoretical concepts into working systems", "controlling spontaneity through rules"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.air_air.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.air_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_air_air", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="panoramic_detachment",
+            intensity="high",
+            human_meaning=["objective sociological perspective", "total freedom from sticky emotional drama", "difficulty locating personal desire amidst ideas"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.air_water.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.air_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_air_water", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="analytical_empathy",
+            intensity="high",
+            human_meaning=["witty social mask concealing deep oceanic sensitivity", "defensive sarcasm protecting vulnerability", "mood shifts between intellectual euphoria and withdrawal"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.water_fire.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.water_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_water_fire", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="combustible_receptivity",
+            intensity="high",
+            human_meaning=["gentle adaptive exterior concealing fierce emotional pride", "disproportionate explosive reaction when pushed too far", "passionate defense of loved ones"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.water_earth.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.water_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_water_earth", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="nourishing_security",
+            intensity="high",
+            human_meaning=["intuitive sensitivity rooted in tangible domestic stability", "inertia keeping self in exhausted routines", "practical care and quiet endurance"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.water_air.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.water_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_water_air", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="ironic_melancholy",
+            intensity="high",
+            human_meaning=["deep emotional receptivity shielded by clever detachment", "using cynicism to mask internal hurt", "perceptive counselor avoiding raw exposure"],
+        ),
+    ),
+    "self.synthesis.element_dynamic.water_water.v1": InterpretationContract(
+        interpretation_id="self.synthesis.element_dynamic.water_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="synthesis_element_dynamic_water_water", strength=0.90),
+        meaning=InterpretationMeaning(
+            type="boundless_resonance",
+            intensity="high",
+            human_meaning=["zero psychological membrane against environment", "absolute emotional radar sensing subtexts", "need for conscious boundaries to avoid drowning"],
+        ),
+    ),
+
+    # =============================================================
+    # 5F. SELF / ME — LIFE VERDICT ARCHETYPES (12 VERDICT CONTRACTS)
+    # =============================================================
+    "self.verdict.archetype_cardinal_fire.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_cardinal_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_cardinal_fire", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="chronic_catalyst",
+            intensity="high",
+            human_meaning=["starts revolutions without finishing", "perpetual motion mistaken for progress", "acceleration as escape from stillness"],
+        ),
+    ),
+    "self.verdict.archetype_fixed_fire.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_fixed_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_fixed_fire", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="unbendable_monarch",
+            intensity="high",
+            human_meaning=["sovereign authority demanding devotion", "refusal to alter course equated with integrity", "echo chamber of flatterers"],
+        ),
+    ),
+    "self.verdict.archetype_mutable_fire.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_mutable_fire.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_mutable_fire", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="restless_spark",
+            intensity="high",
+            human_meaning=["enthusiasm as weapon of evasion", "running from routine maintenance", "museum of temporary campsites"],
+        ),
+    ),
+    "self.verdict.archetype_cardinal_earth.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_cardinal_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_cardinal_earth", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="corporate_sovereign",
+            intensity="high",
+            human_meaning=["excessive administrative bureaucracy", "treating human emotions as overhead expenses", "suffocated by own organizational machine"],
+        ),
+    ),
+    "self.verdict.archetype_fixed_earth.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_fixed_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_fixed_earth", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="granitic_anchor",
+            intensity="high",
+            human_meaning=["immovable resistance to adaptation", "sitting in ruined house rather than moving furniture", "freezing mistaken for principled stability"],
+        ),
+    ),
+    "self.verdict.archetype_mutable_earth.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_mutable_earth.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_mutable_earth", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="anxious_watchmaker",
+            intensity="high",
+            human_meaning=["endless calibration as fear of completion", "cleaning clockwork while ignoring time", "compulsive self-editing"],
+        ),
+    ),
+    "self.verdict.archetype_cardinal_air.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_cardinal_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_cardinal_air", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="social_instigator",
+            intensity="high",
+            human_meaning=["launching social infrastructure", "colliding people without personal skin in the game", "social fireworks with zero anchor"],
+        ),
+    ),
+    "self.verdict.archetype_fixed_air.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_fixed_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_fixed_air", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="ideological_monolith",
+            intensity="high",
+            human_meaning=["blaming reality when it fails the theory", "fortified intellectual bunker", "fighting facts to preserve the blueprint"],
+        ),
+    ),
+    "self.verdict.archetype_mutable_air.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_mutable_air.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_mutable_air", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="intellectual_chameleon",
+            intensity="high",
+            human_meaning=["arguing all sides without personal conviction", "standing in drafty hallway refusing to pick a door", "nimble verbal evasion"],
+        ),
+    ),
+    "self.verdict.archetype_cardinal_water.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_cardinal_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_cardinal_water", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="emotional_general",
+            intensity="high",
+            human_meaning=["emotional dictatorship disguised as care", "weaponized sacrifice and guilt", "suffocating sanctuary driving people away"],
+        ),
+    ),
+    "self.verdict.archetype_fixed_water.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_fixed_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_fixed_water", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="trench_guardian",
+            intensity="high",
+            human_meaning=["archiving grudges with metadata", "loyalty tests nobody can pass", "fortress of unyielding grievances"],
+        ),
+    ),
+    "self.verdict.archetype_mutable_water.v1": InterpretationContract(
+        interpretation_id="self.verdict.archetype_mutable_water.v1",
+        context="self",
+        signal=InterpretationSignal(category="self", type="verdict_archetype_mutable_water", strength=0.95),
+        meaning=InterpretationMeaning(
+            type="fluid_empath",
+            intensity="high",
+            human_meaning=["room writes the personality", "boundless compassion with liquefied responsibility", "evaporating when conflict demands a stance"],
+        ),
+    ),
+
+    # =============================================================
     # 6. RELATIONSHIP / SYNASTRY (45 CONTRACTS)
     # =============================================================
     # Core Attraction Dynamics
