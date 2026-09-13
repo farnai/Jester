@@ -98,6 +98,8 @@ Every feature is categorized into one of four capability buckets:
 ### A. Currently Available (Backend Operational & Tested)
 - Supabase JWT authentication & session verification (`/v1/users/me`).
 - Profile retrieval, bio/city/occupation updating, and discoverability toggle (`/v1/profiles/me`, `/v1/profiles/{id}`).
+- Canonical user pair ordering & deterministic seed generation (`backend/app/core/canonical.py`).
+- Atomic birth data onboarding endpoint (`POST /v1/astrology/birth-data`) executing validation, Swiss Ephemeris calculation, and DB transaction (`birth_data`, `astro_private`, `astro_safe_profile`) in a single backend-owned atomic operation.
 - Swiss Ephemeris natal calculation (10 planets, Placidus houses, Ascendant, element/modality weighting).
 - Safe derived astrology profile exposure (`/v1/astrology/profile/safe-astro`, `/v1/astrology/people/{id}/safe-astro`).
 - Social connection state machine: `pending`, `accepted`, `declined`, `blocked`, `unblock`, `remove` (`/v1/connections`).
@@ -111,7 +113,32 @@ Every feature is categorized into one of four capability buckets:
 
 ### B. Required Frontend Behavior (Cockpit Logic to Build)
 - Client-side JWT storage and authenticated HTTP interceptor with automatic 401 handling.
-- Multi-step birth-data onboarding wizard with precision selection (`exact`, `approximate`, `unknown`).
+- Multi-step birth-data onboarding wizard calling `POST /v1/astrology/birth-data` with precision selection (`exact`, `approximate`, `unknown`).
+- **Interest Onboarding Flow**:
+  - Optional step (user can skip entirely).
+  - If entering selection: curated candidate pool of ~20 candidate interests.
+  - Exact selection gating: user must pick exactly 5 / 5 Primary Interests before Continue activates.
+  - Optional single Signature Interest follow-up (*"Which one could you talk about forever?"*).
+  - Strictly **NO** intensity sliders (*Love/Like*) during onboarding.
+- **Location & Origin Onboarding Flow**:
+  - Optional / skippable step.
+  - One-tap popular domestic city chips (Tbilisi, Batumi, Kutaisi, Rustavi) + fast autocomplete search.
+  - Optional Hometown / Origin input with visibility toggle (*"Where are you originally from?"*).
+  - Strictly **NO** mandatory device GPS permission prompts on onboarding.
+- **Lifestyle Snapshot Onboarding Flow**:
+  - Optional / skippable 3-question card (Daily Rhythm, Activity Pace, Work Style).
+  - Rapid 1-tap segmented controls / chips.
+  - Sensitive attributes (drinking, smoking, living situation, children) strictly excluded from onboarding.
+- **Values & Guiding Compass Onboarding Flow**:
+  - Optional / skippable step.
+  - Curated grid of 18 canonical values across 5 clusters.
+  - Selection constraint: user chooses between 3 and 5 values (Continue button active when count is 3, 4, or 5).
+  - Optional single Core Value follow-up (*"If you had to pick one true north, which is it?"*).
+  - Strictly **NO** 1–10 rating sliders or personality diagnosis metrics.
+- **Social Rhythm Snapshot Onboarding Flow**:
+  - Optional / skippable 3-question card (Gathering Scale, Social Battery, Warm-Up Dynamic).
+  - Rapid 1-tap chip controls. Zero rating sliders.
+  - No psychological typing, MBTI classifications, or identity box-labeling.
 - Connection management list with action controls (Accept, Decline, Block, Remove).
 - Compatibility score card displaying composite score, 4 sub-scores, data quality confidence, and active signals.
 - Topic and conversation starter display with tap-to-send or tap-to-copy integration.
@@ -127,8 +154,7 @@ Every feature is categorized into one of four capability buckets:
 - Dynamic transit-based daily energy engine (currently returns static daily summary string).
 
 ### D. Unknown / Requires Product Decision
-- **Birth Data CRUD Endpoint**: Direct birth data upsert currently operates via Supabase PostgREST client (`supabase.from('birth_data')`) with RLS, whereas recalculation uses `POST /v1/astrology/profile/recalculate`. Product decision needed on whether to add a dedicated FastAPI endpoint `PUT /v1/birth-data`.
-- **People Discovery Feed**: The backend supports direct ID lookup `GET /v1/profiles/{id}` with discoverability check, but does not yet expose a paginated `GET /v1/people/discover` feed.
+- **People Discovery Feed**: The backend supports direct ID lookup `GET /v1/profiles/{id}` with discoverability check, but does not yet expose a paginated `GET /v1/people/discover` feed. This feed will integrate Interest Graph matching (Shared, Related, Complementary) and Discovery Value weighting.
 - **Client Evidence Trace Visibility**: Whether the technical `evidence_trace` array should be surfaced in an advanced "Astrology Breakdown" UI accordion or kept exclusively as an internal backend/audit layer.
 
 ---
@@ -157,7 +183,7 @@ Every feature is categorized into one of four capability buckets:
 ## 6. Create Self / Onboarding
 
 ### 6.1 Birth Data Onboarding Specification
-To establish astrological identity, the frontend must collect raw birth information:
+To establish astrological identity, the frontend collects raw birth information and submits to `POST /v1/astrology/birth-data`:
 
 | Field | Required / Optional | Supported Formats / Values | Constraints & Logic |
 | :--- | :--- | :--- | :--- |
@@ -177,6 +203,69 @@ To establish astrological identity, the frontend must collect raw birth informat
 ### 6.3 Security Invariants for Onboarding
 - The frontend **MUST NEVER** display raw coordinates (`latitude`, `longitude`) or exact birth times to other users.
 - Raw birth data in `public.birth_data` is protected by Row-Level Security (`birth_data_select_own`).
+
+### 6.4 Interest Onboarding Specification
+*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+
+Following or alongside birth data entry, the user reaches the Interest step:
+1. **Optional Step**: User may tap "Skip" at any time.
+2. **5 / 5 Primary Gating**: If the user chooses to select interests, they **MUST select exactly 5 Primary Interests** from a curated pool of ~20 candidate interests (e.g. *Travel, Coffee, Music, Photography, Cinema, Books, Astrology, Food, Hiking, Art, Fitness, Dogs, Technology, Gaming, Fashion, Nature, Theatre, Writing, Psychology, Concerts*).
+3. **Continue Gating**: The "Continue" button is active only when selection count equals 5 (or when Skip is pressed).
+4. **Signature Interest (Optional Prompt)**: Upon selecting 5, a follow-up asks: *"Which one could you talk about forever?"* (skippable; designates 1 Signature Interest).
+5. **No Intensity Sliders**: Never prompt for *Love / Like* intensity ratings during onboarding.
+6. **Progressive Architecture**: Onboarding is lightweight; additional Secondary Interests can be added later in profile editing.
+
+### 6.5 Location & Origin Onboarding Specification
+*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+
+Alongside profile creation, the user reaches the Location & Origin step:
+1. **Optional Step**: User may tap "Skip for now" at any time.
+2. **Current City ("Where are you based?"):**
+   - Quick one-tap selection chips for major regional hubs (`Tbilisi`, `Batumi`, `Kutaisi`, `Rustavi`).
+   - Autocomplete search input querying `GET /v1/geo/cities?query=...` with instant results.
+3. **Hometown / Origin ("Where are you from? — Optional"):**
+   - Autocomplete search for origin city/town (e.g. `Kvareli`, `Telavi`, `Gori`).
+   - Toggle to make hometown visible on public profile (default: `true`).
+4. **Privacy Invariant**:
+   - Zero device GPS requests during onboarding. Location is self-declared.
+   - Exact coordinates are NEVER surfaced to the client UI.
+
+### 6.6 Lifestyle Snapshot Onboarding Specification
+*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+
+Following location entry, the user reaches the rapid Lifestyle Snapshot step:
+1. **Optional Step**: User may tap "Skip for now" at any time.
+2. **3-Question Rapid Cadence Form**:
+   - **Daily Rhythm:** Single-tap chips `[ 🌅 Early Bird ]`, `[ 🌙 Night Owl ]`, `[ ⚖️ Flexible ]`.
+   - **Activity Pace:** Single-tap chips `[ ⚡ Always Moving ]`, `[ 🌿 Balanced ]`, `[ ☕ Relaxed ]`.
+   - **Work Reality:** Single-tap chips `[ 💻 Remote ]`, `[ 🔄 Hybrid ]`, `[ 🏢 On-Site ]`, `[ 🎓 Student ]`, `[ 🚀 Entrepreneur ]`.
+3. **Sensitive Item Exclusion**: Drinking, smoking, living situation, and children are **strictly excluded from onboarding** to eliminate friction and prevent discomfort.
+
+### 6.7 Values Onboarding Specification
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+
+Following lifestyle entry, the user reaches the optional Values step:
+1. **Optional Step**: User may tap "Skip for now" at any time.
+2. **Interactive 18-Value Grid**: Displayed in 5 clean thematic clusters (`Personal Direction`, `Intellectual & Creative`, `Relational & Ethical`, `Life Grounding`, `Inner Spirit`).
+3. **Selection Rule (3 to 5 Values)**:
+   - User taps chips to select between 3 and 5 values that guide their life.
+   - Counter tracks selection (`Selected: 3 / 5`).
+   - "Continue" button unlocks as soon as 3 items are selected, and stays active through 5 items. Tapping a 6th prompts to deselect one.
+4. **Optional Core Value Designation**:
+   - Follow-up prompt: *"If you had to pick one true north, which is it?"*
+   - User may tap one of their chosen values to mark it as Core (`⭐ True North`). Skippable.
+5. **Anti-Diagnosis Invariant**: Zero rating sliders (1–10), zero virtue scores, zero personality diagnoses.
+
+### 6.8 Social Behavior Onboarding Specification
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+
+Following values selection, the user encounters the optional Social Rhythm Snapshot:
+1. **Optional Step**: User may tap "Skip for now" at any time.
+2. **3-Question Rapid Preference Card**:
+   - **Preferred Gathering:** `[ ☕ One-on-One ]`, `[ 👥 Small Groups ]`, `[ 🎉 Lively Crowds ]`, `[ 🌐 Adaptable ]`.
+   - **Social Battery (Energy Dynamics):** `[ 🔋 Recharges Solo ]`, `[ ⚡ Recharges Around People ]`, `[ ⚖️ Context-Dependent ]`.
+   - **Approach to New People:** `[ 🚀 Quick to Initiate ]`, `[ 👀 Observant First ]`, `[ 💎 Selective & Intentional ]`.
+3. **Anti-Typing Invariant**: Zero personality typing ("Introvert", "Extrovert", "Alpha", MBTI codes); captures functional interaction mechanics only.
 
 ---
 
@@ -225,20 +314,63 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 ## 8. Profile
 
 ### 8.1 Profile Capabilities
-- **Get Own Profile**: `GET /v1/profiles/me` -> `ProfileResponse`
+- **Get Own Profile**: `GET /v1/profiles/me` -> `ProfileResponse` (includes `location`, `origin`)
 - **Update Own Profile**: `PATCH /v1/profiles/me` with fields:
   - `display_name` (string)
-  - `avatar_url` (string URL)
+  - `avatar_url` (string URL — Profile Photo)
   - `bio` (string)
-  - `city` (string)
+  - `current_city_id` (UUID referencing canonical `geo_cities`)
+  - `hometown_city_id` (UUID referencing canonical `geo_cities`)
+  - `hometown_visible` (boolean)
+  - `city` (string — legacy fallback)
   - `occupation` (string)
   - `timezone` (string)
   - `is_discoverable` (boolean)
 - **Get Target Profile**: `GET /v1/profiles/{profile_id}`
 
-### 8.2 Privacy & Discoverability Rules
-- If `is_discoverable == false`, other users attempting to view `GET /v1/profiles/{id}` receive `404 PrivacySafeNotFoundException`.
-- If either user blocks the other, profile requests return `404 PrivacySafeNotFoundException` to prevent existence oracles.
+### 8.2 Privacy & Security Boundaries
+- **Discoverability**: If `is_discoverable == false`, other users attempting to view `GET /v1/profiles/{id}` receive `404 PrivacySafeNotFoundException`.
+- **Block Protection**: If either user blocks the other, profile requests return `404 PrivacySafeNotFoundException` to prevent existence oracles.
+- **Profile Photo vs. Face Verification Boundary**: Profile photo is an aesthetic, user-managed visual representation; Face Verification is an independent biometric identity verification security concept. They must remain strictly separate concepts.
+
+### 8.3 Profile Interest Presentation & Management
+*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+- **Visual Hierarchy**: The profile must NOT become a wall of 20–30 generic tags.
+- **Primary Interests**: The 5 core declared interests receive prominent visual hierarchy and distinct chip styling.
+- **Signature Interest**: If specified, marked with a distinctive highlight badge (*"Which one could you talk about forever?"*).
+- **Secondary Interests**: Grouped under a separate expandable/progressive section.
+- **Human-Readable Relational Goal**: An interest should help an observer answer: *"What could I talk to this person about?"* rather than *"This person checked a box."*
+
+### 8.4 Location & Origin Presentation
+*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+- **Primary Location**: Renders prominently as `📍 Tbilisi` (or `📍 Berlin, Germany` if international).
+- **Origin / Hometown**: If configured and `hometown_visible == true`, renders as `🏡 From Kvareli` or `📍 Tbilisi · From Kvareli`.
+- **Privacy Control**: In profile settings, user can toggle hometown visibility on or off at any time.
+- **Coordinate Invariant**: Exact geographic coordinates, street addresses, and live GPS tracking are NEVER displayed or fetched by the client.
+
+### 8.5 Lifestyle Cadence Presentation & Habit Privacy
+*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+- **Cadence Micro-Badges**: Displayed as compact, elegant chips under a "Cadence" card section:
+  - `[ 🌙 Night Owl ]` `[ ⚡ Always Moving ]` `[ 💻 Remote ]` `[ 🐕 Has a Dog ]`
+- **Avoid Checkbox Clutter**: Never present lifestyle as a clinical checklist of checkboxes or medical intake form.
+- **Granular Privacy Toggles**: In profile settings, users can toggle visibility on any habit (drinking, smoking, living situation) independently.
+- **Empty State Restraint**: Undeclared attributes simply do not render (no *"Drinking: Not specified"* clutter).
+
+### 8.6 Values & Guiding Compass Presentation
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+- **Guiding Compass Micro-Badges**: Displayed under a dedicated "Guiding Compass" or "Values" profile section:
+  - `⭐ Curiosity (Core)` `[ Growth ]` `[ Honesty ]` `[ Autonomy ]`
+- **Aesthetic Glassmorphism**: Clean, refined badge styling without cluttering the profile.
+- **Privacy Control**: In profile settings, user can toggle the entire Values section visible or hidden.
+- **Strictly Non-Clinical**: Never show percentage bars, personality labels, or diagnostic assessments.
+
+### 8.7 Social Rhythm Presentation & Preference Privacy
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+- **Social Rhythm Micro-Badges**: Displayed under a dedicated "Social Rhythm" profile section:
+  - `[ ☕ One-on-One ]` `[ 🔋 Recharges Solo ]` `[ 👀 Observant First ]` `[ ⚡ Spontaneous ]`
+- **Granular Privacy Toggles**: Users can independently toggle any social behavior attribute on or off in profile settings.
+- **Empty State Restraint**: Undeclared preferences simply do not render.
+- **Strictly Non-Diagnostic**: Never display radar charts, psychometric profiles, or clinical labels.
 
 ---
 
@@ -247,11 +379,42 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 ### 9.1 Discovery Lifecycle
 1. User views a discoverable profile (`GET /v1/profiles/{target_id}`).
 2. User inspects the target's public safe astrology (`GET /v1/astrology/people/{target_id}/safe-astro`).
-3. User initiates a connection request (`POST /v1/connections`).
+3. User inspects shared, related, or complementary interest hooks.
+4. User initiates a connection request (`POST /v1/connections`).
 
 ### 9.2 Public Profile vs Connection Relationship Boundary
-- A user **CAN** see Sun/Moon/Ascendant signs and primary element/modality of discoverable non-connected users.
+- A user **CAN** see Sun/Moon/Ascendant signs, primary element/modality, and declared interests of discoverable non-connected users.
 - A user **CANNOT** run compatibility analysis or initiate direct chat without an active accepted connection.
+
+### 9.3 Interest Discovery Matching
+The Discovery UI evaluates three relationship types:
+1. **Shared**: Exact mutual canonical interest (*"You both love photography"*).
+2. **Related**: Graph-connected semantic neighbors (*"You both seem to like exploring the world — just differently"*).
+3. **Complementary**: Different declared interests paired with compatible communication energy (*"Different interests. Similar energy"*).
+- Internal recommendation relies on multi-signal **Interest Clusters** (*Explorers*, *Creatives*, *Thinkers*, etc.) rather than flat single-tag comparisons.
+
+### 9.4 Location Relevance in Discovery
+- **Proximity Boost**: Users residing in the same current city receive an organic soft relevance boost to facilitate real-world meeting potential.
+- **Shared Origin Observation**: When two users share a hometown root or regional heritage, discovery cards surface contextual observations (e.g. *"Both based in Tbilisi · Originally from Kvareli"* or *"Shared roots in Kakheti"*).
+- **No Hard Exclusion**: Proximity is a soft signal; high-synergy connections in other cities remain discoverable.
+
+### 9.5 Lifestyle Cadence in Discovery Matching
+- **Rhythm Harmony**: Highlights natural late-night or early-morning conversational synergy (e.g. *"Both night owls — expect 2 AM chats"*).
+- **Schedule Synergy**: Surfaces remote/flexible work synergies for daytime coffee or co-working connections.
+- **Soft Relevance**: Lifestyle alignment serves as natural conversational context, never as hard exclusionary filters in V1.
+
+### 9.6 Values & Philosophical Resonance in Discovery
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+- **Shared Values (Direct Resonance)**: Surfaces shared life principles as conversational hooks (e.g. *"Both guided by Curiosity and Growth — endless shared rabbit holes"*).
+- **Complementary Polarities**: Highlights constructive philosophical balances with trademark JESTER wit (e.g. *Autonomy + Loyalty*: *"One brings fierce independence, one brings steadfast loyalty. Space to breathe with a secure tether"*).
+- **Soft Relevance**: In V1, values act as philosophical compatibility signals and conversation bridges, never as hard exclusionary dealbreaker filters.
+
+### 9.7 Social Dynamics in Discovery Matching
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+- **Gathering Harmony**: Surfaces shared preferences (e.g. *"Both thrive in one-on-one settings — quiet corner cafés over chaotic parties"*).
+- **Battery Awareness**: Highlights mutual or complementary recharge styles (e.g. *"Both need quiet downtime after socializing — zero pressure, zero guilt"*).
+- **Meeting Setting Intelligence**: AI uses mutual comfort zones to suggest optimal low-friction first hangouts.
+- **Soft Relevance**: In V1, social dynamics serve as practical relationship context and meeting aids, never hard exclusionary gates.
 
 ---
 

@@ -36,33 +36,46 @@ Authorization: Bearer <supabase_jwt_token>
 
 #### 3. Get Own Profile — `GET /v1/profiles/me`
 - **Auth**: Bearer JWT
-- **Response 200**: `ProfileResponse(id: UUID, display_name: str, avatar_url: str, bio: str, city: str, occupation: str, timezone: str, is_discoverable: bool, created_at: datetime, updated_at: datetime)`
+- **Response 200**: `ProfileResponse(id: UUID, display_name: str, avatar_url: str, bio: str, city: str, location: LocationDTO|None, origin: OriginDTO|None, lifestyle: LifestyleDTO|None, values: list[ValueDTO], social_behavior: SocialBehaviorDTO|None, occupation: str, timezone: str, is_discoverable: bool, created_at: datetime, updated_at: datetime)`
+  - `location`: `{ city: "Tbilisi", country: "Georgia", country_code: "GE" }`
+  - `origin`: `{ city: "Kvareli", country: "Georgia", country_code: "GE" }` (or `null` if hidden or unconfigured)
+  - `lifestyle`: `{ daily_rhythm, activity_pace, work_style, pet_status, drinking, smoking }` (filtered by visibility flags)
+  - `values`: `[ { slug: "curiosity", name: "Curiosity", is_core: true, badge_icon: "compass" }, ... ]`
+  - `social_behavior`: `{ group_preference: "one_on_one", social_battery: "recharge_solo", warmup_style: "observer_first", planning_style: "spontaneous", comfort_zone: "cozy_intimate" }` (filtered by visibility flags)
+  - `city`: Kept as backward-compatible string alias.
 - **Errors**: `404 PrivacySafeNotFoundException` if profile missing.
 
 #### 4. Update Own Profile — `PATCH /v1/profiles/me`
 - **Auth**: Bearer JWT
-- **Body**: `ProfileUpdate(display_name?, avatar_url?, bio?, city?, occupation?, timezone?, is_discoverable?)`
+- **Body**: `ProfileUpdate(display_name?, avatar_url?, bio?, city?, current_city_id?: UUID, hometown_city_id?: UUID, hometown_visible?: bool, occupation?, timezone?, is_discoverable?)`
 - **Response 200**: Updated `ProfileResponse`
 
 #### 5. Get Target Profile — `GET /v1/profiles/{profile_id}`
 - **Auth**: Bearer JWT
-- **Response 200**: `ProfileResponse`
+- **Response 200**: `ProfileResponse` (`origin` serialized only if target user has `hometown_visible = true`; `lifestyle` filtered by target's visibility flags; coordinates NEVER serialized).
 - **Errors**: `404 PrivacySafeNotFoundException` if non-discoverable or user is blocked.
 
 ---
 
 ### Astrology
 
-#### 6. Recalculate Astrology — `POST /v1/astrology/profile/recalculate`
+#### 6. Atomic Birth Data Onboarding — `POST /v1/astrology/birth-data`
+- **Auth**: Bearer JWT
+- **Body**: `BirthDataRequest(birth_date: date, birth_time: time|None, birth_timezone: str, latitude: float, longitude: float, place_label: str)`
+- **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
+- **Errors**: `400 placidus_polar_error` if latitude $> 66.5^\circ$; `400 invalid_timezone` if not IANA timezone; `400 invalid_coordinates` if out of range.
+- **Behavior**: Atomically persists `public.birth_data`, calculates Ephemeris planetary positions in `public.astro_private`, and derives safe profile in `public.astro_safe_profile` within a single backend-owned transaction.
+
+#### 7. Recalculate Astrology — `POST /v1/astrology/profile/recalculate`
 - **Auth**: Bearer JWT
 - **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
 - **Errors**: `404 birth_data_not_found` if `public.birth_data` row missing; `400 placidus_polar_error` if latitude $> 66.5^\circ$.
 
-#### 7. Get Own Safe Astrology — `GET /v1/astrology/profile/safe-astro`
+#### 8. Get Own Safe Astrology — `GET /v1/astrology/profile/safe-astro`
 - **Auth**: Bearer JWT
 - **Response 200**: `SafeDerivedAstrologyResponse` (Auto-recalculates if birth_data exists).
 
-#### 8. Get Person Safe Astrology — `GET /v1/astrology/people/{target_user_id}/safe-astro`
+#### 9. Get Person Safe Astrology — `GET /v1/astrology/people/{target_user_id}/safe-astro`
 - **Auth**: Bearer JWT
 - **Response 200**: `SafeDerivedAstrologyResponse`
 - **Errors**: `404 PrivacySafeNotFoundException` if target non-discoverable or blocked.
@@ -224,5 +237,240 @@ Authorization: Bearer <supabase_jwt_token>
   - Enforces discoverability: non-discoverable target profiles without an active connection return `404 PrivacySafeNotFoundException`.
   - Never exposes private birth data, coordinates, raw planetary longitudes, or evidence traces.
 
+---
+
+### Interest System & Graph V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Interest System V1 architecture specification.
+
+#### 31. List Interest Categories — `GET /v1/interests/categories`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[InterestCategoryResponse]`
+  - `id`: UUID
+  - `name`: Category name (e.g. "Creative", "Travel & Exploring")
+  - `slug`: Canonical category slug
+  - `icon`: Icon identifier
+  - `sort_order`: Display sort order
+
+#### 32. Get Onboarding Candidate Pool — `GET /v1/interests/candidate-pool`
+- **Auth**: Bearer JWT
+- **Response 200**: `InterestCandidatePoolResponse`
+  - `items`: Curated pool of ~20 canonical interest items for onboarding
+  - `rules`: `{"min_primary": 5, "max_primary": 5, "skippable": true}`
+
+#### 33. Submit Onboarding Interests — `POST /v1/interests/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `InterestOnboardingRequest`
+  - `primary_interest_ids`: Exactly 5 UUIDs (or empty array if skipped)
+  - `signature_interest_id`: Optional UUID (must be one of the 5 primary interests if supplied)
+- **Response 200**: `UserInterestsResponse`
+  - Returns persisted primary interests and optional signature interest.
+- **Errors**: `400 invalid_interest_count` if non-empty and count $\neq$ 5; `400 invalid_signature_interest` if signature interest is not in primary list.
+
+#### 34. Get Own Declared Interests — `GET /v1/interests/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserInterestsResponse`
+  - `primary`: List of primary interests (max 5)
+  - `signature`: Optional signature interest
+  - `secondary`: List of secondary interests added post-onboarding
+
+#### 35. Add Secondary Interest — `POST /v1/interests/secondary`
+- **Auth**: Bearer JWT
+- **Body**: `AddSecondaryInterestRequest(interest_id: UUID)`
+- **Response 201**: `UserInterestItemResponse`
+
+#### 36. Remove Secondary Interest — `DELETE /v1/interests/secondary/{interest_id}`
+- **Auth**: Bearer JWT
+- **Response 204**: No content
+
+#### 37. Get Person Interests — `GET /v1/interests/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PersonInterestsResponse`
+  - `primary`: Visible primary interests
+  - `signature`: Optional signature interest
+  - `secondary`: Visible secondary interests
+  - `matching_summary`: Relationship matching mode (`shared`, `related`, or `complementary`)
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked or non-discoverable.
+- **Privacy Enforcement**: Internal behavioral affinity scores (`public.user_interest_affinity`) are strictly service-role and never exposed.
+
+---
+
+### Location & Origin System V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Location & Origin System V1 architecture specification.
+
+#### 38. Search Canonical Cities — `GET /v1/geo/cities`
+- **Auth**: Public or Bearer JWT
+- **Query Params**:
+  - `query: str` (Minimum 2 characters for autocomplete, e.g. "Tbi", "თბი")
+  - `country_code?: str` (Optional ISO filter, e.g. "GE")
+  - `limit?: int` (Default 10, max 30)
+- **Response 200**: `list[GeoCitySearchResult]`
+  - `id`: UUID
+  - `name`: Localized city name (e.g. "Tbilisi")
+  - `country_name`: Localized country name (e.g. "Georgia")
+  - `country_code`: ISO code (e.g. "GE")
+  - `slug`: Canonical slug (e.g. "ge-tbilisi")
+
+#### 39. Get Major Onboarding Hubs — `GET /v1/geo/cities/major`
+- **Auth**: Public or Bearer JWT
+- **Query Params**: `country_code: str = "GE"`
+- **Response 200**: `list[GeoCitySearchResult]`
+  - Returns curated list of major domestic hubs for 1-tap onboarding chips (e.g. Tbilisi, Batumi, Kutaisi, Rustavi).
+
+#### 40. Update Location Settings — `PATCH /v1/profiles/me/location`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateLocationRequest`
+  - `current_city_id?: UUID`
+  - `hometown_city_id?: UUID`
+  - `hometown_visible?: bool`
+- **Response 200**: `ProfileLocationResponse`
+  - `location`: `{ city: "Tbilisi", country: "Georgia", country_code: "GE" }`
+  - `origin`: `{ city: "Kvareli", country: "Georgia", country_code: "GE" }` (or `null` if `hometown_visible = false`)
+- **Errors**: `400 invalid_city_id` if referenced UUID does not exist in `geo_cities`.
+
+---
+
+### Lifestyle System V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Lifestyle System V1 architecture specification.
+
+#### 41. List Canonical Lifestyle Options — `GET /v1/lifestyle/options`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[LifestyleCategoryWithOptions]`
+  - Returns taxonomy categories (`daily_rhythm`, `activity_pace`, `work_style`, `pet_status`, etc.) and their localized options with badge icons.
+
+#### 42. Get Onboarding Lifestyle Snapshot Options — `GET /v1/lifestyle/onboarding-snapshot`
+- **Auth**: Bearer JWT
+- **Response 200**: `LifestyleOnboardingSnapshotConfig`
+  - Returns the 3 curated onboarding questions (Daily Rhythm, Activity Pace, Work Style) with quick-select options and icons.
+
+#### 43. Submit Lifestyle Onboarding — `POST /v1/lifestyle/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `LifestyleOnboardingRequest`
+  - `daily_rhythm?: str` (e.g. `'night_owl'`, `'early_bird'`, `'flexible_rhythm'`)
+  - `activity_pace?: str` (e.g. `'high_velocity'`, `'balanced_pace'`, `'relaxed_pace'`)
+  - `work_style?: str` (e.g. `'remote'`, `'hybrid'`, `'on_site'`, `'student'`)
+- **Response 200**: `UserLifestyleResponse`
+- **Errors**: `400 invalid_option_slug` if an unrecognized slug is submitted.
+- **Behavior**: All fields are optional (payload can be empty to represent a skipped step).
+
+#### 44. Get Own Lifestyle Profile — `GET /v1/lifestyle/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserLifestyleResponse`
+  - Returns all declared lifestyle attributes, custom visibility flags, and metadata.
+
+#### 45. Update Own Lifestyle & Visibility — `PATCH /v1/lifestyle/me`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateLifestyleRequest`
+  - `daily_rhythm?: str|None`
+  - `activity_pace?: str|None`
+  - `work_style?: str|None`
+  - `social_cadence?: str|None`
+  - `pet_status?: str|None`
+  - `living_situation?: str|None`
+  - `drinking_habit?: str|None`
+  - `smoking_habit?: str|None`
+  - `visibility_flags?: dict[str, bool]` (e.g. `{"living_situation": false, "drinking": true}`)
+- **Response 200**: Updated `UserLifestyleResponse`
+
+#### 46. Get Target User Lifestyle — `GET /v1/lifestyle/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PublicLifestyleResponse`
+  - Returns target user's public lifestyle attributes filtered strictly through target's `visibility_flags`.
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked or non-discoverable.
+
+---
+
+### Values System V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Values System V1 architecture specification.
+
+#### 47. List Canonical Values Taxonomy — `GET /v1/values`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[ValuesCategoryWithOptions]`
+  - Returns the 5 thematic clusters (`personal_direction`, `intellectual_creative`, `relational_ethical`, `life_grounding`, `inner_spirit`) with their 18 canonical values, localized definitions, and badge icons.
+
+#### 48. Get Values Onboarding Candidate Pool — `GET /v1/values/candidate-pool`
+- **Auth**: Bearer JWT
+- **Response 200**: `ValuesCandidatePoolResponse`
+  - Returns the 18 canonical values formatted for rapid interactive chip selection (with selection constraints: `min: 3`, `max: 5`, `core_allowed: 1`, `is_skippable: true`).
+
+#### 49. Submit Values Onboarding — `POST /v1/values/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `ValuesOnboardingRequest`
+  - `selected_value_slugs: list[str]` (Must contain between 3 and 5 valid slugs, or empty list if skipped)
+  - `core_value_slug?: str|None` (Optional single True North value, must be one of `selected_value_slugs`)
+- **Response 200**: `UserValuesResponse`
+- **Errors**:
+  - `400 invalid_selection_count` if selected count is not between 3 and 5 (unless empty array when skipping).
+  - `400 invalid_core_value` if core value is not in selected list.
+  - `400 invalid_value_slug` if slug is not recognized.
+
+#### 50. Get Own Values Profile — `GET /v1/values/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserValuesResponse`
+  - Returns user's selected values list (`slug`, `name`, `definition`, `badge_icon`, `is_core`, `sort_order`).
+
+#### 51. Update Own Values — `PUT /v1/values/me`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateUserValuesRequest`
+  - `selected_value_slugs: list[str]` (3 to 5 items)
+  - `core_value_slug?: str|None`
+- **Response 200**: Updated `UserValuesResponse`
+
+#### 52. Get Target User Values — `GET /v1/values/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PublicValuesResponse`
+  - Returns target user's Guiding Compass values (`slug`, `name`, `badge_icon`, `is_core`).
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked, values hidden, or user non-discoverable.
+
+---
+
+### Social Behavior System V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Social Behavior System V1 architecture specification.
+
+#### 53. List Canonical Social Behavior Options — `GET /v1/social-behavior/options`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[SocialCategoryWithOptions]`
+  - Returns the 5 dimensions (`gathering_scale`, `social_battery`, `warmup_style`, `planning_style`, `comfort_zone`) with localized labels, definitions, and badge icons.
+
+#### 54. Get Onboarding Social Snapshot Options — `GET /v1/social-behavior/onboarding-snapshot`
+- **Auth**: Bearer JWT
+- **Response 200**: `SocialOnboardingSnapshotConfig`
+  - Returns the 3 onboarding questions (Gathering Scale, Social Battery, Warm-Up Dynamic) with interactive chips.
+
+#### 55. Submit Social Behavior Onboarding — `POST /v1/social-behavior/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `SocialOnboardingRequest`
+  - `group_preference?: str` (e.g. `'one_on_one'`, `'small_groups'`, `'lively_crowds'`, `'adaptable_scale'`)
+  - `social_battery?: str` (e.g. `'recharge_solo'`, `'recharge_social'`, `'recharge_fluid'`)
+  - `warmup_style?: str` (e.g. `'initiator'`, `'observer_first'`, `'selective_deep'`)
+- **Response 200**: `UserSocialPreferencesResponse`
+- **Errors**: `400 invalid_option_slug` if an unrecognized slug is passed.
+- **Behavior**: All fields are optional (submitting empty body represents skipping the step).
+
+#### 56. Get Own Social Preferences — `GET /v1/social-behavior/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserSocialPreferencesResponse`
+  - Returns all declared social preferences, custom visibility flags, and metadata.
+
+#### 57. Update Own Social Preferences & Visibility — `PATCH /v1/social-behavior/me`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateSocialPreferencesRequest`
+  - `group_preference?: str|None`
+  - `social_battery?: str|None`
+  - `warmup_style?: str|None`
+  - `planning_style?: str|None`
+  - `comfort_zone?: str|None`
+  - `visibility_flags?: dict[str, bool]`
+- **Response 200**: Updated `UserSocialPreferencesResponse`
+
+#### 58. Get Target User Social Preferences — `GET /v1/social-behavior/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PublicSocialPreferencesResponse`
+  - Returns target user's public social preferences filtered strictly through target's `visibility_flags`.
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked, non-discoverable, or preferences hidden.
 
 

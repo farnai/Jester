@@ -80,6 +80,73 @@ In the content pipeline, the daily insight is the user's **first personal taste 
 
 ---
 
+## 🌐 Interest Graph as Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+
+JESTER AI integrates declared interests and the semantic Interest Graph as grounding context for relationship interpretation, profile prompts, and conversation starters.
+
+### Core AI Context Guardrails:
+1. **Never Stereotype from a Single Interest:** A single interest must **never** be treated as a comprehensive personality verdict (e.g., selecting `Photography` does not permit JESTER to assume the user is "an artistic, sensitive soul"). Interests contribute to broader signals only in combination with other declared or verified behavioral signals.
+2. **Behavioral Affinity is Non-Judgmental:** Observed behavioral affinity scores (`user_interest_affinity`) are internal algorithmic recommendation signals. JESTER AI must **never** use behavioral scores to publicly label, psychoanalyze, or pigeonhole users (e.g., never proclaim: *"You are a visual storyteller"* unless intentionally packaged within an approved, delightful JESTER insight feature).
+3. **Conversational Anchoring:** High Conversation-Value interests (e.g. Photography, Coffee, Cinema) and the user's declared **Signature Interest** (*"Which one could you talk about forever?"*) serve as natural conversational icebreakers, bridging the gap between astrological connection dynamics and real-world human dialogue.
+
+---
+
+## 📍 Location & Origin as Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests safe location and origin tokens (City, Country, and relational flags) to provide warm, human conversational context without compromising privacy:
+
+### Operational Invariants:
+1. **Conversational Bridge, Not Stereotype:** Current city and hometown/origin are used for natural shared-background warmth (e.g. *"You're both based in Tbilisi, but carry roots from different parts of Georgia"* or *"You both grew up outside Tbilisi"*). The AI must **never** invoke regional clichés, stereotypes, or cultural judgments.
+2. **Contextual Spark, Not Interrogation:** Hometown context is surfaced as a natural observation or icebreaker, never as an aggressive cross-examination or forced discussion point.
+3. **Strict Zero-Coordinate Boundary:** System prompts, context payloads, and generated interpretations must **never** contain raw GPS coordinates, street addresses, or live tracking data.
+
+---
+
+## 🌿 Lifestyle & Daily Rhythm Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+
+JESTER AI integrates declared daily rhythm, activity pace, and work reality to craft empathetic, witty, and schedule-aware interpretations:
+
+### Operational Invariants:
+1. **Zero Moralizing & No Health Lecturing:** JESTER AI must **never** judge, lecture, or scold a user about their sleep hours, physical activity level, or substance habits (e.g. never generate *"You should go to sleep earlier"* or *"You need to exercise more"*).
+2. **Schedule Harmony & Playful Camaderie:** Lifestyle tokens are used to highlight practical interpersonal harmony (e.g. *"You're both night owls — expect chaotic 2 AM messages and late-night clarity"*, or *"One wakes with the sun, one owns the night"*).
+3. **Sensitive Attribute Omission:** If a user has marked drinking, smoking, or living situation as hidden in `visibility_flags`, those tokens are **strictly omitted from AI prompt payloads**.
+
+---
+
+## 💎 Values & Guiding Compass Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests structured values tokens (Core Value and chosen guiding values) to generate warm, witty, and philosophically resonant relational interpretations:
+
+### Operational Invariants:
+1. **Never Diagnose Personality or Calculate Virtue:** JESTER AI must **never** tell a user: *"Because you value honesty, your personality is rigid"* or *"You are 80% an intellectual"*. Values are self-declared human priorities, not psychometric test results or medical diagnoses.
+2. **Zero Moralizing or Virtuous Grading:** The AI must **never** imply that one value is "superior", "more enlightened", or "better" than another (e.g., never generate *"You should value family more than autonomy"*). All 18 canonical values are treated with equal dignity.
+3. **Conversational Anchoring ("The Insight Becomes the Invitation"):** Shared values serve as natural prompts for meaningful dialogue (e.g. *"You both value authenticity above pleasing the room — small talk won't last long here"*).
+4. **Playful Polarity Framing:** Differing values are framed as fascinating, dynamic balances (e.g. *Autonomy + Loyalty*: *"One brings fierce independence, one brings steadfast loyalty. Space to breathe with a secure tether"*), never as fatal relational incompatibilities.
+
+---
+
+## 👥 Social Dynamics & Battery Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests declared social preferences (gathering scale, social battery, warm-up pacing, and comfort zone) to deliver practical, low-friction meeting suggestions and empathetic relational dynamics:
+
+### Operational Invariants:
+1. **Never Pigeonhole into Psychological Types:** JESTER AI must **never** call a user an "introverted recluse", "attention-seeking extrovert", "antisocial", or assign pop-psychology labels like "Alpha" or MBTI types. Social preferences describe gathering comfort, not character flaws or personality verdicts.
+2. **Equal Dignity Across Energy Rhythms:** Needing solitary downtime to recharge is celebrated with identical warmth as drawing energy from a bustling crowd. The AI must never frame solitary recharge as "shyness to fix."
+3. **Meeting Setting Recommendations ("The Insight Becomes the Invitation"):** Context is used to suggest thoughtful first hangout ideas (e.g. *"Since you both prefer low-key one-on-one spots, skip the noisy event and grab quiet tea on a balcony"*).
+4. **Friction-Reducing Dynamics:** Highlights pacing synergies (e.g. *"One brings the warm icebreaker, one reads the room — natural balance with zero conversational pressure"*).
+
+---
+
 ## 📁 File-by-File Inventory
 
 ### `backend/app/interpretation/contracts.py`

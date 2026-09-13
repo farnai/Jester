@@ -78,6 +78,27 @@ PostgreSQL security operates on the **Principle of Least Privilege**, separating
 | `public.messages` | 🚫 **REVOKED** | `SELECT, INSERT` (Active direct conversation member only) | 🟢 Full Access |
 | `public.notifications` | 🚫 **REVOKED** | `SELECT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
 | `public.daily_energies` | 🚫 **REVOKED** | `SELECT` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.interest_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.interests` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.interest_aliases` | 🚫 **REVOKED** | `SELECT` (Taxonomy alias resolution) | 🟢 Full Access |
+| `public.interest_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_interests` | 🚫 **REVOKED** | `SELECT` (Own profile OR discoverable/unblocked target), `INSERT, UPDATE, DELETE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_interest_affinity`| 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Internal recommendation only) |
+| `public.geo_countries` | `SELECT` (Geo reference) | `SELECT` (Geo reference) | 🟢 Full Access |
+| `public.geo_cities` | `SELECT` (Geo reference) | `SELECT` (Geo reference) | 🟢 Full Access |
+| `public.geo_city_aliases` | `SELECT` (Geo search) | `SELECT` (Geo search) | 🟢 Full Access |
+| `public.user_location_private` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only) |
+| `public.lifestyle_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.lifestyle_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.user_lifestyle` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.values_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.values_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.value_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_values` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target), `INSERT, UPDATE, DELETE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.social_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.social_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.social_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_social_preferences`| 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
 
 ---
 
@@ -130,6 +151,44 @@ These invariants are permanent engineering constraints. Any pull request or refa
 ### 7. Developer Debug Isolation (`/v1/astrology/debug/*`)
 - **Invariant:** Developer inspection tools and debug routes must be completely unreachable in production.
 - **Enforcement:** Endpoints in `backend/app/astrology/debug.py` check `settings.ENV == "production"` and immediately abort with HTTP 403 Forbidden. Furthermore, debug endpoints are 100% read-only and never trigger mutating auto-recalculations.
+
+### 8. Interest Graph & Behavioral Affinity Isolation (`public.user_interest_affinity`)
+- **Invariant:** Behavioral affinity scores, interaction confidence, and internal cluster weights are strictly internal recommendation signals. They must **never** overwrite, mutate, or blur the boundary of a user's explicitly declared interests (`public.user_interests`).
+- **Enforcement:** All database privileges on `public.user_interest_affinity` are revoked from client roles (`authenticated`, `anon`, `public`). The API and JESTER intelligence engine never project unconfirmed behavioral labels (e.g., "You are an adventurous person") onto the user.
+
+### 9. Separation of Profile Presentation and Identity Verification
+- **Invariant:** Public profile imagery (`avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
+- **Enforcement:** Uploading or displaying a profile photo does not grant or imply verified status. Verification tokens, status, and biometric metadata are governed by dedicated security boundaries and never conflated with casual profile presentation.
+
+### 10. Precise Geographic Coordinate Protection & Location Privacy
+- **Invariant:** Exact coordinates (`latitude`, `longitude`), street addresses, live GPS positioning, and continuous device tracking are sensitive personal data. They must **never** be publicly exposed, serialized in public client DTOs, or exposed in normal discovery feeds.
+- **Enforcement:**
+  - Public profile and discovery responses serialize only canonical city and country names (`location: { city, country }`, `origin: { city, country }`).
+  - Origin/Hometown visibility is strictly user-controlled via `hometown_visible`.
+  - Client database roles have zero read permissions on private coordinate tables (`public.user_location_private`).
+  - No trilateration or precise distance stalking: future distance indicators will operate solely on broad fuzzy bands (e.g. "Within 25 km", "Same city"), never exact decimal distances.
+  - Analytics and access logs are stripped of raw GPS coordinates.
+
+### 11. Lifestyle & Sensitive Habit Privacy Boundaries
+- **Invariant:** Sensitive lifestyle attributes (drinking, smoking, living situation, household structure) are strictly user-controlled. They must **never** be coerced during initial onboarding, leaked when toggled private, or used to generate moralistic or judgmental JESTER AI commentary.
+- **Enforcement:**
+  - `visibility_flags` on `public.user_lifestyle` dictate public serialization; private fields are stripped before client delivery.
+  - Suppressed from AI prompt payloads when marked hidden.
+  - Zero health lecturing or shaming algorithms permitted.
+
+### 12. Values & Philosophical Non-Diagnostic Invariants
+- **Invariant:** Values represent self-declared life priorities and principles, not clinical psychometric profiles. They must **never** be converted into percentage scores (e.g. "87% independent"), used for virtue grading, or treated as psychological labels.
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality diagnosis or moral superiority commentary.
+  - The API exposes values as categorical tags with optional single Core Value status (`is_core = true`), strictly avoiding Likert-scale or decimal scores.
+  - All canonical values possess equal dignity and respect across the platform.
+
+### 13. Social Behavior & Anti-Typing Non-Diagnostic Invariants
+- **Invariant:** Social behavior describes situational gathering preferences and energy mechanics, not psychological personality types. Users must **never** be boxed into clinical MBTI archetypes, labeled with pop-psychology buzzwords ("Alpha", "Loner", "Social Butterfly"), or graded as "socially awkward".
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality typing or judgmental social commentary.
+  - The API exposes social behavior as discrete functional choices (e.g. `recharge_solo`, `one_on_one`), completely avoiding clinical labels or personality percentage scales.
+  - All social battery and gathering styles carry equal dignity across the platform.
 
 ---
 
