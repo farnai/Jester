@@ -100,13 +100,24 @@ Authorization: Bearer <supabase_jwt_token>
 
 #### 10. Send Connection Request — `POST /v1/connections`
 - **Auth**: Bearer JWT
-- **Body**: `ConnectionCreate(target_user_id: UUID)`
-- **Response 201**: `ConnectionResponse`
+- **Body**: `ConnectionCreate(target_user_id: UUID, connection_reason?: str, prompt_reference_id?: UUID, invitation_note?: str)`
+  - `connection_reason`: Optional single-tap intent hook (`"shared_curiosity"`, `"creative_collaboration"`, `"philosophical_resonance"`, `"humor_banter"`, `"meaningful_chat"`, `"coffee_walk"`).
+  - `prompt_reference_id`: Optional UUID of target's answered prompt if initiating via profile prompt quote.
+  - `invitation_note`: Optional personal note, max 250 characters. Stripped of raw contact handles/links.
+- **Response 201**: `ConnectionResponse(id: UUID, user_a_id: UUID, user_b_id: UUID, status: str, initiated_by: UUID, connection_reason: str|None, prompt_reference_id: UUID|None, invitation_note: str|None, created_at: datetime, updated_at: datetime)`
+- **Errors**: `400 invalid_pair` (connecting with self); `400 invalid_invitation_note` (>250 chars); `403 forbidden` (blocked or daily cap exceeded: 15/day); `404 PrivacySafeNotFoundException` (target does not exist or blocked).
 
 #### 11. Transition Connection State — `POST /v1/connections/{connection_id}/transition`
 - **Auth**: Bearer JWT
 - **Body**: `ConnectionTransition(action: Literal["accept", "decline", "block", "unblock", "remove"])`
 - **Response 200**: `ConnectionResponse`
+- **Actions**:
+  - `"accept"`: Target accepts pending request. Transitions to `accepted`. Automatically triggers inaugural message seeding in direct chat thread if `invitation_note` or `prompt_reference_id` was provided.
+  - `"decline"`: Target declines pending request. Transitions to `declined`. Silent to sender (zero decline push notification to preserve dignity).
+  - `"remove"` (Disconnect): Either user disconnects. Transitions to `removed`. Locks direct chat history into read-only archive; bars new messages; 48-hour reconnection cooldown; zero notification to counterpart.
+  - `"block"`: Immediate personal safety block. Transitions to `blocked`, setting `blocked_by`. Reciprocal HTTP 404 across all endpoints; counterpart immediately disappears.
+  - `"unblock"`: Blocker unblocks. Transitions to `removed` (does NOT auto-restore accepted connection).
+- **Errors**: `400 invalid_transition`; `403 forbidden` (unauthorized transition); `404 PrivacySafeNotFoundException`.
 
 #### 12. Compare Users / Calculate Compatibility — `POST /v1/compare`
 - **Auth**: Bearer JWT
@@ -121,25 +132,52 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Conversations & Messages
+### Conversations & Messages (Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))
 
 #### 14. Create / Get Direct Conversation — `POST /v1/conversations`
 - **Auth**: Bearer JWT
 - **Body**: `DirectConversationCreate(target_user_id: UUID)`
-- **Response 201**: `ConversationResponse`
-- **Errors**: `403 Forbidden` if active connection does not exist.
+- **Response 201**: `ConversationResponse(id: UUID, conversation_type: str, created_by: UUID, created_at: datetime, updated_at: datetime, other_member_id: UUID)`
+- **Errors**: `403 Forbidden` if active `accepted` connection does not exist.
 
 #### 15. List My Conversations — `GET /v1/conversations`
 - **Auth**: Bearer JWT
 - **Response 200**: `list[ConversationInboxResponse]`, where each item contains `id`, `other_member_id`, `last_message` (`MessageResponse | null`), `unread_count`, and `updated_at`.
-- **Visibility**: Returns only the caller's active direct conversations. Conversations that are unrelated, blocked, removed, or no longer accepted are omitted.
+- **Visibility**: Returns only caller's active direct conversations where `public.is_active_direct_conversation(c.id, user_id)` is true. Conversations that are blocked, removed, or no longer accepted are omitted from active list.
 - **Ordering**: Most recent message activity first; conversations without messages fall back to `conversations.updated_at`.
-- **Unread limitation**: `unread_count` is currently always `0`, because the database does not yet represent per-member message read state. Proper read tracking is a future backend capability.
+- **Unread Tracking**: Computes `unread_count` via member's `last_read_message_id` pointer against newer messages.
 
-#### 16. List Messages — `GET /v1/conversations/{conversation_id}/messages`
+#### 16. Get Conversation Details — `GET /v1/conversations/{conversation_id}`
 - **Auth**: Bearer JWT
-- **Response 200**: `list[MessageResponse]`
+- **Response 200**: `ConversationResponse`
+- **Errors**: `404 PrivacySafeNotFoundException` if conversation does not exist or caller is not an active participant.
+
+#### 17. List Messages — `GET /v1/conversations/{conversation_id}/messages`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[MessageResponse(id: UUID, conversation_id: UUID, sender_user_id: UUID, body: str, created_at: datetime)]`
+- **Ordering**: Chronological ascending by `created_at`.
 - **Errors**: `404 PrivacySafeNotFoundException` if not member or blocked.
+
+#### 18. Send Message — `POST /v1/conversations/{conversation_id}/messages`
+- **Auth**: Bearer JWT
+- **Body**: `MessageCreate(body: str)`
+- **Validation**: UTF-8 plain text, 1 to 2,000 characters. Unicode emoji supported. Media attachments barred in V1.
+- **Enforcement**: Validates `public.is_active_direct_conversation(conversation_id, current_user.id)`. Fails if disconnected or blocked.
+- **Response 201**: `MessageResponse`
+- **Errors**: `400 invalid_message_body` (empty or >2,000 chars); `404 PrivacySafeNotFoundException` if conversation inactive, removed, or blocked.
+
+#### 19. Mark Conversation Read — `PATCH /v1/conversations/{conversation_id}/read`
+- **Auth**: Bearer JWT
+- **Body**: `ReadReceiptUpdate(last_read_message_id: UUID)`
+- **Response 200**: `{"status": "ok", "unread_count": 0}`
+- **Behavior**: Updates caller's `last_read_message_id` and `last_read_at` in `public.conversation_members`. Anti-surveillance invariant: Does NOT broadcast "Seen at HH:MM" to counterpart.
+- **Errors**: `404 PrivacySafeNotFoundException` if not member.
+
+#### 20. Generate Conversation Starters — `POST /v1/conversations/{conversation_id}/starters`
+- **Auth**: Bearer JWT
+- **Response 200**: `ConversationStartersResponse(starters: list[ConversationStarterDTO], shared_topics: list[str])`
+- **Behavior**: Scopes JESTER AI context to caller and recipient's declared public signals (interests, values, prompts, communication rhythm). Produces 3 user-reviewable opening lines. Never auto-sends without explicit user approval.
+- **Errors**: `404 PrivacySafeNotFoundException` if not member or disconnected.
 
 ---
 

@@ -96,3 +96,119 @@ async def test_list_my_conversations_requires_authentication():
 
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "missing_token"
+
+
+@pytest.mark.asyncio
+async def test_send_and_list_messages_active_connection(db_conn, clean_db):
+    u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
+    u3 = str(uuid.uuid4())
+    create_test_user(db_conn, u1, "u1@test.jester.app", "User 1")
+    create_test_user(db_conn, u2, "u2@test.jester.app", "User 2")
+    create_test_user(db_conn, u3, "u3@test.jester.app", "User 3")
+
+    with db_conn.cursor() as cur:
+        set_auth_context(cur, None, "admin")
+        _create_accepted_connection(cur, u1, u2)
+
+    token_u1 = generate_test_jwt(user_id=u1, email="u1@test.jester.app")
+    token_u2 = generate_test_jwt(user_id=u2, email="u2@test.jester.app")
+    token_u3 = generate_test_jwt(user_id=u3, email="u3@test.jester.app")
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # Create direct conversation
+        create_res = await client.post(
+            "/v1/conversations",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"target_user_id": u2},
+        )
+        assert create_res.status_code == 201
+        conv_id = create_res.json()["id"]
+
+        # U1 sends message
+        send_res = await client.post(
+            f"/v1/conversations/{conv_id}/messages",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"body": "Hello from U1!"},
+        )
+        assert send_res.status_code == 201
+        msg = send_res.json()
+        assert msg["body"] == "Hello from U1!"
+        assert msg["sender_user_id"] == u1
+
+        # U2 retrieves messages
+        list_res = await client.get(
+            f"/v1/conversations/{conv_id}/messages",
+            headers={"Authorization": f"Bearer {token_u2}"},
+        )
+        assert list_res.status_code == 200
+        msgs = list_res.json()
+        assert len(msgs) == 1
+        assert msgs[0]["body"] == "Hello from U1!"
+
+        # Unrelated U3 cannot list messages -> 404 PrivacySafeNotFoundException
+        u3_res = await client.get(
+            f"/v1/conversations/{conv_id}/messages",
+            headers={"Authorization": f"Bearer {token_u3}"},
+        )
+        assert u3_res.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_disconnect_locks_message_sending(db_conn, clean_db):
+    u1, u2 = str(uuid.uuid4()), str(uuid.uuid4())
+    create_test_user(db_conn, u1, "disc_u1@test.jester.app", "Disconnect 1")
+    create_test_user(db_conn, u2, "disc_u2@test.jester.app", "Disconnect 2")
+
+    token_u1 = generate_test_jwt(user_id=u1, email="disc_u1@test.jester.app")
+    token_u2 = generate_test_jwt(user_id=u2, email="disc_u2@test.jester.app")
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # Create connection request
+        req_res = await client.post(
+            "/v1/connections",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"target_user_id": u2},
+        )
+        assert req_res.status_code == 201
+        conn_id = req_res.json()["id"]
+
+        # Accept connection
+        acc_res = await client.post(
+            f"/v1/connections/{conn_id}/transition",
+            headers={"Authorization": f"Bearer {token_u2}"},
+            json={"action": "accept"},
+        )
+        assert acc_res.status_code == 200
+
+        # Create direct conversation and send initial message
+        conv_res = await client.post(
+            "/v1/conversations",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"target_user_id": u2},
+        )
+        conv_id = conv_res.json()["id"]
+
+        send_res = await client.post(
+            f"/v1/conversations/{conv_id}/messages",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"body": "First message before disconnect"},
+        )
+        assert send_res.status_code == 201
+
+        # U1 disconnects (action="remove")
+        disc_res = await client.post(
+            f"/v1/connections/{conn_id}/transition",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"action": "remove"},
+        )
+        assert disc_res.status_code == 200
+        assert disc_res.json()["status"] == "removed"
+
+        # Sending new message after disconnect is locked -> 404 PrivacySafeNotFoundException
+        post_disc_send = await client.post(
+            f"/v1/conversations/{conv_id}/messages",
+            headers={"Authorization": f"Bearer {token_u1}"},
+            json={"body": "Message attempted after disconnect"},
+        )
+        assert post_disc_send.status_code == 404
+

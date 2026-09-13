@@ -596,23 +596,37 @@ The Discovery UI evaluates three relationship types:
 
 ### 10.2 State Permissions & Actions Matrix
 
-| State | Initiator Can Do | Target Can Do | Compatibility Allowed? | Messaging Allowed? |
+| State | Initiator Can Do | Target Can Do | Compatibility / US Allowed? | Messaging Allowed? |
 | :--- | :--- | :--- | :--- | :--- |
-| **`pending`** | View pending status; Block; Remove. | Accept; Decline; Block. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
-| **`accepted`** | Compare; Message; Block; Remove. | Compare; Message; Block; Remove. | ✅ Yes (200 OK) | ✅ Yes (201 Created) |
-| **`declined`** | Re-send request (reactivates pending). | Block; Remove. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
+| **`pending`** | View pending status; Cancel request; Block. | Accept; Decline (silent); Block. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
+| **`accepted`** | Compare; Open US; Message; Disconnect; Block; Report. | Compare; Open US; Message; Disconnect; Block; Report. | ✅ Yes (200 OK) | ✅ Yes (201 Created) |
+| **`declined`** | Re-send request (after 48h cooldown). | Block; Report. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
 | **`blocked`** | Unblock (transitions to `removed`). | Profile/Chat returns 404 (hidden).| ❌ No (404 Not Found) | ❌ No (404 Not Found) |
-| **`removed`** | Re-send request (transitions to pending).| Re-send request. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
+| **`removed` (Disconnected)**| View read-only chat archive; Re-connect (after 48h cooldown); Block; Report. | View read-only chat archive; Re-connect (after 48h cooldown); Block; Report. | ❌ No (Reverts to Discover/Preview) | ❌ Read-Only (New messages barred) |
 
-### 10.3 Connection Request Intent Context & "Why Connect?" Reason
+### 10.3 Connection Request Packaging, Intent Context & Invitation Note
 - **Transparent Mutual Intent**: The connection modal highlights shared intent alignment (e.g. *"You're both open to shared activities"*).
-- **Optional Context Reason (`connection_reason`)**: Senders can attach an optional 1-tap tag (`[ ☕ Grab coffee ]`, `[ 💬 Great conversation ]`, `[ 🧗 Activity ]`, `[ 🎨 Project ]`).
-- **Recipient Experience**: The notification and request card show the explicit reason, eliminating cold-start ambiguity.
+- **Optional Context Reason (`connection_reason`)**: Senders can attach an optional 1-tap hook (`[ ☕ Grab coffee ]`, `[ 💬 Great conversation ]`, `[ 🧗 Activity ]`, `[ 🎨 Project ]`, `[ 💡 Shared curiosity ]`).
+- **Prompt Quoting (`prompt_reference_id`)**: Tapping `[ 💬 Reply to this ]` on a profile prompt anchors that specific prompt card into the connection request modal.
+- **Optional Personal Note (`invitation_note`)**: Max 250 characters. Stripped of raw phone numbers, social handles, and hyperlinks to prevent spam/harassment before connection.
+- **Daily Request Cap**: Active limit of 15 requests per 24 hours. When capped, the client displays a friendly cadence notification: *"You've reached your connection request limit for today. Quality connections happen with care."*
+- **Inaugural Message Seeding**: Upon target acceptance, Sender's invitation note and quoted prompt are automatically persisted into the newly created direct thread as the inaugural message bubble, preventing cold-start anxiety.
 
-### 10.4 Prompt-Referenced Connection Invitations
-- **Inline Quote Action**: When a user taps `[ 💬 Reply to this ]` on a prompt card, the connection invitation modal pre-populates with that prompt quoted directly at the top.
-- **Contextual Note**: The sender can attach a short note (up to 200 characters) responding specifically to the prompt (e.g. Prompt: *"Finding the best khachapuri in Tbilisi"* -> Note: *"You have to try the one at Sakhachapure N1 on Rustaveli!"*).
-- **Conversation Continuity**: Upon request acceptance, the quoted prompt and invitation note become the very first message bubble in the newly opened direct chat thread.
+### 10.4 Disconnect vs. Block vs. Report Differentiation
+- **Disconnect (`POST /v1/connections/{id}/transition` with `action = 'remove'`)**:
+  - Mutual civil separation.
+  - Locks the direct chat thread into an immutable read-only archive (past mutual messages remain visible for review/safety reporting).
+  - New messages are strictly barred via database-level enforcement (`is_active_direct_conversation`).
+  - Imposes a 48-hour reconnection cooldown.
+  - Zero notification is sent to the other user.
+- **Block (`POST /v1/connections/{id}/transition` with `action = 'block'` or `/v1/safety/block`)**:
+  - Personal safety boundary.
+  - Immediately causes total mutual disappearance across profiles, search, and chat via reciprocal HTTP 404 (`PrivacySafeNotFoundException`).
+  - Zero notification sent to the blocked user.
+- **Report (`POST /v1/safety/report`)**:
+  - Platform safety signal across 6 structured categories (`harassment`, `inappropriate_content`, `spam_scam`, `fake_profile`, `underage`, `offline_safety`).
+  - Submits confidential report payload and recent message IDs to platform moderation.
+  - Reported user is never notified. Reporter is prompted with an immediate 1-tap option to also Block the reported user.
 
 ---
 
@@ -732,10 +746,24 @@ When calling `POST /v1/compare` or `GET /v1/people/{id}/why`, the frontend recei
 - **Create / Retrieve Conversation**: `POST /v1/conversations` with `{"target_user_id": UUID}`.
 - **List Messages**: `GET /v1/conversations/{id}/messages` (ordered chronologically by `created_at ASC`).
 - **Send Message**: `POST /v1/conversations/{id}/messages` with `{"body": str}`.
+- **Message Constraints**: Plain text UTF-8, 1 to 2,000 characters. Unicode emoji supported. Media attachments, voice notes, video calls, disappearing messages, reactions, and message editing are strictly excluded from V1.
+- **Inaugural Bubble**: If Sender included an invitation note or quoted prompt, it appears at the head of the thread as the inaugural message bubble.
 - **Realtime Updates**: Subscribe via Supabase Realtime WebSocket channel: `public:messages:conversation_id=eq.{id}`.
 
-### 16.2 Block & Removal Behavior
-- If either user blocks the other or removes the connection, subsequent requests to `/messages` return `404 PrivacySafeNotFoundException`.
+### 16.2 Read Tracking & Anti-Surveillance Invariants
+- **Read State Pointer**: Calling `PATCH /v1/conversations/{id}/read` updates caller's private `last_read_message_id` and `last_read_at` on `public.conversation_members`.
+- **Zero Surveillance Timers**: The frontend strictly forbids displaying granular read timestamps ("Seen at 2:15 PM") or typing speed metrics to the counterpart.
+- **Unread Count**: Local inbox badges reflect messages with `id > last_read_message_id`.
+
+### 16.3 Empty State & JESTER Conversation Starters Tray
+- When a new chat has 0 messages, the client displays a warm, low-pressure empty state featuring a 1-tap action: `[ 💡 JESTER Conversation Starters ]`.
+- Tapping opens the interactive tray with 3 AI-suggested icebreakers rooted in mutual declared interests, answered prompts, and communication rhythm. Tapping any starter inserts it into the input draft for the user to review, edit, or delete. AI never auto-sends.
+
+### 16.4 Disconnect vs. Block Messaging Behavior
+- **Disconnected (`status = 'removed'`)**: The conversation remains visible in the inbox in read-only archive mode. The message input box is replaced by an immutable notice banner:
+  > *"This connection has ended. You can read past messages, but new messages cannot be sent."*
+  with an accessible `[ 🚩 Report ]` option.
+- **Blocked (`status = 'blocked'`)**: Both users receive `404 PrivacySafeNotFoundException`. The conversation immediately vanishes from the inbox, and thread URLs resolve to a generic 404 page. Zero existence leak.
 
 ---
 

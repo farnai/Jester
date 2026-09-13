@@ -281,6 +281,25 @@ User Data (Multi-Domain) → Context Assembler Service → Context Safety Gate (
 
 ---
 
+## 💬 Conversation Starters & Direct Messaging Guidance for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+
+JESTER AI acts as a witty, observant relational wingman during the initial connection and direct messaging phases, governed by strict privacy and user-sovereignty guardrails:
+
+### Operational Invariants:
+1. **User Authorship Sovereignty**: JESTER AI **NEVER** automatically sends a message or initiates contact on behalf of any user. All conversation starters and connection note polishes are rendered strictly inside interactive client trays (`ConversationStarterTray`) for user review, modification, or dismissal. The user remains the sole author of every outgoing byte.
+2. **Context Scoping for Starters**: When generating conversation starters (`POST /v1/conversations/{id}/starters`), JESTER AI receives strictly public, discoverable tokens:
+   - Recipient's answered profile prompts (`quoted_prompt`),
+   - Mutual and high-affinity shared interests (`InterestGraph`),
+   - Resonating core values (`ValuesCompass`),
+   - Complementary communication styles (e.g. Questioner + Storyteller),
+   - Declared connection reason (`connection_reason`).
+3. **Private Message Body Blacklist**: Direct conversation message history (`messages.body`) is **permanently blacklisted** from JESTER AI context ingestion. JESTER AI must never parse, summarize, or analyze past message bodies for behavioral profiling, sentiment tracking, or recommendation tuning.
+4. **US Relationship Reflection**: When connected users open the `US` surface, JESTER AI provides qualitative reflections on interpersonal dynamics (collaborative strengths, creative sparks, conversational rhythm, growth edges) rooted in mutual declared intents. If the declared intent is platonic (`friendship`, `collaboration`), JESTER AI is strictly barred from framing relationship chemistry as romantic destiny.
+
+---
+
 ## 📁 File-by-File Inventory
 
 ### `backend/app/interpretation/contracts.py`

@@ -262,6 +262,17 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - **Bilateral Privacy Preservation:** In two-person contexts (WHY, US, Starters), the caller receives private fields, but candidate data is strictly scoped to public, discoverable fields. Private discovery preferences and hidden habits never cross user boundaries.
   - **Sanitized Logging:** Full context payloads are never serialized in logs or observability pipelines. Only sanitized correlation hashes and latency metrics are retained.
 
+### 20. Direct Chat Confidentiality, Disconnect Lockdown & Non-Surveillance Messaging (Connection & Messaging V1)
+*(Authoritative Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Direct chat is an intimate, private communication channel between two mutually consented, connected users. Chat messages must never be mined for behavioral profiling, exposed to public or discovery surfaces, accessible to unauthorized third parties, or weaponized via surveillance telemetry (e.g. read-receipt countdowns, typing speed metrics, or psychological sentiment tracking).
+- **Enforcement:**
+  - `REVOKE ALL ON public.messages, public.conversations, public.conversation_members FROM anon, public;`
+  - RLS policies on `public.messages` and `public.conversations` strictly enforce membership and active connection status via `public.is_active_direct_conversation(conversation_id, auth.uid())`.
+  - **Disconnect Lockdown:** When a user disconnects (`status = 'removed'`), `public.has_active_connection` immediately returns `false`. This terminates message insertion rights instantly at the database level for both participants. The historical thread locks into an immutable read-only archive for reference and safety reporting.
+  - **Block Total Disappearance:** When a user blocks another, all conversation endpoints return `PrivacySafeNotFoundException` (HTTP 404). Neither user can access the conversation list item, details, or message history.
+  - **Anti-Surveillance Reading Pointer:** Read state is tracked via caller-private `last_read_message_id` on `public.conversation_members`. Counterparts receive zero granular timestamps or "Seen at HH:MM" surveillance signals.
+  - **Zero Message Mining:** Message bodies (`messages.body`) are permanently blacklisted from behavioral telemetry and JESTER AI context assembly.
+
 ---
 
 ## ⚙️ Procedural Hardening & Function Security

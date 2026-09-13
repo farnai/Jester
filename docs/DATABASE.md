@@ -733,6 +733,48 @@ The JESTER AI Context System operates as an **ephemeral, read-only aggregation a
 - **Ephemeral State**: The compiled `JesterAiContextV1` contract is held strictly in memory during request evaluation. Only sanitized correlation telemetry (`request_id`, `surface`, `assembly_latency_ms`) is recorded.
 - **Fail-Closed Security**: Evaluated by the in-memory `ContextSafetyGate` before prompt formatting. Detection of forbidden keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`) aborts the database context delivery immediately.
 
+---
+
+## 🤝 Connection & Messaging System V1 Schema Specification (Architecture Blueprint)
+
+*(Detailed Product & Platform Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+
+To power intentional connection requests, inaugural message seeding, and non-surveillance direct chat without schema redundancy:
+
+### 1. Enhanced `public.connections` (Social Graph & Request Packaging)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_a_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `user_b_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined', 'blocked', 'removed')),
+- `initiated_by` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `blocked_by` UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `connection_reason` VARCHAR(30),             -- 'coffee_chat', 'activity_outing', 'creative_project', etc.
+- `prompt_reference_id` UUID REFERENCES public.prompt_templates(id),
+- `invitation_note` VARCHAR(200),               -- Sanitized personal note (max 200 chars)
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT connections_canonical_pair CHECK (user_a_id < user_b_id),
+- CONSTRAINT connections_unique_pair UNIQUE (user_a_id, user_b_id)
+
+### 2. Enhanced `public.conversation_members` (Direct Chat Participants & Read Pointers)
+- `conversation_id` UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `last_read_message_id` UUID REFERENCES public.messages(id) ON DELETE SET NULL,
+- `last_read_at` TIMESTAMPTZ,
+- PRIMARY KEY (conversation_id, user_id)
+
+### 3. `public.messages` (Text-Only Direct Messages)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `conversation_id` UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+- `sender_user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `body` TEXT NOT NULL CHECK (char_length(body) BETWEEN 1 AND 2000),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:*
+  - **Access Gate:** `public.is_active_direct_conversation(conversation_id, auth.uid())` strictly requires an active, unblocked connection (`public.has_active_connection`).
+  - **Disconnect Lockdown:** Transitioning connection to `removed` revokes `has_active_connection`; new message insertion fails RLS immediately.
+  - **Anti-Surveillance:** No read-receipt timestamps or typing speed telemetry stored.
+
+
 
 
 

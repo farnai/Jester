@@ -1126,17 +1126,16 @@ The AI must not invent underlying astronomical facts or override canonical inter
 
 # 27. Messaging
 
-JESTER supports direct communication between connected users.
+*(Detailed Platform Architecture Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
-## Capabilities
+JESTER supports direct, calm 1-on-1 communication between connected users.
 
-* create/retrieve direct conversation;
-* send message;
-* retrieve messages;
-* persist messages;
-* receive realtime message updates.
-
-Messaging requires an active accepted connection.
+## Capabilities & Architecture
+* **Access Gate:** Messaging strictly requires an active accepted connection (`public.has_active_connection`). Disconnecting locks the thread into read-only archive mode.
+* **Inaugural Message Seeding:** When a connection request with an `invitation_note` and `quoted_prompt` is accepted, the invitation automatically seeds the top of the direct thread as the opening message bubble.
+* **Text & Emoji Only:** Supports UTF-8 text messages up to 2,000 characters with Unicode emoji. Media attachments, video, and audio are deliberately excluded in V1.
+* **Non-Surveillance Guarantee:** Zero read-receipt timers ("Seen at 2:14 PM"), zero typing latency metrics, and zero psychological profiling of message bodies.
+* **Realtime Updates:** Live delivery over Supabase Realtime channel `conversation:{id}`.
 
 ---
 
@@ -1390,5 +1389,32 @@ $$\text{DECLARED HUMAN TRUTH} \gg \text{OBSERVED PRODUCT BEHAVIOR} \gg \text{INF
 - **Surface Scopes:** Context payloads are tailored to 7 distinct surfaces (Main Chat, Discovery Feed, Profile Preview, WHY, US, Conversation Starters, Astrology Deep Dive) to ensure minimal necessary exposure.
 - **Bilateral Isolation:** In two-person contexts (WHY, US, Starters), the caller receives their own private context, but the candidate profile exposes **only public, discoverable fields**. Private discovery preferences and hidden lifestyle habits never leak.
 - **Fail-Closed Safety Gate:** Payloads are scanned for prohibited keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`). Any detection trips the gate, blocking LLM execution and yielding pre-seeded Georgian fallback copy.
+
+---
+
+# 38. Connection & Messaging System V1
+
+*(Detailed Platform & Product Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+
+JESTER establishes a dignified, intent-aware connection and messaging subsystem that governs interpersonal permission transitions after discovery.
+
+### 38.1 Core Principles
+- **"People first. Signals second. Scores last."**
+- **Not Dating-Only:** Connections span Friendship, Activity Partner, Collaboration, Meaningful Chat, and Intentional Dating.
+- **Permission Transition:** A connection represents explicit bilateral consent to open a richer channel of interaction, not an assumption of instant intimacy.
+
+### 38.2 Canonical State Machine & Request Architecture
+- **State Machine:** Governed by canonical states `pending`, `accepted`, `declined`, `blocked`, and `removed` with strict canonical pair constraint (`user_a_id < user_b_id`).
+- **Warm Request Packaging:** Replaces cold clicks with intentional context: optional 1-tap `connection_reason` (`coffee_chat`, `activity_outing`, etc.), optional `prompt_reference_id` (anchoring a published prompt), and optional `invitation_note` (max 200 characters).
+- **Inaugural Message Seeding:** Upon acceptance, the request note and quoted prompt automatically become the top message bubble of the direct chat thread.
+
+### 38.3 Bilateral Intent Compatibility & Advisory
+- Matches with identical or complementary intent flow smoothly.
+- When intents are disjoint (e.g. exclusive platonic friendship vs. exclusive serious dating), Discovery partitions candidates. If connection is initiated via direct link, an **Intent Disparity Advisory** requires explicit confirmation of platonic boundaries before dispatch.
+
+### 38.4 Connection to US Transition & Abuse Prevention
+- **US View Unlock:** Transition to `accepted` upgrades the pre-connection `WHY` card into the comprehensive `US` relational view (shared territory, communication rhythm synergy, deep synastry dynamics).
+- **Abuse Caps:** Outbound requests capped at 20/day; recipient backlog capped at 50; 48-hour re-request cooldown after decline or disconnect.
+
 
 

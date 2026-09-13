@@ -254,6 +254,18 @@ Jester/
 4. **Fail-Closed Context Safety Gate (`ContextSafetyGate`)**: Validates assembled payload against forbidden-context blacklist (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`). Any detection trips the gate, drops execution, and yields pre-seeded Georgian fallback copy.
 5. **LLM Gateway & Post-Execution Jargon Filter**: Validated `JesterAiContextV1` is formatted with JESTER persona system prompts and passed to LLM runner. Output is programmatically scanned for astrological jargon and mockery before delivery to the client.
 
+### 18. Connection Request, Acceptance & Direct Chat Seeding Flow
+*(Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+1. **Contextual Request Packaging (`POST /v1/connections`)**: Sender A attaches an optional single-tap intent hook (`connection_reason`), optional quoted prompt anchor (`prompt_reference_id`), and optional personal note (max 250 characters). System validates bilateral intent compatibility and enforces daily request caps (15/day).
+2. **Canonical State Transition (`pending`)**: Persists to `public.connections` adhering to canonical ordering `user_a_id < user_b_id`. Recipient B receives push notification and unread badge.
+3. **Acceptance & Direct Conversation Seeding (`POST /v1/connections/{id}/accept`)**:
+   - Connection status transitions atomically to `accepted`.
+   - Direct conversation record is created in `public.conversations` with members in `public.conversation_members`.
+   - **Inaugural Message Seeding**: If Sender A included an invitation note or quoted prompt, it is automatically persisted as the first message bubble in `public.messages`, initiating the chat without awkward blank states.
+4. **Direct Messaging (`POST /v1/conversations/{id}/messages`)**: Connected users exchange UTF-8 text messages (max 2,000 chars) with Unicode emoji. Message delivery is governed by `public.is_active_direct_conversation`, ensuring new messages are barred if disconnected or blocked.
+5. **Read Receipt Tracking (`PATCH /v1/conversations/{id}/read`)**: Updates member's private `last_read_message_id` for local unread badge clearing. Anti-surveillance invariant prohibits broadcasting granular "Seen at HH:MM" timestamps to the counterpart.
+6. **Civil Disconnection (`POST /v1/connections/{id}/disconnect`)**: Either user may cleanly disconnect (`removed`). Existing chat history locks into an immutable read-only archive; new messaging is permanently barred; mutual discovery surfaces reset with a 48-hour reconnection cooldown; zero notification is broadcast to the counterpart.
+
 ---
 
 ## 🎨 The Astrology & Semantic Context → JESTER Content Pipeline
@@ -292,6 +304,7 @@ USER-FACING INSIGHT (Short, witty, human-readable)
 - **Trust & Verification Decoupling Invariant**: Profile photos, biometric verification, and human trustworthiness are completely separate concepts. JESTER strictly forbids numeric trust scores. Verification proves only that an ephemeral selfie matches the primary profile photo. Verification media is stored in a private, client-inaccessible bucket, never exposed in public APIs, and never passed to JESTER AI.
 - **Behavioral Intelligence & Anti-Profiling Invariant**: Behavioral intelligence captures observable product interactions strictly to refine candidate relevance and conversation starters. It is fundamentally barred from performing psychological profiling, diagnosing mental health, computing personality or attractiveness scores, or scoring communication response latency. Private message bodies are never parsed. Declared human truth always outranks behavioral observation.
 - **JESTER AI Context Isolation & Fail-Closed Boundary**: JESTER AI operates strictly through strongly typed, surface-scoped data contracts (`JesterAiContextV1`). It is never granted direct database connection handles or unrestricted table access. The Context Safety Gate fails closed upon detecting any prohibited data keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`), guaranteeing zero private data leakage into third-party LLM APIs.
+- **Canonical Connection & Disconnect Isolation Invariant**: Connections are strictly canonical unordered pairs (`CHECK (user_a_id < user_b_id)`). Transitions follow a closed state machine (`pending`, `accepted`, `declined`, `blocked`, `removed`). Disconnecting (`removed`) transitions direct conversations into immutable read-only archives where past mutual messages remain visible for review/safety reporting, but new messages are permanently barred via database helper functions (`is_active_direct_conversation` calls `has_active_connection`). Blocking immediately renders the counterpart reciprocal HTTP 404. Direct messages are UTF-8 text-only up to 2,000 characters without read-receipt timers, typing speed surveillance, or AI training exploitation.
 - **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
 
 
