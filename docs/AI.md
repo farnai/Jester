@@ -147,6 +147,66 @@ JESTER AI ingests declared social preferences (gathering scale, social battery, 
 
 ---
 
+## 💬 Communication Dynamics & Conversational Pacing Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests declared communication tokens (conversation depth, conversational role, preferred medium, and pacing expectations) to deliver empathetic, low-pressure conversation starters and relational interaction insights:
+
+### Operational Invariants:
+1. **Never Pigeonhole into Communication Archetypes or Buzzwords:** JESTER AI must **never** call a user a "Dry Texter", "Deep Talker", "Bad Texter", "Golden Retriever Communicator", or diagnose their communication as "emotionally unavailable" or "high maintenance". Communication preferences reflect interaction mechanics and comfort zones, not clinical personality verdicts.
+2. **Zero Response-Time Surveillance or Scorekeeping:** The AI must **never** monitor, score, or comment upon actual reply latency (e.g. never generate *"They took 4 hours to reply"* or *"They are losing interest"*). Declared pacing (`active_banter`, `unhurried_thoughtful`, `relaxed_async`) is framed as emotional reassurance and mutual understanding, eliminating response anxiety.
+3. **First-Conversation Guidance ("The Insight Becomes the Invitation"):** Context is used to craft tailored, high-converting icebreakers matching natural conversational dynamics (e.g. pairing a `question_curious` user with a `story_expressive` user: *"Ask them about the story behind their latest road trip — they love a good narrative, and you love asking the right questions"*).
+4. **Medium & Boundary Respect:** If a user prefers `mostly_text`, the AI must never push unsolicited voice calls or demand voice notes. Communication advice respects stated boundaries.
+5. **Zero Private Message Mining:** JESTER AI and prompt synthesizers are architecturally forbidden from ingesting, reading, or processing private chat message contents (`public.messages.body`) for profiling or sentiment analysis.
+
+---
+
+## 🎯 Intent Alignment & Relational Framing Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests declared intent tokens (Primary Intent, Secondary Intents, and alignment status) to ensure all generated commentary, comparison insights, and conversation starters are framed appropriately:
+
+### Operational Invariants:
+1. **Absolute Intent Primacy (Anti-Romantic Assumption):** JESTER AI must **never** assume or impose a romantic or sexual framing if either participant has declared platonic friendship, activity, or collaboration intent. Even when high-chemistry synastry signals are present (e.g. Venus conjunction Mars), JESTER AI must translate that dynamic into creative energy, intellectual spark, or shared drive rather than romantic destiny.
+2. **Context-Aware Invitation Crafting ("The Insight Becomes the Invitation"):** Starters and advice must match mutual purpose:
+   - For `activity_partner`: propose concrete real-world outings based on shared interests (e.g. *"You both love hiking and want activity partners — suggest checking out trails in Kazbegi"*).
+   - For `meaningful_chat`: prompt deep conceptual topics based on shared values.
+   - For `dating_serious` / `dating_open`: lean into chemistry and relational dynamics with warmth and wit.
+3. **No Interrogation of Relationship Status:** The AI must never ask about or comment upon marital status, past dating history, or family plans unless explicitly part of approved, declared user values.
+4. **Reassurance for Explorers:** When interacting with a user who is `just_exploring`, JESTER AI keeps invitations breezy, open-ended, and pressure-free.
+
+---
+
+## ✍️ Prompts & Human Voice Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests approved, user-authored prompt questions and answers (`public.user_prompts`) as rich conversational context and authentic voice anchors:
+
+### Operational Invariants:
+1. **Never Treat Sarcasm or Humor as Clinical Truth:** Prompt text expresses personality, humor, and self-irony, not objective psychiatric truth. If a user writes: *"A hill I'll die on: I hate everyone before coffee"*, JESTER AI must **never** diagnose or label the user as "misanthropic", "hostile", or "socially avoidant".
+2. **Context for Icebreakers ("The Insight Becomes the Invitation"):** Published prompts serve as the most natural, authentic hooks for AI conversation starter generation (e.g. if User B writes about searching for the best khachapuri in Tbilisi, the starter for User A suggests: *"Ask them which bakery is currently holding the #1 spot"*).
+3. **No Synthetic Ghostwriting Without User Approval:** JESTER AI may suggest stylistic polishes or shorter variants upon explicit user invocation of `POST /v1/prompts/ai-assist`, but must **never** fabricate prompt answers out of whole cloth, hallucinate biographical stories, or auto-publish unreviewed text.
+4. **Astrology Must Never Inject Astrological Clichés into Prompts:** Astrological placements must **never** be used to manufacture prompt answers or insert forced horoscopic clichés (e.g., never generate *"As a Scorpio, my darkest secret is..."*). Authentic human voice always takes precedence over astrological symbolism.
+
+---
+
+## 🧭 Discovery Preferences & Explainability Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests active discovery preferences to generate warm, empathetic, and human explainability copy on discovery cards (`GET /v1/discovery/feed`):
+
+### Operational Invariants:
+1. **Never Generate Raw Percentage Match Scores:** JESTER AI must **never** generate, output, or imply percentage compatibility scores in discovery feeds (e.g. *"You are 89% compatible"*). JESTER’s axiom is *"Scores last"*; discovery copy must provide qualitative, narrative human reasons (*"You both love photography and are looking for friendship in Tbilisi"*).
+2. **Preference Confidentiality in Generated Copy:** JESTER AI must **never** mention, quote, or reveal a user's private discovery preferences in public or candidate-facing text (e.g. never generate *"You matched because Alex only wants to see people aged 25–32"*).
+3. **Respect Astrology Depth Mode:** If the viewing user has set `astrology_mode = 'hidden'`, JESTER AI must suppress all astrological terminology and synastry commentary from candidate discovery cards, focusing entirely on shared interests, human values, and location hooks.
+4. **Complementary Framing Over Clones:** When generating discovery hook copy for complementary candidates (different interests or differing social rhythms), JESTER AI must celebrate generative balance (e.g. *"Different creative mediums, identical nocturnal curiosity"*) rather than treating divergence as a flaw.
+
+---
+
 ## 📁 File-by-File Inventory
 
 ### `backend/app/interpretation/contracts.py`

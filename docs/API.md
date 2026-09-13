@@ -36,12 +36,15 @@ Authorization: Bearer <supabase_jwt_token>
 
 #### 3. Get Own Profile — `GET /v1/profiles/me`
 - **Auth**: Bearer JWT
-- **Response 200**: `ProfileResponse(id: UUID, display_name: str, avatar_url: str, bio: str, city: str, location: LocationDTO|None, origin: OriginDTO|None, lifestyle: LifestyleDTO|None, values: list[ValueDTO], social_behavior: SocialBehaviorDTO|None, occupation: str, timezone: str, is_discoverable: bool, created_at: datetime, updated_at: datetime)`
+- **Response 200**: `ProfileResponse(id: UUID, display_name: str, avatar_url: str, bio: str, city: str, location: LocationDTO|None, origin: OriginDTO|None, lifestyle: LifestyleDTO|None, values: list[ValueDTO], social_behavior: SocialBehaviorDTO|None, communication: CommunicationDTO|None, intent: IntentDTO|None, prompts: list[UserPromptDTO], occupation: str, timezone: str, is_discoverable: bool, created_at: datetime, updated_at: datetime)`
   - `location`: `{ city: "Tbilisi", country: "Georgia", country_code: "GE" }`
   - `origin`: `{ city: "Kvareli", country: "Georgia", country_code: "GE" }` (or `null` if hidden or unconfigured)
   - `lifestyle`: `{ daily_rhythm, activity_pace, work_style, pet_status, drinking, smoking }` (filtered by visibility flags)
   - `values`: `[ { slug: "curiosity", name: "Curiosity", is_core: true, badge_icon: "compass" }, ... ]`
   - `social_behavior`: `{ group_preference: "one_on_one", social_battery: "recharge_solo", warmup_style: "observer_first", planning_style: "spontaneous", comfort_zone: "cozy_intimate" }` (filtered by visibility flags)
+  - `communication`: `{ conversation_depth: "deep_meaningful", conversation_role: "idea_conceptual", messaging_medium: "voice_notes_welcome", response_pace: "unhurried_thoughtful" }` (filtered by visibility flags)
+  - `intent`: `{ primary: { slug: "friendship", name: "New Friends", icon: "users" }, secondaries: [ { slug: "activity_partner", name: "Activity Partner", icon: "compass" } ], visibility: "public" }`
+  - `prompts`: `[ { id: UUID, template_slug: "unnecessary_hill", prompt_text: "A completely unnecessary hill I'll die on...", answer: "Pineapple on pizza is culinary innovation.", sort_order: 1, visibility: "public" } ]` (max 3 prompts)
   - `city`: Kept as backward-compatible string alias.
 - **Errors**: `404 PrivacySafeNotFoundException` if profile missing.
 
@@ -472,5 +475,236 @@ Authorization: Bearer <supabase_jwt_token>
 - **Response 200**: `PublicSocialPreferencesResponse`
   - Returns target user's public social preferences filtered strictly through target's `visibility_flags`.
 - **Errors**: `404 PrivacySafeNotFoundException` if target is blocked, non-discoverable, or preferences hidden.
+
+---
+
+### Communication System V1 (Planned Specification)
+
+> **Note:** The following endpoints define the API contract for the Communication System V1 architecture specification.
+
+#### 59. List Canonical Communication Options — `GET /v1/communication/options`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[CommunicationCategoryWithOptions]`
+  - Returns the 4 dimensions (`conversation_depth`, `conversation_role`, `messaging_medium`, `response_pace`) with localized labels, definitions, and badge icons.
+
+#### 60. Get Onboarding Communication Snapshot Options — `GET /v1/communication/onboarding-snapshot`
+- **Auth**: Bearer JWT
+- **Response 200**: `CommunicationOnboardingSnapshotConfig`
+  - Returns the 3 onboarding questions (Depth, Conversational Role, Messaging Medium) with interactive chips.
+
+#### 61. Submit Communication Onboarding — `POST /v1/communication/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `CommunicationOnboardingRequest`
+  - `conversation_depth?: str` (e.g. `'casual_light'`, `'balanced_depth'`, `'deep_meaningful'`)
+  - `conversation_role?: str` (e.g. `'question_curious'`, `'story_expressive'`, `'idea_conceptual'`, `'adaptable_flow'`)
+  - `messaging_medium?: str` (e.g. `'mostly_text'`, `'voice_notes_welcome'`, `'calls_welcome'`, `'flexible_medium'`)
+- **Response 200**: `UserCommunicationPreferencesResponse`
+- **Errors**: `400 invalid_option_slug` if an unrecognized slug is passed.
+- **Behavior**: All fields are optional (submitting empty body represents skipping the step).
+
+#### 62. Get Own Communication Preferences — `GET /v1/communication/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserCommunicationPreferencesResponse`
+  - Returns all declared communication preferences, custom visibility flags, and metadata.
+
+#### 63. Update Own Communication Preferences & Visibility — `PATCH /v1/communication/me`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateCommunicationPreferencesRequest`
+  - `conversation_depth?: str|None`
+  - `conversation_role?: str|None`
+  - `messaging_medium?: str|None`
+  - `response_pace?: str|None`
+  - `visibility_flags?: dict[str, bool]`
+- **Response 200**: Updated `UserCommunicationPreferencesResponse`
+
+#### 64. Get Target User Communication Preferences — `GET /v1/communication/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PublicCommunicationPreferencesResponse`
+  - Returns target user's public communication preferences filtered strictly through target's `visibility_flags`.
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked, non-discoverable, or preferences hidden.
+
+---
+
+### Intent System V1 (Planned Specification)
+
+*(Authoritative Architecture Specification: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+
+> **Note:** The following endpoints define the API contract for the Intent System V1 architecture specification.
+
+#### 65. List Canonical Intent Options — `GET /v1/intents/options`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[IntentCategoryWithOptions]`
+  - Returns the 3 categories (`social_connection`, `activity_practical`, `exploratory`) with all 7 canonical options (`friendship`, `dating_open`, `dating_serious`, `meaningful_chat`, `activity_partner`, `collaboration`, `just_exploring`), localized names, definitions, and badge icons.
+
+#### 66. Get Onboarding Intent Options — `GET /v1/intents/onboarding`
+- **Auth**: Bearer JWT
+- **Response 200**: `IntentOnboardingConfig`
+  - Returns the primary selection card metadata and secondary openness options.
+
+#### 67. Submit Intent Onboarding — `POST /v1/intents/onboarding`
+- **Auth**: Bearer JWT
+- **Body**: `IntentOnboardingRequest`
+  - `primary_intent: str` (e.g. `'friendship'`, `'dating_open'`, `'dating_serious'`, `'just_exploring'`)
+  - `secondary_intents?: list[str]` (Array of max 2 slugs)
+- **Response 200**: `UserIntentResponse`
+- **Errors**: `400 invalid_intent_slug` if unrecognized slug; `400 mutually_exclusive_intent` if primary also in secondaries.
+- **Behavior**: 100% optional (submitting empty body sets default to `just_exploring` with `source = 'skipped'`).
+
+#### 68. Get Own Intent — `GET /v1/intents/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserIntentResponse(user_id: UUID, primary_intent: str, secondary_intents: list[str], visibility: str, source: str, updated_at: datetime)`
+
+#### 69. Update Own Intent & Visibility — `PATCH /v1/intents/me`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateIntentRequest`
+  - `primary_intent?: str`
+  - `secondary_intents?: list[str]`
+  - `visibility?: Literal["public", "connections_only", "hidden"]`
+- **Response 200**: Updated `UserIntentResponse`
+- **Behavior**: Appends transition audit record to `public.user_intent_history` (service-role only) and invalidates discovery cache.
+
+#### 70. Get Target User Intent — `GET /v1/intents/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `PublicIntentResponse`
+  - Returns target user's public primary and secondary intents.
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked, non-discoverable, or intent hidden.
+
+---
+
+### Prompts & Self-Expression System V1 (Planned Specification)
+
+*(Authoritative Architecture Specification: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+
+> **Note:** The following endpoints define the API contract for the Prompts & Self-Expression System V1 architecture specification.
+
+#### 71. List Curated Prompt Templates — `GET /v1/prompts/templates`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `list[PromptCategoryWithTemplates]`
+  - Returns all 6 categories (`voice_quirks`, `curiosities`, `daily_reality`, `connection`, `perspectives`, `action`) with the 24 canonical prompt questions, localized texts (EN/KA), placeholders, and sort orders.
+
+#### 72. Get Contextual Prompt Recommendations — `GET /v1/prompts/suggestions`
+- **Auth**: Bearer JWT
+- **Response 200**: `PromptSuggestionsResponse(recommended_templates: list[PromptTemplateDTO], context_reason: str)`
+  - Returns intelligent, non-hallucinated template recommendations based on the user's declared interests, values, and communication roles (e.g. suggests rabbit hole prompts for curious thinkers). Never suggests or pre-writes answers.
+
+#### 73. Get Own Prompts — `GET /v1/prompts/me`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[UserPromptResponse(id: UUID, prompt_template_id: UUID, template_slug: str, prompt_text: str, answer: str, sort_order: int, visibility: str, source: str, moderation_status: str, created_at: datetime, updated_at: datetime)]`
+
+#### 74. Publish Prompt — `POST /v1/prompts`
+- **Auth**: Bearer JWT
+- **Body**: `CreatePromptRequest`
+  - `prompt_template_id: UUID`
+  - `answer: str` (min 3, max 250 characters; non-empty)
+  - `sort_order?: int` (1, 2, or 3)
+  - `visibility?: Literal["public", "connections_only", "hidden"]` (default: `"public"`)
+- **Response 201**: `UserPromptResponse`
+- **Errors**: `400 prompt_limit_exceeded` if user already has 3 active prompts; `400 invalid_length` if $> 250$ chars; `422 moderation_flagged` if automated regex detects PII, harassment, or malicious scripts.
+
+#### 75. Update Own Prompt — `PATCH /v1/prompts/{prompt_id}`
+- **Auth**: Bearer JWT
+- **Body**: `UpdatePromptRequest(answer?: str, sort_order?: int, visibility?: str)`
+- **Response 200**: Updated `UserPromptResponse`
+- **Errors**: `404 PrivacySafeNotFoundException` if prompt not owned by caller.
+
+#### 76. Delete Own Prompt — `DELETE /v1/prompts/{prompt_id}`
+- **Auth**: Bearer JWT
+- **Response 204**: No Content
+- **Behavior**: Permanently removes the prompt answer; frees up the prompt slot.
+
+#### 77. AI Writing Assistance — `POST /v1/prompts/ai-assist`
+- **Auth**: Bearer JWT
+- **Body**: `PromptAIAssistRequest`
+  - `prompt_template_id: UUID`
+  - `draft_text: str` (user's raw thought or draft)
+  - `style: Literal["sharpen", "shorten", "warmer", "wittier"]`
+- **Response 200**: `PromptAIAssistResponse(original: str, suggestions: list[str])`
+  - Returns up to 3 candidate formulations retaining authentic user voice.
+  - *Hard Invariant*: AI suggestions are NEVER automatically published or persisted. The user must explicitly choose, edit, and submit the final text.
+
+#### 78. Get Target User Prompts — `GET /v1/prompts/people/{target_user_id}`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[PublicPromptDTO(id: UUID, template_slug: str, prompt_text: str, answer: str, sort_order: int)]`
+  - Returns target user's active, approved prompts (filtered by visibility).
+- **Errors**: `404 PrivacySafeNotFoundException` if target is blocked or non-discoverable.
+
+---
+
+### Discovery Preferences & Feed Engine V1 (Planned Specification)
+
+*(Authoritative Architecture Specification: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+
+> **Note:** The following endpoints define the API contract for the Discovery Preferences & Feed Engine V1 architecture specification.
+
+#### 79. Get Own Discovery Preferences — `GET /v1/discovery/preferences`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserDiscoveryPreferencesResponse`
+  - `user_id: UUID`
+  - `age_min: int` (18–99)
+  - `age_max: int` (18–99)
+  - `age_dealbreaker: bool`
+  - `target_genders: list[str]` (e.g. `["all"]`, `["woman"]`, `["man"]`, `["non_binary"]`)
+  - `location_scope: str` (`"same_city"`, `"same_country"`, `"regional_nearby"`, `"anywhere"`)
+  - `location_dealbreaker: bool`
+  - `target_intents: list[str]` (optional sub-filter; empty = natural bilateral compatibility)
+  - `astrology_mode: str` (`"full_insights"`, `"minimal_insights"`, `"hidden"`)
+  - `diversity_level: str` (`"focused"`, `"balanced"`, `"adventurous"`)
+  - `source: str` (`"default_derived"`, `"user_configured"`, `"reset_to_default"`)
+  - `updated_at: datetime`
+
+#### 80. Update Own Discovery Preferences — `PATCH /v1/discovery/preferences`
+- **Auth**: Bearer JWT
+- **Body**: `UpdateDiscoveryPreferencesRequest`
+  - `age_min?: int`
+  - `age_max?: int`
+  - `age_dealbreaker?: bool`
+  - `target_genders?: list[str]`
+  - `location_scope?: str`
+  - `location_dealbreaker?: bool`
+  - `target_intents?: list[str]`
+  - `astrology_mode?: str`
+  - `diversity_level?: str`
+- **Response 200**: Updated `UserDiscoveryPreferencesResponse`
+- **Errors**: `400 invalid_age_range` if `age_min > age_max` or `age_min < 18`.
+
+#### 81. Reset Discovery Preferences — `POST /v1/discovery/preferences/reset`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserDiscoveryPreferencesResponse`
+  - Re-derives sensible open defaults from caller's current age and intent.
+
+#### 82. Get Discovery Feed — `GET /v1/discovery/feed`
+- **Auth**: Bearer JWT
+- **Query Params**:
+  - `cursor?: str` (base64 pagination token)
+  - `limit?: int` (default: 10, max: 30)
+  - `lens?: Literal["for_you", "nearby", "shared_purpose", "shared_curiosities"]` (default: `"for_you"`)
+- **Response 200**: `DiscoveryFeedResponse`
+  - `candidates: list[DiscoveryCandidateDTO]`
+    - `id: UUID`
+    - `display_name: str`
+    - `age: int` (computed integer age; raw birth date is NEVER returned)
+    - `avatar_url: str | None`
+    - `headline: str | None` (max 140 chars)
+    - `location: LocationDTO` (city & country only; zero coordinates)
+    - `origin: OriginDTO | None`
+    - `primary_intent: IntentOptionDTO`
+    - `featured_prompt: PromptDTO | None` (top featured prompt with quote)
+    - `primary_interests: list[InterestDTO]` (5 core chips)
+    - `safe_astrology: SafeDerivedAstrologyResponse | None` (filtered by caller's `astrology_mode`)
+    - `explanation: DiscoveryExplanationDTO`
+      - `primary_reason: str` (e.g. *"You both love photography and are looking for friendship in Tbilisi."*)
+      - `resonance_type: str`
+  - `next_cursor: str | None`
+  - `has_more: bool`
+- **Errors**: `401 Unauthorized` if unauthenticated.
+- **Invariants**: Strictly enforces 3-tier pipeline (SQL hard gates, composite relevance scoring, diversity reranking). Excludes viewer, blocked users, non-discoverable profiles, and existing connections. Never leaks percentage match scores.
+
+#### 83. Get Discovery Options & Taxonomy — `GET /v1/discovery/options`
+- **Auth**: Public or Bearer JWT
+- **Response 200**: `DiscoveryOptionsResponse`
+  - Returns localized labels, descriptions, and defaults for `location_scopes`, `gender_options`, `astrology_modes`, and `diversity_levels`.
+
+
+
 
 

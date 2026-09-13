@@ -126,6 +126,10 @@ A user maintains:
 * Lifestyle & Cadence (Daily rhythm, activity pace, work style, pet cohabitation, and toggleable habits)
 * Values & Guiding Compass (Core Value and 3–5 guiding life principles)
 * Social Rhythm & Behavior (Gathering scale preference, social battery recharge style, warm-up dynamic, and comfort zone)
+* Communication Rhythm & Preferences (Conversation depth, conversational role, messaging format, and pacing)
+* Intent & Relational Openness (Primary Intent, up to 2 Secondary Intents, and visibility)
+* Prompts & Self-Expression (Short Headline/Bio up to 140 chars + up to 3 curated prompt answers up to 250 chars)
+* Discovery Preferences (Age bounds, target genders, geographic scope, astrology depth — strictly private outbound controls)
 
 ## 3.2 Privacy & Visibility
 
@@ -162,7 +166,9 @@ JESTER strictly isolates user dimensions. **Interests, Locations, Lifestyles, an
 | **Deep conversations, Banter** | `Communication` | Interaction depth and communication preference. |
 | **Has Children ("Parent")** | `Lifestyle / Household` | Daily living reality and time responsibility. |
 | **Wants Children / Family Plans** | `Values & Life Direction`| Long-term relational alignment; NOT everyday routine. |
-| **Long-term relationship, Casual, Friends** | `Relationship Intent` | What the user is seeking on JESTER right now. |
+| **New Friends, Dating, Activity, Collab** | `Intent` | What the user is seeking on JESTER right now. |
+| **Open-ended voice, quirks, stories** | `Prompts / Voice` | Authentic human voice, tone, and conversation hooks. |
+| **Age Bounds, Target Genders, Location Scope** | `Discovery Preferences` | Outbound candidate filtering & ranking controls (*"Who I want to see"*); strictly private. |
 | **Drinking / Smoking Habits** | `Lifestyle (Sensitive)` | Personal consumption habits; strictly user-controlled. |
 | **Living Situation (Alone / Roommates)** | `Lifestyle (Household)` | Living structure; private/toggleable by default. |
 
@@ -171,7 +177,7 @@ JESTER strictly isolates user dimensions. **Interests, Locations, Lifestyles, an
 The platform operates on a clear guiding principle:
 > **"Collect enough information to make the first experience useful, but never ask users to fully describe themselves before they can experience JESTER."**
 
-- Onboarding remains intentionally lightweight (Birth Data + Optional Location + Optional Lifestyle Snapshot + Optional Values Selection + Optional Social Rhythm Snapshot + Optional 5 Primary Interests).
+- Onboarding remains intentionally lightweight (Birth Data + Optional Location + Optional Lifestyle Snapshot + Optional Values Selection + Optional Social Rhythm Snapshot + Optional Communication Snapshot + Optional Intent Selection + Optional Prompts + Optional 5 Primary Interests).
 - The underlying schema is designed broadly from the start to support progressive enrichment over time.
 - Deep behavioral affinity and nuanced relationship signals are observed downstream rather than demanded upfront.
 
@@ -225,6 +231,60 @@ JESTER defines a dedicated **Social Behavior System** to capture interaction pre
 5. **Rapid 3-Question Snapshot:** Onboarding captures 3 high-impact preferences (Gathering Scale, Social Battery, Warm-Up Dynamic) via 1-tap chips; 100% skippable. Zero rating sliders.
 6. **Social Rhythm Micro-Badges:** Rendered as clean, glassmorphic chips under a dedicated "Social Rhythm" profile card with granular visibility toggles.
 7. **Practical Meeting Intelligence:** In Discovery and Matching, social preferences suggest optimal meeting settings (e.g. quiet corner café vs. bustling event) and prevent social friction, never acting as hard exclusionary dealbreakers.
+
+## 3.10 Communication System V1
+
+JESTER defines a dedicated **Communication System** to model conversation dynamics, messaging format, and pacing:
+
+1. **Core Purpose:** Answers *"How do you like to communicate?"* — describing conversational depth, narrative roles, messaging channels, and pacing expectations without diagnosing personality.
+2. **Strict Anti-Labeling Invariant:** Rejects communication buzzwords and personality classifications (*"Deep Talker"*, *"Dry Texter"*, *"Bad Texter"*, *"Golden Retriever Communicator"*). Preferences are practical situational guidelines, not character verdicts.
+3. **Zero Response-Time Surveillance:** JESTER strictly forbids reply-time timers, read-receipt clocks, and latency tracking. Texting speed is never measured as compatibility. Pacing is framed as personal rhythm (`active_banter`, `unhurried_thoughtful`, `relaxed_async`).
+4. **4 Canonical Dimensions (14 Options):** Conversation Depth, Conversational Role, Messaging Medium, Conversational Pacing.
+5. **Rapid 3-Question Snapshot:** Onboarding captures 3 core preferences (Conversation Depth, Conversational Role, Messaging Medium) via 1-tap chips; 100% skippable. Zero rating sliders.
+6. **Communication Rhythm Micro-Badges:** Displayed as elegant, glassmorphic chips under a dedicated "Communication Rhythm" profile card with granular visibility controls.
+7. **First-Conversation Intelligence:** Powers "The Insight Becomes the Invitation" by tailoring icebreakers to complementary conversational dynamics (e.g. Questioner + Storyteller, or mutual Deep Seekers).
+8. **Decoupling from Synastry V1:** Strictly distinct from the mathematical Mercury aspect score $S_{\text{communication}}$. Astrology models cognitive dynamic tension; Communication V1 models practical interaction habits. They enrich each other but never overwrite each other.
+
+## 3.11 Intent System V1
+
+JESTER defines a dedicated **Intent System** to model current platform purpose and relational openness:
+
+1. **Core Purpose:** Answers *"What are you looking for on JESTER right now?"* — capturing temporal motivation and relational openness without diagnosing personality or probing marital status.
+2. **Intent is Temporal, Not Identity:** Intent reflects current life seasons (exploring, new friends, dating, activity partners, creative collaboration), whereas interests and values remain stable over years.
+3. **Unified Discovery Without Mode Fracturing:** JESTER avoids the Bumble failure pattern (splitting into isolated Date/BFF/Bizz silos) and the Tinder trap (forcing romance on every connection). Intent is an explicit, transparent tag on profiles and discovery cards.
+4. **7 Canonical Options Across 3 Categories:**
+   - *Social & Personal:* `friendship` (New Friends), `dating_open` (Dating & Chemistry), `dating_serious` (Long-Term Relationship), `meaningful_chat` (Great Conversation).
+   - *Activity & Practical:* `activity_partner` (Shared Activities & Outdoors), `collaboration` (Creative Collaboration).
+   - *Exploratory:* `just_exploring` (Curious & Open-Minded).
+5. **1 Primary + Max 2 Secondary Model:** Captures real-world nuance (e.g. Primary: Long-Term Relationship, Also open to: New Friends).
+6. **Bilateral Discovery Partitioning:** Strictly separates incompatible non-overlapping intents (e.g. exclusive serious dating vs. exclusive platonic friendship) to eliminate harassment and mismatched expectations.
+7. **Absolute Astrological Primacy Invariant:** Declared intent strictly governs astrological interpretation. JESTER AI must never project romantic or sexual destiny onto users who declared platonic intent, regardless of high planetary synastry scores.
+8. **Contextual Connection Requests:** Bridges intent into action with transparent mutual intent indicators and optional 1-tap invitation reasons (`connection_reason`).
+
+## 3.12 Prompts / Self-Expression System V1
+
+JESTER defines a dedicated **Prompts / Self-Expression System** to capture authentic human voice and conversation hooks:
+
+1. **Core Purpose:** Answers *"What does this person actually sound like?"* — preventing profiles from becoming flat sheets of tags and scores by exposing individual humor, warmth, quirks, and stories.
+2. **Short Headline/About + Curated Prompts:** Pairs a compact 140-character headline with up to 3 curated prompts (250 chars max each) to minimize blank-box writing anxiety while maximizing conversational richness.
+3. **6 Canonical Categories (24 Prompts):** Voice & Quirks, Curiosities & Rabbit Holes, Daily Reality, Connection & Interaction, Perspectives & Worldview, Action & Collaboration.
+4. **Inline Conversation Entry Points:** Every prompt card features a 1-tap `[ 💬 Reply to this ]` action that quotes the prompt directly into a connection request note, effortlessly solving the cold-start messaging problem.
+5. **Human Authorship Over Synthetic Generation:** JESTER AI can provide optional, user-requested polishing or idea sparks, but is strictly prohibited from auto-generating or hallucinating answers without explicit user approval.
+6. **Profile Interweaving:** Prompts are woven strategically throughout the profile layout (between photos, interests, communication badges, and safe astrology) to ensure the experience feels human and dynamic.
+
+## 3.13 Discovery Preferences System V1
+
+JESTER defines a dedicated **Discovery Preferences System** to govern candidate generation, eligibility, and recommendation steering:
+
+1. **Core Purpose:** Answers *"Who and what do you want JESTER to show you?"* — providing user agency over discovery without degrading JESTER into a commodified filter marketplace.
+2. **Hard vs. Soft Boundary Invariant:**
+   - *Hard Filters (Strict Exclusion):* Age bounds, target genders (for romantic intents), bilateral intent compatibility, account safety standing, discoverability status, and mutual block hiding.
+   - *Soft Preferences (Relevance Boosts):* Location proximity (same city/country), shared & related interests, guiding values resonance, lifestyle schedule harmony, social rhythm pairing, and astrological synastry. Candidates outside soft preferences are never excluded; they receive intelligent ranking adjustments.
+3. **Anti-Marketplace Dealbreakers Policy:** Restricts hard dealbreakers strictly to Age, Gender, and Intent. Strictly bans discriminatory filtering on physical attributes, zodiac signs, income, religion, ethnicity, or private lifestyle habits.
+4. **Separation of Inbound Discoverability from Outbound Preferences:** `is_discoverable` (on `public.profiles`) controls whether others can find the user; `user_discovery_preferences` controls who the user sees. A user may browse discovery feeds while their profile remains hidden.
+5. **DOB & Coordinate Privacy:** Exact birth dates are never exposed (only computed integer age is serialized). Zero GPS coordinates or live tracking data are ever collected or filtered on.
+6. **Three-Tier Ranking Pipeline:** Tier 1 (SQL hard gates) -> Tier 2 (Multi-signal composite scoring) -> Tier 3 (JESTER Intelligence, diversity reranking, and rotation penalty).
+7. **Explainability Over Percentage Scores:** JESTER strictly forbids percentage match scores (e.g., *"87% Match"*). Discovery cards display qualitative, human explanations (*"You both love photography and are looking for friendship in Tbilisi"*).
 
 ---
 
@@ -561,6 +621,32 @@ When viewing another discoverable person's profile or discovery card:
 * **Meeting Intelligence:** JESTER AI suggests ideal low-pressure first hangout contexts based on mutual comfort zones.
 * **Granular Privacy:** Individual attributes render only if not toggled hidden by the user.
 
+## 8.8 Person Communication Profile & First-Conversation Intelligence
+
+When viewing another discoverable person's profile or discovery card:
+* **Communication Rhythm Presentation:** Rendered as glassmorphic chips under "Communication Rhythm" (`[ 🌊 Deep & Meaningful ]`, `[ 💡 Exchanges Ideas ]`, `[ 🎙️ Voice Notes OK ]`, `[ ⏳ Unhurried Pace ]`).
+* **Symmetric Depth:** Highlights shared conversational depth (e.g. *"Both skip the shallow small talk — conversations here get real quickly"*).
+* **Complementary Dynamics:** Identifies natural flow (e.g. Question-Asker + Storyteller: *"One draws stories out, one loves narrating vivid experiences"*).
+* **Channel & Pacing Comfort:** Informs conversational initiation (e.g. *"Voice notes are welcome here"* or *"Prefers an unhurried, thoughtful rhythm"*).
+* **Zero Scorekeeping:** Never presents reply-time latency, read-receipt timers, or communication scores.
+
+## 8.9 Person Intent Profile & Discovery Partitioning
+
+When viewing another discoverable person's profile or discovery card:
+* **Looking For Presentation:** Displayed prominently near top of profile (`[ 👥 New Friends (Main) ]`, `[ 🧗 Activity Partner ]`, `[ 🔍 Just Exploring ]`).
+* **Symmetric Match:** Users sharing identical primary intent receive a direct relevance boost (e.g. *"Both here for new friends and social circle"*).
+* **Aligned Openness:** Users with overlapping secondary openness surface bridge invitations (e.g. *"Alexandre is primarily dating, but both are open to outdoor activities"*).
+* **Bilateral Discovery Partitioning:** Eliminates romantic/platonic mismatched feeds: users seeking exclusively serious dating are never presented to users seeking exclusively platonic friendship or collaboration unless a secondary bridge or `just_exploring` exists.
+* **Astrological Framing Guardrail:** Astrological synastry is strictly framed within declared intent boundaries; JESTER AI never suggests romantic destiny to platonic seekers.
+
+## 8.10 Person Prompts Profile & Conversational Hooks
+
+When viewing another discoverable person's profile:
+* **Interwoven Profile Presence:** Prompts appear interwoven between photo, interests, lifestyle, and astrology cards rather than isolated at the bottom.
+* **Inline Connection Hooks:** Every prompt card includes an interactive `[ 💬 Reply to this ]` action that quotes the prompt directly into a connection request note.
+* **Voice & Texture Discovery:** Prompts expose unique humor, quirks, and conversational tone, turning passive reading into active engagement.
+* **Automated Safety Protection:** All public prompt answers pass automated PII detection, hate-speech filtering, and XSS sanitization prior to publication.
+
 ---
 
 # 9. Connections
@@ -607,6 +693,13 @@ Compatibility
   ↓
 Conversation
 ```
+
+## 9.4 Connection Context & Optional Invitation Reason
+
+To fulfill the axiom *"The insight becomes the invitation"*, connection requests bridge declared intent:
+* **Mutual Shared Intent:** The request modal surfaces shared intent alignment (e.g. *"You're both open to shared activities"*).
+* **Optional Context Reason (`connection_reason`):** Senders may attach an optional 1-tap invitation tag (`coffee_meet`, `great_chat`, `shared_activity`, `creative_project`, `mutual_vibe`).
+* **Transparent Reception:** Recipients see the context immediately, eliminating cold-start hesitation and ambiguity.
 
 ---
 
@@ -884,6 +977,8 @@ JESTER generates witty, situational conversation starters to eliminate cold-star
 Starters synthesize:
 1. **Astrological Dynamic Tension**: Interpersonal dynamics derived from Synastry aspects.
 2. **Interest Graph Anchors**: Leveraging the users' declared Primary Interests, Signature Interest, and mutual graph neighbors with high **Conversation Value** (e.g. Photography, Coffee).
+3. **Communication Role & Depth Pairing**: Tailoring starters to the users' declared conversational roles (e.g. Questioner + Storyteller generates a narrative question prompt; mutual Deep Seekers skip small talk).
+4. **Intent & Purpose Framing**: Framing conversation starters to match mutual declared intent (e.g. suggesting outdoor trail outings for mutual `activity_partner` seekers, intellectual debates for `meaningful_chat`, or romantic chemistry for mutual `dating` seekers).
 
 Conversation starters are a downstream interpretation layer. They must never retroactively modify the deterministic numerical compatibility score.
 
@@ -965,6 +1060,9 @@ The AI interprets data; it does not replace the deterministic calculation engine
 5. **Lifestyle Context Without Moralizing**: JESTER AI uses daily rhythm, activity pace, and work reality for empathetic schedule harmony (e.g. nocturnal camaraderie, remote coffee work), never for moralizing, health lectures, or judgment on personal habits. Private habits (drinking, smoking, living situation) are strictly omitted from prompt context if hidden.
 6. **Values Context Without Diagnostic Grading**: JESTER AI uses shared values and polarities for philosophical depth and conversational warmth, never for psychological diagnoses, virtue grading, or moral superiority claims. All canonical values are treated with equal dignity.
 7. **Social Behavior Context Without Box-Labelling**: JESTER AI uses gathering scale, social battery, and warm-up dynamics to suggest comfortable first meeting venues and empathetic pacing, strictly never calling a user "antisocial", "introverted recluse", "attention-seeking", or assigning MBTI/pop-psychology personality types.
+8. **Communication Context Without Response-Time Surveillance**: JESTER AI uses declared conversation depth, role pairing, and messaging format to craft natural starters and set healthy expectations, strictly never tracking or commenting on reply latency, scorekeeping response times, or diagnosing communication flaws ("dry texter"). Message bodies are never parsed for psychological profiling.
+9. **Intent Primacy & Anti-Romantic Assumption Invariant**: JESTER AI must strictly respect declared intent boundaries. Astrological chemistry (e.g. Venus-Mars aspects) must **never** be interpreted as romantic destiny or sexual pursuit if either participant has declared platonic friendship or collaboration intent. Declared user intent strictly governs astrological framing.
+10. **Prompt Context Without Psychological Stereotyping**: JESTER AI treats published prompt answers as authentic self-expression and contextual conversation anchors, **never as clinical psychological proof or moral diagnostic verdicts** (e.g. humorous exaggeration in a prompt is never converted into an antisocial diagnosis).
 
 ---
 

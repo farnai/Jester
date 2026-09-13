@@ -99,6 +99,19 @@ PostgreSQL security operates on the **Principle of Least Privilege**, separating
 | `public.social_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
 | `public.social_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
 | `public.user_social_preferences`| 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.communication_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.communication_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.communication_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_communication_preferences`| 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.intent_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.intent_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.intent_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_intents` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_intent_history` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role audit only) |
+| `public.prompt_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.prompt_templates` | `SELECT` (Templates) | `SELECT` (Templates) | 🟢 Full Access |
+| `public.user_prompts` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility & approved status), `INSERT, UPDATE, DELETE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_discovery_preferences` | 🚫 **REVOKED** | `SELECT, INSERT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
 
 ---
 
@@ -189,6 +202,38 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - JESTER AI prompts explicitly forbid personality typing or judgmental social commentary.
   - The API exposes social behavior as discrete functional choices (e.g. `recharge_solo`, `one_on_one`), completely avoiding clinical labels or personality percentage scales.
   - All social battery and gathering styles carry equal dignity across the platform.
+
+### 14. Communication & Anti-Surveillance Non-Diagnostic Invariants
+- **Invariant:** Communication preferences define interaction mechanics, conversation depth, and pacing expectations, not personality traits or latency metrics. Surveillance mechanics (reply-time timers, read-receipt latency tracking, "fast responder" / "bad texter" badges) and automated mining of private message text for psychometric profiling are **strictly prohibited**.
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality typing, buzzword labels ("Dry Texter", "Deep Talker", "Golden Retriever Communicator"), and reply-time anxiety scorekeeping.
+  - Zero private message body inspection: AI models and recommendation algorithms are architecturally barred from reading or processing private conversation message contents (`public.messages.body`) for communication profiling.
+  - Declared pacing (`active_banter`, `unhurried_thoughtful`, `relaxed_async`) is treated as personal preference and emotional reassurance, never scored for algorithmic penalty or compatibility grading.
+  - `visibility_flags` on `public.user_communication_preferences` allow users to selectively hide any communication dimension from their public profile.
+
+### 15. Intent Primacy & Anti-Romantic Assumption Invariants
+- **Invariant:** Declared intent defines current platform purpose and relational openness, not permanent personality or marital status. Mutually incompatible non-overlapping intents must be partitioned to prevent harassment, and astrological synastry must **never** be used to impose romantic or sexual destiny on users declaring platonic intent. Intent history is strictly private.
+- **Enforcement:**
+  - RLS policies on `public.user_intent_history` revoke all permissions from client roles (`REVOKE ALL FROM authenticated, anon, public`).
+  - Discovery algorithms enforce bilateral intent partitioning (e.g. exclusive dating partitioned from exclusive friendship).
+  - JESTER AI prompt architecture explicitly enforces Intent Primacy: when either participant declares friendship or collaboration, romantic interpretations of planetary aspects (e.g. Venus-Mars chemistry) are strictly barred and reframed as creative synergy or shared drive.
+
+### 16. Prompts & Authentic Human Voice Invariants (`public.user_prompts`)
+- **Invariant:** Prompts represent the user's authentic voice, humor, and quirks. JESTER AI is strictly prohibited from generating, hallucinating, or publishing prompt answers without explicit user prompting, review, and manual submission. Prompt answers are public user-generated content that must undergo pre-publication sanitization, but must never be treated as clinical psychological profiles or psychiatric evidence.
+- **Enforcement:**
+  - Automated regex and sanitization runs pre-publication on `POST /v1/prompts` and `PATCH /v1/prompts/{id}`, stripping HTML tags/scripts and detecting raw PII (phone numbers, external messaging handles, and harassment terms).
+  - JESTER AI prompt construction instructions explicitly command the model: prompt text is user-authored conversational context, NOT clinical truth. Harmless sarcasm, dry humor, or hyperbole (e.g., *"I hate everyone before coffee"*) must never be diagnosed as misanthropy or antisocial behavior.
+  - Moderation states (`approved`, `flagged`, `rejected`, `pending_review`): Prompts with `status = 'rejected'` are automatically excluded from public profile queries and discovery cards via RLS policy.
+
+### 17. Discovery Preferences & Candidate Confidentiality Invariants (`public.user_discovery_preferences`)
+- **Invariant:** A user's discovery preferences (`target_genders`, `age_min`, `age_max`, `location_scope`, `target_intents`, `astrology_mode`) are strictly confidential and private to the owner. Candidates who are filtered out must **never** be informed or able to deduce that they were excluded. Discovery preferences are outbound selection criteria and must never be conflated with inbound discoverability (`profiles.is_discoverable`).
+- **Enforcement:**
+  - `REVOKE ALL ON public.user_discovery_preferences FROM anon, public;`
+  - RLS policy `user_discovery_preferences_owner_all` strictly checks `user_id = auth.uid()`.
+  - Discovery query execution enforces mutual block hiding (`NOT is_user_blocked()`), returning privacy-safe empty results rather than error states.
+  - Zero raw birth dates or exact timestamps are serialized; only dynamically computed integer age is exposed in candidate DTOs.
+  - Hard dealbreakers are restricted to Age, Gender, and Intent; physical, racial, religious, or zodiac-sign filtering is architecturally prohibited.
+
 
 ---
 

@@ -87,16 +87,20 @@ Jester/
 │   │   ├── canonical.py      # Authoritative canonical user pair ordering & seed utilities
 │   │   ├── database.py       # psycopg3 connection pool singleton
 │   │   └── errors.py         # API exceptions and global handler
+│   ├── discovery/            # [SPEC] Discovery Preferences & Feed Engine V1 (/v1/discovery/*)
 │   ├── interests/            # [SPEC] Interest System & Interest Graph V1
 │   │   ├── models.py         # Taxonomy, user_interests, affinity schemas
 │   │   ├── taxonomy.py       # 18-category canonical taxonomy & alias resolver
 │   │   ├── graph.py          # Interest relationships, clusters & matching engine
 │   │   └── router.py         # /v1/interests/* endpoints
+│   ├── communication/        # [SPEC] Communication System & Dynamics V1 (/v1/communication/*)
+│   ├── intents/              # [SPEC] Intent System & Relational Purpose V1 (/v1/intents/*)
 │   ├── interpretation/       # Jester AI interpretation pipeline & contract library
 │   ├── jobs/                 # Background energy calculation jobs (stub)
 │   ├── lifestyle/            # [SPEC] Lifestyle System & Cadence V1 (/v1/lifestyle/*)
 │   ├── notifications/        # User notification endpoints
 │   ├── profiles/             # User profile endpoints (/v1/profiles/*)
+│   ├── prompts/              # [SPEC] Prompts & Self-Expression System V1 (/v1/prompts/*)
 │   ├── social/               # [SPEC] Social Behavior & Energy Dynamics V1 (/v1/social-behavior/*)
 │   ├── users/                # User identity endpoint (/v1/users/me)
 │   └── values/               # [SPEC] Values System & Guiding Compass V1 (/v1/values/*)
@@ -194,14 +198,43 @@ Jester/
 3. **Meeting Intelligence & Discovery**: Evaluates shared gathering comfort (e.g. mutual one-on-one preference) and complementary dynamics (e.g. initiator + observer).
 4. **Anti-Typing Invariant**: Never classifies or labels users with psychological personality types (MBTI, Big 5, Introvert/Extrovert boxes).
 
+### 11. Communication Onboarding & First-Conversation Intelligence Flow
+*(Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+1. **Onboarding Snapshot**: User completes optional 3-question single-tap card (Depth, Conversational Role, Messaging Medium). 100% skippable.
+2. Persists to `public.user_communication_preferences` (`user_id`, `conversation_depth`, `conversation_role`, `messaging_medium`, `response_pace`, `visibility_flags`).
+3. **First-Conversation Intelligence**: Pairs user roles (e.g. Questioner + Storyteller) to craft personalized conversation starters.
+4. **Anti-Surveillance Invariant**: Strictly prohibits reply-time scorekeeping, read-receipt timers, or scanning private chat message bodies for personality profiling.
+
+### 12. Intent Onboarding, Discovery Partitioning & Connection Context Flow
+*(Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+1. **Onboarding Selection**: User selects 1 Primary Intent (e.g. `friendship`, `dating_open`, `dating_serious`, `activity_partner`, `meaningful_chat`, `collaboration`, `just_exploring`) and optionally up to 2 Secondary Openness options. 100% skippable; defaults to `just_exploring`.
+2. Persists to `public.user_intents` (`user_id`, `primary_intent`, `secondary_intents`, `visibility`, `source`). Changes append audit records to `public.user_intent_history` (service-role only).
+3. **Discovery Partitioning**: Enforces strict bilateral partition between mutually incompatible intents (e.g. exclusive dating vs. exclusive platonic friendship) to prevent mismatched expectations and harassment.
+4. **Contextual Connection Flow**: Automatically surfaces mutual intent context on connection requests and allows senders to attach an optional 1-tap invitation reason (`connection_reason`).
+5. **Astrological Primacy Gate**: Declared intent strictly governs astrological framing; synastry dynamics are framed to respect declared intent rather than assuming romance.
+
+### 13. Prompt Authoring, Inline Reply & Moderation Flow
+*(Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+1. **Curated Selection**: User browses 24 standardized prompt questions across 6 human categories (`voice_quirks`, `curiosities`, `daily_reality`, `connection`, `perspectives`, `action`) and selects 1 to 3 templates.
+2. **Authoring & Polish**: User writes concise answers (max 250 characters). Optional AI writing assistant can suggest up to 3 stylistic polishes or shorter formulations upon explicit user request, but NEVER auto-publishes or fabricates text without user approval.
+3. **Safety & Moderation Gate**: Answers pass automated pre-publication moderation checks (XSS sanitization, PII filtering for raw phone numbers/handles, and harassment filters). Harmless sarcasm, dry humor, and eccentric opinions are protected.
+4. **Interactive Conversation Entry**: Published prompts appear as interactive cards on the public profile. Tapping `[ 💬 Reply to this ]` on any prompt card opens the connection invitation dialog with that specific prompt pre-quoted, transforming passive self-expression into an organic conversation hook.
+
+### 14. Discovery Candidate Generation & Ranking Flow
+*(Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+1. **Tier 1 (SQL Eligibility Gates)**: Evaluates hard constraints directly in PostgreSQL (`is_discoverable = true`, block isolation, self-exclusion, non-connected status, age bounds, target gender set, and bilateral intent compatibility).
+2. **Tier 2 (Multi-Signal Composite Scoring)**: Computes rapid relevance weighting across intent alignment ($25\%$), geographic proximity ($20\%$), Interest Graph overlap ($20\%$), guiding values resonance ($15\%$), prompt presence ($10\%$), and baseline astrological harmony ($10\%$). Selects top 100 candidates.
+3. **Tier 3 (JESTER Intelligence & Diversity Reranking)**: Calculates deep synastry dimensions, generates qualitative human explainability reasons, injects complementary diversity (60% direct resonance, 30% complementary dynamic, 10% serendipity wildcard), and applies recent view/dismissal rotation decay.
+4. **Paginated Feed Exposure**: Returns clean cursor-paginated `DiscoveryFeedResponse` with zero raw percentage match scores.
+
 ---
 
 ## 🎨 The Astrology & Semantic Context → JESTER Content Pipeline
 
 ```text
-ASTROLOGICAL DATA + INTEREST GRAPH + LOCATION/ORIGIN + LIFESTYLE CADENCE + VALUES COMPASS + SOCIAL DYNAMICS
-       ↓ (PySwissEph Engine, Semantic Graph, Geo, Lifestyle, Values & Social Options)
-DETERMINISTIC SIGNALS, ASPECTS, SHARED TOPICS, CADENCE, PHILOSOPHICAL RESONANCE & SOCIAL HARMONY
+ASTROLOGICAL DATA + INTEREST GRAPH + LOCATION/ORIGIN + LIFESTYLE CADENCE + VALUES COMPASS + SOCIAL DYNAMICS + COMMUNICATION RHYTHM + INTENT PURPOSE + PROMPTS / VOICE + DISCOVERY PREFERENCES
+       ↓ (PySwissEph Engine, Semantic Graph, Geo, Lifestyle, Values, Social, Communication, Intent, Prompts & Discovery Preferences)
+DETERMINISTIC SIGNALS, ASPECTS, SHARED TOPICS, CADENCE, PHILOSOPHICAL RESONANCE, SOCIAL HARMONY, CONVERSATION BRIDGES, INTENT ALIGNMENT, AUTHENTIC VOICE HOOKS & ELIGIBILITY FILTERS
        ↓ (Rule-Based Aggregator & Taxonomy)
 CORE INTERPERSONAL DYNAMICS & CONVERSATION ANCHORS
        ↓ (SynastryEngine / Interpretation Resolver)
@@ -218,12 +251,18 @@ USER-FACING INSIGHT (Short, witty, human-readable)
 
 ## 🔒 Important Subsystem Boundaries
 
-- **Database Layer Isolation**: Client applications communicate with FastAPI using JWT tokens. Directly calling Supabase REST API via PostgREST is guarded by RLS policies. `astro_private`, `user_interest_affinity`, and `user_location_private` have `REVOKE ALL` for client roles.
+- **Database Layer Isolation**: Client applications communicate with FastAPI using JWT tokens. Directly calling Supabase REST API via PostgREST is guarded by RLS policies. `astro_private`, `user_interest_affinity`, `user_location_private`, `user_intent_history`, and `user_discovery_preferences` (owner-only) are isolated from general queries.
 - **Privacy Safe Not Found**: When a resource is hidden due to block status or `is_discoverable = false`, endpoints raise `PrivacySafeNotFoundException` (HTTP 404) rather than HTTP 403 to prevent enumeration attacks.
 - **Behavioral Affinity Isolation**: Internal behavioral affinity scores are recommendation inputs; they must never overwrite explicit user declarations or be leaked as public labels.
 - **Geographic Coordinate Isolation**: Exact coordinates (`latitude`, `longitude`) are strictly restricted to internal background tasks. Public API responses serialize only canonical city and country names.
 - **Lifestyle & Sensitive Habit Isolation**: Substance use (drinking, smoking), living situations, and family structure are never requested during initial onboarding. They are governed by per-attribute visibility flags and omitted from AI prompts when hidden.
 - **Values & Anti-Diagnosis Invariant**: Values represent self-declared human principles and priorities. The system strictly forbids psychological grading, virtue percentages, or moral hierarchies. All canonical values carry equal dignity.
 - **Social Behavior & Anti-Typing Invariant**: Social preferences capture interaction comfort, gathering scale, and battery mechanics, strictly avoiding psychological personality diagnoses, MBTI archetypes, or boxing labels. All social battery styles are treated with equal respect.
+- **Communication & Anti-Surveillance Invariant**: Communication preferences capture conversation depth, narrative role, and channel format without tracking reply-time latency, scorekeeping response speeds, or parsing private chat messages for psychological analysis.
+- **Intent Primacy & Anti-Romantic Assumption Invariant**: Intent captures current temporal purpose on JESTER without mode-switching fragmentation. Astrological chemistry must never be framed as romantic destiny if either participant has declared platonic friendship or collaboration intent. Intent history is strictly private.
+- **Prompts & Authentic Human Voice Invariant**: Prompts exist to reveal what a person actually sounds like. They must never be auto-generated or hallucinated by AI without explicit user editing and approval. Prompts provide authentic user-authored context for conversation starters and connection requests, but must never be treated by JESTER AI as clinical psychological truth or psychiatric profiles.
+- **Discovery Preferences & Inbound Discoverability Boundary**: Discovery preferences are strictly private, owner-only outbound candidate selection criteria. They must never be exposed or leaked as existence oracles. Inbound discoverability (`profiles.is_discoverable`) determines if a user is eligible to be shown; outbound preferences determine who the user sees. Filtering is anti-marketplace: zodiac signs, physical attributes, income, and sensitive habits are permanently barred from hard exclusionary filtering.
 - **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
+
+
 

@@ -139,6 +139,26 @@ Every feature is categorized into one of four capability buckets:
   - Optional / skippable 3-question card (Gathering Scale, Social Battery, Warm-Up Dynamic).
   - Rapid 1-tap chip controls. Zero rating sliders.
   - No psychological typing, MBTI classifications, or identity box-labeling.
+- **Communication Rhythm Snapshot Onboarding Flow**:
+  - Optional / skippable 3-question card (Conversation Depth, Conversational Role, Messaging Medium).
+  - Rapid 1-tap chip controls. Zero rating sliders.
+  - Strictly no reply-time timers, read-receipt surveillance, or personality diagnosis.
+- **Intent Onboarding Flow**:
+  - Optional / skippable single-card selection (What brings you to JESTER right now?).
+  - 1 Primary Intent (Single-Select) + up to 2 Secondary Openness (Multi-Select).
+  - 100% skippable; defaults to `just_exploring` on skip.
+  - Zero marital status questioning or relationship diagnosis.
+- **Prompt Authoring & Self-Expression Flow**:
+  - Optional profile enhancement (0 to 3 prompts; recommended 2–3).
+  - Curated library of 24 prompts across 6 categories.
+  - Max 250 characters per prompt answer.
+  - Optional AI writing assistant (suggests up to 3 candidate polishes upon request; strictly no automatic publishing without explicit user approval).
+  - Interactive prompt cards with `[ 💬 Reply to this ]` conversation opener triggers.
+- **Discovery Preferences & Feed Controls Sheet**:
+  - Modal sheet managing age range (dual-handle slider + dealbreaker toggle), target genders, geographic scope (`same_city`, `same_country`, `regional_nearby`, `anywhere`), astrology mode (`full_insights`, `minimal_insights`, `hidden`), and diversity steering.
+  - Reset to default button.
+  - Contextual Feed Lenses (`[ ✨ For You ]`, `[ 📍 Nearby ]`, `[ 🎯 Shared Purpose ]`, `[ 💡 Shared Curiosities ]`).
+  - Clear mental model notice: *"Controls who you see; does not change who can see you."*
 - Connection management list with action controls (Accept, Decline, Block, Remove).
 - Compatibility score card displaying composite score, 4 sub-scores, data quality confidence, and active signals.
 - Topic and conversation starter display with tap-to-send or tap-to-copy integration.
@@ -154,7 +174,6 @@ Every feature is categorized into one of four capability buckets:
 - Dynamic transit-based daily energy engine (currently returns static daily summary string).
 
 ### D. Unknown / Requires Product Decision
-- **People Discovery Feed**: The backend supports direct ID lookup `GET /v1/profiles/{id}` with discoverability check, but does not yet expose a paginated `GET /v1/people/discover` feed. This feed will integrate Interest Graph matching (Shared, Related, Complementary) and Discovery Value weighting.
 - **Client Evidence Trace Visibility**: Whether the technical `evidence_trace` array should be surfaced in an advanced "Astrology Breakdown" UI accordion or kept exclusively as an internal backend/audit layer.
 
 ---
@@ -267,6 +286,18 @@ Following values selection, the user encounters the optional Social Rhythm Snaps
    - **Approach to New People:** `[ 🚀 Quick to Initiate ]`, `[ 👀 Observant First ]`, `[ 💎 Selective & Intentional ]`.
 3. **Anti-Typing Invariant**: Zero personality typing ("Introvert", "Extrovert", "Alpha", MBTI codes); captures functional interaction mechanics only.
 
+### 6.9 Communication Rhythm Onboarding Specification
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+
+Following social rhythm entry, the user encounters the optional Communication Rhythm Snapshot:
+1. **Optional Step**: User may tap "Skip for now" at any time.
+2. **3-Question Rapid Preference Card**:
+   - **Conversation Depth:** `[ 🎈 Light & Casual ]`, `[ ⚖️ Balanced Flow ]`, `[ 🌊 Deep & Meaningful ]`.
+   - **Conversational Dynamic:** `[ 🔍 Asks Questions ]`, `[ 📖 Shares Stories ]`, `[ 💡 Exchanges Ideas ]`, `[ 🌊 Goes with the Flow ]`.
+   - **Preferred Format:** `[ 💬 Mostly Text ]`, `[ 🎙️ Voice Notes OK ]`, `[ 📞 Calls Welcome ]`, `[ 🔄 A Bit of Everything ]`.
+3. **Pacing Availability**: Conversational Pacing (`active_banter`, `unhurried_thoughtful`, `relaxed_async`) can be selected during onboarding or managed later in Profile Settings.
+4. **Anti-Surveillance Invariant**: Zero reply-time tracking or scorekeeping.
+
 ---
 
 ## 7. Personal Astrology
@@ -372,6 +403,29 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Empty State Restraint**: Undeclared preferences simply do not render.
 - **Strictly Non-Diagnostic**: Never display radar charts, psychometric profiles, or clinical labels.
 
+### 8.8 Communication Rhythm Presentation & Preference Privacy
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+- **Communication Rhythm Micro-Badges**: Displayed under a dedicated "Communication Rhythm" profile section:
+  - `[ 🌊 Deep & Meaningful ]` `[ 💡 Exchanges Ideas ]` `[ 🎙️ Voice Notes OK ]` `[ ⏳ Unhurried Pace ]`
+- **Granular Privacy Controls**: Users can independently toggle any communication attribute on or off in profile settings.
+- **Empty State Restraint**: Undeclared preferences simply do not render.
+- **Zero Latency Shaming**: Never display response-time averages, read-receipt timers, or typing speed metrics.
+
+### 8.9 Intent Presentation & "Looking For" Badges
+*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+- **Looking For Micro-Badges**: Displayed prominently near top of profile under "Looking For":
+  - `[ 👥 New Friends (Main) ]` `[ 🧗 Activity Partner ]` `[ 🔍 Just Exploring ]`
+- **Visual Distinction**: Primary intent receives distinct highlight badge with icon; secondary intents render as subtle companion chips.
+- **Visibility Controls**: User can toggle intent visibility (`public`, `connections_only`, `hidden`) in profile settings.
+- **Non-Diagnostic Stance**: Strictly descriptive of current purpose; zero relationship status interrogation.
+
+### 8.10 Prompts & Self-Expression Presentation
+*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+- **Prominent Human Voice Cards**: Rendered as distinct speech/quotation cards displaying the standardized prompt question in bold accent typography alongside the user's authentic answer.
+- **Capacity Limits**: Renders up to 3 published prompt cards (`sort_order` 1 to 3).
+- **Interactive Action Anchor**: Every prompt card features a dedicated `[ 💬 Reply to this ]` button, inviting immediate low-friction conversational entry.
+- **Authentic Voice Invariant**: Displays user-authored text exactly as approved. AI never generates profile answers without user review. Empty prompts simply do not render.
+
 ---
 
 ## 9. People Discovery
@@ -415,6 +469,36 @@ The Discovery UI evaluates three relationship types:
 - **Battery Awareness**: Highlights mutual or complementary recharge styles (e.g. *"Both need quiet downtime after socializing — zero pressure, zero guilt"*).
 - **Meeting Setting Intelligence**: AI uses mutual comfort zones to suggest optimal low-friction first hangouts.
 - **Soft Relevance**: In V1, social dynamics serve as practical relationship context and meeting aids, never hard exclusionary gates.
+
+### 9.8 Communication Dynamics in Discovery Matching
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+- **Depth Resonance**: Surfaces shared conversational appetite (e.g. *"Both skip the shallow small talk — conversations here get real quickly"*).
+- **Role Pairing**: Identifies natural flow (e.g. Questioner + Storyteller: *"One draws stories out, one loves narrating vivid experiences"*).
+- **Pacing Reassurance**: Reassures users connecting with unhurried responders (*"Unhurried, thoughtful rhythm — expect quality over immediate speed"*).
+- **Decoupled from Synastry**: Complements the deterministic astrological Mercury score without altering it.
+
+### 9.9 Intent Partitioning & Alignment in Discovery Matching
+*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+- **Bilateral Partitioning**: Users seeking exclusively serious dating are never matched with users seeking exclusively platonic friendship or collaboration unless a secondary bridge or `just_exploring` exists.
+- **Shared Intent Boost**: Users sharing identical primary intent receive a prominent relevance boost in discovery ordering.
+- **Multi-Domain Actionable Invitations**: Combines intent with interests and lifestyle to generate concrete invitations (e.g. *"Both seeking activity partners and both love hiking — easy weekend plan"*).
+- **Astrology Primacy Invariant**: Astrological synastry is framed strictly within declared intent; zero romantic assumptions projected onto platonic seekers.
+
+### 9.10 Prompts in Discovery & Profile Preview
+*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+- **Human Voice Snippet**: Discovery profile previews highlight the user's #1 prompt as a conversational teaser card (*"What this person actually sounds like"*).
+- **Direct Reply Action**: Viewers can tap `[ 💬 Reply to this ]` directly from the discovery card or full profile view to initiate a connection request quoting that specific prompt.
+- **Differentiation Factor**: Two profiles with similar astrological charts and shared interests are instantly differentiated by their authentic prompt humor, voice, and perspective.
+
+### 9.11 Discovery Preferences & Feed Architecture
+*(Authoritative Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+- **Unified Candidate Pool with Contextual Lenses**: Discovery serves candidates through a single coherent feed governed by active preferences, navigable via 4 lenses:
+  - `[ ✨ For You ]`: Balanced multi-signal master feed.
+  - `[ 📍 Nearby ]`: Local city and neighborhood priority.
+  - `[ 🎯 Shared Purpose ]`: Direct intent alignment (e.g. Activity Partners).
+  - `[ 💡 Shared Curiosities ]`: Semantic interest graph clusters.
+- **Qualitative Explainability Cards**: Eliminates clinical percentage match scores. Every discovery card articulates a clear human rationale (e.g. *"You both love photography and are looking for friendship in Tbilisi"*).
+- **Graceful Pool Depletion**: If tight preferences yield $< 5$ candidates, surfaces an inline notice (*"Your current settings are very specific"*); if exhausted, provides a 1-tap `[ 🌍 Broaden to Entire Country ]` action.
 
 ---
 
@@ -466,6 +550,16 @@ The Discovery UI evaluates three relationship types:
 | **`declined`** | Re-send request (reactivates pending). | Block; Remove. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
 | **`blocked`** | Unblock (transitions to `removed`). | Profile/Chat returns 404 (hidden).| ❌ No (404 Not Found) | ❌ No (404 Not Found) |
 | **`removed`** | Re-send request (transitions to pending).| Re-send request. | ❌ No (403 Forbidden) | ❌ No (403 Forbidden) |
+
+### 10.3 Connection Request Intent Context & "Why Connect?" Reason
+- **Transparent Mutual Intent**: The connection modal highlights shared intent alignment (e.g. *"You're both open to shared activities"*).
+- **Optional Context Reason (`connection_reason`)**: Senders can attach an optional 1-tap tag (`[ ☕ Grab coffee ]`, `[ 💬 Great conversation ]`, `[ 🧗 Activity ]`, `[ 🎨 Project ]`).
+- **Recipient Experience**: The notification and request card show the explicit reason, eliminating cold-start ambiguity.
+
+### 10.4 Prompt-Referenced Connection Invitations
+- **Inline Quote Action**: When a user taps `[ 💬 Reply to this ]` on a prompt card, the connection invitation modal pre-populates with that prompt quoted directly at the top.
+- **Contextual Note**: The sender can attach a short note (up to 200 characters) responding specifically to the prompt (e.g. Prompt: *"Finding the best khachapuri in Tbilisi"* -> Note: *"You have to try the one at Sakhachapure N1 on Rustaveli!"*).
+- **Conversation Continuity**: Upon request acceptance, the quoted prompt and invitation note become the very first message bubble in the newly opened direct chat thread.
 
 ---
 

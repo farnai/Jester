@@ -12,10 +12,10 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 | Tier | Target Tables / Views | Access Scope | Enforced By |
 | :--- | :--- | :--- | :--- |
-| **PUBLIC** | `profiles`, `interest_categories`, `interests`, `interest_aliases`, `interest_relations`, `geo_countries`, `geo_cities`, `geo_city_aliases`, `lifestyle_categories`, `lifestyle_options`, `values_categories`, `values_options`, `value_relations`, `social_categories`, `social_options`, `social_relations` | Authenticated users (profile discoverable and not blocked; taxonomy, geo, lifestyle, values & social options publicly readable). | RLS policies |
-| **SAFE DERIVED** | `astro_safe_profile`, `user_interests`, `user_lifestyle`, `user_values`, `user_social_preferences` | High-level summary (signs, element, modality, declared interests, safe location, safe cadence pills, guiding compass values, social rhythm). Authenticated users. | RLS policies |
-| **PRIVATE** | `birth_data`, `connections`, `conversations`, `messages`, `daily_energies`, `notifications` | Owner or active connected participants only. | RLS policies + security-definer functions |
-| **SERVICE-ONLY** | `astro_private`, `user_interest_affinity`, `user_location_private` | Server-side calculation & recommendation engine ONLY. Never exposed to client. | `REVOKE ALL` from client roles / RLS restriction |
+| **PUBLIC** | `profiles`, `interest_categories`, `interests`, `interest_aliases`, `interest_relations`, `geo_countries`, `geo_cities`, `geo_city_aliases`, `lifestyle_categories`, `lifestyle_options`, `values_categories`, `values_options`, `value_relations`, `social_categories`, `social_options`, `social_relations`, `communication_categories`, `communication_options`, `communication_relations`, `intent_categories`, `intent_options`, `intent_relations`, `prompt_categories`, `prompt_templates` | Authenticated users (profile discoverable and not blocked; taxonomy, geo, lifestyle, values, social, communication, intent & prompt options publicly readable). | RLS policies |
+| **SAFE DERIVED** | `astro_safe_profile`, `user_interests`, `user_lifestyle`, `user_values`, `user_social_preferences`, `user_communication_preferences`, `user_intents`, `user_prompts` | High-level summary (signs, element, modality, declared interests, safe location, safe cadence pills, guiding compass values, social rhythm, communication preferences, looking for intent, user prompts). Authenticated users. | RLS policies |
+| **PRIVATE** | `birth_data`, `connections`, `conversations`, `messages`, `daily_energies`, `notifications`, `user_discovery_preferences` | Owner or active connected participants only. | RLS policies + security-definer functions |
+| **SERVICE-ONLY** | `astro_private`, `user_interest_affinity`, `user_location_private`, `user_intent_history` | Server-side calculation & recommendation engine ONLY. Never exposed to client. | `REVOKE ALL` from client roles / RLS restriction |
 
 ---
 
@@ -399,6 +399,200 @@ To capture how users prefer to interact, gather, warm up, and recharge socially 
 - CONSTRAINT uq_social_relation UNIQUE (option_a_id, option_b_id),
 - CONSTRAINT check_no_self_social_relation CHECK (option_a_id != option_b_id)
 - *Usage:* Powers JESTER AI meeting-setting recommendations and interpersonal dynamics without calculating clinical compatibility scores.
+
+---
+
+## 💬 Communication System V1 Schema Specification (Architecture Blueprint)
+
+To capture how users prefer to converse, message, pace replies, and choose formats without introducing response-time surveillance, read-receipt scorekeeping, or clinical personality typologies, the Communication System V1 defines the following normalized entities:
+
+### 1. `public.communication_categories`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- 'conversation_depth', 'conversation_role', 'messaging_medium', 'response_pace'
+- `name_en` VARCHAR(100) NOT NULL,
+- `name_ka` VARCHAR(100) NOT NULL,
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 2. `public.communication_options`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `category_id` UUID NOT NULL REFERENCES public.communication_categories(id) ON DELETE CASCADE,
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- 'deep_meaningful', 'question_curious', 'voice_notes_welcome', 'unhurried_thoughtful', etc.
+- `name_en` VARCHAR(100) NOT NULL,
+- `name_ka` VARCHAR(100) NOT NULL,
+- `definition_en` TEXT NOT NULL,
+- `definition_ka` TEXT NOT NULL,
+- `badge_icon` VARCHAR(30),                    -- 'waves', 'help-circle', 'mic', 'clock', etc.
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 3. `public.user_communication_preferences` (Normalized Profile Extension)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `conversation_depth` VARCHAR(40),            -- e.g. 'casual_light', 'balanced_depth', 'deep_meaningful'
+- `conversation_role` VARCHAR(40),             -- e.g. 'question_curious', 'story_expressive', 'idea_conceptual', 'adaptable_flow'
+- `messaging_medium` VARCHAR(40),              -- e.g. 'mostly_text', 'voice_notes_welcome', 'calls_welcome', 'flexible_medium'
+- `response_pace` VARCHAR(40),                 -- e.g. 'active_banter', 'unhurried_thoughtful', 'relaxed_async'
+- `visibility_flags` JSONB NOT NULL DEFAULT '{
+    "conversation_depth": true,
+    "conversation_role": true,
+    "messaging_medium": true,
+    "response_pace": true
+}',
+- `source` VARCHAR(30) NOT NULL DEFAULT 'declared' CHECK (source IN ('onboarding_snapshot', 'profile_edit', 'inferred')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* Governed by RLS. Users can update only their own row. Fields toggled private are stripped from public responses and omitted from AI prompts. Raw message bodies are never scanned for behavioral inference.
+
+### 4. `public.communication_relations` (Synergies & Dynamic Interplay Graph)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `option_a_id` UUID NOT NULL REFERENCES public.communication_options(id) ON DELETE CASCADE,
+- `option_b_id` UUID NOT NULL REFERENCES public.communication_options(id) ON DELETE CASCADE,
+- `relation_type` VARCHAR(30) NOT NULL CHECK (relation_type IN ('symmetric_harmony', 'complementary_balance', 'pacing_awareness')),
+- `dynamic_label_en` VARCHAR(120) NOT NULL,    -- e.g. 'Questioner and Storyteller', 'Mutual Deep Substance'
+- `dynamic_label_ka` VARCHAR(120) NOT NULL,
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT uq_communication_relation UNIQUE (option_a_id, option_b_id),
+- CONSTRAINT check_no_self_communication_relation CHECK (option_a_id != option_b_id)
+- *Usage:* Powers JESTER AI first-conversation starter crafting and pacing guidance without calculating clinical compatibility scores.
+
+---
+
+## 🎯 Intent System V1 Schema Specification (Architecture Blueprint)
+
+To capture what users are seeking on JESTER right now without mode-switching fragmentation, generic dating traps, or conflating temporal intent with marital status or family planning, the Intent System V1 defines the following normalized entities:
+
+### 1. `public.intent_categories`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- 'social_connection', 'dating_romance', 'activity_practical', 'exploratory'
+- `name_en` VARCHAR(100) NOT NULL,
+- `name_ka` VARCHAR(100) NOT NULL,
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 2. `public.intent_options`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `category_id` UUID NOT NULL REFERENCES public.intent_categories(id) ON DELETE CASCADE,
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- 'friendship', 'dating_open', 'dating_serious', 'meaningful_chat', 'activity_partner', 'collaboration', 'just_exploring'
+- `name_en` VARCHAR(100) NOT NULL,
+- `name_ka` VARCHAR(100) NOT NULL,
+- `definition_en` TEXT NOT NULL,
+- `definition_ka` TEXT NOT NULL,
+- `badge_icon` VARCHAR(30),                    -- 'users', 'sparkles', 'heart', 'message-circle', 'compass', 'cpu', 'search'
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 3. `public.user_intents` (Active Declared Intent State)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `primary_intent` VARCHAR(60) NOT NULL REFERENCES public.intent_options(slug) ON DELETE RESTRICT,
+- `secondary_intents` JSONB NOT NULL DEFAULT '[]'::jsonb,  -- Array of max 2 slugs
+- `visibility` VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'connections_only', 'hidden')),
+- `source` VARCHAR(30) NOT NULL DEFAULT 'declared' CHECK (source IN ('onboarding', 'profile_edit', 'skipped')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* Governed by RLS. Users update only their own row. Hidden intent is suppressed from public profiles and target AI prompts, but remains active internally for bilateral discovery partitioning.
+
+### 4. `public.intent_relations` (Compatibility & Alignment Matrix)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `intent_a_slug` VARCHAR(60) NOT NULL REFERENCES public.intent_options(slug) ON DELETE CASCADE,
+- `intent_b_slug` VARCHAR(60) NOT NULL REFERENCES public.intent_options(slug) ON DELETE CASCADE,
+- `relation_type` VARCHAR(30) NOT NULL CHECK (relation_type IN ('symmetric_match', 'aligned_soft', 'partitioned', 'universal')),
+- `alignment_label_en` VARCHAR(120) NOT NULL,
+- `alignment_label_ka` VARCHAR(120) NOT NULL,
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT uq_intent_relation UNIQUE (intent_a_slug, intent_b_slug),
+- CONSTRAINT check_no_self_intent_relation CHECK (intent_a_slug != intent_b_slug)
+- *Usage:* Evaluated by Discovery engine to partition mutually incompatible intents and calculate candidate relevance boosts.
+
+### 5. `public.user_intent_history` (Private Transition Audit Log)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `previous_primary` VARCHAR(60),
+- `new_primary` VARCHAR(60) NOT NULL,
+- `previous_secondaries` JSONB,
+- `new_secondaries` JSONB,
+- `changed_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Security Note:* Strictly **SERVICE-ONLY**. All privileges revoked from `authenticated`, `anon`, and `public`. Past intentions must never be exposed or weaponized.
+
+---
+
+## ✍️ Prompts / Self-Expression System V1 Schema Specification (Architecture Blueprint)
+
+To capture what a person actually sounds like, their conversational rhythm, humor, and unique perspective without creating database-only chip profiles or clinical psychological typologies, the Prompts / Self-Expression System V1 defines the following normalized entities:
+
+### 1. `public.prompt_categories` (Curated Prompt Taxonomy)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- 'voice_quirks', 'curiosities', 'daily_reality', 'connection', 'perspectives', 'action'
+- `name_en` VARCHAR(100) NOT NULL,
+- `name_ka` VARCHAR(100) NOT NULL,
+- `description_en` TEXT,
+- `description_ka` TEXT,
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 2. `public.prompt_templates` (Standardized Prompt Question Library)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `category_id` UUID NOT NULL REFERENCES public.prompt_categories(id) ON DELETE CASCADE,
+- `slug` VARCHAR(60) NOT NULL UNIQUE,          -- e.g. 'unnecessary_hill', 'talk_forever', 'ordinary_day', 'get_me_talking', etc.
+- `prompt_text_en` TEXT NOT NULL,              -- e.g. 'A completely unnecessary hill I''ll die on...'
+- `prompt_text_ka` TEXT NOT NULL,              -- e.g. 'სრულიად უაზრო პრინციპი, რომელსაც ბოლომდე დავიცავ...'
+- `placeholder_en` TEXT,                       -- e.g. 'Tell us about that tiny passionate debate...'
+- `placeholder_ka` TEXT,
+- `sort_order` INTEGER DEFAULT 100,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 3. `public.user_prompts` (Active Declared User Prompts & Answers)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `prompt_template_id` UUID NOT NULL REFERENCES public.prompt_templates(id) ON DELETE RESTRICT,
+- `answer` VARCHAR(250) NOT NULL,              -- Concise answers (max 250 chars)
+- `sort_order` SMALLINT NOT NULL CHECK (sort_order BETWEEN 1 AND 3),
+- `visibility` VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'connections_only', 'hidden')),
+- `source` VARCHAR(30) NOT NULL DEFAULT 'human' CHECK (source IN ('human', 'ai_assisted_edited')),
+- `moderation_status` VARCHAR(20) NOT NULL DEFAULT 'approved' CHECK (moderation_status IN ('approved', 'flagged', 'rejected', 'pending_review')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `moderated_at` TIMESTAMPTZ,
+- CONSTRAINT uq_user_prompt_template UNIQUE (user_id, prompt_template_id),
+- CONSTRAINT uq_user_prompt_order UNIQUE (user_id, sort_order)
+- *Invariants:*
+  - Max 3 published prompts per user enforced via trigger `check_user_prompt_limit` and check constraint.
+  - Answers must be between 3 and 250 characters.
+  - Governed by RLS: viewable by authenticated users if target user is discoverable and no active block exists; editable and deletable only by the owner.
+  - Moderation status `rejected` hides the prompt from public discovery and API responses while notifying the owner.
+
+---
+
+## 🧭 Discovery Preferences System V1 Schema Specification (Architecture Blueprint)
+
+To give users transparent control over who and what JESTER shows them without creating an exclusionary filter marketplace or compromising private birth dates, the Discovery Preferences System V1 defines the following normalized entity:
+
+### 1. `public.user_discovery_preferences` (Owner-Only Candidate Steering Controls)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `age_min` SMALLINT NOT NULL DEFAULT 18 CHECK (age_min >= 18 AND age_min <= age_max),
+- `age_max` SMALLINT NOT NULL DEFAULT 99 CHECK (age_max >= age_min AND age_max <= 99),
+- `age_dealbreaker` BOOLEAN NOT NULL DEFAULT true,
+- `target_genders` JSONB NOT NULL DEFAULT '["all"]'::jsonb, -- Array of ['man'], ['woman'], ['non_binary'], or ['all']
+- `location_scope` VARCHAR(30) NOT NULL DEFAULT 'same_city' CHECK (location_scope IN ('same_city', 'same_country', 'regional_nearby', 'anywhere')),
+- `location_dealbreaker` BOOLEAN NOT NULL DEFAULT false,
+- `target_intents` JSONB NOT NULL DEFAULT '[]'::jsonb,      -- Optional intent filters (empty = natural bilateral compatibility)
+- `astrology_mode` VARCHAR(30) NOT NULL DEFAULT 'full_insights' CHECK (astrology_mode IN ('full_insights', 'minimal_insights', 'hidden')),
+- `diversity_level` VARCHAR(30) NOT NULL DEFAULT 'balanced' CHECK (diversity_level IN ('focused', 'balanced', 'adventurous')),
+- `source` VARCHAR(30) NOT NULL DEFAULT 'default_derived' CHECK (source IN ('default_derived', 'user_configured', 'reset_to_default')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants & Security:*
+  - **Strictly Owner-Only:** Protected by RLS (`user_id = auth.uid()`). Revoked from `anon` and `public`. Never exposed to other users or serialized in public profile endpoints.
+  - **Zero Filter Notification:** Excluded candidates are never notified that they were filtered out.
+  - **Independent from Inbound Discoverability:** Operates as outbound candidate retrieval criteria, completely independent of `profiles.is_discoverable`.
+
+
+
 
 
 
