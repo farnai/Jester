@@ -15,7 +15,7 @@ from backend.app.astrology.transits import compute_daily_transits, get_daily_gui
 from backend.app.auth.dependencies import get_current_user, get_optional_user, require_copywriter_or_admin
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.compatibility.engine import CompatibilityEngine
-from backend.app.connections.router import get_canonical_pair, get_canonical_pair_seed
+from backend.app.core.canonical import canonical_pair, canonical_pair_seed
 from backend.app.core.database import get_db, db_manager
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.interpretation.engine import interpretation_engine
@@ -701,7 +701,7 @@ async def compare_preview(
             raise PrivacySafeNotFoundException("User not found or unavailable.")
 
         if not target_prof["is_discoverable"]:
-            u_min, u_max = sorted([source_id, target_id])
+            u_min, u_max = canonical_pair(source_id, target_id)
             cur.execute("SELECT public.has_active_connection(%s, %s) as is_active;", (u_min, u_max))
             conn_res = cur.fetchone()
             if not conn_res or not conn_res["is_active"]:
@@ -734,7 +734,7 @@ async def compare_preview(
         cur.execute("SELECT user_id, data_version, birth_time_precision FROM public.birth_data WHERE user_id IN (%s, %s);", (source_id, target_id))
         bd_map = {r["user_id"]: r for r in cur.fetchall()}
 
-    user_a, user_b = get_canonical_pair(source_id, target_id)
+    user_a, user_b = canonical_pair(source_id, target_id)
     bd_a = bd_map.get(user_a, {"data_version": 1, "birth_time_precision": "exact"})
     bd_b = bd_map.get(user_b, {"data_version": 1, "birth_time_precision": "exact"})
 
@@ -769,7 +769,7 @@ async def compare_preview(
         person_b_placements=placements_map[user_b],
     )
 
-    pair_seed = get_canonical_pair_seed(user_a, bd_a["data_version"], user_b, bd_b["data_version"])
+    pair_seed = canonical_pair_seed(user_a, bd_a["data_version"], user_b, bd_b["data_version"])
 
     enriched_signals = interpretation_engine.resolve_signals(
         calc_result.signals,

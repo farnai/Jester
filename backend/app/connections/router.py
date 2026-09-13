@@ -8,25 +8,23 @@ from backend.app.auth.models import AuthenticatedUser
 from backend.app.core.database import get_db
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.connections.models import ConnectionCreate, ConnectionResponse, ConnectionTransition
+from backend.app.core.canonical import canonical_pair, canonical_pair_seed
 
 router = APIRouter(prefix="/connections", tags=["connections"])
 
 
 def get_canonical_pair(u1: uuid.UUID, u2: uuid.UUID) -> tuple[uuid.UUID, uuid.UUID]:
-    if u1 == u2:
-        raise JesterAPIException(status_code=400, message="Cannot connect with yourself", error_code="invalid_pair")
-    return (u1, u2) if str(u1) < str(u2) else (u2, u1)
+    """
+    Application-layer wrapper around core canonical_pair that preserves existing
+    JesterAPIException behavior for HTTP endpoints.
+    """
+    try:
+        return canonical_pair(u1, u2)
+    except ValueError as e:
+        raise JesterAPIException(status_code=400, message="Cannot connect with yourself", error_code="invalid_pair") from e
 
 
-def get_canonical_pair_seed(u1: uuid.UUID, ver1: int, u2: uuid.UUID, ver2: int) -> str:
-    """
-    Returns the canonical, symmetric, version-aware relationship pair seed.
-    Ensures identical seed generation regardless of caller/target order.
-    """
-    if str(u1) < str(u2):
-        return f"{u1}:{u2}:{ver1}:{ver2}"
-    else:
-        return f"{u2}:{u1}:{ver2}:{ver1}"
+get_canonical_pair_seed = canonical_pair_seed
 
 
 @router.get("", response_model=list[ConnectionResponse])

@@ -11,7 +11,7 @@ from backend.app.compatibility.engine import CompatibilityEngine
 from backend.app.core.database import get_db
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.comparisons.models import CompareRequest, StructuredCompatibilityResponse
-from backend.app.connections.router import get_canonical_pair, get_canonical_pair_seed
+from backend.app.core.canonical import canonical_pair, canonical_pair_seed
 from backend.app.interpretation.engine import interpretation_engine
 
 router = APIRouter(tags=["compare"])
@@ -36,7 +36,7 @@ async def compare_users(
             message="Cannot compare a user with themselves.",
         )
 
-    user_a, user_b = get_canonical_pair(current_user.id, payload.target_user_id)
+    user_a, user_b = canonical_pair(current_user.id, payload.target_user_id)
 
     with db.cursor() as cur:
         # Check block status first to preserve privacy-safe 404
@@ -78,7 +78,7 @@ async def compare_users(
         )
         existing = cur.fetchone()
 
-        pair_seed = get_canonical_pair_seed(user_a, ver_a, user_b, ver_b)
+        pair_seed = canonical_pair_seed(user_a, ver_a, user_b, ver_b)
         if (
             existing
             and existing["user_a_birth_data_version"] == ver_a

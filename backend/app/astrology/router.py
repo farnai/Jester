@@ -2,8 +2,8 @@ import uuid
 from fastapi import APIRouter, Depends, status
 import psycopg
 
-from backend.app.astrology.models import SafeDerivedAstrologyResponse
-from backend.app.astrology.natal import recalculate_user_astrology
+from backend.app.astrology.models import BirthDataInput, SafeDerivedAstrologyResponse
+from backend.app.astrology.natal import recalculate_user_astrology, save_birth_data_and_calculate
 from backend.app.astrology.calculator import longitude_to_sign
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.models import AuthenticatedUser
@@ -14,6 +14,28 @@ from backend.app.astrology.debug import router as debug_router
 
 router = APIRouter(prefix="/astrology", tags=["astrology"])
 router.include_router(debug_router)
+
+
+@router.post(
+    "/birth-data",
+    response_model=SafeDerivedAstrologyResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def save_birth_data(
+    payload: BirthDataInput,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> SafeDerivedAstrologyResponse:
+    """
+    Saves user birth data and atomically calculates and persists natal profile:
+    Validates input -> Computes Swiss Ephemeris -> Atomic DB transaction writes:
+    birth_data, astro_private, and astro_safe_profile.
+    """
+    return save_birth_data_and_calculate(
+        user_id=current_user.id,
+        birth_data=payload,
+        db=db,
+    )
 
 
 @router.post(
