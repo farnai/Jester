@@ -426,6 +426,28 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Interactive Action Anchor**: Every prompt card features a dedicated `[ 💬 Reply to this ]` button, inviting immediate low-friction conversational entry.
 - **Authentic Voice Invariant**: Displays user-authored text exactly as approved. AI never generates profile answers without user review. Empty prompts simply do not render.
 
+### 8.11 Profile Astrology Presentation
+*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+- **The Big Three Badges**: Displays Sun Sign, Moon Sign, and Ascendant Sign (or *"Unknown"* if birth time was omitted).
+- **Three Functional Themes**:
+  - **Communication Rhythm (Mercury sign + element)**: E.g. *"Fast intellectual banter with low patience for small talk."*
+  - **Emotional Rhythm (Moon + Venus signs)**: E.g. *"Needs emotional autonomy before processing intense feelings."*
+  - **Drive & Curiosity (Sun + Mars signs)**: E.g. *"Motivated by creative independence and rapid momentum."*
+- **Primary Element & Modality Pill**: E.g. `[ 🔥 Primary Fire • Fixed Momentum ]`.
+- **Anti-Horoscope Guardrails**: The profile never displays raw degrees, house boundaries, medical claims, fatalistic predictions, or stereotypical zodiac insults.
+
+### 8.12 Trust, Photo Gallery & Face Verification UI
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+- **Multi-Photo Carousel / Grid**: Supports up to 6 photos. Drag/tap to reorder. Clear star badge on Primary Photo (`is_primary = true`).
+- **No-Photo State**: If 0 photos are uploaded, renders a friendly profile banner: *"Add a photo of yourself to appear in Discovery."*
+- **Verified Trust Badge**: If `is_verified = true`, renders subtle accent checkmark `✓ Photo Verified` alongside the display name. Tooltip explains: *"JESTER verified that this person's live selfie matches their profile photo."*
+- **Face Verification Flow**:
+  - Initiates 5-minute ephemeral camera session (`POST /v1/verification/face/session`).
+  - Active liveness challenge (detects depth/motion to prevent screen/paper spoofing).
+  - Encrypted upload evaluated in background; returns instant verified/failed feedback.
+  - Capped to 3 attempts per 24 hours. Verification media is private evidence and never displayed in gallery.
+- **Photo Change Invalidation Warning**: If a verified user attempts to change their primary photo, an in-app confirmation warns: *"Changing your primary photo will require re-verifying your face."*
+
 ---
 
 ## 9. People Discovery
@@ -499,6 +521,30 @@ The Discovery UI evaluates three relationship types:
   - `[ 💡 Shared Curiosities ]`: Semantic interest graph clusters.
 - **Qualitative Explainability Cards**: Eliminates clinical percentage match scores. Every discovery card articulates a clear human rationale (e.g. *"You both love photography and are looking for friendship in Tbilisi"*).
 - **Graceful Pool Depletion**: If tight preferences yield $< 5$ candidates, surfaces an inline notice (*"Your current settings are very specific"*); if exhausted, provides a 1-tap `[ 🌍 Broaden to Entire Country ]` action.
+
+### 9.12 Astrology in Discovery & Relevance Ranking
+*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+- **Anti-Filtering Invariant**: Astrology is **strictly prohibited** from acting as a hard search filter. Users cannot exclude candidates by zodiac sign or require minimum astrological match thresholds.
+- **10% Soft Relevance Signal**: Contributes a capped 10% weight to candidate ranking to surface relational chemistry without overriding declared human intent (25%), location (20%), interests (20%), values (15%), or prompts (10%).
+- **Qualitative Dynamic Tags**: Surfaces observational hooks on candidate cards (e.g. *"Creative Push-Pull"*, *"Conversational Rapport"*) rather than percentage scores.
+- **Astrology Depth Respect**: If viewer sets `astrology_mode = 'hidden'`, discovery cards suppress all astrological terms and hooks, focusing purely on human interests and shared values.
+
+### 9.13 Trust & Photo Eligibility in Discovery
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+- **Mandatory Photo Gate**: Candidates MUST have at least 1 valid primary photo to appear in the Discovery feed. Accounts without photos remain private.
+- **Unverified Inclusion**: Unverified users with authentic photos appear normally in candidate feeds. Verification is a trust badge, NOT a discriminatory gate.
+- **Badge Presentation**: Verified candidates render the subtle `✓ Photo Verified` badge alongside their display name on candidate cards.
+- **User Preference Steering**: Viewers can optionally enable *"Prioritize verified profiles"* in their Discovery settings to surface verified candidates with higher ranking weight.
+- **Instant Block & Report Actions**: Discovery cards feature accessible `[ 🚫 Block ]` and `[ 🚩 Report ]` options directly from the card action menu.
+
+### 9.14 Behavioral Intelligence & Diversity Controls in Discovery
+*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+- **Transparent Human Explainability**: Candidate cards influenced by behavioral affinity surface humble, respectful rationale chips (*"You've both been exploring analog photography lately"*), avoiding creepy "algorithm knows you" claims.
+- **6 / 3 / 1 Frozen Diversity Delivery**: The client feed preserves candidate variety across 6 Direct Resonance, 3 Complementary Contrast, and 1 Serendipitous Wildcard card per 10-candidate cycle, completely preventing echo-chamber narrowing.
+- **Sanitized Telemetry Dispatch**: The web client batches observable engagement events (profile opens, prompt expansions, dwell time) and flushes via `POST /v1/telemetry/events` every 30 seconds or on feed navigation. Payloads are strictly stripped of coordinates, message text, and private fields.
+- **Personalization Sovereignty Controls**: User Settings includes a dedicated *"Personalization & Intelligence"* panel featuring:
+  - `[ Toggle: Learn from my activity ]` (when disabled, feed uses 100% declared matching).
+  - `[ Button: Reset Personalization Data ]` (immediately wipes behavioral affinity weights and restores clean baseline).
 
 ---
 

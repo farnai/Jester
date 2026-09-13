@@ -62,7 +62,7 @@ Jester/
 │   │   ├── natal.py          # Natal orchestration (atomic DB insert -> calculate -> persist)
 │   │   ├── aspects.py        # Angular aspects (Conjunction, Sextile, Square, Trine, Opposition) & orbs
 │   │   ├── router.py         # /v1/astrology/* endpoints (POST /v1/astrology/birth-data, recalculate)
-│   │   ├── transits.py       # [STUB] Transit calculations
+│   │   ├── transits.py       # Real planetary transits & daily energy guidance (488 lines, 19 tests)
 │   │   └── validation.py     # Date, timezone, precision, and coordinate validators
 │   ├── auth/
 │   │   ├── dependencies.py   # HTTPBearer token extraction & get_current_user guard
@@ -102,6 +102,8 @@ Jester/
 │   ├── profiles/             # User profile endpoints (/v1/profiles/*)
 │   ├── prompts/              # [SPEC] Prompts & Self-Expression System V1 (/v1/prompts/*)
 │   ├── social/               # [SPEC] Social Behavior & Energy Dynamics V1 (/v1/social-behavior/*)
+│   ├── telemetry/            # [SPEC] Behavioral Intelligence & Telemetry V1 (/v1/telemetry/*)
+│   ├── trust/                # [SPEC] Trust & Verification System V1 (/v1/verification/*, /v1/safety/*)
 │   ├── users/                # User identity endpoint (/v1/users/me)
 │   └── values/               # [SPEC] Values System & Guiding Compass V1 (/v1/values/*)
 └── supabase/migrations/      # SQL schema and policy migrations
@@ -227,14 +229,31 @@ Jester/
 3. **Tier 3 (JESTER Intelligence & Diversity Reranking)**: Calculates deep synastry dimensions, generates qualitative human explainability reasons, injects complementary diversity (60% direct resonance, 30% complementary dynamic, 10% serendipity wildcard), and applies recent view/dismissal rotation decay.
 4. **Paginated Feed Exposure**: Returns clean cursor-paginated `DiscoveryFeedResponse` with zero raw percentage match scores.
 
+### 15. Trust & Verification Lifecycle Flow
+*(Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+1. **Photo Upload & Gallery Gate**: User uploads 1 to 6 photos to `public.profile_photos` via `avatars` storage bucket. Exactly 1 photo is designated `is_primary = true`. At least 1 photo is strictly required to appear in Discovery.
+2. **Face Verification Session (`POST /v1/verification/face/session`)**: Ephemeral liveness session created; returns 5-minute signed token.
+3. **Biometric Evaluation (`POST /v1/verification/face/submit`)**: Ephemeral selfie analyzed via `VerificationProvider` abstraction; matches live selfie against primary profile photo.
+4. **Private Evidence Storage**: Selfie media stored in private encrypted bucket `verification-evidence` (`public = false`, REVOKE ALL from clients); permanently deleted after 30 days. Never exposed to clients or passed to JESTER AI.
+5. **Decoupled Trust Badge**: If similarity $\ge 85\%$, sets `user_verifications.status = 'verified'`, granting `✓ Photo Verified` badge. Primary photo modification resets status.
+6. **Safety & Reporting (`POST /v1/safety/report`, `POST /v1/safety/block`)**: Immediate reciprocal blocking with zero existence oracles; structured community reports routed to platform moderation.
+
+### 16. Behavioral Intelligence Telemetry, Decay & Discovery Reranking Flow
+*(Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+1. **Sanitized Telemetry Ingestion (`POST /v1/telemetry/events`)**: Client batches observable product actions (candidate impressions, profile opens, why-aspect expansions, request acceptances). Payload strictly strips PII, message bodies, raw coordinates, and biometric data.
+2. **Storage & Auto-Pruning**: Ingests into `public.behavioral_events` (partitioned monthly; hard-deleted after 60 days via TTL background vacuum). Client access revoked.
+3. **Decay & Signal Aggregation Engine**: Nightly background worker (`jobs/aggregate_behavioral_signals.py`) derives decayed interest affinity weights ($t_{1/2} = 30\text{ days}$) into `public.user_interest_affinity` and macro behavioral metrics into `public.user_behavioral_signals`.
+4. **Discovery Modulation & 6/3/1 Diversity Guarantee**: In Discovery Tier 2/3, behavioral affinity contributes $\le 30\%$ of candidate relevance scoring, operating strictly within allocated diversity buckets (6 Direct Resonance, 3 Complementary Contrast, 1 Serendipitous Wildcard). It is mathematically barred from shrinking contrast or eliminating wildcards.
+5. **Sovereign User Control (`POST /v1/users/me/personalization/reset`)**: Users can toggle activity learning off or instantly wipe all derived affinity records, reverting candidate generation immediately to pure declared baselines.
+
 ---
 
 ## 🎨 The Astrology & Semantic Context → JESTER Content Pipeline
 
 ```text
-ASTROLOGICAL DATA + INTEREST GRAPH + LOCATION/ORIGIN + LIFESTYLE CADENCE + VALUES COMPASS + SOCIAL DYNAMICS + COMMUNICATION RHYTHM + INTENT PURPOSE + PROMPTS / VOICE + DISCOVERY PREFERENCES
-       ↓ (PySwissEph Engine, Semantic Graph, Geo, Lifestyle, Values, Social, Communication, Intent, Prompts & Discovery Preferences)
-DETERMINISTIC SIGNALS, ASPECTS, SHARED TOPICS, CADENCE, PHILOSOPHICAL RESONANCE, SOCIAL HARMONY, CONVERSATION BRIDGES, INTENT ALIGNMENT, AUTHENTIC VOICE HOOKS & ELIGIBILITY FILTERS
+ASTROLOGICAL DATA + INTEREST GRAPH + LOCATION/ORIGIN + LIFESTYLE CADENCE + VALUES COMPASS + SOCIAL DYNAMICS + COMMUNICATION RHYTHM + INTENT PURPOSE + PROMPTS / VOICE + DISCOVERY PREFERENCES + TRUST CONTEXT + BEHAVIORAL AFFINITY
+       ↓ (PySwissEph Engine, Semantic Graph, Geo, Lifestyle, Values, Social, Communication, Intent, Prompts, Discovery, Trust & Behavioral)
+DETERMINISTIC SIGNALS, ASPECTS, SHARED TOPICS, CADENCE, PHILOSOPHICAL RESONANCE, SOCIAL HARMONY, CONVERSATION BRIDGES, INTENT ALIGNMENT, AUTHENTIC VOICE HOOKS, ELIGIBILITY FILTERS, VERIFIED BADGES & OBSERVED AFFINITY
        ↓ (Rule-Based Aggregator & Taxonomy)
 CORE INTERPERSONAL DYNAMICS & CONVERSATION ANCHORS
        ↓ (SynastryEngine / Interpretation Resolver)
@@ -262,7 +281,10 @@ USER-FACING INSIGHT (Short, witty, human-readable)
 - **Intent Primacy & Anti-Romantic Assumption Invariant**: Intent captures current temporal purpose on JESTER without mode-switching fragmentation. Astrological chemistry must never be framed as romantic destiny if either participant has declared platonic friendship or collaboration intent. Intent history is strictly private.
 - **Prompts & Authentic Human Voice Invariant**: Prompts exist to reveal what a person actually sounds like. They must never be auto-generated or hallucinated by AI without explicit user editing and approval. Prompts provide authentic user-authored context for conversation starters and connection requests, but must never be treated by JESTER AI as clinical psychological truth or psychiatric profiles.
 - **Discovery Preferences & Inbound Discoverability Boundary**: Discovery preferences are strictly private, owner-only outbound candidate selection criteria. They must never be exposed or leaked as existence oracles. Inbound discoverability (`profiles.is_discoverable`) determines if a user is eligible to be shown; outbound preferences determine who the user sees. Filtering is anti-marketplace: zodiac signs, physical attributes, income, and sensitive habits are permanently barred from hard exclusionary filtering.
+- **Trust & Verification Decoupling Invariant**: Profile photos, biometric verification, and human trustworthiness are completely separate concepts. JESTER strictly forbids numeric trust scores. Verification proves only that an ephemeral selfie matches the primary profile photo. Verification media is stored in a private, client-inaccessible bucket, never exposed in public APIs, and never passed to JESTER AI.
+- **Behavioral Intelligence & Anti-Profiling Invariant**: Behavioral intelligence captures observable product interactions strictly to refine candidate relevance and conversation starters. It is fundamentally barred from performing psychological profiling, diagnosing mental health, computing personality or attractiveness scores, or scoring communication response latency. Private message bodies are never parsed. Declared human truth always outranks behavioral observation.
 - **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
+
 
 
 

@@ -139,13 +139,18 @@ A non-discoverable profile must not be exposed through normal person/profile acc
 
 Blocked users must not be able to access protected profile information or safe astrology.
 
-## 3.3 Separation of Profile Photo and Face Verification
+## 3.3 Separation of Profile Photo and Face Verification & Trust System V1
 
-JESTER enforces a strict conceptual and architectural boundary:
-* **Profile Photo (Avatar):** An aesthetic, user-controlled element for visual social presentation and self-expression.
-* **Face Verification:** An independent biometric and identity verification security capability.
+*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 
-These must **never** be conflated or coupled in schema, authorization, or user flow.
+JESTER enforces a strict conceptual, architectural, and security boundary:
+* **Profile Photo (User Gallery):** An aesthetic, user-controlled element for visual social presentation and self-expression (supporting 1 to 6 photos, with 1 primary photo).
+* **Face Verification:** An independent biometric and identity verification security capability that evaluates liveness and matches an ephemeral selfie against the active primary profile photo.
+* **Trust Model:** Trust is evaluated through multi-layered account, profile, verification, community report, and moderation standing. JESTER strictly **never computes or displays a numeric "Trust Score"**.
+* **Limited Proof Invariant:** Verification proves only that a live human matched the profile photo at the time of verification. It does **NOT** prove trustworthiness, goodness, safety, or compatibility.
+* **Discovery Gate:** At least 1 clear, authentic primary photo is required to appear in Discovery. Unverified users with a valid photo appear normally in Discovery; verified users receive a subtle `✓ Photo Verified` badge.
+
+These layers must **never** be conflated or coupled in schema, authorization, or user flow.
 
 ## 3.4 Domain Separation in the User Model
 
@@ -516,32 +521,48 @@ Modalities:
 
 ---
 
-# 7. Astrological Data Boundaries
+# 7. Astrological Data Boundaries & Integration System V1
 
-JESTER must distinguish between:
+*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 
-### Private astronomical data
+JESTER establishes a strict 5-layer architectural pipeline separating sensitive inputs from mathematical calculations, structured facts, and consumer presentation:
 
+```text
+LAYER 1: SOURCE BIRTH DATA (Private, user-owned, public.birth_data)
+       ↓
+LAYER 2: DETERMINISTIC CALCULATIONS (Server-only floats, public.astro_private)
+       ↓
+LAYER 3: STRUCTURED ASTROLOGICAL FACTS (Discrete signs/aspects, public.astro_safe_profile)
+       ↓
+LAYER 4: INTERPRETIVE RELATIONAL MEANING (Dimensions, signals, public.compatibility_results)
+       ↓
+LAYER 5: PRODUCT PRESENTATION (Witty JESTER voice, zero jargon, consumer UI)
+```
+
+### Core Product Axioms & Precedence Rules
+1. **"People first. Signals second. Scores last."**
+2. **"The insight becomes the invitation."**
+3. **Human Reality Outranks Astrological Symbolism:** Astrology is an interpretive signal, never a deterministic fact about character or behavior. Declared human choices (intent, values, lifestyle, communication) strictly outrank astrological interpretations and chart tendencies.
+4. **Anti-Filtering Invariant:** Astrology is **never** a hard filter in Discovery. No zodiac exclusions, no sign-based blocking, and no numerical compatibility cutoffs.
+5. **Score Creates Curiosity. Interpretation Creates Value:** JESTER never presents an unexplained percentage match score in discovery feeds.
+
+### Private astronomical data (Layer 2)
 Raw calculated information such as:
-
 * exact planetary longitudes;
 * Ascendant longitude;
 * house cusps;
 * retrograde state.
 
-This data is protected server-side.
+This data is strictly server-controlled (`public.astro_private`) with zero client access grants.
 
-### Safe derived information
-
+### Safe derived information (Layer 3 & 5)
 Information suitable for application-level exposure:
+* Sun sign, Moon sign, Ascendant sign (when birth time is available);
+* Mercury, Venus, Mars signs (safe DTO);
+* dominant element and dominant modality;
+* qualitative relational dynamic hooks (e.g. *"Dynamic Push-Pull"*).
 
-* Sun sign;
-* Moon sign;
-* Ascendant sign;
-* dominant element;
-* dominant modality.
-
-This separation is part of JESTER's privacy model.
+This separation is an immutable foundation of JESTER's privacy and product model.
 
 ---
 
@@ -1063,6 +1084,7 @@ The AI interprets data; it does not replace the deterministic calculation engine
 8. **Communication Context Without Response-Time Surveillance**: JESTER AI uses declared conversation depth, role pairing, and messaging format to craft natural starters and set healthy expectations, strictly never tracking or commenting on reply latency, scorekeeping response times, or diagnosing communication flaws ("dry texter"). Message bodies are never parsed for psychological profiling.
 9. **Intent Primacy & Anti-Romantic Assumption Invariant**: JESTER AI must strictly respect declared intent boundaries. Astrological chemistry (e.g. Venus-Mars aspects) must **never** be interpreted as romantic destiny or sexual pursuit if either participant has declared platonic friendship or collaboration intent. Declared user intent strictly governs astrological framing.
 10. **Prompt Context Without Psychological Stereotyping**: JESTER AI treats published prompt answers as authentic self-expression and contextual conversation anchors, **never as clinical psychological proof or moral diagnostic verdicts** (e.g. humorous exaggeration in a prompt is never converted into an antisocial diagnosis).
+11. **Behavioral Intelligence Context Without Psychological Profiling**: JESTER AI uses aggregated behavioral affinity tags (e.g. shared exploratory passion for creative projects) solely to guide conversational warmth, **strictly never using behavioral signals to psychologically diagnose users, label personality types, assign attachment styles, or diagnose conversational flaws**. Message bodies are never parsed for behavioral intelligence.
 
 ---
 
@@ -1303,19 +1325,42 @@ Synastry V1          ██████████  Implemented
 Social Graph         ██████████  Implemented
 Messaging            ██████████  Implemented
 Notifications        █████████░  Implemented
-Daily Transits       ██░░░░░░░░  Stub
-JESTER AI Voice      █░░░░░░░░░  Stub
+Daily Transits       ██████████  Implemented (488 lines, 19 tests)
+JESTER AI Voice      █████████░  Contracts & Library Implemented
+Astrology Int. V1    ██████████  Specified & Audited
 ```
 
-The mathematical specification for Synastry was completed and implemented as **Synastry V1 (`synastry-v1.0.0`)**, documented authoritatively in [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) and verified by 74 automated tests.
+The mathematical specifications are authoritatively defined in:
+- [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md) (Platform Astrology Architecture)
+- [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) (Synastry Engine V1)
+- [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md) (Discovery Preferences & 10% Astrology Weight)
+
+All calculations are verified by 83 automated astrology/compatibility tests and 290 tests repository-wide.
 
 ---
 
-# 35. Next Technical Milestones
+# 36. Behavioral Intelligence System V1
 
-With Synastry V1 fully operational, the remaining development milestones are:
+*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 
-1. **Daily Transit & Day Vibe Engine**: Implement `backend/app/astrology/transits.py` to calculate real-time transit aspects against user natal placements and generate short, witty daily observations.
-2. **JESTER Voice & Interpretation Pipeline**: Connect the structured signal output from Synastry V1 and Daily Transits to OpenAI API via `backend/app/interpretation/jester.py` using validated prompt templates.
-3. **Frontend Consumer Transformation**: Translate the raw astronomical data exposure in the web app into the witty, human-first JESTER experience (`ME → YOU → US → MORE PEOPLE`).
+JESTER introduces a disciplined, observable Behavioral Intelligence system to enhance candidate relevance and conversation starters without engaging in psychological profiling, surveillance, or feedback-loop manipulation.
+
+### 36.1 Guiding Principles
+- **"People first. Signals second. Scores last."**
+- **Strict Precedence Hierarchy:**
+  $$\text{Declared Human Truth} \gg \text{Observed Behavioral Telemetry} \gg \text{Inferred Recommendation Signals}$$
+- **Zero Psychological Scoring:** Behavioral intelligence tracks observable interactions within the product (e.g. candidate profile opens, prompt expansions, accepted connections). It **never** computes personality scores, attractiveness ratings, trust scores, or communication speed grades ("good texter").
+- **Private Messages Are Sacred:** Conversation message bodies are **never mined or tokenized** for behavioral profiling.
+
+### 36.2 The 6 / 3 / 1 Discovery Diversity Invariant
+To prevent algorithmic echo chambers and confirmation loops, candidate pools are mathematically anchored to JESTER's frozen diversity model:
+- **6 Cards (60%):** Direct Resonance (matches declared interests, core values, and top behavioral affinities).
+- **3 Cards (30%):** Complementary Contrast (healthy polarity, differing elements, complementary social rhythms).
+- **1 Card (10%):** Serendipitous Wildcard (unexpected high-synergy connection outside usual circles).
+Behavioral affinity is strictly restricted to ranking candidates *within* their allocated buckets; it can never eliminate complementary or wildcard profiles.
+
+### 36.3 User Sovereignty & Decay
+- **Exponential Decay:** All affinity signals decay with a 30-day half-life; inactive behavior naturally resets to declared baselines.
+- **One-Click Reset:** Users can instantly purge all derived behavioral affinity and restore pure declared matching via `POST /v1/users/me/personalization/reset`.
+- **Full Transparency:** Explainability indicators inform the user respectfully (*"Suggested because you recently explored creative profiles"*), never claiming to read minds.
 

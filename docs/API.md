@@ -60,28 +60,35 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Astrology
+### Astrology (Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))
 
 #### 6. Atomic Birth Data Onboarding — `POST /v1/astrology/birth-data`
 - **Auth**: Bearer JWT
-- **Body**: `BirthDataRequest(birth_date: date, birth_time: time|None, birth_timezone: str, latitude: float, longitude: float, place_label: str)`
-- **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
-- **Errors**: `400 placidus_polar_error` if latitude $> 66.5^\circ$; `400 invalid_timezone` if not IANA timezone; `400 invalid_coordinates` if out of range.
-- **Behavior**: Atomically persists `public.birth_data`, calculates Ephemeris planetary positions in `public.astro_private`, and derives safe profile in `public.astro_safe_profile` within a single backend-owned transaction.
+- **Body**: `BirthDataRequest(birth_date: date, birth_time: time|None, birth_time_precision: Literal["exact", "approximate", "unknown"], birth_timezone: str, latitude: float|None, longitude: float|None, place_label: str|None)`
+- **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, mercury_sign: str|None, venus_sign: str|None, mars_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
+- **Errors**: `400 placidus_polar_error` if latitude $> 66.5^\circ$; `400 invalid_timezone` if not valid IANA timezone; `400 invalid_coordinates` if out of range [-90, 90] / [-180, 180]; `400 invalid_birth_date` if future or prior to 1900.
+- **Behavior**: Validates inputs and calculates Swiss Ephemeris in memory BEFORE transaction. Then executes an atomic transaction writing `public.birth_data`, `public.astro_private` (server-only), and `public.astro_safe_profile`. If calculation fails, 0 database writes occur.
 
 #### 7. Recalculate Astrology — `POST /v1/astrology/profile/recalculate`
 - **Auth**: Bearer JWT
-- **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
+- **Response 200**: `SafeDerivedAstrologyResponse(user_id: UUID, sun_sign: str, moon_sign: str, ascendant_sign: str|None, mercury_sign: str|None, venus_sign: str|None, mars_sign: str|None, element_primary: str, modality_primary: str, source_birth_data_version: int, engine_version: str, updated_at: datetime)`
 - **Errors**: `404 birth_data_not_found` if `public.birth_data` row missing; `400 placidus_polar_error` if latitude $> 66.5^\circ$.
+- **Behavior**: Recalculates natal chart and safe profile from existing stored birth data, synchronizing `astro_private` and `astro_safe_profile`.
 
 #### 8. Get Own Safe Astrology — `GET /v1/astrology/profile/safe-astro`
 - **Auth**: Bearer JWT
-- **Response 200**: `SafeDerivedAstrologyResponse` (Auto-recalculates if birth_data exists).
+- **Response 200**: `SafeDerivedAstrologyResponse` (Auto-recalculates if birth_data exists). Returns safe derived signs, element, and modality.
 
 #### 9. Get Person Safe Astrology — `GET /v1/astrology/people/{target_user_id}/safe-astro`
 - **Auth**: Bearer JWT
 - **Response 200**: `SafeDerivedAstrologyResponse`
-- **Errors**: `404 PrivacySafeNotFoundException` if target non-discoverable or blocked.
+- **Errors**: `404 PrivacySafeNotFoundException` if target is non-discoverable or mutually blocked.
+- **Privacy Boundary**: Exposes only public safe signs and elements. Coordinates, exact birth time, birth date, and raw degree longitudes are NEVER returned.
+
+#### 9a. Developer Debug Astrology (Non-Production Only) — `GET /astrology/debug/my-astro`
+- **Auth**: Bearer JWT
+- **Response 200**: Returns full private calculation (`astro_private`) and raw birth parameters (`birth_data`) for caller only.
+- **Errors**: `403 ForbiddenException` if `ENV == "production"`. Strictly disabled in production.
 
 ---
 
@@ -703,6 +710,104 @@ Authorization: Bearer <supabase_jwt_token>
 - **Auth**: Public or Bearer JWT
 - **Response 200**: `DiscoveryOptionsResponse`
   - Returns localized labels, descriptions, and defaults for `location_scopes`, `gender_options`, `astrology_modes`, and `diversity_levels`.
+
+---
+
+### Trust, Verification & Safety (Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))
+
+#### 84. List Own Profile Photos — `GET /v1/profiles/me/photos`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[ProfilePhotoDTO(id: UUID, url: str, is_primary: bool, sort_order: int, created_at: datetime)]`
+
+#### 85. Upload Profile Photo — `POST /v1/profiles/me/photos`
+- **Auth**: Bearer JWT
+- **Body**: `multipart/form-data` containing image file (`image/jpeg`, `image/png`, `image/webp`, max 5MB).
+- **Response 201**: `ProfilePhotoDTO`
+- **Errors**: `400 max_photos_exceeded` if user already has 6 photos; `400 inappropriate_media` if NSFW scan fails.
+- **Behavior**: Stores in `avatars` bucket. If first photo, automatically marks as `is_primary = true` and updates `profiles.avatar_url`.
+
+#### 86. Set Primary Photo — `PATCH /v1/profiles/me/photos/{photo_id}/primary`
+- **Auth**: Bearer JWT
+- **Response 200**: `ProfilePhotoDTO`
+- **Invariants**: If the user has an active `verified` status, changing the primary photo automatically resets verification to `needs_review` or `expired` to prevent identity tampering.
+
+#### 87. Delete Profile Photo — `DELETE /v1/profiles/me/photos/{photo_id}`
+- **Auth**: Bearer JWT
+- **Response 204**: No Content
+- **Invariants**: If the primary photo is deleted and other photos remain, another photo must be promoted. If 0 photos remain, profile is automatically removed from public Discovery.
+
+#### 88. Start Face Verification Session — `POST /v1/verification/face/session`
+- **Auth**: Bearer JWT
+- **Response 200**: `VerificationSessionInitDTO(session_token: str, expires_in_seconds: int, challenge_type: str)`
+- **Errors**: `429 verification_rate_limited` if $> 3$ failed attempts in 24 hours.
+- **Behavior**: Generates an ephemeral session token valid for 5 minutes.
+
+#### 89. Submit Face Verification — `POST /v1/verification/face/submit`
+- **Auth**: Bearer JWT
+- **Body**: `VerificationSubmitRequest(session_token: str, selfie_payload: bytes)`
+- **Response 200**: `VerificationResultDTO(status: Literal["verified", "failed", "needs_review"], message: str)`
+- **Errors**: `400 session_expired`, `400 liveness_failed`, `429 rate_limited`.
+- **Security Boundary**: Verification selfie is evaluated server-side, encrypted into private `verification-evidence` bucket (`public = false`, auto-deleted after 30 days). NEVER exposed to clients or passed to JESTER AI.
+
+#### 90. Get Face Verification Status — `GET /v1/verification/face/status`
+- **Auth**: Bearer JWT
+- **Response 200**: `UserVerificationStatusDTO(status: str, is_verified: bool, verified_at: datetime|None, expires_at: datetime|None)`
+
+#### 91. Block User — `POST /v1/safety/block`
+- **Auth**: Bearer JWT
+- **Body**: `BlockRequest(target_user_id: UUID)`
+- **Response 200**: `{"status": "blocked", "target_user_id": UUID}`
+- **Behavior**: Inserts reciprocal block into `public.user_blocks` and transitions active connection to `blocked`. Immediately triggers reciprocal 404 on all endpoints. Zero notification sent to blocked user.
+
+#### 92. Unblock User — `POST /v1/safety/unblock`
+- **Auth**: Bearer JWT
+- **Body**: `UnblockRequest(target_user_id: UUID)`
+- **Response 200**: `{"status": "unblocked", "target_user_id": UUID}`
+
+#### 93. List Blocked Users — `GET /v1/safety/blocks`
+- **Auth**: Bearer JWT
+- **Response 200**: `list[BlockedUserDTO(blocked_id: UUID, display_name: str, blocked_at: datetime)]`
+
+#### 94. Submit Community Safety Report — `POST /v1/safety/report`
+- **Auth**: Bearer JWT
+- **Body**: `ReportCreateRequest(reported_user_id: UUID, reason: Literal["fake_profile", "harassment", "inappropriate_content", "spam_scam", "underage", "other"], details: str|None)`
+- **Response 201**: `{"status": "report_received", "report_id": UUID}`
+- **Privacy & Safety**: 100% confidential. Reported user is never informed of reporter identity. If reported account accumulates $\ge 3$ reports within 48 hours, outbound privileges are throttled pending moderator review.
+
+---
+
+### Behavioral Intelligence & Telemetry (Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))
+
+#### 95. Batch Ingest Telemetry Events — `POST /v1/telemetry/events`
+- **Auth**: Bearer JWT
+- **Body**: `BatchTelemetryRequest`
+  - `events`: `list[TelemetryEventDTO]` (max 50 events per batch)
+    - `event_name`: `str` (from canonical taxonomy: `candidate_profile_opened`, `why_opened`, `candidate_dismissed`, etc.)
+    - `target_id`: `UUID | None`
+    - `target_type`: `Literal["candidate", "interest", "prompt", "preference"] | None`
+    - `context`: `dict[str, Any]` (sanitized; capped `dwell_time_ms`, boolean flags; zero message text, zero coordinates)
+    - `client_timestamp`: `datetime`
+- **Response 202**: `{"status": "accepted", "ingested_count": int}`
+- **Security & Rate Limits**: Max 120 events/min per user. Velocity anomalies (<200ms inter-event latency) dropped. Raw events stored in `public.behavioral_events` (60-day auto-prune TTL). Client read access revoked.
+
+#### 96. Get Behavioral Personalization Settings — `GET /v1/users/me/behavioral-settings`
+- **Auth**: Bearer JWT
+- **Response 200**: `BehavioralSettingsResponse`
+  - `personalization_enabled`: `bool`
+  - `allow_activity_learning`: `bool`
+  - `last_reset_at`: `datetime | None`
+
+#### 97. Update Behavioral Personalization Settings — `PUT /v1/users/me/behavioral-settings`
+- **Auth**: Bearer JWT
+- **Body**: `BehavioralSettingsUpdateRequest(personalization_enabled: bool | None, allow_activity_learning: bool | None)`
+- **Response 200**: `BehavioralSettingsResponse`
+- **Invariants**: If `personalization_enabled = false`, Discovery Tier 2/3 ranking ignores all behavioral affinity signals, computing recommendations exclusively from declared profile attributes and deterministic synastry.
+
+#### 98. Reset Personalization History — `POST /v1/users/me/personalization/reset`
+- **Auth**: Bearer JWT
+- **Response 200**: `{"status": "reset_complete", "reset_at": datetime}`
+- **Invariants**: Immediately purges all rows in `public.user_interest_affinity` for the caller and resets `public.user_behavioral_signals` to default values. Declared interests, values, and profile data remain completely untouched.
+
 
 
 

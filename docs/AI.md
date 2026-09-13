@@ -207,6 +207,51 @@ JESTER AI ingests active discovery preferences to generate warm, empathetic, and
 
 ---
 
+## 🔮 Structured Astrology & Relational Dynamics Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests structured astronomical facts and pre-resolved synastry signals as grounding context for profile commentary, conversational icebreakers, and relationship explainability:
+
+### Operational Invariants:
+1. **Zero Independent Calculation:** JESTER AI must **never** attempt to independently calculate planetary positions, orbs, or chart aspects from text. It is purely an interpretive synthesizer of deterministically pre-calculated facts.
+2. **Zero Hallucination of Placements:** If a user's Ascendant or houses are `null` (due to unknown birth time or unprovided coordinates), JESTER AI must **never** guess, hallucinate, or invent a Rising sign or house placement.
+3. **Absolute Intent Primacy (Anti-Romantic Default):** When high-chemistry synastry signals (e.g. Venus conjunction Mars) are present between two users whose declared mutual intent is platonic (`friendship`, `activity_partner`, `creative_collaborator`), JESTER AI must translate that dynamic into creative spark, intellectual drive, or shared enthusiasm rather than romantic destiny.
+4. **Zero Astrological Jargon in User Copy:** Generated consumer copy must strictly adhere to the voice guardrails in `backend/app/interpretation/jester.py`. It must never reference aspect angles, orb numbers, or technical astrology jargon (e.g. *"Because your Venus forms a trine to Mars"*).
+5. **Human Reality Over Astrological Symbolism:** If a user's declared lifestyle or communication style conflicts with an astrological tendency (e.g. Mars in Aries vs. planned lifestyle), JESTER AI always validates and honors the declared human reality.
+
+---
+
+## 🛡️ Trust, Verification & Safety Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests high-level trust state to ensure conversation starters and relationship commentary respect safety boundaries without imposing moralistic judgments:
+
+### Operational Invariants:
+1. **Awareness of Verification Badge (Non-Prejudicial):** JESTER AI is aware of whether an account holds the `✓ Photo Verified` badge. However, it must **never** treat an unverified account with suspicion, contempt, or prejudice (e.g. never generate *"You shouldn't trust them because they aren't verified"*).
+2. **Zero Biometric / Selfie Ingestion:** JESTER AI, prompt builders, and LLM context synthesizers are **strictly forbidden** from accessing, ingesting, or referencing raw verification selfies, face vectors, or biometric templates.
+3. **Zero Trust Scoring or Moralizing:** The AI must **never** generate, quantify, or imply a numerical "Trust Score" (e.g. *"This person has an 82% trust rating"*), nor make sweeping moral claims (e.g. *"They are 100% safe"* or *"A genuinely good-hearted person"*). Verification proves facial match, not character.
+4. **Abuse Report Confidentiality:** Community reports, moderation flags, and disciplinary history are **strictly excluded** from AI prompt payloads to prevent biased or prejudicial commentary.
+5. **Safety Guard in Conversation Starters:** If a user account has moderation restrictions (`limited`), AI suppresses high-velocity or aggressive invitation prompts.
+
+---
+
+## 🧠 Behavioral Intelligence & Anti-Profiling Context for JESTER AI
+
+*(Authoritative Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+
+JESTER AI ingests aggregated behavioral affinity tags and macro engagement metrics strictly to surface warm, relevant conversation topics and explain candidate connections, without crossing into psychoanalysis:
+
+### Operational Invariants:
+1. **Conversational Common Ground, Never Psychological Profiling:** Behavioral affinity tags (e.g. shared exploratory passion for creative projects or trail hiking) serve strictly as conversational icebreakers. JESTER AI must **never** use behavioral telemetry to diagnose personality traits, deduce attachment styles, infer loneliness, or assign psychological archetypes.
+2. **Zero Message Mining Ingestion:** Private conversation message bodies are **never tokenized, parsed, or passed** into JESTER AI for behavioral intelligence or recommendation tuning.
+3. **Zero Communication Velocity Judgments:** JESTER AI must never judge reply speeds, score response times, or label participants as "dry texters", "anxious responders", or "ghosters". Pacing preferences are honored respectfully without moralizing.
+4. **Declared Truth Always Outranks Behavioral Inferences:** If a user's declared lifestyle is `early_riser` but late-night telemetry exists, JESTER AI honors the declared preference, never making patronizing or intrusive comments about browsing hours.
+5. **Humble, Transparent Explainability:** In conversational advice and discovery explanations, JESTER AI explains relevance through shared passions (*"You both seem drawn to analog synthesizers lately"*), strictly avoiding creepy, omniscient assertions (*"Our algorithm detected your subconscious desire"*).
+
+---
+
 ## 📁 File-by-File Inventory
 
 ### `backend/app/interpretation/contracts.py`

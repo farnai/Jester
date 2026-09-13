@@ -112,10 +112,15 @@ PostgreSQL security operates on the **Principle of Least Privilege**, separating
 | `public.prompt_templates` | `SELECT` (Templates) | `SELECT` (Templates) | 🟢 Full Access |
 | `public.user_prompts` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility & approved status), `INSERT, UPDATE, DELETE` (`user_id = auth.uid()`) | 🟢 Full Access |
 | `public.user_discovery_preferences` | 🚫 **REVOKED** | `SELECT, INSERT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.behavioral_events` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only; 60-day auto-prune TTL) |
+| `public.user_behavioral_signals` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only) |
+| `public.user_behavioral_settings` | 🚫 **REVOKED** | `SELECT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
 
 ---
 
 ## 🔒 Security & Privacy Invariants
+
+*(Authoritative Platform Architecture Specs: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md), [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md))*
 
 These invariants are permanent engineering constraints. Any pull request or refactoring that violates these rules is rejected.
 
@@ -169,9 +174,13 @@ These invariants are permanent engineering constraints. Any pull request or refa
 - **Invariant:** Behavioral affinity scores, interaction confidence, and internal cluster weights are strictly internal recommendation signals. They must **never** overwrite, mutate, or blur the boundary of a user's explicitly declared interests (`public.user_interests`).
 - **Enforcement:** All database privileges on `public.user_interest_affinity` are revoked from client roles (`authenticated`, `anon`, `public`). The API and JESTER intelligence engine never project unconfirmed behavioral labels (e.g., "You are an adventurous person") onto the user.
 
-### 9. Separation of Profile Presentation and Identity Verification
-- **Invariant:** Public profile imagery (`avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
-- **Enforcement:** Uploading or displaying a profile photo does not grant or imply verified status. Verification tokens, status, and biometric metadata are governed by dedicated security boundaries and never conflated with casual profile presentation.
+### 9. Separation of Profile Presentation and Identity Verification (Trust System V1)
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Public profile imagery (`public.profile_photos`, `profiles.avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
+- **Verification Evidence Isolation:** Ephemeral selfie verification media is stored exclusively in a private, encrypted storage bucket (`verification-evidence`) with `public = false`. All client roles (`authenticated`, `anon`, `public`) have zero access privileges (`REVOKE ALL`).
+- **Zero Biometric Data to JESTER AI:** Verification media, face vectors, and raw selfie frames are **NEVER** passed to LLMs, system prompts, or context synthesizers.
+- **Data Retention & Auto-Pruning:** Raw verification media is permanently deleted after 30 days. Only the boolean status, provider reference, and timestamp are retained.
+- **Bait-and-Switch Prevention:** If a verified user updates or replaces their primary profile photo, verification status is immediately reset to `needs_review` or `expired`.
 
 ### 10. Precise Geographic Coordinate Protection & Location Privacy
 - **Invariant:** Exact coordinates (`latitude`, `longitude`), street addresses, live GPS positioning, and continuous device tracking are sensitive personal data. They must **never** be publicly exposed, serialized in public client DTOs, or exposed in normal discovery feeds.
@@ -234,6 +243,15 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - Zero raw birth dates or exact timestamps are serialized; only dynamically computed integer age is exposed in candidate DTOs.
   - Hard dealbreakers are restricted to Age, Gender, and Intent; physical, racial, religious, or zodiac-sign filtering is architecturally prohibited.
 
+### 18. Behavioral Telemetry Hygiene, Anti-Profiling & Right-to-Reset (Behavioral Intelligence V1)
+*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Behavioral telemetry tracks observable in-product events strictly for candidate relevance and conversation starters. The system is fundamentally barred from performing psychological profiling, diagnosing personality traits, computing attractiveness tiers, scoring mental health, or scorekeeping communication response speeds.
+- **Enforcement:**
+  - `REVOKE ALL ON public.behavioral_events FROM anon, authenticated, public;`
+  - Ingestion via `/v1/telemetry/events` is strictly rate-limited and schema-sanitized; payloads strip message text, exact coordinates, birth data, and biometric evidence.
+  - Message bodies are **never mined or tokenized** for behavioral profiling.
+  - Raw telemetry records are automatically pruned after 60 days via partitioned table TTL.
+  - Right-to-Reset: Calling `POST /v1/users/me/personalization/reset` immediately purges all derived affinity weights (`user_interest_affinity`) and resets behavioral signals without affecting declared profile truth.
 
 ---
 

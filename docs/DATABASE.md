@@ -121,7 +121,21 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 ### `021_compatibility_evidence_trace.sql`
 - **Purpose**: Adds dedicated JSONB `evidence_trace` column to `public.compatibility_results` for deterministic auditability and explainability of Synastry V1 calculations.
 
+### `022_compatibility_dimensions.sql`
+- **Purpose**: Adds dedicated JSONB `dimensions` column to `public.compatibility_results` persisting the 4 Synastry V1 relationship dimension subscores (`emotional_harmony`, `communication`, `attraction`, `growth_long_term`).
+
 ---
+
+## 🔮 Astrology Integration System V1 Schema Specification
+
+*(Detailed Product & Platform Specification: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+
+The Astrology subsystem strictly separates sensitive raw inputs from deterministic calculations and public safe summaries:
+
+1. **`public.birth_data` (Tier 1: Private)**: Owner-only (`user_id = auth.uid()`). Stores raw date, time, timezone, and coordinates. Auto-increments `data_version` on parameter updates to invalidate stale compatibility caches.
+2. **`public.astro_private` (Tier 2: Service-Only)**: Client access completely revoked (`REVOKE ALL FROM authenticated, anon`). Stores exact float longitudes, speeds, houses, and retrogrades.
+3. **`public.astro_safe_profile` (Tier 3: Safe Derived)**: Read-only for authenticated users (blocked or hidden targets return 404). Stores `sun_sign`, `moon_sign`, `ascendant_sign`, `element_primary`, `modality_primary`. Enriched on read with `mercury_sign`, `venus_sign`, and `mars_sign` via safe server DTO.
+4. **`public.compatibility_results` (Tier 4: Relational Cache)**: Enforces canonical pair ordering `user_a_id < user_b_id`. Caches composite `score`, `dimensions`, `signals`, `best_topics`, `conversation_starters`, and `evidence_trace`.
 
 ## 🌐 Interest Graph V1 Schema Specification (Architecture Blueprint)
 
@@ -590,6 +604,121 @@ To give users transparent control over who and what JESTER shows them without cr
   - **Strictly Owner-Only:** Protected by RLS (`user_id = auth.uid()`). Revoked from `anon` and `public`. Never exposed to other users or serialized in public profile endpoints.
   - **Zero Filter Notification:** Excluded candidates are never notified that they were filtered out.
   - **Independent from Inbound Discoverability:** Operates as outbound candidate retrieval criteria, completely independent of `profiles.is_discoverable`.
+
+---
+
+## 🛡️ Trust & Verification System V1 Schema Specification (Architecture Blueprint)
+
+*(Detailed Product & Platform Specification: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+
+To decouple profile presentation from verification and ensure safety without building a surveillance score, the Trust & Verification System V1 defines the following 6 core entities:
+
+### 1. `public.profile_photos` (Multi-Photo User Gallery)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `url` TEXT NOT NULL,
+- `is_primary` BOOLEAN NOT NULL DEFAULT false,
+- `sort_order` SMALLINT NOT NULL DEFAULT 0 CHECK (sort_order BETWEEN 0 AND 5),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* Max 6 photos per user. Exactly 1 photo marked `is_primary = true` (synced to `profiles.avatar_url`). At least 1 photo required to appear in Discovery.
+
+### 2. `public.user_verifications` (Active Verification State)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'not_started' CHECK (status IN ('not_started', 'pending', 'verified', 'failed', 'needs_review', 'expired', 'revoked')),
+- `provider` VARCHAR(50) NOT NULL DEFAULT 'internal',
+- `confidence_score` NUMERIC(4,3) CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
+- `verified_at` TIMESTAMPTZ,
+- `expires_at` TIMESTAMPTZ,
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* Verification proves only facial match between a live selfie and the primary profile photo. Modifying the primary photo resets status to `needs_review` or `expired`.
+
+### 3. `public.verification_attempts` (Audit Log)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `session_token` TEXT UNIQUE NOT NULL,
+- `status` VARCHAR(20) NOT NULL CHECK (status IN ('initiated', 'passed', 'failed', 'flagged')),
+- `failure_reason` TEXT,
+- `attempt_ip_hash` TEXT,
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+### 4. `public.reports` (Community Safety Signals)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `reporter_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `reported_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `reason` VARCHAR(30) NOT NULL CHECK (reason IN ('fake_profile', 'harassment', 'inappropriate_content', 'spam_scam', 'underage', 'other')),
+- `details` TEXT,
+- `status` VARCHAR(20) NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'investigating', 'resolved', 'dismissed')),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT no_self_report CHECK (reporter_id <> reported_id)
+
+### 5. `public.user_blocks` (Dedicated Two-Way Blocking)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `blocker_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `blocked_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT no_self_block CHECK (blocker_id <> blocked_id),
+- CONSTRAINT unique_block_pair UNIQUE (blocker_id, blocked_id)
+
+### 6. `public.moderation_actions` (Disciplinary Audit Log)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `action` VARCHAR(30) NOT NULL CHECK (action IN ('warning', 'limit_rate', 'put_under_review', 'suspend', 'ban', 'lift_restriction')),
+- `reason` TEXT NOT NULL,
+- `expires_at` TIMESTAMPTZ,
+- `issued_by` UUID REFERENCES public.profiles(id),
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+---
+
+## 🧠 Behavioral Intelligence System V1 Schema Specification (Architecture Blueprint)
+
+*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+
+To enable observable product personalization without psychological profiling or surveillance, the Behavioral Intelligence System V1 defines the following 4 entities:
+
+### 1. `public.behavioral_events` (Partitioned Raw Event Stream)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `actor_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `event_name` VARCHAR(50) NOT NULL,              -- e.g. 'candidate_profile_opened', 'why_opened', 'connection_request_sent'
+- `target_id` UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+- `target_type` VARCHAR(30),                      -- 'candidate', 'interest', 'prompt', 'preference'
+- `context` JSONB DEFAULT '{}'::jsonb,            -- sanitized minimal context (dwell_time_ms, has_note, category_slug)
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants & Security:*
+  - **Service-Only:** `REVOKE ALL ON public.behavioral_events FROM anon, authenticated;`. Written solely via rate-limited backend RPC or backend service-role.
+  - **Zero Content Mining:** No message text, no coordinates, no birth data, no biometric data.
+  - **Automated 60-Day TTL:** Partitioned monthly; records older than 60 days are automatically pruned by background cron.
+
+### 2. `public.user_behavioral_signals` (Aggregated Profile Summary)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `exploration_breadth` VARCHAR(20) NOT NULL DEFAULT 'balanced' CHECK (exploration_breadth IN ('focused', 'balanced', 'exploratory')),
+- `interaction_depth` NUMERIC(4,3) NOT NULL DEFAULT 0.500 CHECK (interaction_depth BETWEEN 0.0 AND 1.0),
+- `connection_conversion_rate` NUMERIC(4,3) NOT NULL DEFAULT 0.000 CHECK (connection_conversion_rate BETWEEN 0.0 AND 1.0),
+- `total_impressions_count` INTEGER NOT NULL DEFAULT 0,
+- `total_opens_count` INTEGER NOT NULL DEFAULT 0,
+- `total_requests_sent` INTEGER NOT NULL DEFAULT 0,
+- `total_requests_accepted` INTEGER NOT NULL DEFAULT 0,
+- `last_aggregated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* Derived summary table maintained by background aggregation jobs. Never exposes personality scores or psychological diagnostics.
+
+### 3. `public.user_interest_affinity` (Decayed Topic Weights)
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+- `user_id` UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `interest_id` UUID NOT NULL REFERENCES public.interests(id) ON DELETE CASCADE,
+- `affinity_score` NUMERIC(4,3) NOT NULL DEFAULT 0.500 CHECK (affinity_score BETWEEN 0.0 AND 1.0),
+- `observation_count` INTEGER NOT NULL DEFAULT 1,
+- `last_observed_at` TIMESTAMPTZ NOT NULL DEFAULT now(),
+- CONSTRAINT uq_user_interest_affinity UNIQUE (user_id, interest_id)
+- *Invariants:* Subject to 30-day exponential half-life decay. Independent layer that **never overwrites** declared interests in `user_interests`.
+
+### 4. `public.user_behavioral_settings` (User Sovereign Controls)
+- `user_id` UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+- `personalization_enabled` BOOLEAN NOT NULL DEFAULT true,
+- `allow_activity_learning` BOOLEAN NOT NULL DEFAULT true,
+- `last_reset_at` TIMESTAMPTZ,
+- `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+- *Invariants:* User-controlled settings. Calling reset clears all rows in `user_interest_affinity` and resets `user_behavioral_signals` to defaults.
+
 
 
 
