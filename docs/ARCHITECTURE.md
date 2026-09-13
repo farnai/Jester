@@ -246,6 +246,14 @@ Jester/
 4. **Discovery Modulation & 6/3/1 Diversity Guarantee**: In Discovery Tier 2/3, behavioral affinity contributes $\le 30\%$ of candidate relevance scoring, operating strictly within allocated diversity buckets (6 Direct Resonance, 3 Complementary Contrast, 1 Serendipitous Wildcard). It is mathematically barred from shrinking contrast or eliminating wildcards.
 5. **Sovereign User Control (`POST /v1/users/me/personalization/reset`)**: Users can toggle activity learning off or instantly wipe all derived affinity records, reverting candidate generation immediately to pure declared baselines.
 
+### 17. JESTER AI Context Assembly & Gateway Flow (`JesterAiContextV1`)
+*(Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+1. **Surface Scope Resolution**: Request arrives at JESTER AI with a specific target surface (Main Chat, Discovery Feed, Profile Preview, WHY, US, Conversation Starters, Astrology Deep Dive).
+2. **On-Demand Context Assembly (`ContextAssemblerService`)**: Fetches declared human signals, safe categorical astrology, and decayed behavioral affinities. Enforces authority hierarchy ($\text{Declared} \gg \text{Observed} \gg \text{Inferred} \gg \text{Astrological}$).
+3. **Bilateral Isolation Check**: In two-user contexts, caller receives private fields; candidate profile is strictly scoped to public, discoverable fields only.
+4. **Fail-Closed Context Safety Gate (`ContextSafetyGate`)**: Validates assembled payload against forbidden-context blacklist (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`). Any detection trips the gate, drops execution, and yields pre-seeded Georgian fallback copy.
+5. **LLM Gateway & Post-Execution Jargon Filter**: Validated `JesterAiContextV1` is formatted with JESTER persona system prompts and passed to LLM runner. Output is programmatically scanned for astrological jargon and mockery before delivery to the client.
+
 ---
 
 ## 🎨 The Astrology & Semantic Context → JESTER Content Pipeline
@@ -254,13 +262,13 @@ Jester/
 ASTROLOGICAL DATA + INTEREST GRAPH + LOCATION/ORIGIN + LIFESTYLE CADENCE + VALUES COMPASS + SOCIAL DYNAMICS + COMMUNICATION RHYTHM + INTENT PURPOSE + PROMPTS / VOICE + DISCOVERY PREFERENCES + TRUST CONTEXT + BEHAVIORAL AFFINITY
        ↓ (PySwissEph Engine, Semantic Graph, Geo, Lifestyle, Values, Social, Communication, Intent, Prompts, Discovery, Trust & Behavioral)
 DETERMINISTIC SIGNALS, ASPECTS, SHARED TOPICS, CADENCE, PHILOSOPHICAL RESONANCE, SOCIAL HARMONY, CONVERSATION BRIDGES, INTENT ALIGNMENT, AUTHENTIC VOICE HOOKS, ELIGIBILITY FILTERS, VERIFIED BADGES & OBSERVED AFFINITY
-       ↓ (Rule-Based Aggregator & Taxonomy)
-CORE INTERPERSONAL DYNAMICS & CONVERSATION ANCHORS
-       ↓ (SynastryEngine / Interpretation Resolver)
-RELATIONSHIP / PERSONAL CONTEXT
+       ↓ (ContextAssemblerService: Surface Scoping & Authority Hierarchy)
+STRUCTURED AI CONTEXT CONTRACT (JesterAiContextV1)
+       ↓ (ContextSafetyGate: Blacklist Validation & Fail-Closed Assertions)
+VALIDATED AI CONTEXT PAYLOAD
        ↓ (Prompt Formatter with JESTER Voice Persona)
 JESTER VOICE TRANSFORMATION
-       ↓ (Structured Models)
+       ↓ (Programmatic Jargon & Mockery Filter)
 USER-FACING INSIGHT (Short, witty, human-readable)
 ```
 
@@ -283,7 +291,9 @@ USER-FACING INSIGHT (Short, witty, human-readable)
 - **Discovery Preferences & Inbound Discoverability Boundary**: Discovery preferences are strictly private, owner-only outbound candidate selection criteria. They must never be exposed or leaked as existence oracles. Inbound discoverability (`profiles.is_discoverable`) determines if a user is eligible to be shown; outbound preferences determine who the user sees. Filtering is anti-marketplace: zodiac signs, physical attributes, income, and sensitive habits are permanently barred from hard exclusionary filtering.
 - **Trust & Verification Decoupling Invariant**: Profile photos, biometric verification, and human trustworthiness are completely separate concepts. JESTER strictly forbids numeric trust scores. Verification proves only that an ephemeral selfie matches the primary profile photo. Verification media is stored in a private, client-inaccessible bucket, never exposed in public APIs, and never passed to JESTER AI.
 - **Behavioral Intelligence & Anti-Profiling Invariant**: Behavioral intelligence captures observable product interactions strictly to refine candidate relevance and conversation starters. It is fundamentally barred from performing psychological profiling, diagnosing mental health, computing personality or attractiveness scores, or scoring communication response latency. Private message bodies are never parsed. Declared human truth always outranks behavioral observation.
+- **JESTER AI Context Isolation & Fail-Closed Boundary**: JESTER AI operates strictly through strongly typed, surface-scoped data contracts (`JesterAiContextV1`). It is never granted direct database connection handles or unrestricted table access. The Context Safety Gate fails closed upon detecting any prohibited data keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`), guaranteeing zero private data leakage into third-party LLM APIs.
 - **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
+
 
 
 

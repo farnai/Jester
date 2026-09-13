@@ -808,6 +808,35 @@ Authorization: Bearer <supabase_jwt_token>
 - **Response 200**: `{"status": "reset_complete", "reset_at": datetime}`
 - **Invariants**: Immediately purges all rows in `public.user_interest_affinity` for the caller and resets `public.user_behavioral_signals` to default values. Declared interests, values, and profile data remain completely untouched.
 
+---
+
+### JESTER AI Context & Copilot System (Platform Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))
+
+#### 99. Generate Contextual JESTER Insight / Copilot Response — `POST /v1/ai/insight`
+- **Auth**: Bearer JWT
+- **Body**: `AiInsightRequest`
+  - `surface`: `Literal["main_chat", "discovery_feed", "profile_preview", "why_card", "us_relationship", "conversation_starter", "astrology_deep"]`
+  - `target_user_id`: `UUID | None` (required for relational surfaces: profile_preview, why_card, us_relationship, conversation_starter)
+  - `prompt_reference_id`: `UUID | None` (optional specific prompt card target)
+  - `user_query`: `str | None` (optional user message for Main Chat copilot turns)
+- **Response 200**: `AiInsightResponse`
+  - `insight_text`: `str` (short, witty, observant copy in Georgian/English)
+  - `surface`: `str`
+  - `tone`: `Literal["witty", "playful_sarcastic", "warm_observant"]`
+  - `grounded_in`: `list[str]` (human explainability topics, e.g. `["shared_interest:photography", "communication:unhurried"]`)
+  - `language`: `str`
+- **Errors**: `404 PrivacySafeNotFoundException` if target user is blocked, non-discoverable, or non-existent; `400 invalid_surface`.
+- **Invariants**: Context is assembled strictly on-demand via `ContextAssemblerService` and verified by `ContextSafetyGate`. If safety gate detects any forbidden data, execution falls back immediately to deterministic pre-approved Georgian copy from `ContentLibrary`. Zero astrology jargon permitted in output.
+
+#### 100. Inspect Assembled AI Context (Non-Production Testing) — `GET /v1/ai/context/inspect`
+- **Auth**: Bearer JWT (`admin` or `developer` role)
+- **Query Parameters**:
+  - `surface`: `str`
+  - `target_user_id`: `UUID | None`
+- **Response 200**: `JesterAiContextV1` JSON contract
+- **Security Invariant**: Strictly forbidden in production (`settings.ENV == "production"` raises `403 Forbidden`). Exists purely for automated CI regression testing and privacy auditing.
+
+
 
 
 

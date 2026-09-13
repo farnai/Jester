@@ -253,6 +253,15 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - Raw telemetry records are automatically pruned after 60 days via partitioned table TTL.
   - Right-to-Reset: Calling `POST /v1/users/me/personalization/reset` immediately purges all derived affinity weights (`user_interest_affinity`) and resets behavioral signals without affecting declared profile truth.
 
+### 19. JESTER AI Context Isolation, Fail-Closed Boundary & Forbidden Data Blacklist (AI Context V1)
+*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+- **Invariant:** JESTER AI must never receive direct database connections, unvetted SQL access, or unrestricted table queries. Context assembly is mediated exclusively through on-demand strongly typed contracts (`JesterAiContextV1`) and validated by an automated, fail-closed Context Safety Gate.
+- **Enforcement:**
+  - **Blacklist Enforcement:** The in-memory `ContextSafetyGate` scans every assembled payload before LLM transmission. Detection of any forbidden key (`messages.body`, `latitude`, `longitude`, `selfie_bytes`, `birth_time`, `report`, `block`, `introvert_score`, `attractiveness_score`) immediately raises `ContextSafetyViolationException` and aborts network transmission.
+  - **Zero Raw PII & Zero Private Messaging:** Private direct messages, raw GPS coordinates, and biometric verification captures are permanently barred from AI prompts.
+  - **Bilateral Privacy Preservation:** In two-person contexts (WHY, US, Starters), the caller receives private fields, but candidate data is strictly scoped to public, discoverable fields. Private discovery preferences and hidden habits never cross user boundaries.
+  - **Sanitized Logging:** Full context payloads are never serialized in logs or observability pipelines. Only sanitized correlation hashes and latency metrics are retained.
+
 ---
 
 ## ⚙️ Procedural Hardening & Function Security

@@ -252,6 +252,35 @@ JESTER AI ingests aggregated behavioral affinity tags and macro engagement metri
 
 ---
 
+## 🏛️ JESTER AI Context System V1 (Platform Architecture Blueprint)
+
+*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+
+The JESTER AI Context System defines the controlled, privacy-preserving context assembly layer between JESTER's multi-domain data systems and the JESTER AI relational copilot:
+
+```text
+User Data (Multi-Domain) → Context Assembler Service → Context Safety Gate (Fails Closed) → JesterAiGateway → LLM Provider
+```
+
+### Core Architecture Highlights:
+1. **Canonical Contract (`JesterAiContextV1`)**: Strongly typed Pydantic contract encompassing Identity, Safe Location, Declared Human Truth, Observed/Inferred Behavioral Affinities, Categorical Astrology, and Bilateral Relational Dynamics.
+2. **Context Authority Hierarchy**:
+   $$\text{DECLARED HUMAN TRUTH} \gg \text{OBSERVED PRODUCT BEHAVIOR} \gg \text{INFERRED RECOMMENDATION SIGNALS} \gg \text{ASTROLOGICAL INTERPRETATION}$$
+   Declared sovereign choices always override conflicting inferences or astrological archetypes.
+3. **Surface-Specific Context Scoping**: Restricts payload size and contents across 7 distinct surfaces:
+   - *1. Main Chat (ME)*: Self-understanding & personal copilot.
+   - *2. Discovery Feed*: Broad matching & shared curiosity hooks.
+   - *3. Person Profile Preview*: Candidate public profile & shared interests.
+   - *4. WHY Card*: Bilateral harmony & qualitative synastry dynamic hooks.
+   - *5. US (Connected)*: Comprehensive relationship territory & dynamic analysis.
+   - *6. Conversation Starters*: Quoted prompts, shared topics & communication role pairing.
+   - *7. Astrology Deep Explanation*: Categorical aspects without jargon.
+4. **Person-to-Person Bilateral Privacy Boundary**: The caller receives full private context; the target profile exposes ONLY public discoverable fields. Private discovery preferences or hidden habits are strictly non-leaking.
+5. **Context Safety Gate (Fail-Closed)**: Automated pre-LLM blacklist validation. Any occurrence of prohibited keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`, etc.) aborts execution and triggers deterministic Georgian fallback text. Zero raw errors leaked.
+6. **Sanctity of Private Communication**: Message bodies are **never mined, parsed, or tokenized** for behavioral profiling.
+
+---
+
 ## 📁 File-by-File Inventory
 
 ### `backend/app/interpretation/contracts.py`

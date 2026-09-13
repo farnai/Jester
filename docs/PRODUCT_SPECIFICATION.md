@@ -1085,6 +1085,7 @@ The AI interprets data; it does not replace the deterministic calculation engine
 9. **Intent Primacy & Anti-Romantic Assumption Invariant**: JESTER AI must strictly respect declared intent boundaries. Astrological chemistry (e.g. Venus-Mars aspects) must **never** be interpreted as romantic destiny or sexual pursuit if either participant has declared platonic friendship or collaboration intent. Declared user intent strictly governs astrological framing.
 10. **Prompt Context Without Psychological Stereotyping**: JESTER AI treats published prompt answers as authentic self-expression and contextual conversation anchors, **never as clinical psychological proof or moral diagnostic verdicts** (e.g. humorous exaggeration in a prompt is never converted into an antisocial diagnosis).
 11. **Behavioral Intelligence Context Without Psychological Profiling**: JESTER AI uses aggregated behavioral affinity tags (e.g. shared exploratory passion for creative projects) solely to guide conversational warmth, **strictly never using behavioral signals to psychologically diagnose users, label personality types, assign attachment styles, or diagnose conversational flaws**. Message bodies are never parsed for behavioral intelligence.
+12. **Controlled Context Layer & Fail-Closed Safety Invariant**: JESTER AI must **never** receive direct or unrestricted access to product databases. All context is assembled on-demand into strongly typed, surface-scoped payloads (`JesterAiContextV1`) and validated by a fail-closed Context Safety Gate. Any attempt to inject raw coordinates, message bodies, private birth data, or biometric evidence aborts execution and yields deterministic fallback text.
 
 ---
 
@@ -1363,4 +1364,31 @@ Behavioral affinity is strictly restricted to ranking candidates *within* their 
 - **Exponential Decay:** All affinity signals decay with a 30-day half-life; inactive behavior naturally resets to declared baselines.
 - **One-Click Reset:** Users can instantly purge all derived behavioral affinity and restore pure declared matching via `POST /v1/users/me/personalization/reset`.
 - **Full Transparency:** Explainability indicators inform the user respectfully (*"Suggested because you recently explored creative profiles"*), never claiming to read minds.
+
+---
+
+# 37. JESTER AI Context System V1
+
+*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+
+JESTER establishes an explicit, controlled context assembly subsystem (`ContextAssemblerService`) to manage what JESTER AI knows, what it does not know, and how it translates product data into relational intelligence.
+
+### 37.1 The Controlled Context Invariant
+```text
+User Data (Multi-Domain) → Context Assembler Service → Context Safety Gate (Fails Closed) → JesterAiGateway → LLM
+```
+JESTER AI operates exclusively on validated, strongly typed data contracts (`JesterAiContextV1`). It is never granted direct SQL queries or unrestricted access to product storage.
+
+### 37.2 The Canonical Authority Hierarchy
+All context reconciliation obeys the immutable four-tier authority hierarchy:
+$$\text{DECLARED HUMAN TRUTH} \gg \text{OBSERVED PRODUCT BEHAVIOR} \gg \text{INFERRED RECOMMENDATION SIGNALS} \gg \text{ASTROLOGICAL INTERPRETATION}$$
+- Declared user choices (lifestyle, pacing, values, intent) always outrank algorithmic inferences or astrological archetypes.
+- Astrological synastry is strictly framed within declared user intent (platonic intent suppresses romantic chemistry assumptions).
+- Behavioral affinity is framed as recent curious exploration, never as definitive identity.
+
+### 37.3 Surface-Specific Scoping & Person-to-Person Privacy
+- **Surface Scopes:** Context payloads are tailored to 7 distinct surfaces (Main Chat, Discovery Feed, Profile Preview, WHY, US, Conversation Starters, Astrology Deep Dive) to ensure minimal necessary exposure.
+- **Bilateral Isolation:** In two-person contexts (WHY, US, Starters), the caller receives their own private context, but the candidate profile exposes **only public, discoverable fields**. Private discovery preferences and hidden lifestyle habits never leak.
+- **Fail-Closed Safety Gate:** Payloads are scanned for prohibited keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`). Any detection trips the gate, blocking LLM execution and yielding pre-seeded Georgian fallback copy.
+
 

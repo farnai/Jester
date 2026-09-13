@@ -719,6 +719,21 @@ To enable observable product personalization without psychological profiling or 
 - `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
 - *Invariants:* User-controlled settings. Calling reset clears all rows in `user_interest_affinity` and resets `user_behavioral_signals` to defaults.
 
+---
+
+## 🤖 JESTER AI Context System V1 (Data Architecture Blueprint)
+
+*(Detailed Product & Platform Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+
+The JESTER AI Context System operates as an **ephemeral, read-only aggregation and safety layer**. It deliberately introduces **zero new persistent database tables** to prevent data duplication and stale profile caching:
+
+### 1. Ingestion Data Flow
+- **Sources**: Queries normalized tables across `profiles`, `user_interests`, `user_values`, `user_lifestyle`, `user_social_preferences`, `user_communication_preferences`, `user_intents`, `user_prompts`, `astro_safe_profile`, and `user_interest_affinity`.
+- **Isolation**: Executed by the backend service role via `ContextAssemblerService`. Database connections and raw table references are **never passed to the LLM Gateway**.
+- **Ephemeral State**: The compiled `JesterAiContextV1` contract is held strictly in memory during request evaluation. Only sanitized correlation telemetry (`request_id`, `surface`, `assembly_latency_ms`) is recorded.
+- **Fail-Closed Security**: Evaluated by the in-memory `ContextSafetyGate` before prompt formatting. Detection of forbidden keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`) aborts the database context delivery immediately.
+
+
 
 
 

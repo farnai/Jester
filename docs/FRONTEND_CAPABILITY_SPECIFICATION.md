@@ -448,6 +448,13 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
   - Capped to 3 attempts per 24 hours. Verification media is private evidence and never displayed in gallery.
 - **Photo Change Invalidation Warning**: If a verified user attempts to change their primary photo, an in-app confirmation warns: *"Changing your primary photo will require re-verifying your face."*
 
+### 8.13 JESTER AI Copilot & Surface Integration UI
+*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+- **Contextual Copilot Drawer**: User can summon JESTER AI across key surfaces (Main Chat, Candidate Profile Preview, WHY card, and Direct Chat starter bar).
+- **Grounded Explainability Pills**: Responses render subtle, interactive topic chips (e.g. `[ 💡 Grounded in Shared Passion: Photography ]` or `[ ☕ Conversational Starter: Prompt #1 ]`), reassuring users that observations stem from declared human interests.
+- **Graceful Fallback Display**: If the AI network call encounters latency or the Context Safety Gate fails closed, the UI seamlessly renders pre-approved Georgian copy from `ContentLibrary` without error bars or disruption.
+- **Zero Jargon Guarantee**: UI guarantees that generated insights never display technical astrology terms (aspects, orbs, houses), fatalistic prophecies, or clinical personality diagnoses.
+
 ---
 
 ## 9. People Discovery
