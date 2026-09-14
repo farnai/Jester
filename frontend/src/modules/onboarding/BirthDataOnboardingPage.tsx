@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../core/auth/useAuth";
 import { API } from "../../core/api/endpoints";
 import { Card } from "../../shared/ui";
@@ -12,6 +13,7 @@ import { CreateSelfStep } from "./steps/CreateSelfStep";
 
 export const BirthDataOnboardingPage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Active step in onboarding wizard (1 through 6)
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -170,6 +172,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
             occupation={occupation}
             setOccupation={setOccupation}
             onNext={() => setCurrentStep(2)}
+            onBack={() => navigate(-1)}
           />
         )}
 

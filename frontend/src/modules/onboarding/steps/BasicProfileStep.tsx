@@ -9,6 +9,7 @@ interface BasicProfileStepProps {
   occupation: string;
   setOccupation: (val: string) => void;
   onNext: () => void;
+  onBack?: () => void;
 }
 
 export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
@@ -19,6 +20,7 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
   occupation,
   setOccupation,
   onNext,
+  onBack,
 }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,12 +71,23 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
         placeholder="მაგ. არქიტექტორი, დეველოპერი, მხატვარი"
       />
 
-      <div style={{ marginTop: "1rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
+        {onBack && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            style={{ flex: 1 }}
+            onClick={onBack}
+          >
+            ⬅️ უკან
+          </Button>
+        )}
         <Button
           type="submit"
           variant="brand"
           size="lg"
-          fullWidth
+          style={{ flex: 2 }}
         >
           შემდეგი ➡️ (Continue)
         </Button>
