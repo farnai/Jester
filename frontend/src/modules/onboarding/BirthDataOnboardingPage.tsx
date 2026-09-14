@@ -1,68 +1,75 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../core/auth/useAuth";
 import { API } from "../../core/api/endpoints";
-import { BirthDataPayload } from "../../core/api/types";
+import { Card } from "../../shared/ui";
 import { LoadingState } from "../../shared/StatusState";
-
-interface CityPreset {
-  label: string;
-  place: string;
-  lat: string;
-  lon: string;
-  tz: string;
-}
-
-const CITY_PRESETS: CityPreset[] = [
-  { label: "თბილისი", place: "Tbilisi, Georgia", lat: "41.7151", lon: "44.8271", tz: "Asia/Tbilisi" },
-  { label: "ბათუმი", place: "Batumi, Georgia", lat: "41.6168", lon: "41.6367", tz: "Asia/Tbilisi" },
-  { label: "ქუთაისი", place: "Kutaisi, Georgia", lat: "42.2662", lon: "42.7180", tz: "Asia/Tbilisi" },
-  { label: "რუსთავი", place: "Rustavi, Georgia", lat: "41.5495", lon: "45.0031", tz: "Asia/Tbilisi" },
-  { label: "თელავი", place: "Telavi, Georgia", lat: "41.9198", lon: "45.4731", tz: "Asia/Tbilisi" },
-  { label: "ზუგდიდი", place: "Zugdidi, Georgia", lat: "42.5088", lon: "41.8709", tz: "Asia/Tbilisi" },
-];
+import { BasicProfileStep } from "./steps/BasicProfileStep";
+import { BirthDateStep } from "./steps/BirthDateStep";
+import { BirthTimeStep, BirthTimePrecision } from "./steps/BirthTimeStep";
+import { BirthPlaceStep } from "./steps/BirthPlaceStep";
+import { ReviewStep } from "./steps/ReviewStep";
+import { CreateSelfStep } from "./steps/CreateSelfStep";
 
 export const BirthDataOnboardingPage: React.FC = () => {
-  const queryClient = useQueryClient();
-  const { user, setHasBirthData } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
+  // Active step in onboarding wizard (1 through 6)
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [loadingInitial, setLoadingInitial] = useState(true);
-  const [isExistingData, setIsExistingData] = useState(false);
 
-  const [birthDate, setBirthDate] = useState("");
-  const [precision, setPrecision] = useState<"exact" | "approximate" | "unknown">("exact");
-  const [birthTime, setBirthTime] = useState("12:00");
-  const [timezone, setTimezone] = useState("Asia/Tbilisi");
-  const [placeLabel, setPlaceLabel] = useState("Tbilisi, Georgia");
-  const [latitude, setLatitude] = useState<string>("41.7151");
-  const [longitude, setLongitude] = useState<string>("44.8271");
+  // Step 1: Basic Profile
+  const [displayName, setDisplayName] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [occupation, setOccupation] = useState<string>("");
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Step 2: Birth Date
+  const [birthDate, setBirthDate] = useState<string>("");
 
-  // Load existing birth data from PostgreSQL so user's true data is preserved and shown
+  // Step 3: Birth Time & Precision
+  const [precision, setPrecision] = useState<BirthTimePrecision>("exact");
+  const [birthTime, setBirthTime] = useState<string>("12:00");
+
+  // Step 4: Birth Place & Coordinates
+  const [placeLabel, setPlaceLabel] = useState<string>("Tbilisi, Georgia");
+  const [latitude, setLatitude] = useState<number | null>(41.7151);
+  const [longitude, setLongitude] = useState<number | null>(44.8271);
+  const [birthTimezone, setBirthTimezone] = useState<string>("Asia/Tbilisi");
+
+  // Load existing profile & birth data if available (e.g., editing flow)
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoadingInitial(false);
+      return;
+    }
+
     let isMounted = true;
 
-    API.astrology.getBirthData(user.id)
-      .then((saved) => {
+    Promise.all([
+      API.profiles.getMyProfile().catch(() => null),
+      API.astrology.getBirthData(user.id).catch(() => null),
+    ])
+      .then(([savedProfile, savedBirthData]) => {
         if (!isMounted) return;
-        if (saved) {
-          setIsExistingData(true);
-          if (saved.birth_date) setBirthDate(saved.birth_date);
-          if (saved.birth_time_precision) setPrecision(saved.birth_time_precision);
-          if (saved.birth_time) setBirthTime(saved.birth_time.slice(0, 5));
-          if (saved.birth_timezone) setTimezone(saved.birth_timezone);
-          if (saved.place_label) setPlaceLabel(saved.place_label);
-          if (saved.latitude != null) setLatitude(saved.latitude.toString());
-          if (saved.longitude != null) setLongitude(saved.longitude.toString());
+
+        // Populate profile fields
+        if (savedProfile) {
+          if (savedProfile.display_name) setDisplayName(savedProfile.display_name);
+          if (savedProfile.city) setCity(savedProfile.city);
+          if (savedProfile.occupation) setOccupation(savedProfile.occupation);
+        } else if (user.email) {
+          setDisplayName(user.email.split("@")[0]);
         }
-      })
-      .catch((err) => {
-        console.warn("Could not load existing birth data:", err);
+
+        // Populate birth data fields if already exist
+        if (savedBirthData) {
+          if (savedBirthData.birth_date) setBirthDate(savedBirthData.birth_date);
+          if (savedBirthData.birth_time_precision) setPrecision(savedBirthData.birth_time_precision);
+          if (savedBirthData.birth_time) setBirthTime(savedBirthData.birth_time.slice(0, 5));
+          if (savedBirthData.place_label) setPlaceLabel(savedBirthData.place_label);
+          if (savedBirthData.birth_timezone) setBirthTimezone(savedBirthData.birth_timezone);
+          if (savedBirthData.latitude != null) setLatitude(savedBirthData.latitude);
+          if (savedBirthData.longitude != null) setLongitude(savedBirthData.longitude);
+        }
       })
       .finally(() => {
         if (isMounted) setLoadingInitial(false);
@@ -73,333 +80,158 @@ export const BirthDataOnboardingPage: React.FC = () => {
     };
   }, [user]);
 
-  const handleSelectPreset = (preset: CityPreset) => {
-    setPlaceLabel(preset.place);
-    setLatitude(preset.lat);
-    setLongitude(preset.lon);
-    setTimezone(preset.tz);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    if (!birthDate) {
-      setError("გთხოვთ მიუთითოთ დაბადების თარიღი.");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const payload: BirthDataPayload = {
-        birth_date: birthDate,
-        birth_time: precision === "unknown" ? null : `${birthTime}:00`,
-        birth_time_precision: precision,
-        birth_timezone: timezone,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-        place_label: placeLabel || null,
-      };
-
-      await API.astrology.saveBirthData(user.id, payload);
-      // Invalidate dependent queries immediately so frontend does not display stale astrology, daily energy, or comparisons
-      await queryClient.invalidateQueries({ queryKey: ["astrology"] });
-      await queryClient.invalidateQueries({ queryKey: ["birth-data"] });
-      await queryClient.invalidateQueries({ queryKey: ["natal-observations"] });
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
-      await queryClient.invalidateQueries({ queryKey: ["daily-energy"] });
-      await queryClient.invalidateQueries({ queryKey: ["discovery-people"] });
-      await queryClient.invalidateQueries({ queryKey: ["compare-preview"] });
-      await queryClient.invalidateQueries({ queryKey: ["why-experience"] });
-      await queryClient.invalidateQueries({ queryKey: ["compatibility-us"] });
-      await queryClient.invalidateQueries({ queryKey: ["compatibility"] });
-      await queryClient.invalidateQueries({ queryKey: ["connections"] });
-
-      setHasBirthData(true);
-      navigate("/me");
-    } catch (err: any) {
-      setError(err.message || "ასტროლოგიური მონაცემების შენახვა ვერ მოხერხდა.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loadingInitial) {
-    return <LoadingState message="ასტროლოგიური მონაცემების შემოწმება..." />;
+    return <LoadingState message="მონაცემების შემოწმება (Loading profile)..." />;
   }
+
+  const stepTitles: Record<number, string> = {
+    1: "პროფილი",
+    2: "დაბადების თარიღი",
+    3: "დაბადების დრო",
+    4: "დაბადების ადგილი",
+    5: "გადამოწმება",
+    6: "რუკის გამოთვლა",
+  };
 
   return (
     <div
       style={{
-        maxWidth: "540px",
-        margin: "2rem auto",
-        padding: "2rem",
-        border: "1px solid #e2e8f0",
-        borderRadius: "12px",
-        backgroundColor: "#fff",
-        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "85vh",
+        padding: "1.5rem",
+        boxSizing: "border-box",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-        <div>
-          <h2 style={{ margin: 0, color: "#0f172a", fontSize: "1.35rem", fontWeight: 800 }}>
-            {isExistingData ? "ასტროლოგიური მონაცემების რედაქტირება" : "ასტროლოგიური მონაცემები"}
-          </h2>
-          <p style={{ margin: "0.35rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
-            {isExistingData
-              ? "თქვენი შენახული დაბადების პარამეტრები. ცვლილების შემთხვევაში ნატალური რუკა გადაითვლება."
-              : "შეიყვანეთ დაბადების პარამეტრები Swiss Ephemeris-ით ზუსტი ნატალური რუკის გამოსათვლელად."}
-          </p>
-        </div>
-        {isExistingData && (
-          <Link
-            to="/me"
-            style={{
-              fontSize: "0.85rem",
-              color: "#3b82f6",
-              textDecoration: "none",
-              fontWeight: 600,
-              padding: "0.3rem 0.6rem",
-              background: "#eff6ff",
-              borderRadius: "6px",
-            }}
-          >
-            გაუქმება
-          </Link>
-        )}
-      </div>
-
-      {error && (
-        <div
-          style={{
-            padding: "0.75rem",
-            marginBottom: "1rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
-            borderRadius: "6px",
-            color: "#cf1322",
-            fontSize: "0.85rem",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-        <div>
-          <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-            დაბადების თარიღი (Date of Birth) *
-          </label>
-          <input
-            type="date"
-            required
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              borderRadius: "6px",
-              border: "1px solid #cbd5e1",
-              fontSize: "0.95rem",
-              boxSizing: "border-box",
-            }}
-          />
-        </div>
-
-        <div>
-          <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-            დროის სიზუსტე (Birth Time Precision)
-          </label>
-          <div style={{ display: "flex", gap: "1.25rem" }}>
-            {[
-              { key: "exact", label: "ზუსტი" },
-              { key: "approximate", label: "მიახლოებითი" },
-              { key: "unknown", label: "უცნობი" },
-            ].map(({ key, label }) => (
-              <label key={key} style={{ fontSize: "0.9rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                <input
-                  type="radio"
-                  name="precision"
-                  value={key}
-                  checked={precision === key}
-                  onChange={() => setPrecision(key as any)}
-                />
-                {label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {precision !== "unknown" ? (
-          <div>
-            <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-              დაბადების დრო (24h)
-            </label>
-            <input
-              type="time"
-              required
-              value={birthTime}
-              onChange={(e) => setBirthTime(e.target.value)}
+      <Card
+        variant="elevated"
+        style={{
+          width: "100%",
+          maxWidth: "520px",
+          padding: "2rem",
+        }}
+      >
+        {/* Progress Bar Header (Steps 1 to 5) */}
+        {currentStep <= 5 && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div
               style={{
-                width: "100%",
-                padding: "0.6rem",
-                borderRadius: "6px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.95rem",
-                boxSizing: "border-box",
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "0.825rem",
+                color: "#64748b",
+                marginBottom: "0.4rem",
               }}
-            />
-          </div>
-        ) : (
-          <div
-            style={{
-              padding: "0.75rem",
-              background: "#f0fdf4",
-              border: "1px solid #bbf7d0",
-              borderRadius: "6px",
-              color: "#166534",
-              fontSize: "0.85rem",
-            }}
-          >
-            ℹ️ <em>თუ დაბადების დრო უცნობია, ასცენდენტი და სახლები არ გამოითვლება. პლანეტები დალაგდება UTC 12:00 შუადღის მიხედვით.</em>
-          </div>
-        )}
-
-        <div>
-          <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-            სწრაფი არჩევანი (ქალაქი)
-          </label>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-            {CITY_PRESETS.map((preset) => (
-              <button
-                key={preset.label}
-                type="button"
-                onClick={() => handleSelectPreset(preset)}
+            >
+              <span>{stepTitles[currentStep]}</span>
+              <span>ეტაპი {currentStep} / 5</span>
+            </div>
+            <div
+              style={{
+                height: "5px",
+                width: "100%",
+                background: "#f1f5f9",
+                borderRadius: "3px",
+                overflow: "hidden",
+              }}
+            >
+              <div
                 style={{
-                  padding: "0.35rem 0.65rem",
-                  fontSize: "0.8rem",
-                  border: placeLabel === preset.place ? "1px solid #2563eb" : "1px solid #cbd5e1",
-                  borderRadius: "6px",
-                  background: placeLabel === preset.place ? "#eff6ff" : "#f8fafc",
-                  color: placeLabel === preset.place ? "#1d4ed8" : "#334155",
-                  cursor: "pointer",
-                  fontWeight: placeLabel === preset.place ? 700 : 500,
+                  height: "100%",
+                  width: `${(currentStep / 5) * 100}%`,
+                  background: "#6366f1",
+                  transition: "width 0.3s ease",
                 }}
-              >
-                📍 {preset.label}
-              </button>
-            ))}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        <div>
-          <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-            დაბადების ქალაქი / ადგილი
-          </label>
-          <input
-            type="text"
-            value={placeLabel}
-            onChange={(e) => setPlaceLabel(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              borderRadius: "6px",
-              border: "1px solid #cbd5e1",
-              fontSize: "0.95rem",
-              boxSizing: "border-box",
-            }}
-            placeholder="მაგ. Tbilisi, Georgia"
+        {/* STEP 1: Basic Profile */}
+        {currentStep === 1 && (
+          <BasicProfileStep
+            displayName={displayName}
+            setDisplayName={setDisplayName}
+            city={city}
+            setCity={setCity}
+            occupation={occupation}
+            setOccupation={setOccupation}
+            onNext={() => setCurrentStep(2)}
           />
-        </div>
+        )}
 
-        <div>
-          <label style={{ display: "block", marginBottom: "0.35rem", fontWeight: 700, fontSize: "0.85rem", color: "#1e293b" }}>
-            დროის სარტყელი (IANA Timezone) *
-          </label>
-          <input
-            type="text"
-            required
-            value={timezone}
-            onChange={(e) => setTimezone(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              borderRadius: "6px",
-              border: "1px solid #cbd5e1",
-              fontSize: "0.95rem",
-              boxSizing: "border-box",
-            }}
-            placeholder="მაგ. Asia/Tbilisi ან Europe/London"
+        {/* STEP 2: Birth Date */}
+        {currentStep === 2 && (
+          <BirthDateStep
+            birthDate={birthDate}
+            setBirthDate={setBirthDate}
+            onNext={() => setCurrentStep(3)}
+            onBack={() => setCurrentStep(1)}
           />
-        </div>
+        )}
 
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.8rem", color: "#64748b" }}>
-              განედი (Latitude)
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={latitude}
-              onChange={(e) => setLatitude(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                borderRadius: "6px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.85rem",
-                boxSizing: "border-box",
-              }}
-              placeholder="41.7151"
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.8rem", color: "#64748b" }}>
-              გრძედი (Longitude)
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={longitude}
-              onChange={(e) => setLongitude(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                borderRadius: "6px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.85rem",
-                boxSizing: "border-box",
-              }}
-              placeholder="44.8271"
-            />
-          </div>
-        </div>
+        {/* STEP 3: Birth Time & Precision */}
+        {currentStep === 3 && (
+          <BirthTimeStep
+            precision={precision}
+            setPrecision={setPrecision}
+            birthTime={birthTime}
+            setBirthTime={setBirthTime}
+            onNext={() => setCurrentStep(4)}
+            onBack={() => setCurrentStep(2)}
+          />
+        )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "0.8rem",
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: 700,
-            fontSize: "1rem",
-            cursor: loading ? "not-allowed" : "pointer",
-            marginTop: "0.5rem",
-            transition: "background 0.15s ease",
-          }}
-        >
-          {loading
-            ? "მიმდინარეობს რუკის გამოთვლა..."
-            : isExistingData
-            ? "მონაცემების განახლება და რუკის გადათვლა"
-            : "ნატალური რუკის გამოთვლა"}
-        </button>
-      </form>
+        {/* STEP 4: Birth Place */}
+        {currentStep === 4 && (
+          <BirthPlaceStep
+            placeLabel={placeLabel}
+            setPlaceLabel={setPlaceLabel}
+            latitude={latitude}
+            setLatitude={setLatitude}
+            longitude={longitude}
+            setLongitude={setLongitude}
+            birthTimezone={birthTimezone}
+            setBirthTimezone={setBirthTimezone}
+            onNext={() => setCurrentStep(5)}
+            onBack={() => setCurrentStep(3)}
+          />
+        )}
+
+        {/* STEP 5: Review & Confirm */}
+        {currentStep === 5 && (
+          <ReviewStep
+            displayName={displayName}
+            city={city}
+            occupation={occupation}
+            birthDate={birthDate}
+            birthTime={birthTime}
+            precision={precision}
+            placeLabel={placeLabel}
+            onConfirm={() => setCurrentStep(6)}
+            onBack={() => setCurrentStep(4)}
+            onJumpToStep={(step) => setCurrentStep(step)}
+          />
+        )}
+
+        {/* STEP 6: Persistence, Swiss Ephemeris Calculation, and Success Highlights */}
+        {currentStep === 6 && (
+          <CreateSelfStep
+            displayName={displayName}
+            city={city}
+            occupation={occupation}
+            birthDate={birthDate}
+            birthTime={birthTime}
+            precision={precision}
+            placeLabel={placeLabel}
+            latitude={latitude}
+            longitude={longitude}
+            birthTimezone={birthTimezone}
+            onBack={() => setCurrentStep(5)}
+          />
+        )}
+      </Card>
     </div>
   );
 };

@@ -15,6 +15,11 @@ export const ProtectedRoute: React.FC<{
   }
 
   if (!user) {
+    // If visitor lands on root without auth, direct to public Welcome
+    if (location.pathname === "/") {
+      return <Navigate to="/welcome" replace />;
+    }
+    // Deep links retain 'from' redirect to Login
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 

@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { RegisterPage } from "../modules/auth/RegisterPage";
+import { WelcomePage } from "../modules/auth/WelcomePage";
+import { AuthChoicePage } from "../modules/auth/AuthChoicePage";
 import { BirthDataOnboardingPage } from "../modules/onboarding/BirthDataOnboardingPage";
 import { HomePage } from "../modules/home/HomePage";
 import { DiscoverPage } from "../modules/discover/DiscoverPage";
@@ -62,12 +64,15 @@ export const AppRoutes: React.FC = () => {
       <Route path="/inspector" element={<ContentInspectorPage />} />
 
       {/* Public Auth Routes */}
+      <Route path="/welcome" element={<WelcomePage />} />
+      <Route path="/auth/choice" element={<AuthChoicePage />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/logout" element={<LogoutHandler />} />
       <Route path="/auth/logout" element={<LogoutHandler />} />
 
-      {/* Onboarding Route */}
+      {/* Onboarding Routes */}
+      <Route path="/onboarding" element={<Navigate to="/onboarding/birth-data" replace />} />
       <Route
         path="/onboarding/birth-data"
         element={

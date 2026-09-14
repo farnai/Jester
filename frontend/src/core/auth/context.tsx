@@ -44,7 +44,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Initial session load
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        setSession(null);
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+      const session = data?.session ?? null;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -52,6 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setIsLoading(false);
       }
+    }).catch(() => {
+      setSession(null);
+      setUser(null);
+      setIsLoading(false);
     });
 
     // Listen for auth state changes
