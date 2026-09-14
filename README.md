@@ -100,7 +100,7 @@ Jester/
 │   └── vite.config.ts       # Vite configuration
 ├── supabase/
 │   ├── config.toml          # Supabase CLI configuration
-│   └── migrations/          # 20 ordered SQL migrations (schema, RLS, triggers, functions)
+│   └── migrations/          # 25 ordered SQL migrations (schema, RLS, triggers, functions, geo)
 ├── tests/
 │   ├── astrology/           # Swiss Ephemeris validation, aspects, and calculation tests
 │   ├── backend/             # API routes, CORS, JWT auth, self-healing, and preview tests
@@ -123,40 +123,51 @@ Jester/
 
 ---
 
-### 2. Backend Setup
+### 2. Local Database & Backend Setup
 
-1. **Create and Activate Virtual Environment:**
-   ```powershell
-   # Windows (PowerShell)
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
+JESTER relies on a **single source of truth** for local development: the official Supabase Docker stack.
 
-   # macOS / Linux
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-2. **Install Python Dependencies:**
+1. **Start Supabase Local Stack:**
    ```bash
-   pip install -r requirements.txt
+   npx supabase start
+   ```
+   *Ports exposed by Supabase:*
+   - **`:54321`** — Supabase Kong Gateway (Auth, PostgREST API, Storage)
+   - **`:54322`** — Canonical PostgreSQL 17 database (`supabase_db_Jester`)
+   - **`:54323`** — Supabase Studio Web UI
+
+2. **Apply Database Migrations (001–025):**
+   ```bash
+   npx supabase migration up --local
    ```
 
-3. **Configure Environment Variables:**
+3. **Seed Canonical Global Location Dataset (250 countries & ~153k cities):**
+   ```bash
+   python scripts/seed_geo_dataset.py
+   ```
+
+4. **Verify Database Identity & Schema Integrity:**
+   ```bash
+   python scripts/verify_db_identity.py
+   ```
+   *(The backend also automatically runs this fail-fast identity check during startup).*
+
+5. **Configure Environment Variables:**
    ```bash
    cp backend/.env.example .env
    ```
-   Ensure `.env` contains your Supabase URL, anon key, and database connection string:
+   Ensure `.env` contains:
    ```env
    ENV=development
    PROJECT_NAME="Jester API"
    VERSION="1.0.0"
    SUPABASE_URL=http://127.0.0.1:54321
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
    DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
    ```
 
-4. **Start the FastAPI Backend:**
+6. **Start the FastAPI Backend:**
    ```bash
    uvicorn backend.app.main:app --reload --port 8000
    ```

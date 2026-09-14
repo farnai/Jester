@@ -8,9 +8,13 @@ from backend.app.core.errors import JesterAPIException, jester_exception_handler
 from backend.app.api.router import api_router
 
 
+from backend.app.core.database import verify_database_identity
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup logic
+    # Startup validation: fail-fast if wrong or unmigrated database
+    verify_database_identity()
     yield
     # Shutdown logic
 
