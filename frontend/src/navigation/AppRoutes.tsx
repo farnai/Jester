@@ -4,6 +4,8 @@ import { LoginPage } from "../modules/auth/LoginPage";
 import { RegisterPage } from "../modules/auth/RegisterPage";
 import { WelcomePage } from "../modules/auth/WelcomePage";
 import { AuthChoicePage } from "../modules/auth/AuthChoicePage";
+import { AuthCallbackPage } from "../modules/auth/AuthCallbackPage";
+import { ResetPasswordPage } from "../modules/auth/ResetPasswordPage";
 import { BirthDataOnboardingPage } from "../modules/onboarding/BirthDataOnboardingPage";
 import { HomePage } from "../modules/home/HomePage";
 import { DiscoverPage } from "../modules/discover/DiscoverPage";
@@ -37,6 +39,16 @@ export const LogoutHandler: React.FC = () => {
   return <LoadingState message="გამოსვლა / Logging out..." />;
 };
 
+// Dispatcher for /onboarding root based on persisted onboarding step
+const OnboardingDispatcher: React.FC = () => {
+  const { onboardingCompleted } = useAuth();
+
+  if (onboardingCompleted) {
+    return <Navigate to="/me" replace />;
+  }
+  return <Navigate to="/onboarding/birth-data" replace />;
+};
+
 // Redirect helper for legacy /why/:target_id to /people/:id/why
 const LegacyWhyRedirect: React.FC = () => {
   const { target_id } = useParams<{ target_id: string }>();
@@ -68,15 +80,25 @@ export const AppRoutes: React.FC = () => {
       <Route path="/auth/choice" element={<AuthChoicePage />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route path="/logout" element={<LogoutHandler />} />
       <Route path="/auth/logout" element={<LogoutHandler />} />
 
       {/* Onboarding Routes */}
-      <Route path="/onboarding" element={<Navigate to="/onboarding/birth-data" replace />} />
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute requireOnboardingComplete={false}>
+            <OnboardingDispatcher />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/onboarding/birth-data"
         element={
-          <ProtectedRoute requireBirthData={false}>
+          <ProtectedRoute requireOnboardingComplete={false}>
             <BirthDataOnboardingPage />
           </ProtectedRoute>
         }
@@ -86,7 +108,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/"
         element={
-          <ProtectedRoute requireBirthData={true}>
+          <ProtectedRoute requireOnboardingComplete={true}>
             <AppShell />
           </ProtectedRoute>
         }

@@ -5,13 +5,15 @@ import { LoadingState } from "../shared/StatusState";
 
 export const ProtectedRoute: React.FC<{
   children: React.ReactElement;
+  requireOnboardingComplete?: boolean;
   requireBirthData?: boolean;
-}> = ({ children, requireBirthData = true }) => {
-  const { user, isLoading, hasBirthData } = useAuth();
+}> = ({ children, requireOnboardingComplete, requireBirthData }) => {
+  const { user, isLoading, onboardingCompleted } = useAuth();
   const location = useLocation();
+  const mustBeComplete = requireOnboardingComplete ?? requireBirthData ?? true;
 
   if (isLoading) {
-    return <LoadingState message="Restoring session..." />;
+    return <LoadingState message="სესიის აღდგენა / Restoring session..." />;
   }
 
   if (!user) {
@@ -23,13 +25,16 @@ export const ProtectedRoute: React.FC<{
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // If user has not completed birth data onboarding and is not already on onboarding page
-  if (
-    requireBirthData &&
-    hasBirthData === false &&
-    location.pathname !== "/onboarding/birth-data"
-  ) {
-    return <Navigate to="/onboarding/birth-data" replace />;
+  // If user has not completed onboarding and tries to access authenticated main app
+  if (mustBeComplete && !onboardingCompleted) {
+    if (!location.pathname.startsWith("/onboarding")) {
+      return <Navigate to="/onboarding" replace />;
+    }
+  }
+
+  // If user has already completed onboarding and tries to access onboarding routes
+  if (!mustBeComplete && onboardingCompleted && location.pathname.startsWith("/onboarding")) {
+    return <Navigate to="/me" replace />;
   }
 
   return children;

@@ -4,34 +4,32 @@ import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
 import { API } from "../../core/api/endpoints";
 import { Card, Button, Input } from "../../shared/ui";
+import { SocialAuthButtons } from "./SocialAuthButtons";
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, hasBirthData, isLoading: isAuthLoading } = useAuth();
+  const { user, onboardingCompleted, isLoading: isAuthLoading, refreshProfile } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
 
   // If already authenticated, redirect appropriately
   if (!isAuthLoading && user) {
-    if (hasBirthData === true) {
-      return <Navigate to="/" replace />;
+    if (onboardingCompleted) {
+      return <Navigate to="/me" replace />;
     }
-    if (hasBirthData === false) {
-      return <Navigate to="/onboarding/birth-data" replace />;
-    }
+    return <Navigate to="/onboarding" replace />;
   }
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanFirstName = firstName.trim();
     const cleanLastName = lastName.trim();
-    const cleanDisplayName = displayName.trim();
     const cleanEmail = email.trim();
 
     if (!cleanFirstName) {
@@ -40,10 +38,6 @@ export const RegisterPage: React.FC = () => {
     }
     if (!cleanLastName) {
       setError("გთხოვთ შეიყვანოთ თქვენი გვარი (Last name is required).");
-      return;
-    }
-    if (!cleanDisplayName) {
-      setError("გთხოვთ შეიყვანოთ მეტსახელი (Display name is required).");
       return;
     }
     if (!cleanEmail.includes("@")) {
@@ -57,12 +51,12 @@ export const RegisterPage: React.FC = () => {
 
     setLoading(true);
     setError(null);
+    setDuplicateEmail(null);
+
+    const derivedDisplayName = `${cleanFirstName} ${cleanLastName[0].toUpperCase()}.`;
 
     try {
-      let activeUser: any = null;
-      let activeSession: any = null;
-
-      // 1. Create account via Supabase Auth with metadata
+      // 1. Create account via Supabase Auth
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
@@ -70,85 +64,58 @@ export const RegisterPage: React.FC = () => {
           data: {
             first_name: cleanFirstName,
             last_name: cleanLastName,
-            display_name: cleanDisplayName,
+            display_name: derivedDisplayName,
           },
         },
       });
 
       if (authErr) {
         const msg = authErr.message.toLowerCase();
-        if (msg.includes("already registered") || msg.includes("exists")) {
-          // If already registered, attempt direct sign in
-          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-            email: cleanEmail,
-            password,
-          });
-          if (signInErr) {
-            throw new Error("ეს მომხმარებელი უკვე რეგისტრირებულია.");
-          }
-          activeUser = signInData.user;
-          activeSession = signInData.session;
-        } else {
-          throw new Error(authErr.message);
+        if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("unique")) {
+          setDuplicateEmail(cleanEmail);
+          setError("ეს ელფოსტა უკვე რეგისტრირებულია.");
+          setLoading(false);
+          return;
         }
-      } else {
-        activeUser = authData.user;
-        activeSession = authData.session;
+        throw new Error(authErr.message);
       }
 
-      // If session was not directly returned, acquire it via sign in
-      if (!activeSession) {
-        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+      // Check if user already exists (Supabase returns empty identities list for existing accounts)
+      if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+        setDuplicateEmail(cleanEmail);
+        setError("ეს ელფოსტა უკვე რეგისტრირებულია.");
+        setLoading(false);
+        return;
+      }
+
+      // If session was not immediately granted (e.g. email confirmation setting), attempt sign in
+      let session = authData.session;
+      if (!session) {
+        const { data: signInData } = await supabase.auth.signInWithPassword({
           email: cleanEmail,
           password,
         });
-        if (signInErr) {
-          throw new Error(signInErr.message);
-        }
-        activeUser = signInData.user;
-        activeSession = signInData.session;
+        session = signInData.session;
       }
 
-      if (!activeUser) {
-        throw new Error("ანგარიშის შექმნა ვერ მოხერხდა. სცადეთ ხელახლა.");
-      }
-
-      if (activeSession) {
+      if (session) {
         await supabase.auth.setSession({
-          access_token: activeSession.access_token,
-          refresh_token: activeSession.refresh_token,
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
         });
-      }
 
-      // 2. Persist identity to public.profiles
-      const { error: profileErr } = await supabase.from("profiles").upsert({
-        id: activeUser.id,
-        first_name: cleanFirstName,
-        last_name: cleanLastName,
-        display_name: cleanDisplayName,
-        updated_at: new Date().toISOString(),
-      });
-
-      if (profileErr) {
-        console.warn("Direct profile upsert note:", profileErr.message);
-      }
-
-      // Also ensure backend API recognizes the profile update
-      try {
-        await API.profiles.updateMyProfile({
+        // 2. Explicitly initialize profile with names via backend
+        await API.profiles.initializeProfile({
           first_name: cleanFirstName,
           last_name: cleanLastName,
-          display_name: cleanDisplayName,
         });
-      } catch (apiErr) {
-        console.warn("API profile update note:", apiErr);
+        await refreshProfile();
       }
 
-      // 3. Canonical user identity established -> proceed straight to onboarding
       setLoading(false);
-      navigate("/onboarding/birth-data", { replace: true });
+      navigate("/onboarding", { replace: true });
     } catch (err: any) {
-      setError(err.message || "ანგარიშის შექმნისას დაფიქსირდა შეცდომა.");
+      setError(err?.message || "ანგარიშის შექმნისას დაფიქსირდა შეცდომა.");
       setLoading(false);
     }
   };
@@ -156,7 +123,6 @@ export const RegisterPage: React.FC = () => {
   const isFormValid =
     firstName.trim().length > 0 &&
     lastName.trim().length > 0 &&
-    displayName.trim().length > 0 &&
     email.trim().includes("@") &&
     password.length >= 6;
 
@@ -202,7 +168,38 @@ export const RegisterPage: React.FC = () => {
           </p>
         </div>
 
-        {error && (
+        {duplicateEmail ? (
+          <div
+            style={{
+              padding: "1rem",
+              marginBottom: "1.2rem",
+              background: "#fff1f0",
+              border: "1px solid #ff4d4f",
+              borderRadius: "8px",
+              color: "#cf1322",
+            }}
+          >
+            <p style={{ margin: "0 0 0.75rem 0", fontWeight: 700, fontSize: "0.95rem" }}>
+              ⚠️ ეს ელფოსტა უკვე რეგისტრირებულია.
+            </p>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <Button
+                variant="brand"
+                size="sm"
+                onClick={() => navigate("/auth/login", { state: { email: duplicateEmail } })}
+              >
+                შესვლა (Log In)
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate("/auth/reset-password", { state: { email: duplicateEmail } })}
+              >
+                პაროლის აღდგენა
+              </Button>
+            </div>
+          </div>
+        ) : error ? (
           <div
             style={{
               padding: "0.75rem",
@@ -216,7 +213,16 @@ export const RegisterPage: React.FC = () => {
           >
             ⚠️ {error}
           </div>
-        )}
+        ) : null}
+
+        {/* Social Authentication */}
+        <SocialAuthButtons onError={(err) => setError(err)} disabled={loading} />
+
+        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "#94a3b8" }}>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+          <span style={{ padding: "0 0.75rem", fontSize: "0.8rem", textTransform: "uppercase" }}>ან ელფოსტით</span>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+        </div>
 
         <form onSubmit={handleAccountSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <Input
@@ -235,16 +241,7 @@ export const RegisterPage: React.FC = () => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="მაგ. იორდანიშვილი"
-          />
-
-          <Input
-            label="მეტსახელი / Display Name *"
-            type="text"
-            required
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="მაგ. ნიკა"
-            helperText="ეს სახელი გამოჩნდება საჯაროდ აპლიკაციაში."
+            helperText="საჯაროდ გამოჩნდება მხოლოდ სახელისა და გვარის პირველი ასო (მაგ. ნიკა ი.)."
           />
 
           <Input

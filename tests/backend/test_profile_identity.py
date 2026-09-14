@@ -36,22 +36,27 @@ def test_profile_identity_columns_exist(db_conn):
 
 
 @pytest.mark.asyncio
-async def test_self_healing_profile_has_null_names(db_conn):
+async def test_initialized_profile_has_null_names_when_not_provided(db_conn):
     """
     Given: An auth user without a profile row.
-    When: GET /v1/profiles/me is called.
-    Then: Profile is auto-created with display_name=email_prefix and first_name/last_name=None.
+    When: POST /v1/profiles/initialize is called with empty payload.
+    Then: Profile is created with display_name=email_prefix and first_name/last_name=None.
     """
     uid = str(uuid.uuid4())
-    prefix = f"identity_heal_{uid[:8]}"
+    prefix = f"identity_init_{uid[:8]}"
     email = f"{prefix}@test.jester.app"
     create_auth_only_user(db_conn, uid, email)
 
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        res = await ac.get(
-            "/v1/profiles/me",
+        # GET returns 404 before initialization
+        get_before = await ac.get("/v1/profiles/me", headers={"Authorization": f"Bearer {token}"})
+        assert get_before.status_code == 404
+
+        # Explicit initialization
+        res = await ac.post(
+            "/v1/profiles/initialize",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200
@@ -65,7 +70,7 @@ async def test_self_healing_profile_has_null_names(db_conn):
 @pytest.mark.asyncio
 async def test_patch_profile_identity_fields(db_conn):
     """
-    Given: An authenticated user with an existing profile.
+    Given: An authenticated user with an initialized profile.
     When: PATCH /v1/profiles/me with first_name, last_name, and display_name.
     Then: 200 OK, response reflects updated values, and DB row persists all three.
     """
@@ -75,6 +80,9 @@ async def test_patch_profile_identity_fields(db_conn):
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # Initialize profile first
+        await ac.post("/v1/profiles/initialize", headers={"Authorization": f"Bearer {token}"})
+
         # 1. Update identity
         patch_res = await ac.patch(
             "/v1/profiles/me",
@@ -128,14 +136,21 @@ async def test_partial_name_updates(db_conn):
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        # Initial set
+        # Initialize profile first
+        await ac.post(
+            "/v1/profiles/initialize",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"first_name": "Alex", "last_name": "Smith"},
+        )
+
+        # Explicit display name override
         await ac.patch(
             "/v1/profiles/me",
             headers={"Authorization": f"Bearer {token}"},
-            json={"first_name": "Alex", "last_name": "Smith", "display_name": "AlexS"},
+            json={"display_name": "AlexS"},
         )
 
-        # Partial update
+        # Partial update: only last_name
         res = await ac.patch(
             "/v1/profiles/me",
             headers={"Authorization": f"Bearer {token}"},

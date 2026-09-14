@@ -15,6 +15,7 @@ import {
   NotificationResponse,
   ProfileResponse,
   ProfileUpdate,
+  ProfileInitializeRequest,
   SafeDerivedAstrologyResponse,
   StructuredCompatibilityResponse,
   UserResponse,
@@ -32,10 +33,19 @@ export const API = {
   // Profiles
   profiles: {
     getMyProfile: () => apiRequest<ProfileResponse>("/v1/profiles/me"),
+    initializeProfile: (data?: ProfileInitializeRequest) =>
+      apiRequest<ProfileResponse>("/v1/profiles/initialize", {
+        method: "POST",
+        body: data ? JSON.stringify(data) : undefined,
+      }),
     updateMyProfile: (data: ProfileUpdate) =>
       apiRequest<ProfileResponse>("/v1/profiles/me", {
         method: "PATCH",
         body: JSON.stringify(data),
+      }),
+    completeOnboarding: () =>
+      apiRequest<ProfileResponse>("/v1/profiles/me/complete-onboarding", {
+        method: "POST",
       }),
     getProfileById: (profileId: string) =>
       apiRequest<ProfileResponse>(`/v1/profiles/${profileId}`),

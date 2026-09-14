@@ -41,3 +41,10 @@ class ProfileResponse(ProfileBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+
+class ProfileInitializeRequest(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    avatar_url: str | None = None
+

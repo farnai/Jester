@@ -5,16 +5,14 @@ import { Card, Button } from "../../shared/ui";
 
 export const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, hasBirthData, isLoading } = useAuth();
+  const { user, onboardingCompleted, isLoading } = useAuth();
 
   // If user is already logged in, route to appropriate surface
   if (!isLoading && user) {
-    if (hasBirthData === true) {
-      return <Navigate to="/" replace />;
+    if (onboardingCompleted) {
+      return <Navigate to="/me" replace />;
     }
-    if (hasBirthData === false) {
-      return <Navigate to="/onboarding/birth-data" replace />;
-    }
+    return <Navigate to="/onboarding" replace />;
   }
 
   return (

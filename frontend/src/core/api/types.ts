@@ -44,6 +44,12 @@ export interface ProfileUpdate {
   is_discoverable?: boolean;
 }
 
+export interface ProfileInitializeRequest {
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+}
+
 export interface SafeDerivedAstrologyResponse {
   user_id: string;
   sun_sign: string;

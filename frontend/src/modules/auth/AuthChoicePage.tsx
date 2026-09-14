@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../../core/auth/useAuth";
 import { Card, Button } from "../../shared/ui";
+import { SocialAuthButtons } from "./SocialAuthButtons";
 
 export const AuthChoicePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, hasBirthData, isLoading } = useAuth();
+  const { user, onboardingCompleted, isLoading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   if (!isLoading && user) {
-    if (hasBirthData === true) {
-      return <Navigate to="/" replace />;
+    if (onboardingCompleted) {
+      return <Navigate to="/me" replace />;
     }
-    if (hasBirthData === false) {
-      return <Navigate to="/onboarding/birth-data" replace />;
-    }
+    return <Navigate to="/onboarding" replace />;
   }
 
   return (
@@ -51,7 +51,7 @@ export const AuthChoicePage: React.FC = () => {
 
         <p
           style={{
-            margin: "0 0 2rem 0",
+            margin: "0 0 1.5rem 0",
             color: "#64748b",
             fontSize: "0.9rem",
             lineHeight: 1.5,
@@ -59,6 +59,32 @@ export const AuthChoicePage: React.FC = () => {
         >
           აირჩიეთ ახალი ანგარიშის შექმნა ან არსებულში შესვლა:
         </p>
+
+        {error && (
+          <div
+            style={{
+              padding: "0.75rem",
+              marginBottom: "1.2rem",
+              background: "#fff1f0",
+              border: "1px solid #ff4d4f",
+              borderRadius: "6px",
+              color: "#cf1322",
+              fontSize: "0.85rem",
+            }}
+          >
+            ⚠️ {error}
+          </div>
+        )}
+
+        <div style={{ marginBottom: "1.2rem" }}>
+          <SocialAuthButtons onError={(err) => setError(err)} />
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "#94a3b8" }}>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+          <span style={{ padding: "0 0.75rem", fontSize: "0.8rem", textTransform: "uppercase" }}>ან ელფოსტით</span>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <Button

@@ -1,7 +1,10 @@
 """
-Regression tests for self-healing profile auto-provisioning.
-Verifies that newly registered auth-only users automatically receive a default profile on GET /v1/profiles/me,
-and that existing profiles remain untouched and idempotent.
+Tests for explicit profile initialization architecture.
+Verifies that:
+1. GET /v1/profiles/me is strictly read-oriented and returns 404 if profile does not exist.
+2. POST /v1/profiles/initialize explicitly provisions the profile without side effects on GET.
+3. Existing user edits are preserved and never overwritten by subsequent initialize calls.
+4. Repeated POST /v1/profiles/initialize is idempotent.
 """
 import uuid
 import pytest
@@ -12,32 +15,34 @@ from tests.backend.test_jwt_verification import generate_test_jwt
 from tests.database.test_database_security import create_test_user, db_conn
 
 
-def create_auth_only_user(db_conn, user_id: str, email: str):
+def create_auth_only_user(db_conn, user_id: str, email: str, raw_meta: dict | None = None):
     """Creates a user strictly in auth.users without creating a public.profiles row."""
+    import json
+    meta_json = json.dumps(raw_meta or {})
     with db_conn.cursor() as cur:
         cur.execute("RESET ROLE;")
         cur.execute(
             """
             INSERT INTO auth.users (id, email, raw_user_meta_data, role, aud)
-            VALUES (%s, %s, '{}'::jsonb, 'authenticated', 'authenticated')
-            ON CONFLICT (id) DO NOTHING;
+            VALUES (%s, %s, %s::jsonb, 'authenticated', 'authenticated')
+            ON CONFLICT (id) DO UPDATE SET raw_user_meta_data = EXCLUDED.raw_user_meta_data;
             """,
-            (user_id, email),
+            (user_id, email, meta_json),
         )
         # Ensure no row exists in public.profiles for this user
         cur.execute("DELETE FROM public.profiles WHERE id = %s;", (user_id,))
 
 
 @pytest.mark.asyncio
-async def test_missing_profile_is_auto_created_on_get(db_conn):
+async def test_get_profile_me_returns_404_when_uninitialized(db_conn):
     """
-    Test Case A:
+    Architectural invariant:
     Given: Authenticated user exists in auth.users, but NOT in public.profiles.
     When: GET /v1/profiles/me
-    Then: 200 OK, profile.id == user_id, display_name == email prefix, and DB row is created.
+    Then: 404 Not Found, NO row is created in public.profiles (GET is strictly read-oriented).
     """
     uid = str(uuid.uuid4())
-    prefix = f"self_heal_a_{uid[:8]}"
+    prefix = f"no_heal_{uid[:8]}"
     email = f"{prefix}@test.jester.app"
     create_auth_only_user(db_conn, uid, email)
 
@@ -48,116 +53,141 @@ async def test_missing_profile_is_auto_created_on_get(db_conn):
             "/v1/profiles/me",
             headers={"Authorization": f"Bearer {token}"},
         )
-        assert res.status_code == 200
-        data = res.json()
-        assert data["id"] == uid
-        assert data["display_name"] == prefix
+        assert res.status_code == 404
 
-        # Verify database record exists
+        # Verify database record was NOT created by GET
         with db_conn.cursor() as cur:
             cur.execute("SELECT * FROM public.profiles WHERE id = %s;", (uid,))
             row = cur.fetchone()
-            assert row is not None
-            assert row["display_name"] == prefix
+            assert row is None
 
 
 @pytest.mark.asyncio
-async def test_profile_update_works_after_self_healing(db_conn):
+async def test_explicit_initialize_creates_profile(db_conn):
     """
-    Test Case B:
-    Given: Authenticated user with no initial profile.
-    When: GET /v1/profiles/me (auto-creates) -> PATCH /v1/profiles/me (updates fields).
-    Then: 200 OK on PATCH, updated values persisted in database.
+    Given: Authenticated user with no profile row.
+    When: POST /v1/profiles/initialize
+    Then: 200 OK, profile created, display_name derived, and GET /v1/profiles/me succeeds.
     """
     uid = str(uuid.uuid4())
-    prefix = f"self_heal_b_{uid[:8]}"
+    prefix = f"init_a_{uid[:8]}"
     email = f"{prefix}@test.jester.app"
     create_auth_only_user(db_conn, uid, email)
 
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        # Step 1: Self-heal
+        # Step 1: Explicitly initialize
+        init_res = await ac.post(
+            "/v1/profiles/initialize",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"first_name": "Levan", "last_name": "Kapanadze"},
+        )
+        assert init_res.status_code == 200
+        data = init_res.json()
+        assert data["id"] == uid
+        assert data["first_name"] == "Levan"
+        assert data["last_name"] == "Kapanadze"
+        assert data["display_name"] == "Levan K."
+        assert data["onboarding_completed"] is False
+
+        # Step 2: Now GET /v1/profiles/me succeeds
         get_res = await ac.get(
             "/v1/profiles/me",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert get_res.status_code == 200
-
-        # Step 2: PATCH profile
-        patch_res = await ac.patch(
-            "/v1/profiles/me",
-            headers={"Authorization": f"Bearer {token}"},
-            json={
-                "display_name": "Updated Explorer",
-                "bio": "Stargazer & traveler",
-                "city": "Batumi",
-            },
-        )
-        assert patch_res.status_code == 200
-        data = patch_res.json()
-        assert data["display_name"] == "Updated Explorer"
-        assert data["bio"] == "Stargazer & traveler"
-        assert data["city"] == "Batumi"
-
-        # Step 3: Verify DB persistence
-        with db_conn.cursor() as cur:
-            cur.execute("SELECT * FROM public.profiles WHERE id = %s;", (uid,))
-            row = cur.fetchone()
-            assert row is not None
-            assert row["display_name"] == "Updated Explorer"
-            assert row["bio"] == "Stargazer & traveler"
-            assert row["city"] == "Batumi"
+        assert get_res.json()["display_name"] == "Levan K."
 
 
 @pytest.mark.asyncio
-async def test_existing_profile_is_not_overwritten(db_conn):
+async def test_initialize_from_auth_metadata(db_conn):
     """
-    Test Case C:
-    Given: User with an already established profile (custom display_name and bio).
-    When: GET /v1/profiles/me
-    Then: 200 OK, existing custom display_name and bio are preserved (not replaced by email prefix).
+    Given: OAuth user with Google/Apple metadata in auth.users.raw_user_meta_data.
+    When: POST /v1/profiles/initialize without payload.
+    Then: Metadata (given_name/family_name) is used to initialize profile.
+    """
+    uid = str(uuid.uuid4())
+    email = f"oauth_user_{uid[:8]}@example.com"
+    raw_meta = {
+        "given_name": "Giorgi",
+        "family_name": "Beridze",
+        "picture": "https://example.com/avatar.jpg",
+    }
+    create_auth_only_user(db_conn, uid, email, raw_meta=raw_meta)
+
+    token = generate_test_jwt(user_id=uid, email=email)
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        init_res = await ac.post(
+            "/v1/profiles/initialize",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert init_res.status_code == 200
+        data = init_res.json()
+        assert data["id"] == uid
+        assert data["first_name"] == "Giorgi"
+        assert data["last_name"] == "Beridze"
+        assert data["display_name"] == "Giorgi B."
+        assert data["avatar_url"] == "https://example.com/avatar.jpg"
+
+
+@pytest.mark.asyncio
+async def test_existing_profile_is_not_overwritten_by_initialize(db_conn):
+    """
+    Given: User has already established profile with custom display_name and bio.
+    When: POST /v1/profiles/initialize called with conflicting or OAuth metadata.
+    Then: Existing user edits are preserved and NOT overwritten.
     """
     uid = str(uuid.uuid4())
     email = f"custom_user_{uid[:8]}@test.jester.app"
     create_test_user(db_conn, uid, email, display_name="Established Pioneer")
 
-    # Set custom bio
     with db_conn.cursor() as cur:
-        cur.execute("UPDATE public.profiles SET bio = 'Original bio' WHERE id = %s;", (uid,))
+        cur.execute(
+            """
+            UPDATE public.profiles
+            SET first_name = 'OriginalFirst', last_name = 'OriginalLast', bio = 'Original bio'
+            WHERE id = %s;
+            """,
+            (uid,),
+        )
 
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        res = await ac.get(
-            "/v1/profiles/me",
+        res = await ac.post(
+            "/v1/profiles/initialize",
             headers={"Authorization": f"Bearer {token}"},
+            json={"first_name": "NewOAuthFirst", "last_name": "NewOAuthLast"},
         )
         assert res.status_code == 200
         data = res.json()
+        # Original edits MUST be preserved
+        assert data["first_name"] == "OriginalFirst"
+        assert data["last_name"] == "OriginalLast"
         assert data["display_name"] == "Established Pioneer"
         assert data["bio"] == "Original bio"
 
 
 @pytest.mark.asyncio
-async def test_repeated_get_is_idempotent(db_conn):
+async def test_repeated_initialize_is_idempotent(db_conn):
     """
-    Test Case D:
     Given: User with no initial profile.
-    When: GET /v1/profiles/me called 3 consecutive times.
-    Then: All return 200 OK with identical data, exactly 1 row exists in public.profiles.
+    When: POST /v1/profiles/initialize called 3 consecutive times.
+    Then: All return 200 OK with identical data, exactly 1 row in public.profiles.
     """
     uid = str(uuid.uuid4())
-    prefix = f"self_heal_d_{uid[:8]}"
+    prefix = f"idem_{uid[:8]}"
     email = f"{prefix}@test.jester.app"
     create_auth_only_user(db_conn, uid, email)
 
     token = generate_test_jwt(user_id=uid, email=email)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        res1 = await ac.get("/v1/profiles/me", headers={"Authorization": f"Bearer {token}"})
-        res2 = await ac.get("/v1/profiles/me", headers={"Authorization": f"Bearer {token}"})
-        res3 = await ac.get("/v1/profiles/me", headers={"Authorization": f"Bearer {token}"})
+        res1 = await ac.post("/v1/profiles/initialize", headers={"Authorization": f"Bearer {token}"}, json={"first_name": "Anna", "last_name": "Kiknadze"})
+        res2 = await ac.post("/v1/profiles/initialize", headers={"Authorization": f"Bearer {token}"})
+        res3 = await ac.post("/v1/profiles/initialize", headers={"Authorization": f"Bearer {token}"})
 
         assert res1.status_code == 200
         assert res2.status_code == 200
@@ -167,11 +197,10 @@ async def test_repeated_get_is_idempotent(db_conn):
         assert res2.json()["id"] == uid
         assert res3.json()["id"] == uid
 
-        assert res1.json()["display_name"] == prefix
-        assert res2.json()["display_name"] == prefix
-        assert res3.json()["display_name"] == prefix
+        assert res1.json()["display_name"] == "Anna K."
+        assert res2.json()["display_name"] == "Anna K."
+        assert res3.json()["display_name"] == "Anna K."
 
-        # Verify exactly 1 row exists in public.profiles
         with db_conn.cursor() as cur:
             cur.execute("SELECT count(*) as cnt FROM public.profiles WHERE id = %s;", (uid,))
             cnt = cur.fetchone()["cnt"]

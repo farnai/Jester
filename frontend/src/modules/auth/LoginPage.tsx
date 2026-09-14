@@ -3,27 +3,27 @@ import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
 import { Card, Button, Input } from "../../shared/ui";
+import { SocialAuthButtons } from "./SocialAuthButtons";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, hasBirthData, isLoading: isAuthLoading, refreshBirthDataCheck } = useAuth();
+  const { user, onboardingCompleted, isLoading: isAuthLoading, refreshProfile } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const initialEmail = (location.state as any)?.email || "";
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const from = (location.state as any)?.from?.pathname || "/";
+  const from = (location.state as any)?.from?.pathname || "/me";
 
   // If already authenticated, redirect
   if (!isAuthLoading && user) {
-    if (hasBirthData === true) {
+    if (onboardingCompleted) {
       return <Navigate to={from} replace />;
     }
-    if (hasBirthData === false) {
-      return <Navigate to="/onboarding/birth-data" replace />;
-    }
+    return <Navigate to="/onboarding" replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,11 +31,15 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const trimmed = email.trim();
-    const loginEmail = trimmed.includes("@") ? trimmed : `${trimmed}@jester.app`;
+    const cleanEmail = email.trim();
+    if (!cleanEmail.includes("@")) {
+      setError("გთხოვთ შეიყვანოთ სწორი ელფოსტა.");
+      setLoading(false);
+      return;
+    }
 
     const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
+      email: cleanEmail,
       password,
     });
 
@@ -46,12 +50,12 @@ export const LoginPage: React.FC = () => {
     }
 
     if (data.user) {
-      const hasBirth = await refreshBirthDataCheck(data.user.id);
+      const p = await refreshProfile();
       setLoading(false);
-      if (!hasBirth) {
-        navigate("/onboarding/birth-data", { replace: true });
-      } else {
+      if (p?.onboarding_completed) {
         navigate(from, { replace: true });
+      } else {
+        navigate("/onboarding", { replace: true });
       }
     }
   };
@@ -108,26 +112,46 @@ export const LoginPage: React.FC = () => {
           </div>
         )}
 
+        {/* Social Authentication */}
+        <SocialAuthButtons onError={(err) => setError(err)} disabled={loading} />
+
+        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "#94a3b8" }}>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+          <span style={{ padding: "0 0.75rem", fontSize: "0.8rem", textTransform: "uppercase" }}>ან ელფოსტით</span>
+          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+        </div>
+
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <Input
-            label="ელფოსტა ან მომხმარებელი (Email / Username) *"
-            type="text"
+            label="ელფოსტა (Email) *"
+            type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="name@example.com ან farna"
+            placeholder="name@example.com"
             autoCapitalize="none"
             autoCorrect="off"
           />
 
-          <Input
-            label="პაროლი (Password) *"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="თქვენი პაროლი"
-          />
+          <div>
+            <Input
+              label="პაროლი (Password) *"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="თქვენი პაროლი"
+            />
+            <div style={{ textAlign: "right", marginTop: "0.3rem" }}>
+              <Link
+                to="/auth/reset-password"
+                state={{ email }}
+                style={{ fontSize: "0.8rem", color: "#6366f1", textDecoration: "none" }}
+              >
+                დაგავიწყდათ პაროლი?
+              </Link>
+            </div>
+          </div>
 
           <Button
             type="submit"
