@@ -400,7 +400,7 @@ export const BackendAuditDebugPage: React.FC = () => {
       capturedAt: new Date().toISOString(),
       birth_date: storedBirthData.birth_date,
       birth_time: storedBirthData.birth_time || "12:00:00",
-      birth_timezone: storedBirthData.birth_timezone,
+      birth_timezone: storedBirthData.birth_timezone || "UTC",
       place_label: storedBirthData.place_label || "N/A",
       data_version: storedBirthData.data_version ?? 1,
       sun_sign: astro.sun_sign,

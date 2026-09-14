@@ -12,9 +12,12 @@ export interface UserResponse {
 export interface ProfileResponse {
   id: string;
   display_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   avatar_url: string | null;
   bio: string | null;
   city: string | null;
+  city_id?: string | null;
   occupation: string | null;
   timezone: string;
   is_discoverable: boolean;
@@ -24,9 +27,12 @@ export interface ProfileResponse {
 
 export interface ProfileUpdate {
   display_name?: string;
+  first_name?: string;
+  last_name?: string;
   avatar_url?: string;
   bio?: string;
   city?: string;
+  city_id?: string | null;
   occupation?: string;
   timezone?: string;
   is_discoverable?: boolean;
@@ -51,11 +57,41 @@ export interface BirthDataPayload {
   birth_date: string; // YYYY-MM-DD
   birth_time?: string | null; // HH:MM:SS
   birth_time_precision: "exact" | "approximate" | "unknown";
-  birth_timezone: string;
+  birth_timezone?: string;
   latitude?: number | null;
   longitude?: number | null;
   place_label?: string | null;
+  birth_city_id?: string | null;
   data_version?: number;
+}
+
+export interface CitySearchResult {
+  city_id: string;
+  name: string;
+  display_name: string;
+  country_name: string;
+  country_code: string;
+  region: string | null;
+}
+
+export interface CitySearchResponse {
+  items: CitySearchResult[];
+}
+
+export interface CanonicalCity {
+  id: string;
+  source_id: number;
+  country_id: string;
+  country_code: string;
+  country_name: string;
+  name: string;
+  name_ascii: string;
+  state_or_region: string | null;
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  is_major_city: boolean;
+  display_name: string;
 }
 
 export type ConnectionStatus = "pending" | "accepted" | "declined" | "blocked" | "removed";

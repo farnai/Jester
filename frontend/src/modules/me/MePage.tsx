@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { ProfileResponse, ProfileUpdate, SafeDerivedAstrologyResponse, NatalResolveResponseItem } from "../../core/api/types";
-import { Card, Button, Input, Badge, Avatar, Skeleton, LoadingState, ErrorState } from "../../shared/ui";
+import { Card, Button, Input, Badge, Avatar, Skeleton, LoadingState, ErrorState, CitySelector } from "../../shared/ui";
 
 export const MePage: React.FC = () => {
   const queryClient = useQueryClient();
@@ -67,17 +67,23 @@ export const MePage: React.FC = () => {
 
   // Profile Form State
   const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
-  const [city, setCity] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [isDiscoverable, setIsDiscoverable] = useState(true);
-  const [formInitialized, setFormInitialized] = useState(false);
+  const [city, setCity] = useState<string>("");
+  const [cityId, setCityId] = useState<string | null>(null);
+  const [occupation, setOccupation] = useState<string>("");
+  const [isDiscoverable, setIsDiscoverable] = useState<boolean>(true);
+  const [formInitialized, setFormInitialized] = useState<boolean>(false);
 
-  // Sync profile form once data arrives
+  // Sync profile data into local form state once loaded
   if (profile && !formInitialized) {
     setDisplayName(profile.display_name || "");
+    setFirstName(profile.first_name || "");
+    setLastName(profile.last_name || "");
     setBio(profile.bio || "");
     setCity(profile.city || "");
+    setCityId(profile.city_id || null);
     setOccupation(profile.occupation || "");
     setIsDiscoverable(profile.is_discoverable ?? true);
     setFormInitialized(true);
@@ -104,8 +110,11 @@ export const MePage: React.FC = () => {
     e.preventDefault();
     updateMutation.mutate({
       display_name: displayName,
+      first_name: firstName || undefined,
+      last_name: lastName || undefined,
       bio,
       city,
+      city_id: cityId || undefined,
       occupation,
       is_discoverable: isDiscoverable,
     });
@@ -432,8 +441,23 @@ export const MePage: React.FC = () => {
 
           <Card padded>
             <form onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+                <Input
+                  label="სახელი / First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="მაგ. ნიკა"
+                />
+                <Input
+                  label="გვარი / Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="მაგ. იორდანიშვილი"
+                />
+              </div>
+
               <Input
-                label="სახელი / Display Name"
+                label="მეტსახელი / Display Name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="თქვენი სახელი"
@@ -461,12 +485,20 @@ export const MePage: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
-                <Input
+              <div>
+                <CitySelector
+                  value={cityId}
+                  initialDisplayLabel={city}
+                  onChange={(selected) => {
+                    setCityId(selected.city_id);
+                    setCity(`${selected.display_name}, ${selected.country_name}`);
+                  }}
+                  onClear={() => {
+                    setCityId(null);
+                    setCity("");
+                  }}
                   label="ქალაქი / City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="მაგ. თბილისი"
+                  placeholder="მაგ. თბილისი, ბათუმი, London..."
                 />
                 <Input
                   label="საქმიანობა / Occupation"

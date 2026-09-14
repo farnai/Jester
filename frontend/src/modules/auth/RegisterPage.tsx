@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
+import { API } from "../../core/api/endpoints";
 import { Card, Button, Input } from "../../shared/ui";
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, hasBirthData, isLoading: isAuthLoading } = useAuth();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +29,23 @@ export const RegisterPage: React.FC = () => {
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanFirstName = firstName.trim();
+    const cleanLastName = lastName.trim();
+    const cleanDisplayName = displayName.trim();
     const cleanEmail = email.trim();
+
+    if (!cleanFirstName) {
+      setError("გთხოვთ შეიყვანოთ თქვენი სახელი (First name is required).");
+      return;
+    }
+    if (!cleanLastName) {
+      setError("გთხოვთ შეიყვანოთ თქვენი გვარი (Last name is required).");
+      return;
+    }
+    if (!cleanDisplayName) {
+      setError("გთხოვთ შეიყვანოთ მეტსახელი (Display name is required).");
+      return;
+    }
     if (!cleanEmail.includes("@")) {
       setError("გთხოვთ შეიყვანოთ სწორი ელფოსტა (Valid email address).");
       return;
@@ -42,10 +62,17 @@ export const RegisterPage: React.FC = () => {
       let activeUser: any = null;
       let activeSession: any = null;
 
-      // 1. Create account via Supabase Auth
+      // 1. Create account via Supabase Auth with metadata
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
+        options: {
+          data: {
+            first_name: cleanFirstName,
+            last_name: cleanLastName,
+            display_name: cleanDisplayName,
+          },
+        },
       });
 
       if (authErr) {
@@ -57,7 +84,7 @@ export const RegisterPage: React.FC = () => {
             password,
           });
           if (signInErr) {
-            throw new Error("ეს მომხმარებელი უკვე რეგისტრირებულია. გთხოვთ შეხვიდეთ თქვენი პაროლით.");
+            throw new Error("ეს მომხმარებელი უკვე რეგისტრირებულია.");
           }
           activeUser = signInData.user;
           activeSession = signInData.session;
@@ -93,7 +120,31 @@ export const RegisterPage: React.FC = () => {
         });
       }
 
-      // 2. Canonical user identity established -> proceed straight to onboarding
+      // 2. Persist identity to public.profiles
+      const { error: profileErr } = await supabase.from("profiles").upsert({
+        id: activeUser.id,
+        first_name: cleanFirstName,
+        last_name: cleanLastName,
+        display_name: cleanDisplayName,
+        updated_at: new Date().toISOString(),
+      });
+
+      if (profileErr) {
+        console.warn("Direct profile upsert note:", profileErr.message);
+      }
+
+      // Also ensure backend API recognizes the profile update
+      try {
+        await API.profiles.updateMyProfile({
+          first_name: cleanFirstName,
+          last_name: cleanLastName,
+          display_name: cleanDisplayName,
+        });
+      } catch (apiErr) {
+        console.warn("API profile update note:", apiErr);
+      }
+
+      // 3. Canonical user identity established -> proceed straight to onboarding
       setLoading(false);
       navigate("/onboarding/birth-data", { replace: true });
     } catch (err: any) {
@@ -102,7 +153,12 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const isFormValid = email.trim().includes("@") && password.length >= 6;
+  const isFormValid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    displayName.trim().length > 0 &&
+    email.trim().includes("@") &&
+    password.length >= 6;
 
   return (
     <div
@@ -142,7 +198,7 @@ export const RegisterPage: React.FC = () => {
               fontSize: "0.85rem",
             }}
           >
-            შეიყვანეთ ელფოსტა და პაროლი JESTER-ში დასარეგისტრირებლად.
+            შეიყვანეთ თქვენი მონაცემები JESTER-ში დასარეგისტრირებლად.
           </p>
         </div>
 
@@ -163,6 +219,34 @@ export const RegisterPage: React.FC = () => {
         )}
 
         <form onSubmit={handleAccountSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <Input
+            label="სახელი (First Name) *"
+            type="text"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="მაგ. ნიკა"
+          />
+
+          <Input
+            label="გვარი (Last Name) *"
+            type="text"
+            required
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="მაგ. იორდანიშვილი"
+          />
+
+          <Input
+            label="მეტსახელი / Display Name *"
+            type="text"
+            required
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="მაგ. ნიკა"
+            helperText="ეს სახელი გამოჩნდება საჯაროდ აპლიკაციაში."
+          />
+
           <Input
             label="ელფოსტა (Email) *"
             type="email"

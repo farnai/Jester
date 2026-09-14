@@ -17,9 +17,12 @@ export const BirthDataOnboardingPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [loadingInitial, setLoadingInitial] = useState(true);
 
-  // Step 1: Basic Profile
+  // Step 1: Profile identity & details
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [city, setCity] = useState<string>("");
+  const [profileCityId, setProfileCityId] = useState<string | null>(null);
   const [occupation, setOccupation] = useState<string>("");
 
   // Step 2: Birth Date
@@ -30,9 +33,10 @@ export const BirthDataOnboardingPage: React.FC = () => {
   const [birthTime, setBirthTime] = useState<string>("12:00");
 
   // Step 4: Birth Place & Coordinates
-  const [placeLabel, setPlaceLabel] = useState<string>("Tbilisi, Georgia");
-  const [latitude, setLatitude] = useState<number | null>(41.7151);
-  const [longitude, setLongitude] = useState<number | null>(44.8271);
+  const [birthCityId, setBirthCityId] = useState<string | null>(null);
+  const [placeLabel, setPlaceLabel] = useState<string>("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [birthTimezone, setBirthTimezone] = useState<string>("Asia/Tbilisi");
 
   // Load existing profile & birth data if available (e.g., editing flow)
@@ -53,9 +57,16 @@ export const BirthDataOnboardingPage: React.FC = () => {
 
         // Populate profile fields
         if (savedProfile) {
+          if (savedProfile.first_name) setFirstName(savedProfile.first_name);
+          if (savedProfile.last_name) setLastName(savedProfile.last_name);
           if (savedProfile.display_name) setDisplayName(savedProfile.display_name);
           if (savedProfile.city) setCity(savedProfile.city);
+          if (savedProfile.city_id) setProfileCityId(savedProfile.city_id);
           if (savedProfile.occupation) setOccupation(savedProfile.occupation);
+        } else if (user.user_metadata) {
+          if (user.user_metadata.first_name) setFirstName(user.user_metadata.first_name);
+          if (user.user_metadata.last_name) setLastName(user.user_metadata.last_name);
+          if (user.user_metadata.display_name) setDisplayName(user.user_metadata.display_name);
         } else if (user.email) {
           setDisplayName(user.email.split("@")[0]);
         }
@@ -66,6 +77,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
           if (savedBirthData.birth_time_precision) setPrecision(savedBirthData.birth_time_precision);
           if (savedBirthData.birth_time) setBirthTime(savedBirthData.birth_time.slice(0, 5));
           if (savedBirthData.place_label) setPlaceLabel(savedBirthData.place_label);
+          if (savedBirthData.birth_city_id) setBirthCityId(savedBirthData.birth_city_id);
           if (savedBirthData.birth_timezone) setBirthTimezone(savedBirthData.birth_timezone);
           if (savedBirthData.latitude != null) setLatitude(savedBirthData.latitude);
           if (savedBirthData.longitude != null) setLongitude(savedBirthData.longitude);
@@ -148,13 +160,13 @@ export const BirthDataOnboardingPage: React.FC = () => {
           </div>
         )}
 
-        {/* STEP 1: Basic Profile */}
+        {/* STEP 1: Basic Profile Details */}
         {currentStep === 1 && (
           <BasicProfileStep
-            displayName={displayName}
-            setDisplayName={setDisplayName}
             city={city}
             setCity={setCity}
+            cityId={profileCityId}
+            setCityId={setProfileCityId}
             occupation={occupation}
             setOccupation={setOccupation}
             onNext={() => setCurrentStep(2)}
@@ -186,6 +198,8 @@ export const BirthDataOnboardingPage: React.FC = () => {
         {/* STEP 4: Birth Place */}
         {currentStep === 4 && (
           <BirthPlaceStep
+            birthCityId={birthCityId}
+            setBirthCityId={setBirthCityId}
             placeLabel={placeLabel}
             setPlaceLabel={setPlaceLabel}
             latitude={latitude}
@@ -203,6 +217,8 @@ export const BirthDataOnboardingPage: React.FC = () => {
         {currentStep === 5 && (
           <ReviewStep
             displayName={displayName}
+            firstName={firstName}
+            lastName={lastName}
             city={city}
             occupation={occupation}
             birthDate={birthDate}
@@ -219,12 +235,16 @@ export const BirthDataOnboardingPage: React.FC = () => {
         {currentStep === 6 && (
           <CreateSelfStep
             displayName={displayName}
+            firstName={firstName}
+            lastName={lastName}
             city={city}
+            profileCityId={profileCityId}
             occupation={occupation}
             birthDate={birthDate}
             birthTime={birthTime}
             precision={precision}
             placeLabel={placeLabel}
+            birthCityId={birthCityId}
             latitude={latitude}
             longitude={longitude}
             birthTimezone={birthTimezone}

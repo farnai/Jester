@@ -10,10 +10,11 @@ class BirthDataInput(BaseModel):
     birth_date: date
     birth_time: time | None = None
     birth_time_precision: BirthTimePrecision
-    birth_timezone: str
+    birth_timezone: str | None = None
     latitude: float | None = None
     longitude: float | None = None
     place_label: str | None = None
+    birth_city_id: uuid.UUID | None = None
 
 
 class NatalChartPlacements(BaseModel):

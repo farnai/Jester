@@ -4,4 +4,6 @@ export * from "./Card";
 export * from "./Avatar";
 export * from "./Badge";
 export * from "./Skeleton";
+export * from "./CitySelector";
 export * from "../StatusState";
+

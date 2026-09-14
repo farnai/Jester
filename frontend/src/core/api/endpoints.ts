@@ -19,6 +19,8 @@ import {
   StructuredCompatibilityResponse,
   UserResponse,
   InspectorDataResponse,
+  CanonicalCity,
+  CitySearchResponse,
 } from "./types";
 
 export const API = {
@@ -62,6 +64,7 @@ export const API = {
         latitude: data.latitude || null,
         longitude: data.longitude || null,
         place_label: data.place_label || null,
+        birth_city_id: data.birth_city_id || null,
         updated_at: new Date().toISOString(),
       });
       if (error) {
@@ -176,4 +179,17 @@ export const API = {
     getData: (refresh: boolean = false) =>
       apiRequest<InspectorDataResponse>(`/v1/interpretations/inspector-data${refresh ? "?refresh=true" : ""}`),
   },
+
+  // Geography & Canonical Locations
+  geo: {
+    searchCities: (q: string = "", limit: number = 10, signal?: AbortSignal) => {
+      const params = new URLSearchParams({ q, limit: String(limit) });
+      return apiRequest<CitySearchResponse>(`/v1/geo/cities/search?${params.toString()}`, {
+        signal,
+      });
+    },
+    getCity: (cityId: string) =>
+      apiRequest<CanonicalCity>(`/v1/geo/cities/${cityId}`),
+  },
 };
+

@@ -4,6 +4,8 @@ import { BirthTimePrecision } from "./BirthTimeStep";
 
 interface ReviewStepProps {
   displayName: string;
+  firstName?: string;
+  lastName?: string;
   city: string;
   occupation: string;
   birthDate: string;
@@ -17,6 +19,8 @@ interface ReviewStepProps {
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
   displayName,
+  firstName,
+  lastName,
   city,
   occupation,
   birthDate,
@@ -69,6 +73,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               </div>
               <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
                 {displayName}
+                {firstName && lastName ? ` (${firstName} ${lastName})` : ""}
               </div>
               {(city || occupation) && (
                 <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "2px" }}>

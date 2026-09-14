@@ -17,6 +17,8 @@ export const SelfProfilePage: React.FC = () => {
   });
 
   const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
   const [city, setCity] = useState("");
@@ -28,6 +30,8 @@ export const SelfProfilePage: React.FC = () => {
   useEffect(() => {
     if (data) {
       setDisplayName(data.display_name || "");
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
       setAvatarUrl(data.avatar_url || "");
       setBio(data.bio || "");
       setCity(data.city || "");
@@ -50,6 +54,8 @@ export const SelfProfilePage: React.FC = () => {
     e.preventDefault();
     updateMutation.mutate({
       display_name: displayName,
+      first_name: firstName || undefined,
+      last_name: lastName || undefined,
       avatar_url: avatarUrl,
       bio,
       city,
@@ -90,6 +96,33 @@ export const SelfProfilePage: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "bold", fontSize: "0.85rem" }}>
+              First Name
+            </label>
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              style={{ width: "100%", padding: "0.5rem", boxSizing: "border-box" }}
+              placeholder="e.g. Alex"
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "bold", fontSize: "0.85rem" }}>
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              style={{ width: "100%", padding: "0.5rem", boxSizing: "border-box" }}
+              placeholder="e.g. Thorne"
+            />
+          </div>
+        </div>
+
         <div>
           <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "bold", fontSize: "0.85rem" }}>
             Display Name

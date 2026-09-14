@@ -5,9 +5,12 @@ from pydantic import BaseModel, ConfigDict
 
 class ProfileBase(BaseModel):
     display_name: str
+    first_name: str | None = None
+    last_name: str | None = None
     avatar_url: str | None = None
     bio: str | None = None
     city: str | None = None
+    city_id: uuid.UUID | None = None
     occupation: str | None = None
     timezone: str = "UTC"
     is_discoverable: bool = True
@@ -15,9 +18,12 @@ class ProfileBase(BaseModel):
 
 class ProfileUpdate(BaseModel):
     display_name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
     avatar_url: str | None = None
     bio: str | None = None
     city: str | None = None
+    city_id: uuid.UUID | None = None
     occupation: str | None = None
     timezone: str | None = None
     is_discoverable: bool | None = None

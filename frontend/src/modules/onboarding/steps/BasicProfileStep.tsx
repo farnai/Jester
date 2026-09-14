@@ -1,31 +1,42 @@
 import React from "react";
-import { Button, Input } from "../../../shared/ui";
+import { Button, Input, CitySelector, SelectedCityValue } from "../../../shared/ui";
 
 interface BasicProfileStepProps {
-  displayName: string;
-  setDisplayName: (val: string) => void;
   city: string;
   setCity: (val: string) => void;
+  cityId?: string | null;
+  setCityId?: (val: string | null) => void;
   occupation: string;
   setOccupation: (val: string) => void;
   onNext: () => void;
 }
 
 export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
-  displayName,
-  setDisplayName,
   city,
   setCity,
+  cityId,
+  setCityId,
   occupation,
   setOccupation,
   onNext,
 }) => {
-  const isValid = displayName.trim().length > 0;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isValid) {
-      onNext();
+    onNext();
+  };
+
+  const handleCitySelect = (selected: SelectedCityValue) => {
+    const formatted = `${selected.display_name}, ${selected.country_name}`;
+    setCity(formatted);
+    if (setCityId) {
+      setCityId(selected.city_id);
+    }
+  };
+
+  const handleClearCity = () => {
+    setCity("");
+    if (setCityId) {
+      setCityId(null);
     }
   };
 
@@ -33,29 +44,20 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
         <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
-          1. თქვენი პროფილი (Basic Profile)
+          1. დამატებითი ინფორმაცია (Additional Details)
         </h3>
         <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
-          როგორ წარმოჩნდეთ JESTER-ის საზოგადოებაში.
+          მიუთითეთ თქვენი საცხოვრებელი ქალაქი და საქმიანობა (არასავალდებულო).
         </p>
       </div>
 
-      <Input
-        label="თქვენი სახელი / Display Name *"
-        type="text"
-        required
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-        placeholder="მაგ. ნიკა, ანა, ალექსანდრე"
-        helperText="ეს სახელი გამოჩნდება თქვენს პროფილზე."
-      />
-
-      <Input
-        label="ქალაქი (City) — არასავალდებულო"
-        type="text"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        placeholder="მაგ. თბილისი, ბათუმი, ბერლინი"
+      <CitySelector
+        value={cityId || null}
+        initialDisplayLabel={city}
+        onChange={handleCitySelect}
+        onClear={handleClearCity}
+        label="საცხოვრებელი ქალაქი (Current City) — არასავალდებულო"
+        placeholder="მაგ. თბილისი, ბათუმი, ბერლინი..."
         helperText="ქალაქი, სადაც ამჟამად ცხოვრობთ."
       />
 
@@ -73,7 +75,6 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
           variant="brand"
           size="lg"
           fullWidth
-          disabled={!isValid}
         >
           შემდეგი ➡️ (Continue)
         </Button>

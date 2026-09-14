@@ -20,6 +20,7 @@ from backend.app.astrology.models import (
 )
 from backend.app.astrology.validation import validate_birth_data
 from backend.app.core.errors import JesterAPIException
+from backend.app.geo.service import get_city_by_id
 
 logger = logging.getLogger(__name__)
 
@@ -187,6 +188,27 @@ def save_birth_data_and_calculate(
     Guarantees: If calculation fails, 0 database writes occur.
                 If any database write fails, all writes roll back.
     """
+    # 0. Canonical City Resolution (if birth_city_id provided)
+    if birth_data.birth_city_id is not None:
+        canonical_city = get_city_by_id(birth_data.birth_city_id, db)
+        if not canonical_city:
+            raise JesterAPIException(
+                status_code=400,
+                error_code="invalid_city_id",
+                message="The specified birth_city_id does not exist.",
+            )
+        # Authoritative canonical overwrite: client cannot spoof coordinates or timezone
+        birth_data.latitude = canonical_city.latitude
+        birth_data.longitude = canonical_city.longitude
+        birth_data.birth_timezone = canonical_city.timezone
+        birth_data.place_label = canonical_city.display_name
+    elif not birth_data.birth_timezone:
+        raise JesterAPIException(
+            status_code=400,
+            error_code="missing_timezone",
+            message="birth_timezone is required when birth_city_id is not provided.",
+        )
+
     # 1. In-memory validation & calculation (BEFORE transaction)
     placements, derived = compute_and_derive_natal_profile(
         birth_data=birth_data,
@@ -202,9 +224,9 @@ def save_birth_data_and_calculate(
                     """
                     INSERT INTO public.birth_data (
                         user_id, birth_date, birth_time, birth_time_precision,
-                        birth_timezone, latitude, longitude, place_label
+                        birth_timezone, latitude, longitude, place_label, birth_city_id
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s
                     ) ON CONFLICT (user_id) DO UPDATE SET
                         birth_date = EXCLUDED.birth_date,
                         birth_time = EXCLUDED.birth_time,
@@ -212,7 +234,8 @@ def save_birth_data_and_calculate(
                         birth_timezone = EXCLUDED.birth_timezone,
                         latitude = EXCLUDED.latitude,
                         longitude = EXCLUDED.longitude,
-                        place_label = EXCLUDED.place_label
+                        place_label = EXCLUDED.place_label,
+                        birth_city_id = EXCLUDED.birth_city_id
                     RETURNING data_version;
                     """,
                     (
@@ -224,6 +247,7 @@ def save_birth_data_and_calculate(
                         birth_data.latitude,
                         birth_data.longitude,
                         birth_data.place_label,
+                        birth_data.birth_city_id,
                     ),
                 )
                 bd_row = cur.fetchone()
@@ -275,7 +299,7 @@ def recalculate_user_astrology(
         cur.execute(
             """
             SELECT user_id, birth_date, birth_time, birth_time_precision,
-                   birth_timezone, latitude, longitude, place_label, data_version
+                   birth_timezone, latitude, longitude, place_label, birth_city_id, data_version
             FROM public.birth_data
             WHERE user_id = %s;
             """,
@@ -298,6 +322,7 @@ def recalculate_user_astrology(
         latitude=float(row["latitude"]) if row["latitude"] is not None else None,
         longitude=float(row["longitude"]) if row["longitude"] is not None else None,
         place_label=row["place_label"],
+        birth_city_id=row["birth_city_id"],
     )
 
     placements, derived = compute_and_derive_natal_profile(

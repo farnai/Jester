@@ -10,12 +10,16 @@ import { BirthTimePrecision } from "./BirthTimeStep";
 
 interface CreateSelfStepProps {
   displayName: string;
+  firstName?: string;
+  lastName?: string;
   city: string;
+  profileCityId?: string | null;
   occupation: string;
   birthDate: string;
   birthTime: string;
   precision: BirthTimePrecision;
   placeLabel: string;
+  birthCityId?: string | null;
   latitude: number | null;
   longitude: number | null;
   birthTimezone: string;
@@ -39,12 +43,16 @@ const ZODIAC_NAMES_KA: Record<string, string> = {
 
 export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
   displayName,
+  firstName,
+  lastName,
   city,
+  profileCityId,
   occupation,
   birthDate,
   birthTime,
   precision,
   placeLabel,
+  birthCityId,
   latitude,
   longitude,
   birthTimezone,
@@ -69,16 +77,28 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
     setError(null);
 
     try {
-      // 1. Persist user profile to public.profiles
-      const { error: profileErr } = await supabase.from("profiles").upsert({
+      // 1. Persist user profile to public.profiles preserving identity
+      const profileUpsertData: Record<string, any> = {
         id: user.id,
-        display_name: displayName.trim() || user.email?.split("@")[0] || "User",
         city: city.trim() || null,
+        city_id: profileCityId || null,
         occupation: occupation.trim() || null,
         timezone: birthTimezone || "UTC",
         is_discoverable: true,
         updated_at: new Date().toISOString(),
-      });
+      };
+
+      if (displayName.trim()) {
+        profileUpsertData.display_name = displayName.trim();
+      }
+      if (firstName?.trim()) {
+        profileUpsertData.first_name = firstName.trim();
+      }
+      if (lastName?.trim()) {
+        profileUpsertData.last_name = lastName.trim();
+      }
+
+      const { error: profileErr } = await supabase.from("profiles").upsert(profileUpsertData);
 
       if (profileErr) {
         console.warn("Direct profile upsert note:", profileErr.message);
@@ -87,8 +107,11 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
       // Also call PATCH /v1/profiles/me if backend API is reachable
       try {
         await API.profiles.updateMyProfile({
-          display_name: displayName.trim(),
+          display_name: displayName.trim() || undefined,
+          first_name: firstName?.trim() || undefined,
+          last_name: lastName?.trim() || undefined,
           city: city.trim() || undefined,
+          city_id: profileCityId || undefined,
           occupation: occupation.trim() || undefined,
           timezone: birthTimezone || "UTC",
           is_discoverable: true,
@@ -106,6 +129,7 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
         latitude: latitude,
         longitude: longitude,
         place_label: placeLabel || null,
+        birth_city_id: birthCityId || null,
       };
 
       // 3. Save birth data and trigger Swiss Ephemeris calculation
