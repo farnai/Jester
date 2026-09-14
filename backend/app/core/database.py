@@ -99,7 +99,7 @@ def verify_database_identity(conn: psycopg.Connection | None = None) -> dict[str
             cur.execute("SELECT version FROM supabase_migrations.schema_migrations ORDER BY version DESC LIMIT 1;")
             latest_row = cur.fetchone()
             latest_version = latest_row["version"] if latest_row else None
-            required_migration = "025"
+            required_migration = "026"
             if not latest_version or latest_version < required_migration:
                 raise DatabaseIdentityError(
                     f"\n{'=' * 80}\n"
@@ -120,6 +120,9 @@ def verify_database_identity(conn: psycopg.Connection | None = None) -> dict[str
                 ("public", "cities"),
                 ("public", "connections"),
                 ("public", "compatibility_results"),
+                ("public", "interest_categories"),
+                ("public", "interests"),
+                ("public", "user_interests"),
             ]
             for schema, table in required_tables:
                 cur.execute(
@@ -141,6 +144,9 @@ def verify_database_identity(conn: psycopg.Connection | None = None) -> dict[str
                 ("public", "profiles", "first_name"),
                 ("public", "profiles", "last_name"),
                 ("public", "profiles", "city_id"),
+                ("public", "profiles", "current_city_id"),
+                ("public", "profiles", "onboarding_step"),
+                ("public", "profiles", "onboarding_completed"),
                 ("public", "birth_data", "birth_city_id"),
             ]
             for schema, table, col in required_columns:

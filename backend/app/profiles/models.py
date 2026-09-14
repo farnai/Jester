@@ -11,6 +11,9 @@ class ProfileBase(BaseModel):
     bio: str | None = None
     city: str | None = None
     city_id: uuid.UUID | None = None
+    current_city_id: uuid.UUID | None = None
+    onboarding_step: int = 1
+    onboarding_completed: bool = False
     occupation: str | None = None
     timezone: str = "UTC"
     is_discoverable: bool = True
@@ -24,6 +27,9 @@ class ProfileUpdate(BaseModel):
     bio: str | None = None
     city: str | None = None
     city_id: uuid.UUID | None = None
+    current_city_id: uuid.UUID | None = None
+    onboarding_step: int | None = None
+    onboarding_completed: bool | None = None
     occupation: str | None = None
     timezone: str | None = None
     is_discoverable: bool | None = None

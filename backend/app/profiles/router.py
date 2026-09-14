@@ -52,7 +52,7 @@ async def get_my_profile(
                 )
         if not row:
             raise PrivacySafeNotFoundException("Profile not found")
-        return ProfileResponse(**row)
+        return ProfileResponse.model_validate(row)
 
 
 @router.patch("/me", response_model=ProfileResponse)
@@ -61,24 +61,35 @@ async def update_my_profile(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> ProfileResponse:
-    # Ensure profile row exists
-    await get_my_profile(current_user=current_user, db=db)
+    # Ensure profile row exists and retrieve current state
+    current_profile = await get_my_profile(current_user=current_user, db=db)
 
-    # Validate and sync canonical city if city_id provided
-    if update_data.city_id is not None:
-        canonical_city = get_city_by_id(update_data.city_id, db)
+    # Validate and sync canonical city if current_city_id or city_id provided
+    target_city_id = update_data.current_city_id or update_data.city_id
+    if target_city_id is not None:
+        canonical_city = get_city_by_id(target_city_id, db)
         if not canonical_city:
             raise JesterAPIException(
                 status_code=400,
                 error_code="invalid_city_id",
                 message="The specified city_id does not exist.",
             )
-        # Keep profiles.city synchronized with canonical display name
+        update_data.current_city_id = target_city_id
+        update_data.city_id = target_city_id
         update_data.city = canonical_city.display_name
+
+    # Derive display_name from first_name and last_name (First L.) if not explicitly provided
+    if update_data.display_name is None and (update_data.first_name is not None or update_data.last_name is not None):
+        fn = (update_data.first_name if update_data.first_name is not None else current_profile.first_name or "").strip()
+        ln = (update_data.last_name if update_data.last_name is not None else current_profile.last_name or "").strip()
+        default_prefix = current_user.email.split("@")[0] if current_user.email else "User"
+        is_default_display_name = (not current_profile.display_name) or (current_profile.display_name == default_prefix) or (current_profile.display_name == "User")
+        if is_default_display_name and fn and ln:
+            update_data.display_name = f"{fn} {ln[0].upper()}."
 
     fields = update_data.model_dump(exclude_unset=True)
     if not fields:
-        return await get_my_profile(current_user=current_user, db=db)
+        return current_profile
 
     set_clause = ", ".join(f"{k} = %s" for k in fields.keys())
     values = list(fields.values()) + [current_user.id]
@@ -90,7 +101,7 @@ async def update_my_profile(
             row = cur.fetchone()
             if not row:
                 raise PrivacySafeNotFoundException("Profile not found")
-            return ProfileResponse(**row)
+            return ProfileResponse.model_validate(row)
     except psycopg.errors.ForeignKeyViolation:
         raise UnauthorizedException(
             message="Authenticated user does not exist in database.",
@@ -118,4 +129,4 @@ async def get_profile_by_id(
         row = cur.fetchone()
         if not row:
             raise PrivacySafeNotFoundException("Profile not found")
-        return ProfileResponse(**row)
+        return ProfileResponse.model_validate(row)

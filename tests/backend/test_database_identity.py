@@ -18,7 +18,7 @@ def test_database_identity_fails_on_connection_error(monkeypatch):
     monkeypatch.setattr(
         db_manager.settings,
         "DATABASE_URL",
-        "postgresql://postgres:postgres@127.0.0.1:54398/postgres",
+        "postgresql://postgres:postgres@127.0.0.1:54398/postgres?connect_timeout=2",
     )
     with pytest.raises(DatabaseIdentityError) as exc_info:
         verify_database_identity()

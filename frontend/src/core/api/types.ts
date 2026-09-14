@@ -18,6 +18,9 @@ export interface ProfileResponse {
   bio: string | null;
   city: string | null;
   city_id?: string | null;
+  current_city_id?: string | null;
+  onboarding_step?: number;
+  onboarding_completed?: boolean;
   occupation: string | null;
   timezone: string;
   is_discoverable: boolean;
@@ -33,6 +36,9 @@ export interface ProfileUpdate {
   bio?: string;
   city?: string;
   city_id?: string | null;
+  current_city_id?: string | null;
+  onboarding_step?: number;
+  onboarding_completed?: boolean;
   occupation?: string;
   timezone?: string;
   is_discoverable?: boolean;

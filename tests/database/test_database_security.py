@@ -32,6 +32,7 @@ def clean_db(db_conn):
                 public.astro_safe_profile,
                 public.astro_private,
                 public.birth_data,
+                public.user_interests,
                 public.profiles
             CASCADE;
         """)
