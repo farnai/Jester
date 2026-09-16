@@ -186,12 +186,14 @@ When practical, verify runtime request/auth/response/error/persistence/authoriza
 
 Use docs as a routing system, not as equally authoritative copies of reality:
 
-- Product/UX: approved product and frontend specifications.
+- Product Foundation: `docs/JESTER_PRODUCT_FOUNDATION.md` (authoritative stable product truths).
+- Product/UX Specs: approved domain specifications (`docs/*_SYSTEM_V1_SPEC.md`) and frontend specifications.
 - Backend/API: `ARCHITECTURE.md`, `API.md`, source routes/models.
 - Astrology/Synastry: `ASTROLOGY_ENGINE.md`, `SYNASTRY_V1_SPEC.md`, engine/tests.
 - Database/security: `DATABASE.md`, `SECURITY.md`, migrations.
 - Interpretation: `AI.md`, interpretation/content documents, source.
-- Audits: `docs/audits/` and other audit reports as evidence snapshots.
+- Design Explorations: `docs/JESTER_DESIGN_EXPLORATION.md` (proposals, visual mood, UI exploration).
+- Audits & History: `docs/archive/` (`docs/archive/audits/`, `docs/archive/historical/`, `docs/archive/design/`) as evidence snapshots.
 
 Documentation should describe durable contracts. Update it when public behavior, privacy, architecture, schema, capability, or mathematical behavior changes; avoid mutable test counts and unsupported “complete” or “production-ready” claims.
 

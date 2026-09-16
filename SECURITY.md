@@ -40,7 +40,7 @@ JESTER enforces a zero-trust, stateless token validation architecture powered by
 ### 2. Subject & Claims Validation
 - Decodes the `sub` claim and verifies that it is a valid UUID (`user_id`).
 - Extracts tenant roles (`authenticated`, `copywriter`, `admin`, `service_role`).
-- Populates the trusted [`AuthenticatedUser`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/auth/models.py) dependency for downstream route authorization.
+- Populates the trusted `AuthenticatedUser` dependency for downstream route authorization.
 
 ---
 
@@ -78,10 +78,49 @@ PostgreSQL security operates on the **Principle of Least Privilege**, separating
 | `public.messages` | 🚫 **REVOKED** | `SELECT, INSERT` (Active direct conversation member only) | 🟢 Full Access |
 | `public.notifications` | 🚫 **REVOKED** | `SELECT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
 | `public.daily_energies` | 🚫 **REVOKED** | `SELECT` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.interest_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.interests` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.interest_aliases` | 🚫 **REVOKED** | `SELECT` (Taxonomy alias resolution) | 🟢 Full Access |
+| `public.interest_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_interests` | 🚫 **REVOKED** | `SELECT` (Own profile OR discoverable/unblocked target), `INSERT, UPDATE, DELETE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_interest_affinity`| 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Internal recommendation only) |
+| `public.geo_countries` | `SELECT` (Geo reference) | `SELECT` (Geo reference) | 🟢 Full Access |
+| `public.geo_cities` | `SELECT` (Geo reference) | `SELECT` (Geo reference) | 🟢 Full Access |
+| `public.geo_city_aliases` | `SELECT` (Geo search) | `SELECT` (Geo search) | 🟢 Full Access |
+| `public.user_location_private` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only) |
+| `public.lifestyle_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.lifestyle_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.user_lifestyle` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.values_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.values_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.value_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_values` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target), `INSERT, UPDATE, DELETE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.social_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.social_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.social_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_social_preferences`| 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.communication_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.communication_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.communication_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_communication_preferences`| 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility flags), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.intent_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.intent_options` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.intent_relations` | 🚫 **REVOKED** | `SELECT` (Taxonomy graph traversal) | 🟢 Full Access |
+| `public.user_intents` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility), `INSERT, UPDATE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_intent_history` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role audit only) |
+| `public.prompt_categories` | `SELECT` (Taxonomy) | `SELECT` (Taxonomy) | 🟢 Full Access |
+| `public.prompt_templates` | `SELECT` (Templates) | `SELECT` (Templates) | 🟢 Full Access |
+| `public.user_prompts` | 🚫 **REVOKED** | `SELECT` (Own row OR discoverable target; filtered by visibility & approved status), `INSERT, UPDATE, DELETE` (`user_id = auth.uid()`) | 🟢 Full Access |
+| `public.user_discovery_preferences` | 🚫 **REVOKED** | `SELECT, INSERT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
+| `public.behavioral_events` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only; 60-day auto-prune TTL) |
+| `public.user_behavioral_signals` | 🚫 **REVOKED** | 🚫 **REVOKED** (`REVOKE ALL FROM authenticated, anon, public`) | 🟢 Full Access (Service-role only) |
+| `public.user_behavioral_settings` | 🚫 **REVOKED** | `SELECT, UPDATE` (Strictly `user_id = auth.uid()`) | 🟢 Full Access |
 
 ---
 
 ## 🔒 Security & Privacy Invariants
+
+*(Authoritative Platform Architecture Specs: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md), [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md))*
 
 These invariants are permanent engineering constraints. Any pull request or refactoring that violates these rules is rejected.
 
@@ -99,7 +138,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
   Any attempt by a client or standard database role to query `astro_private` raises an immediate `InsufficientPrivilege` PostgreSQL error.
 
 ### 3. Safe Profile Derivation (6 Core Planets)
-- **Invariant:** Other users and discovery cards only receive safe, non-inverting derived profiles ([`SafeDerivedAstrologyResponse`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/frontend/src/core/api/types.ts#L35)).
+- **Invariant:** Other users and discovery cards only receive safe, non-inverting derived profiles (`SafeDerivedAstrologyResponse`).
 - **Planetary Protection:** All 6 core personality planets (**Sun**, **Moon**, **Ascendant**, **Mercury**, **Venus**, **Mars**) expose only their categorical zodiac sign (e.g. `Aries`, `Scorpio`) and dominant element/modality. Raw numerical degrees are never serialized to the client.
 
 ### 4. Elimination of Existence Oracles (Block & Privacy Semantics)
@@ -131,6 +170,109 @@ These invariants are permanent engineering constraints. Any pull request or refa
 - **Invariant:** Developer inspection tools and debug routes must be completely unreachable in production.
 - **Enforcement:** Endpoints in `backend/app/astrology/debug.py` check `settings.ENV == "production"` and immediately abort with HTTP 403 Forbidden. Furthermore, debug endpoints are 100% read-only and never trigger mutating auto-recalculations.
 
+### 8. Interest Graph & Behavioral Affinity Isolation (`public.user_interest_affinity`)
+- **Invariant:** Behavioral affinity scores, interaction confidence, and internal cluster weights are strictly internal recommendation signals. They must **never** overwrite, mutate, or blur the boundary of a user's explicitly declared interests (`public.user_interests`).
+- **Enforcement:** All database privileges on `public.user_interest_affinity` are revoked from client roles (`authenticated`, `anon`, `public`). The API and JESTER intelligence engine never project unconfirmed behavioral labels (e.g., "You are an adventurous person") onto the user.
+
+### 9. Separation of Profile Presentation and Identity Verification (Trust System V1)
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Public profile imagery (`public.profile_photos`, `profiles.avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
+- **Verification Evidence Isolation:** Ephemeral selfie verification media is stored exclusively in a private, encrypted storage bucket (`verification-evidence`) with `public = false`. All client roles (`authenticated`, `anon`, `public`) have zero access privileges (`REVOKE ALL`).
+- **Zero Biometric Data to JESTER AI:** Verification media, face vectors, and raw selfie frames are **NEVER** passed to LLMs, system prompts, or context synthesizers.
+- **Data Retention & Auto-Pruning:** Raw verification media is permanently deleted after 30 days. Only the boolean status, provider reference, and timestamp are retained.
+- **Bait-and-Switch Prevention:** If a verified user updates or replaces their primary profile photo, verification status is immediately reset to `needs_review` or `expired`.
+
+### 10. Precise Geographic Coordinate Protection & Location Privacy
+- **Invariant:** Exact coordinates (`latitude`, `longitude`), street addresses, live GPS positioning, and continuous device tracking are sensitive personal data. They must **never** be publicly exposed, serialized in public client DTOs, or exposed in normal discovery feeds.
+- **Enforcement:**
+  - Public profile and discovery responses serialize only canonical city and country names (`location: { city, country }`, `origin: { city, country }`).
+  - Origin/Hometown visibility is strictly user-controlled via `hometown_visible`.
+  - Client database roles have zero read permissions on private coordinate tables (`public.user_location_private`).
+  - No trilateration or precise distance stalking: future distance indicators will operate solely on broad fuzzy bands (e.g. "Within 25 km", "Same city"), never exact decimal distances.
+  - Analytics and access logs are stripped of raw GPS coordinates.
+
+### 11. Lifestyle & Sensitive Habit Privacy Boundaries
+- **Invariant:** Sensitive lifestyle attributes (drinking, smoking, living situation, household structure) are strictly user-controlled. They must **never** be coerced during initial onboarding, leaked when toggled private, or used to generate moralistic or judgmental JESTER AI commentary.
+- **Enforcement:**
+  - `visibility_flags` on `public.user_lifestyle` dictate public serialization; private fields are stripped before client delivery.
+  - Suppressed from AI prompt payloads when marked hidden.
+  - Zero health lecturing or shaming algorithms permitted.
+
+### 12. Values & Philosophical Non-Diagnostic Invariants
+- **Invariant:** Values represent self-declared life priorities and principles, not clinical psychometric profiles. They must **never** be converted into percentage scores (e.g. "87% independent"), used for virtue grading, or treated as psychological labels.
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality diagnosis or moral superiority commentary.
+  - The API exposes values as categorical tags with optional single Core Value status (`is_core = true`), strictly avoiding Likert-scale or decimal scores.
+  - All canonical values possess equal dignity and respect across the platform.
+
+### 13. Social Behavior & Anti-Typing Non-Diagnostic Invariants
+- **Invariant:** Social behavior describes situational gathering preferences and energy mechanics, not psychological personality types. Users must **never** be boxed into clinical MBTI archetypes, labeled with pop-psychology buzzwords ("Alpha", "Loner", "Social Butterfly"), or graded as "socially awkward".
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality typing or judgmental social commentary.
+  - The API exposes social behavior as discrete functional choices (e.g. `recharge_solo`, `one_on_one`), completely avoiding clinical labels or personality percentage scales.
+  - All social battery and gathering styles carry equal dignity across the platform.
+
+### 14. Communication & Anti-Surveillance Non-Diagnostic Invariants
+- **Invariant:** Communication preferences define interaction mechanics, conversation depth, and pacing expectations, not personality traits or latency metrics. Surveillance mechanics (reply-time timers, read-receipt latency tracking, "fast responder" / "bad texter" badges) and automated mining of private message text for psychometric profiling are **strictly prohibited**.
+- **Enforcement:**
+  - JESTER AI prompts explicitly forbid personality typing, buzzword labels ("Dry Texter", "Deep Talker", "Golden Retriever Communicator"), and reply-time anxiety scorekeeping.
+  - Zero private message body inspection: AI models and recommendation algorithms are architecturally barred from reading or processing private conversation message contents (`public.messages.body`) for communication profiling.
+  - Declared pacing (`active_banter`, `unhurried_thoughtful`, `relaxed_async`) is treated as personal preference and emotional reassurance, never scored for algorithmic penalty or compatibility grading.
+  - `visibility_flags` on `public.user_communication_preferences` allow users to selectively hide any communication dimension from their public profile.
+
+### 15. Intent Primacy & Anti-Romantic Assumption Invariants
+- **Invariant:** Declared intent defines current platform purpose and relational openness, not permanent personality or marital status. Mutually incompatible non-overlapping intents must be partitioned to prevent harassment, and astrological synastry must **never** be used to impose romantic or sexual destiny on users declaring platonic intent. Intent history is strictly private.
+- **Enforcement:**
+  - RLS policies on `public.user_intent_history` revoke all permissions from client roles (`REVOKE ALL FROM authenticated, anon, public`).
+  - Discovery algorithms enforce bilateral intent partitioning (e.g. exclusive dating partitioned from exclusive friendship).
+  - JESTER AI prompt architecture explicitly enforces Intent Primacy: when either participant declares friendship or collaboration, romantic interpretations of planetary aspects (e.g. Venus-Mars chemistry) are strictly barred and reframed as creative synergy or shared drive.
+
+### 16. Prompts & Authentic Human Voice Invariants (`public.user_prompts`)
+- **Invariant:** Prompts represent the user's authentic voice, humor, and quirks. JESTER AI is strictly prohibited from generating, hallucinating, or publishing prompt answers without explicit user prompting, review, and manual submission. Prompt answers are public user-generated content that must undergo pre-publication sanitization, but must never be treated as clinical psychological profiles or psychiatric evidence.
+- **Enforcement:**
+  - Automated regex and sanitization runs pre-publication on `POST /v1/prompts` and `PATCH /v1/prompts/{id}`, stripping HTML tags/scripts and detecting raw PII (phone numbers, external messaging handles, and harassment terms).
+  - JESTER AI prompt construction instructions explicitly command the model: prompt text is user-authored conversational context, NOT clinical truth. Harmless sarcasm, dry humor, or hyperbole (e.g., *"I hate everyone before coffee"*) must never be diagnosed as misanthropy or antisocial behavior.
+  - Moderation states (`approved`, `flagged`, `rejected`, `pending_review`): Prompts with `status = 'rejected'` are automatically excluded from public profile queries and discovery cards via RLS policy.
+
+### 17. Discovery Preferences & Candidate Confidentiality Invariants (`public.user_discovery_preferences`)
+- **Invariant:** A user's discovery preferences (`target_genders`, `age_min`, `age_max`, `location_scope`, `target_intents`, `astrology_mode`) are strictly confidential and private to the owner. Candidates who are filtered out must **never** be informed or able to deduce that they were excluded. Discovery preferences are outbound selection criteria and must never be conflated with inbound discoverability (`profiles.is_discoverable`).
+- **Enforcement:**
+  - `REVOKE ALL ON public.user_discovery_preferences FROM anon, public;`
+  - RLS policy `user_discovery_preferences_owner_all` strictly checks `user_id = auth.uid()`.
+  - Discovery query execution enforces mutual block hiding (`NOT is_user_blocked()`), returning privacy-safe empty results rather than error states.
+  - Zero raw birth dates or exact timestamps are serialized; only dynamically computed integer age is exposed in candidate DTOs.
+  - Hard dealbreakers are restricted to Age, Gender, and Intent; physical, racial, religious, or zodiac-sign filtering is architecturally prohibited.
+
+### 18. Behavioral Telemetry Hygiene, Anti-Profiling & Right-to-Reset (Behavioral Intelligence V1)
+*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Behavioral telemetry tracks observable in-product events strictly for candidate relevance and conversation starters. The system is fundamentally barred from performing psychological profiling, diagnosing personality traits, computing attractiveness tiers, scoring mental health, or scorekeeping communication response speeds.
+- **Enforcement:**
+  - `REVOKE ALL ON public.behavioral_events FROM anon, authenticated, public;`
+  - Ingestion via `/v1/telemetry/events` is strictly rate-limited and schema-sanitized; payloads strip message text, exact coordinates, birth data, and biometric evidence.
+  - Message bodies are **never mined or tokenized** for behavioral profiling.
+  - Raw telemetry records are automatically pruned after 60 days via partitioned table TTL.
+  - Right-to-Reset: Calling `POST /v1/users/me/personalization/reset` immediately purges all derived affinity weights (`user_interest_affinity`) and resets behavioral signals without affecting declared profile truth.
+
+### 19. JESTER AI Context Isolation, Fail-Closed Boundary & Forbidden Data Blacklist (AI Context V1)
+*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+- **Invariant:** JESTER AI must never receive direct database connections, unvetted SQL access, or unrestricted table queries. Context assembly is mediated exclusively through on-demand strongly typed contracts (`JesterAiContextV1`) and validated by an automated, fail-closed Context Safety Gate.
+- **Enforcement:**
+  - **Blacklist Enforcement:** The in-memory `ContextSafetyGate` scans every assembled payload before LLM transmission. Detection of any forbidden key (`messages.body`, `latitude`, `longitude`, `selfie_bytes`, `birth_time`, `report`, `block`, `introvert_score`, `attractiveness_score`) immediately raises `ContextSafetyViolationException` and aborts network transmission.
+  - **Zero Raw PII & Zero Private Messaging:** Private direct messages, raw GPS coordinates, and biometric verification captures are permanently barred from AI prompts.
+  - **Bilateral Privacy Preservation:** In two-person contexts (WHY, US, Starters), the caller receives private fields, but candidate data is strictly scoped to public, discoverable fields. Private discovery preferences and hidden habits never cross user boundaries.
+  - **Sanitized Logging:** Full context payloads are never serialized in logs or observability pipelines. Only sanitized correlation hashes and latency metrics are retained.
+
+### 20. Direct Chat Confidentiality, Disconnect Lockdown & Non-Surveillance Messaging (Connection & Messaging V1)
+*(Authoritative Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+- **Invariant:** Direct chat is an intimate, private communication channel between two mutually consented, connected users. Chat messages must never be mined for behavioral profiling, exposed to public or discovery surfaces, accessible to unauthorized third parties, or weaponized via surveillance telemetry (e.g. read-receipt countdowns, typing speed metrics, or psychological sentiment tracking).
+- **Enforcement:**
+  - `REVOKE ALL ON public.messages, public.conversations, public.conversation_members FROM anon, public;`
+  - RLS policies on `public.messages` and `public.conversations` strictly enforce membership and active connection status via `public.is_active_direct_conversation(conversation_id, auth.uid())`.
+  - **Disconnect Lockdown:** When a user disconnects (`status = 'removed'`), `public.has_active_connection` immediately returns `false`. This terminates message insertion rights instantly at the database level for both participants. The historical thread locks into an immutable read-only archive for reference and safety reporting.
+  - **Block Total Disappearance:** When a user blocks another, all conversation endpoints return `PrivacySafeNotFoundException` (HTTP 404). Neither user can access the conversation list item, details, or message history.
+  - **Anti-Surveillance Reading Pointer:** Read state is tracked via caller-private `last_read_message_id` on `public.conversation_members`. Counterparts receive zero granular timestamps or "Seen at HH:MM" surveillance signals.
+  - **Zero Message Mining:** Message bodies (`messages.body`) are permanently blacklisted from behavioral telemetry and JESTER AI context assembly.
+
 ---
 
 ## ⚙️ Procedural Hardening & Function Security
@@ -153,13 +295,13 @@ To prevent search path hijacking and privilege escalation in PostgreSQL function
 
 Security policies are tested continuously in the automated test suite (`193 passed tests`):
 
-1. **Database RLS & Isolation Suite ([`tests/database/test_database_security.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/database/test_database_security.py)):**
+1. **Database RLS & Isolation Suite (`tests/database/test_database_security.py`):**
    - Verifies that User A cannot select, insert, or update User B's `public.birth_data`.
    - Confirms that direct `SELECT` on `public.astro_private` from authenticated client roles fails with `InsufficientPrivilege`.
    - Validates that blocking masks profiles, compatibility records, and direct messages as 404s.
    - Tests that canonical connections cannot be modified by arbitrary SQL updates.
 
-2. **JWT & Auth Verification Suite ([`tests/backend/test_jwt_verification.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/backend/test_jwt_verification.py)):**
+2. **JWT & Auth Verification Suite (`tests/backend/test_jwt_verification.py`):**
    - Asserts asymmetric JWKS key fetching in production.
    - Verifies that HS256 tokens are rejected in production mode.
    - Verifies expiration, invalid signature, and malformed header rejections.

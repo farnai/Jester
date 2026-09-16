@@ -1,8 +1,9 @@
 # JESTER V1 — Product Capability Specification
 
-**Document Type:** Product Capability Specification  
+**Document Type:** Product Capability Specification (Historical Comprehensive Domain Spec)  
+**Authority Reference:** Superseded on core product principles by [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md) and on individual domain schemas by the 14 Domain V1 Specifications (`docs/*_SYSTEM_V1_SPEC.md`).  
 **Version:** V1.0  
-**Purpose:** Define the functional capabilities of JESTER V1 before UI/UX and implementation decisions.
+**Purpose:** Functional capability reference across early JESTER V1 domains.
 
 ---
 

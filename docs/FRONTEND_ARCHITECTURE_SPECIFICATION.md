@@ -4,7 +4,7 @@
 **System Roles:** Lead Product Architect, Senior Frontend Systems Architect, React Native / Expo Architect, Design Systems Architect  
 **Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 188/188 passing tests)  
 **Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_CAPABILITY_SPECIFICATION.md)  
-**Parent Product Spec:** [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md)  
+**Parent Product Spec:** [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md)  
 **Status:** Authoritative Frontend Architectural Blueprint (Cross-Platform / Universal Target Architecture)  
 
 ---
@@ -142,7 +142,7 @@ JESTER V1
 | :--- | :--- | :--- | :--- | :--- |
 | **Login** | `/auth/login` | Supabase credentials auth | Public | Sign in, navigate to app |
 | **Register** | `/auth/register` | New account registration | Public | Sign up, navigate to onboarding |
-| **Onboarding** | `/onboarding/birth-data` | Collect birth parameters | Auth Required | Submit birth data -> calculate natal |
+| **Onboarding** | `/onboarding` (dispatcher) / `/onboarding/birth-data` | 8-step progressive onboarding (Identity, birth date, time, place, location, interests, photo, finish) | Auth Required | Complete 8-step profile & natal calculation |
 | **Home** | `/` (Index) | Daily energy, active pulse | Onboarded | Jump into ME or DISCOVER |
 | **Discover** | `/discover` | Discoverable people feed | Onboarded | Browse cards, initiate connect |
 | **Person** | `/people/:id` | View public profile & safe signs | Onboarded | Send connect request, view why |

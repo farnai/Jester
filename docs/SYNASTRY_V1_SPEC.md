@@ -448,7 +448,7 @@ Every calculation retains an internal `evidence_trace` array for auditability an
 - [ ] Re-implement `backend/app/compatibility/engine.py` (Service wrapper connecting DB & `SynastryEngine`).
 - [ ] Update `backend/app/comparisons/router.py` (Remove hardcoded `82.5`, connect to service layer).
 - [ ] Update `tests/database/test_database_security.py` (`test_compatibility_access_rules`).
-- [ ] Update `docs/PROJECT_STATE.md`, `docs/ASTROLOGY_ENGINE.md`, and `docs/API.md`.
+- [ ] Update `docs/archive/historical/PROJECT_STATE.md`, `docs/ASTROLOGY_ENGINE.md`, and `docs/API.md`.
 
 ---
 
