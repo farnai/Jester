@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
+import { API } from "../../core/api/endpoints";
 import { Card, Button, Input } from "../../shared/ui";
 import { SocialAuthButtons } from "./SocialAuthButtons";
 
@@ -50,7 +51,13 @@ export const LoginPage: React.FC = () => {
     }
 
     if (data.user) {
-      const p = await refreshProfile();
+      let p = await refreshProfile();
+      if (!p) {
+        try {
+          p = await API.profiles.initializeProfile();
+          await refreshProfile();
+        } catch {}
+      }
       setLoading(false);
       if (p?.onboarding_completed) {
         navigate(from, { replace: true });
@@ -129,6 +136,7 @@ export const LoginPage: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@example.com"
+            autoComplete="email"
             autoCapitalize="none"
             autoCorrect="off"
           />
@@ -141,6 +149,7 @@ export const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="თქვენი პაროლი"
+              autoComplete="current-password"
             />
             <div style={{ textAlign: "right", marginTop: "0.3rem" }}>
               <Link

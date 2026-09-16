@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
-import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
-import { API } from "../../core/api/endpoints";
 import { Card, Button, Input } from "../../shared/ui";
 import { SocialAuthButtons } from "./SocialAuthButtons";
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, onboardingCompleted, isLoading: isAuthLoading, refreshProfile } = useAuth();
+  const { user, onboardingCompleted, isLoading: isAuthLoading, signUp } = useAuth();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
@@ -28,24 +25,24 @@ export const RegisterPage: React.FC = () => {
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanFirstName = firstName.trim();
-    const cleanLastName = lastName.trim();
     const cleanEmail = email.trim();
+    const cleanPassword = password;
+    const cleanConfirmPassword = confirmPassword;
 
-    if (!cleanFirstName) {
-      setError("გთხოვთ შეიყვანოთ თქვენი სახელი (First name is required).");
-      return;
-    }
-    if (!cleanLastName) {
-      setError("გთხოვთ შეიყვანოთ თქვენი გვარი (Last name is required).");
-      return;
-    }
     if (!cleanEmail.includes("@")) {
       setError("გთხოვთ შეიყვანოთ სწორი ელფოსტა (Valid email address).");
       return;
     }
-    if (password.length < 6) {
+    if (cleanPassword.length < 6) {
       setError("პაროლი უნდა შედგებოდეს მინიმუმ 6 სიმბოლოსგან.");
+      return;
+    }
+    if (!cleanConfirmPassword) {
+      setError("გთხოვთ გაიმეოროთ პაროლი (Confirm password is required).");
+      return;
+    }
+    if (cleanPassword !== cleanConfirmPassword) {
+      setError("პაროლები არ ემთხვევა (Passwords do not match).");
       return;
     }
 
@@ -53,78 +50,31 @@ export const RegisterPage: React.FC = () => {
     setError(null);
     setDuplicateEmail(null);
 
-    const derivedDisplayName = `${cleanFirstName} ${cleanLastName[0].toUpperCase()}.`;
-
     try {
-      // 1. Create account via Supabase Auth
-      const { data: authData, error: authErr } = await supabase.auth.signUp({
+      await signUp({
         email: cleanEmail,
-        password,
-        options: {
-          data: {
-            first_name: cleanFirstName,
-            last_name: cleanLastName,
-            display_name: derivedDisplayName,
-          },
-        },
+        password: cleanPassword,
       });
-
-      if (authErr) {
-        const msg = authErr.message.toLowerCase();
-        if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("unique")) {
-          setDuplicateEmail(cleanEmail);
-          setError("ეს ელფოსტა უკვე რეგისტრირებულია.");
-          setLoading(false);
-          return;
-        }
-        throw new Error(authErr.message);
-      }
-
-      // Check if user already exists (Supabase returns empty identities list for existing accounts)
-      if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
-        setDuplicateEmail(cleanEmail);
-        setError("ეს ელფოსტა უკვე რეგისტრირებულია.");
-        setLoading(false);
-        return;
-      }
-
-      // If session was not immediately granted (e.g. email confirmation setting), attempt sign in
-      let session = authData.session;
-      if (!session) {
-        const { data: signInData } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password,
-        });
-        session = signInData.session;
-      }
-
-      if (session) {
-        await supabase.auth.setSession({
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-        });
-
-        // 2. Explicitly initialize profile with names via backend
-        await API.profiles.initializeProfile({
-          first_name: cleanFirstName,
-          last_name: cleanLastName,
-        });
-        await refreshProfile();
-      }
 
       setLoading(false);
       navigate("/onboarding", { replace: true });
     } catch (err: any) {
-      setError(err?.message || "ანგარიშის შექმნისას დაფიქსირდა შეცდომა.");
+      const msg = err?.message?.toLowerCase() || "";
+      if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("unique")) {
+        setDuplicateEmail(cleanEmail);
+        setError("ეს ელფოსტა უკვე რეგისტრირებულია.");
+      } else {
+        setError(err?.message || "ანგარიშის შექმნისას დაფიქსირდა შეცდომა.");
+      }
       setLoading(false);
     }
   };
 
   const isFormValid =
-    firstName.trim().length > 0 &&
-    lastName.trim().length > 0 &&
     email.trim().includes("@") &&
-    password.length >= 6;
+    password.length >= 6 &&
+    confirmPassword.length >= 6 &&
+    password === confirmPassword;
 
   return (
     <div
@@ -226,31 +176,16 @@ export const RegisterPage: React.FC = () => {
 
         <form onSubmit={handleAccountSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <Input
-            label="სახელი (First Name) *"
-            type="text"
-            required
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="მაგ. ნიკა"
-          />
-
-          <Input
-            label="გვარი (Last Name) *"
-            type="text"
-            required
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="მაგ. იორდანიშვილი"
-            helperText="საჯაროდ გამოჩნდება მხოლოდ სახელისა და გვარის პირველი ასო (მაგ. ნიკა ი.)."
-          />
-
-          <Input
             label="ელფოსტა (Email) *"
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
             placeholder="name@example.com"
+            autoComplete="email"
             autoCapitalize="none"
             autoCorrect="off"
           />
@@ -261,9 +196,27 @@ export const RegisterPage: React.FC = () => {
             required
             minLength={6}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (error) setError(null);
+            }}
             placeholder="მინიმუმ 6 სიმბოლო"
+            autoComplete="new-password"
             helperText="მინიმუმ 6 სიმბოლო"
+          />
+
+          <Input
+            label="გაიმეორეთ პაროლი (Confirm Password) *"
+            type="password"
+            required
+            minLength={6}
+            value={confirmPassword}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder="გაიმეორეთ პაროლი"
+            autoComplete="new-password"
           />
 
           <Button
@@ -275,7 +228,7 @@ export const RegisterPage: React.FC = () => {
             disabled={!isFormValid || loading}
             style={{ marginTop: "0.5rem" }}
           >
-            {loading ? "Creating Account..." : "Continue to Onboarding ➡️"}
+            {loading ? "ანგარიშის შექმნა..." : "ანგარიშის შექმნა →"}
           </Button>
         </form>
 

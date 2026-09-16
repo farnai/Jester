@@ -115,14 +115,14 @@ async def initialize_profile(
             if not existing.get("avatar_url") and avatar_url:
                 updates["avatar_url"] = avatar_url
 
-            if updates:
-                fn = updates.get("first_name") or existing.get("first_name")
-                ln = updates.get("last_name") or existing.get("last_name")
-                default_prefix = current_user.email.split("@")[0] if current_user.email else "User"
-                is_default_dn = (not existing.get("display_name")) or (existing.get("display_name") in (default_prefix, "User"))
-                if is_default_dn and fn and ln:
-                    updates["display_name"] = f"{str(fn).strip()} {str(ln).strip()[0].upper()}."
+            fn = updates.get("first_name") or existing.get("first_name")
+            ln = updates.get("last_name") or existing.get("last_name")
+            default_prefix = current_user.email.split("@")[0] if current_user.email else "User"
+            is_default_dn = (not existing.get("display_name")) or (existing.get("display_name") in (default_prefix, "User"))
+            if is_default_dn and fn and ln:
+                updates["display_name"] = f"{str(fn).strip()} {str(ln).strip()[0].upper()}."
 
+            if updates:
                 set_clause = ", ".join(f"{k} = %s" for k in updates.keys())
                 vals = list(updates.values()) + [current_user.id]
                 cur.execute(f"UPDATE public.profiles SET {set_clause} WHERE id = %s RETURNING *;", vals)
@@ -186,8 +186,13 @@ async def update_my_profile(
         fn = (update_data.first_name if update_data.first_name is not None else current_profile.first_name or "").strip()
         ln = (update_data.last_name if update_data.last_name is not None else current_profile.last_name or "").strip()
         default_prefix = current_user.email.split("@")[0] if current_user.email else "User"
-        is_default_display_name = (not current_profile.display_name) or (current_profile.display_name == default_prefix) or (current_profile.display_name == "User")
-        if is_default_display_name and fn and ln:
+        is_default_display_name = (not current_profile.display_name) or (current_profile.display_name in (default_prefix, "User"))
+        was_auto_derived = bool(
+            current_profile.first_name
+            and current_profile.last_name
+            and current_profile.display_name == f"{current_profile.first_name.strip()} {current_profile.last_name.strip()[0].upper()}."
+        )
+        if (is_default_display_name or was_auto_derived) and fn and ln:
             update_data.display_name = f"{fn} {ln[0].upper()}."
 
     fields = update_data.model_dump(exclude_unset=True)

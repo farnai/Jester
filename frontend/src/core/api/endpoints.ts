@@ -22,6 +22,8 @@ import {
   InspectorDataResponse,
   CanonicalCity,
   CitySearchResponse,
+  InterestsListResponse,
+  UserInterestsResponse,
 } from "./types";
 
 export const API = {
@@ -65,11 +67,20 @@ export const API = {
       ),
     // Direct birth data persistence through Supabase client with owner RLS
     saveBirthData: async (userId: string, data: BirthDataPayload) => {
+      let finalBirthTime = data.birth_time && data.birth_time.trim() ? data.birth_time : null;
+      let finalPrecision = data.birth_time_precision;
+      if (!finalBirthTime) {
+        finalBirthTime = null;
+        finalPrecision = "unknown";
+      } else if (finalPrecision === "unknown") {
+        finalBirthTime = null;
+      }
+
       const { error } = await supabase.from("birth_data").upsert({
         user_id: userId,
         birth_date: data.birth_date,
-        birth_time: data.birth_time || null,
-        birth_time_precision: data.birth_time_precision,
+        birth_time: finalBirthTime,
+        birth_time_precision: finalPrecision,
         birth_timezone: data.birth_timezone,
         latitude: data.latitude || null,
         longitude: data.longitude || null,
@@ -98,12 +109,70 @@ export const API = {
     getBirthData: async (userId: string): Promise<BirthDataPayload | null> => {
       const { data, error } = await supabase
         .from("birth_data")
-        .select("birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label, data_version")
+        .select(
+          "birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label, birth_city_id, data_version"
+        )
         .eq("user_id", userId)
         .maybeSingle();
       if (error || !data) return null;
       return data as BirthDataPayload;
     },
+    updateBirthData: async (userId: string, partial: Partial<BirthDataPayload>) => {
+      const existing = await API.astrology.getBirthData(userId);
+
+      // Determine birth_time
+      let finalBirthTime: string | null;
+      if (partial.birth_time !== undefined) {
+        finalBirthTime = partial.birth_time && partial.birth_time.trim() ? partial.birth_time : null;
+      } else {
+        finalBirthTime = existing?.birth_time ?? null;
+      }
+
+      // Determine precision
+      let finalPrecision = partial.birth_time_precision ?? existing?.birth_time_precision;
+      if (!finalPrecision) {
+        finalPrecision = finalBirthTime ? "exact" : "unknown";
+      }
+
+      // Enforce the strict DB check constraint:
+      // ((birth_time_precision = 'unknown' AND birth_time IS NULL) OR
+      //  (birth_time_precision IN ('exact', 'approximate') AND birth_time IS NOT NULL))
+      if (!finalBirthTime) {
+        finalBirthTime = null;
+        finalPrecision = "unknown";
+      } else if (finalPrecision === "unknown") {
+        finalBirthTime = null;
+      }
+
+      const merged: Record<string, any> = {
+        user_id: userId,
+        birth_date: partial.birth_date ?? existing?.birth_date,
+        birth_time: finalBirthTime,
+        birth_time_precision: finalPrecision,
+        birth_timezone: partial.birth_timezone ?? existing?.birth_timezone ?? "Asia/Tbilisi",
+        latitude: partial.latitude !== undefined ? partial.latitude : existing?.latitude ?? null,
+        longitude: partial.longitude !== undefined ? partial.longitude : existing?.longitude ?? null,
+        place_label: partial.place_label !== undefined ? partial.place_label : existing?.place_label ?? null,
+        birth_city_id: partial.birth_city_id !== undefined ? partial.birth_city_id : existing?.birth_city_id ?? null,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await supabase.from("birth_data").upsert(merged);
+      if (error) {
+        throw new Error(error.message);
+      }
+      return merged;
+    },
+  },
+
+  // Interests
+  interests: {
+    list: () => apiRequest<InterestsListResponse>("/v1/interests"),
+    getMyInterests: () => apiRequest<UserInterestsResponse>("/v1/interests/me"),
+    setMyInterests: (interestIds: string[]) =>
+      apiRequest<UserInterestsResponse>("/v1/interests/me", {
+        method: "PUT",
+        body: JSON.stringify({ interest_ids: interestIds }),
+      }),
   },
 
   // Connections

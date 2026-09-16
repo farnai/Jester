@@ -50,6 +50,29 @@ export interface ProfileInitializeRequest {
   avatar_url?: string;
 }
 
+export interface InterestItem {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+  category_name: string;
+  category_slug: string;
+  category_icon?: string | null;
+  sort_order: number;
+}
+
+export interface InterestsListResponse {
+  items: InterestItem[];
+}
+
+export interface UserInterestsResponse {
+  interest_ids: string[];
+}
+
+export interface UserInterestsUpdateRequest {
+  interest_ids: string[];
+}
+
 export interface SafeDerivedAstrologyResponse {
   user_id: string;
   sun_sign: string;

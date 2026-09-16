@@ -1,9 +1,16 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../realtime/supabase";
 import { API } from "../api/endpoints";
 import { ProfileResponse } from "../api/types";
+
+export interface SignUpParams {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+}
 
 export interface AuthContextType {
   user: User | null;
@@ -16,6 +23,7 @@ export interface AuthContextType {
   setHasBirthData: (val: boolean) => void;
   refreshProfile: () => Promise<ProfileResponse | null>;
   signOut: () => Promise<void>;
+  signUp: (params: SignUpParams) => Promise<ProfileResponse>;
   refreshBirthDataCheck: (explicitUserId?: string) => Promise<boolean>;
 }
 
@@ -30,6 +38,9 @@ export const AuthContext = createContext<AuthContextType>({
   setHasBirthData: () => {},
   refreshProfile: async () => null,
   signOut: async () => {},
+  signUp: async () => {
+    throw new Error("AuthProvider not mounted");
+  },
   refreshBirthDataCheck: async () => false,
 });
 
@@ -41,14 +52,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasBirthData, setHasBirthData] = useState<boolean | null>(null);
 
+  const isRegisteringRef = useRef<boolean>(false);
+
   const fetchProfile = async (): Promise<ProfileResponse | null> => {
     try {
       const p = await API.profiles.getMyProfile();
       setProfile(p);
       return p;
     } catch {
-      setProfile(null);
-      return null;
+      // If profile has not yet been provisioned for this authenticated user, initialize it explicitly
+      try {
+        const initialized = await API.profiles.initializeProfile();
+        setProfile(initialized);
+        return initialized;
+      } catch {
+        setProfile(null);
+        return null;
+      }
     }
   };
 
@@ -99,6 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, activeSession) => {
+      if (isRegisteringRef.current) {
+        // Skip automatic background profile fetch during registration;
+        // signUp explicitly initializes the profile first.
+        return;
+      }
       setSession(activeSession);
       setUser(activeSession?.user ?? null);
       if (activeSession?.user) {
@@ -115,6 +140,69 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, [queryClient]);
+
+  const signUp = async ({
+    email,
+    password,
+    firstName,
+    lastName,
+  }: SignUpParams): Promise<ProfileResponse> => {
+    isRegisteringRef.current = true;
+    try {
+      const cleanEmail = email.trim();
+      const fn = firstName?.trim();
+      const ln = lastName?.trim();
+      const metadata: Record<string, any> = {};
+      if (fn && ln) {
+        metadata.first_name = fn;
+        metadata.last_name = ln;
+        metadata.display_name = `${fn} ${ln[0].toUpperCase()}.`;
+      }
+
+      const { data: authData, error: authErr } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: Object.keys(metadata).length > 0 ? { data: metadata } : undefined,
+      });
+
+      if (authErr) {
+        throw authErr;
+      }
+
+      if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+        throw new Error("already registered");
+      }
+
+      let activeSession = authData.session;
+      if (!activeSession) {
+        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+        if (signInErr) throw signInErr;
+        activeSession = signInData.session;
+      }
+
+      if (!activeSession) {
+        throw new Error("Failed to acquire session after registration");
+      }
+
+      // Explicitly initialize profile via POST /v1/profiles/initialize
+      // BEFORE any GET /v1/profiles/me can be triggered!
+      const initPayload = fn && ln ? { first_name: fn, last_name: ln } : undefined;
+      const initProfile = await API.profiles.initializeProfile(initPayload);
+
+      setSession(activeSession);
+      setUser(activeSession.user);
+      setProfile(initProfile);
+      setHasBirthData(false);
+      setIsLoading(false);
+
+      return initProfile;
+    } finally {
+      isRegisteringRef.current = false;
+    }
+  };
 
   const refreshProfile = async (): Promise<ProfileResponse | null> => {
     return fetchProfile();
@@ -151,6 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setHasBirthData,
         refreshProfile,
         signOut,
+        signUp,
         refreshBirthDataCheck,
       }}
     >

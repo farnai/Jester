@@ -1,74 +1,94 @@
-import React from "react";
-import { Button, Input, CitySelector, SelectedCityValue } from "../../../shared/ui";
+import React, { useState } from "react";
+import { Button, Input } from "../../../shared/ui";
 
 interface BasicProfileStepProps {
-  city: string;
-  setCity: (val: string) => void;
-  cityId?: string | null;
-  setCityId?: (val: string | null) => void;
-  occupation: string;
-  setOccupation: (val: string) => void;
+  firstName: string;
+  setFirstName: (val: string) => void;
+  lastName: string;
+  setLastName: (val: string) => void;
   onNext: () => void;
   onBack?: () => void;
 }
 
 export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
-  city,
-  setCity,
-  cityId,
-  setCityId,
-  occupation,
-  setOccupation,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   onNext,
   onBack,
 }) => {
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    const fn = firstName.trim();
+    const ln = lastName.trim();
+
+    if (!fn) {
+      setError("სახელის მითითება სავალდებულოა (First name is required).");
+      return;
+    }
+    if (!ln) {
+      setError("გვარის მითითება სავალდებულოა (Last name is required).");
+      return;
+    }
+
     onNext();
-  };
-
-  const handleCitySelect = (selected: SelectedCityValue) => {
-    const formatted = `${selected.display_name}, ${selected.country_name}`;
-    setCity(formatted);
-    if (setCityId) {
-      setCityId(selected.city_id);
-    }
-  };
-
-  const handleClearCity = () => {
-    setCity("");
-    if (setCityId) {
-      setCityId(null);
-    }
   };
 
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
         <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
-          1. დამატებითი ინფორმაცია (Additional Details)
+          1. სახელი და გვარი (Basic Identity)
         </h3>
         <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
-          მიუთითეთ თქვენი საცხოვრებელი ქალაქი და საქმიანობა (არასავალდებულო).
+          მიუთითეთ თქვენი რეალური სახელი და გვარი. საჯარო სახელი (Display Name) ავტომატურად შედგება: სახელი + გვარის ინიციალი.
         </p>
       </div>
 
-      <CitySelector
-        value={cityId || null}
-        initialDisplayLabel={city}
-        onChange={handleCitySelect}
-        onClear={handleClearCity}
-        label="საცხოვრებელი ქალაქი (Current City) — არასავალდებულო"
-        placeholder="მაგ. თბილისი, ბათუმი, ბერლინი..."
-        helperText="ქალაქი, სადაც ამჟამად ცხოვრობთ."
+      {error && (
+        <div
+          style={{
+            padding: "0.75rem",
+            background: "#fff1f0",
+            border: "1px solid #ff4d4f",
+            borderRadius: "6px",
+            color: "#cf1322",
+            fontSize: "0.85rem",
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
+
+      <Input
+        label="სახელი (First Name) *"
+        type="text"
+        required
+        value={firstName}
+        onChange={(e) => {
+          setFirstName(e.target.value);
+          if (error) setError(null);
+        }}
+        placeholder="მაგ. ნიკა"
+        autoComplete="given-name"
       />
 
       <Input
-        label="საქმიანობა (Occupation) — არასავალდებულო"
+        label="გვარი (Last Name) *"
         type="text"
-        value={occupation}
-        onChange={(e) => setOccupation(e.target.value)}
-        placeholder="მაგ. არქიტექტორი, დეველოპერი, მხატვარი"
+        required
+        value={lastName}
+        onChange={(e) => {
+          setLastName(e.target.value);
+          if (error) setError(null);
+        }}
+        placeholder="მაგ. იორდანიშვილი"
+        autoComplete="family-name"
       />
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
@@ -87,7 +107,8 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
           type="submit"
           variant="brand"
           size="lg"
-          style={{ flex: 2 }}
+          style={{ flex: onBack ? 2 : 1 }}
+          disabled={!firstName.trim() || !lastName.trim()}
         >
           შემდეგი ➡️ (Continue)
         </Button>
