@@ -36,6 +36,7 @@ Primary backend areas live under `backend/app/`:
 
 Other important areas:
 
+- `.jester/`: JESTER AI Development Control Plane (task lifecycle state, orchestration metadata, execution reports, verification artifacts, and lightweight pointers to canonical docs). It must never duplicate canonical specifications.
 - `supabase/migrations/`: schema, RLS, grants, triggers, helper functions, storage, and realtime.
 - `frontend/`: React/Vite web client using Supabase Auth and React Query.
 - `tests/`: astrology, compatibility, backend, database-security, and interpretation tests.
@@ -53,9 +54,9 @@ Use authority by question:
 3. **Verified behavior:** tests and reproducible runtime behavior.
 4. **Product intent:** explicitly approved product specifications, UX decisions, and owner decisions.
 5. **Mathematical behavior:** frozen Synastry/astrology specifications, implementation, and relevant tests.
-6. **Audits:** time-bound evidence, not permanent truth.
+6. **Audits & Archives (`docs/archive/**`):** time-bound historical evidence, not permanent truth. Agents must not treat `docs/archive/**` as current product requirements, active API contracts, current architecture, current test counts, migration counts, or current implementation state. Archived audits may be consulted as historical evidence only.
 
-When sources conflict: identify the discrepancy, inspect code/schema, determine whether it is stale or intentional, preserve privacy/security, and surface unresolved product or architecture choices. Do not silently rewrite behavior merely to make documents agree. Do not let an old audit override current code.
+When sources conflict: identify the discrepancy, inspect code/schema, determine whether it is stale or intentional, preserve privacy/security, and surface unresolved product or architecture choices. Do not silently rewrite behavior merely to make documents agree. Do not let an old audit override current code. If archived evidence conflicts with current implementation or canonical active specifications, the current authoritative source wins according to this hierarchy.
 
 ## Before Modifying Code
 
@@ -187,13 +188,15 @@ When practical, verify runtime request/auth/response/error/persistence/authoriza
 Use docs as a routing system, not as equally authoritative copies of reality:
 
 - Product Foundation: `docs/JESTER_PRODUCT_FOUNDATION.md` (authoritative stable product truths).
+- Historical Monolith: `docs/archive/historical/PRODUCT_SPECIFICATION.md` (superseded by `JESTER_PRODUCT_FOUNDATION.md` and Domain V1 specs; must not be used as canonical source for current decisions).
 - Product/UX Specs: approved domain specifications (`docs/*_SYSTEM_V1_SPEC.md`) and frontend specifications.
 - Backend/API: `ARCHITECTURE.md`, `API.md`, source routes/models.
 - Astrology/Synastry: `ASTROLOGY_ENGINE.md`, `SYNASTRY_V1_SPEC.md`, engine/tests.
 - Database/security: `DATABASE.md`, `SECURITY.md`, migrations.
 - Interpretation: `AI.md`, interpretation/content documents, source.
 - Design Explorations: `docs/JESTER_DESIGN_EXPLORATION.md` (proposals, visual mood, UI exploration).
-- Audits & History: `docs/archive/` (`docs/archive/audits/`, `docs/archive/historical/`, `docs/archive/design/`) as evidence snapshots.
+- Audits & History: `docs/archive/` (`docs/archive/audits/`, `docs/archive/historical/`, `docs/archive/design/`) as historical evidence snapshots.
+- AI Control Plane: `.jester/` (task lifecycle state, orchestration metadata, execution reports, verification artifacts, and lightweight pointers; never duplicates canonical specifications under `docs/`).
 
 Documentation should describe durable contracts. Update it when public behavior, privacy, architecture, schema, capability, or mathematical behavior changes; avoid mutable test counts and unsupported “complete” or “production-ready” claims.
 

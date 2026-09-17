@@ -3,7 +3,7 @@
 **Document Type:** Frontend Functional & Capability Specification  
 **Version:** `1.0.0`  
 **Engine Version Dependency:** `synastry-v1.0.0`  
-**Parent Product Spec:** [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md)  
+**Parent Product Spec:** [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent; active foundation codified in [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md))  
 **Mathematical Engine Spec:** [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md)  
 **Status:** Complete / Authoritative Frontend Functional Blueprint  
 
@@ -23,7 +23,7 @@ This specification focuses strictly on **what the user can do, what information 
 
 The requirements in this document are derived directly from the authoritative codebase:
 
-1. **Product Vision & Architecture**: [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md) and [`docs/ARCHITECTURE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ARCHITECTURE.md)
+1. **Product Vision & Architecture**: [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md) (historical reference: [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md)) and [`docs/ARCHITECTURE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ARCHITECTURE.md)
 2. **Deterministic Synastry Engine**: [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) and [`backend/app/compatibility/synastry.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/compatibility/synastry.py)
 3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/) (Migrations 001 through 021)
 4. **FastAPI API Contracts & Pydantic Models**: [`backend/app/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/)

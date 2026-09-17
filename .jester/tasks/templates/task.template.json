@@ -1,0 +1,16 @@
+{
+  "id": "TASK-0000",
+  "title": "",
+  "type": "feature",
+  "status": "inbox",
+  "priority": "normal",
+  "agent": "gemini",
+  "goal": "",
+  "scope": [],
+  "constraints": [],
+  "acceptance_criteria": [],
+  "verification": [],
+  "dependencies": [],
+  "created_at": "",
+  "updated_at": ""
+}

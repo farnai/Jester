@@ -2,7 +2,7 @@
 
 **Document Type:** Engineering & Mathematical Specification  
 **Engine Version:** `synastry-v1.0.0`  
-**Parent Product Spec:** [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md)  
+**Parent Product Spec:** [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent)  
 **Status:** Authoritative Specification (Frozen)
 
 ---

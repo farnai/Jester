@@ -1,0 +1,14 @@
+{
+  "product": "docs/JESTER_PRODUCT_FOUNDATION.md",
+  "architecture": "docs/ARCHITECTURE.md",
+  "database": "docs/DATABASE.md",
+  "security": "docs/SECURITY.md",
+  "api": "docs/API.md",
+  "astrology": "docs/ASTROLOGY_ENGINE.md",
+  "synastry": "docs/SYNASTRY_V1_SPEC.md",
+  "ai": "docs/AI.md",
+  "frontend_architecture": "docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md",
+  "frontend_capabilities": "docs/FRONTEND_CAPABILITY_SPECIFICATION.md",
+  "design": "docs/JESTER_DESIGN_EXPLORATION.md",
+  "agent_governance": "AGENTS.md"
+}

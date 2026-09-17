@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "project": "JESTER",
+  "control_plane": ".jester",
+  "canonical_docs_root": "docs",
+  "archive_root": "docs/archive",
+  "task_root": ".jester/tasks",
+  "reports_root": ".jester/reports",
+  "git_push": {
+    "autonomous": false,
+    "requires_explicit_user_instruction": true
+  }
+}

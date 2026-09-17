@@ -5,7 +5,7 @@
 **System Domain:** Astrology Integration & Relational Intelligence  
 **Engine Version:** `astrology-v1.0.0` / `synastry-v1.0.0`  
 **Parent Specifications:**
-- [`docs/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PRODUCT_SPECIFICATION.md)
+- [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent)
 - [`docs/ASTROLOGY_ENGINE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_ENGINE.md)
 - [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md)
 - [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md)
