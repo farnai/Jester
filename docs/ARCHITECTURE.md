@@ -139,7 +139,7 @@ Jester/
 4. Persists to `public.astro_private` and `public.astro_safe_profile` inside an atomic transaction.
 
 ### 4. Interest Onboarding & Graph Recommendation Flow (`/v1/interests/*`)
-*(Architecture Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Selection**: User may skip, or must choose exactly 5 / 5 Primary Interests from a candidate pool of ~20.
 2. Persists to `public.user_interests` (`type = 'primary'`).
 3. Optional follow-up selects 1 Signature Interest (`is_signature = true`).
@@ -170,7 +170,7 @@ Jester/
 7. Upserts result into `public.compatibility_results` with full mathematical evidence trace and returns structured payload.
 
 ### 7. Location & Origin Lifecycle Flow
-*(Architecture Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](LOCATION_SYSTEM_V1_SPEC.md))*
 1. **Onboarding / Profile Selection**: User enters or autocompletes city from canonical `public.geo_cities` (`is_major_hub` chips: Tbilisi, Batumi, Kutaisi, Rustavi). Entry is optional and skippable.
 2. User optionally selects Hometown / Origin (`hometown_city_id`) and visibility toggle (`hometown_visible`).
 3. Updates `public.profiles` (`current_city_id`, `current_country_id`, `hometown_city_id`, `hometown_country_id`, `location_updated_at`).
@@ -178,7 +178,7 @@ Jester/
 5. **Coordinate Gate**: Zero coordinates or street addresses are serialized to public API DTOs.
 
 ### 8. Lifestyle Onboarding & Cadence Flow
-*(Architecture Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](LIFESTYLE_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Snapshot**: Quick 3-question single-tap selection (Daily Rhythm, Activity Pace, Work Style). Entry is 100% optional and skippable.
 2. Persists to `public.user_lifestyle` (`user_id`, `daily_rhythm`, `activity_pace`, `work_style`, `visibility_flags`).
 3. Sensitive habits (drinking, smoking, living situation, children) are excluded from onboarding and managed progressively via profile settings.
@@ -186,7 +186,7 @@ Jester/
 5. **Privacy Gate**: Private attributes are stripped from public responses and omitted from AI prompts when hidden.
 
 ### 9. Values Onboarding & Guiding Compass Flow
-*(Architecture Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Selection**: User selects 3 to 5 values from 18 canonical options across 5 clusters. Step is 100% optional and skippable.
 2. User optionally designates 1 Core Value ("True North", `is_core = true`). Zero 1–10 rating sliders.
 3. Persists to `public.user_values` (`user_id`, `value_id`, `is_core`, `sort_order`, `source`).
@@ -194,21 +194,21 @@ Jester/
 5. **Anti-Diagnosis Gate**: Strictly prohibits clinical personality grading or percentage calculations ("You are 87% independent").
 
 ### 10. Social Behavior Onboarding & Social Rhythm Flow
-*(Architecture Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Snapshot**: User completes optional 3-question single-tap card (Gathering Scale, Social Battery, Warm-Up Dynamic). 100% skippable.
 2. Persists to `public.user_social_preferences` (`user_id`, `group_preference`, `social_battery`, `warmup_style`, `planning_style`, `comfort_zone`, `visibility_flags`).
 3. **Meeting Intelligence & Discovery**: Evaluates shared gathering comfort (e.g. mutual one-on-one preference) and complementary dynamics (e.g. initiator + observer).
 4. **Anti-Typing Invariant**: Never classifies or labels users with psychological personality types (MBTI, Big 5, Introvert/Extrovert boxes).
 
 ### 11. Communication Onboarding & First-Conversation Intelligence Flow
-*(Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Snapshot**: User completes optional 3-question single-tap card (Depth, Conversational Role, Messaging Medium). 100% skippable.
 2. Persists to `public.user_communication_preferences` (`user_id`, `conversation_depth`, `conversation_role`, `messaging_medium`, `response_pace`, `visibility_flags`).
 3. **First-Conversation Intelligence**: Pairs user roles (e.g. Questioner + Storyteller) to craft personalized conversation starters.
 4. **Anti-Surveillance Invariant**: Strictly prohibits reply-time scorekeeping, read-receipt timers, or scanning private chat message bodies for personality profiling.
 
 ### 12. Intent Onboarding, Discovery Partitioning & Connection Context Flow
-*(Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md))*
 1. **Onboarding Selection**: User selects 1 Primary Intent (e.g. `friendship`, `dating_open`, `dating_serious`, `activity_partner`, `meaningful_chat`, `collaboration`, `just_exploring`) and optionally up to 2 Secondary Openness options. 100% skippable; defaults to `just_exploring`.
 2. Persists to `public.user_intents` (`user_id`, `primary_intent`, `secondary_intents`, `visibility`, `source`). Changes append audit records to `public.user_intent_history` (service-role only).
 3. **Discovery Partitioning**: Enforces strict bilateral partition between mutually incompatible intents (e.g. exclusive dating vs. exclusive platonic friendship) to prevent mismatched expectations and harassment.
@@ -216,21 +216,21 @@ Jester/
 5. **Astrological Primacy Gate**: Declared intent strictly governs astrological framing; synastry dynamics are framed to respect declared intent rather than assuming romance.
 
 ### 13. Prompt Authoring, Inline Reply & Moderation Flow
-*(Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
 1. **Curated Selection**: User browses 24 standardized prompt questions across 6 human categories (`voice_quirks`, `curiosities`, `daily_reality`, `connection`, `perspectives`, `action`) and selects 1 to 3 templates.
 2. **Authoring & Polish**: User writes concise answers (max 250 characters). Optional AI writing assistant can suggest up to 3 stylistic polishes or shorter formulations upon explicit user request, but NEVER auto-publishes or fabricates text without user approval.
 3. **Safety & Moderation Gate**: Answers pass automated pre-publication moderation checks (XSS sanitization, PII filtering for raw phone numbers/handles, and harassment filters). Harmless sarcasm, dry humor, and eccentric opinions are protected.
 4. **Interactive Conversation Entry**: Published prompts appear as interactive cards on the public profile. Tapping `[ 💬 Reply to this ]` on any prompt card opens the connection invitation dialog with that specific prompt pre-quoted, transforming passive self-expression into an organic conversation hook.
 
 ### 14. Discovery Candidate Generation & Ranking Flow
-*(Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
 1. **Tier 1 (SQL Eligibility Gates)**: Evaluates hard constraints directly in PostgreSQL (`is_discoverable = true`, block isolation, self-exclusion, non-connected status, age bounds, target gender set, and bilateral intent compatibility).
 2. **Tier 2 (Multi-Signal Composite Scoring)**: Computes rapid relevance weighting across intent alignment ($25\%$), geographic proximity ($20\%$), Interest Graph overlap ($20\%$), guiding values resonance ($15\%$), prompt presence ($10\%$), and baseline astrological harmony ($10\%$). Selects top 100 candidates.
 3. **Tier 3 (JESTER Intelligence & Diversity Reranking)**: Calculates deep synastry dimensions, generates qualitative human explainability reasons, injects complementary diversity (60% direct resonance, 30% complementary dynamic, 10% serendipity wildcard), and applies recent view/dismissal rotation decay.
 4. **Paginated Feed Exposure**: Returns clean cursor-paginated `DiscoveryFeedResponse` with zero raw percentage match scores.
 
 ### 15. Trust & Verification Lifecycle Flow
-*(Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 1. **Photo Upload & Gallery Gate**: User uploads 1 to 6 photos to `public.profile_photos` via `avatars` storage bucket. Exactly 1 photo is designated `is_primary = true`. At least 1 photo is strictly required to appear in Discovery.
 2. **Face Verification Session (`POST /v1/verification/face/session`)**: Ephemeral liveness session created; returns 5-minute signed token.
 3. **Biometric Evaluation (`POST /v1/verification/face/submit`)**: Ephemeral selfie analyzed via `VerificationProvider` abstraction; matches live selfie against primary profile photo.
@@ -239,7 +239,7 @@ Jester/
 6. **Safety & Reporting (`POST /v1/safety/report`, `POST /v1/safety/block`)**: Immediate reciprocal blocking with zero existence oracles; structured community reports routed to platform moderation.
 
 ### 16. Behavioral Intelligence Telemetry, Decay & Discovery Reranking Flow
-*(Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 1. **Sanitized Telemetry Ingestion (`POST /v1/telemetry/events`)**: Client batches observable product actions (candidate impressions, profile opens, why-aspect expansions, request acceptances). Payload strictly strips PII, message bodies, raw coordinates, and biometric data.
 2. **Storage & Auto-Pruning**: Ingests into `public.behavioral_events` (partitioned monthly; hard-deleted after 60 days via TTL background vacuum). Client access revoked.
 3. **Decay & Signal Aggregation Engine**: Nightly background worker (`jobs/aggregate_behavioral_signals.py`) derives decayed interest affinity weights ($t_{1/2} = 30\text{ days}$) into `public.user_interest_affinity` and macro behavioral metrics into `public.user_behavioral_signals`.
@@ -247,7 +247,7 @@ Jester/
 5. **Sovereign User Control (`POST /v1/users/me/personalization/reset`)**: Users can toggle activity learning off or instantly wipe all derived affinity records, reverting candidate generation immediately to pure declared baselines.
 
 ### 17. JESTER AI Context Assembly & Gateway Flow (`JesterAiContextV1`)
-*(Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 1. **Surface Scope Resolution**: Request arrives at JESTER AI with a specific target surface (Main Chat, Discovery Feed, Profile Preview, WHY, US, Conversation Starters, Astrology Deep Dive).
 2. **On-Demand Context Assembly (`ContextAssemblerService`)**: Fetches declared human signals, safe categorical astrology, and decayed behavioral affinities. Enforces authority hierarchy ($\text{Declared} \gg \text{Observed} \gg \text{Inferred} \gg \text{Astrological}$).
 3. **Bilateral Isolation Check**: In two-user contexts, caller receives private fields; candidate profile is strictly scoped to public, discoverable fields only.
@@ -255,7 +255,7 @@ Jester/
 5. **LLM Gateway & Post-Execution Jargon Filter**: Validated `JesterAiContextV1` is formatted with JESTER persona system prompts and passed to LLM runner. Output is programmatically scanned for astrological jargon and mockery before delivery to the client.
 
 ### 18. Connection Request, Acceptance & Direct Chat Seeding Flow
-*(Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 1. **Contextual Request Packaging (`POST /v1/connections`)**: Sender A attaches an optional single-tap intent hook (`connection_reason`), optional quoted prompt anchor (`prompt_reference_id`), and optional personal note (max 250 characters). System validates bilateral intent compatibility and enforces daily request caps (15/day).
 2. **Canonical State Transition (`pending`)**: Persists to `public.connections` adhering to canonical ordering `user_a_id < user_b_id`. Recipient B receives push notification and unread badge.
 3. **Acceptance & Direct Conversation Seeding (`POST /v1/connections/{id}/accept`)**:

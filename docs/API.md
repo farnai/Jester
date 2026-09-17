@@ -60,7 +60,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Astrology (Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))
+### Astrology (Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))
 
 #### 6. Atomic Birth Data Onboarding — `POST /v1/astrology/birth-data`
 - **Auth**: Bearer JWT
@@ -132,7 +132,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Conversations & Messages (Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))
+### Conversations & Messages (Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))
 
 #### 14. Create / Get Direct Conversation — `POST /v1/conversations`
 - **Auth**: Bearer JWT
@@ -572,7 +572,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ### Intent System V1 (Planned Specification)
 
-*(Authoritative Architecture Specification: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Architecture Specification: [`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md))*
 
 > **Note:** The following endpoints define the API contract for the Intent System V1 architecture specification.
 
@@ -618,7 +618,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ### Prompts & Self-Expression System V1 (Planned Specification)
 
-*(Authoritative Architecture Specification: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Architecture Specification: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
 
 > **Note:** The following endpoints define the API contract for the Prompts & Self-Expression System V1 architecture specification.
 
@@ -677,7 +677,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ### Discovery Preferences & Feed Engine V1 (Planned Specification)
 
-*(Authoritative Architecture Specification: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Architecture Specification: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
 
 > **Note:** The following endpoints define the API contract for the Discovery Preferences & Feed Engine V1 architecture specification.
 
@@ -751,7 +751,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Trust, Verification & Safety (Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))
+### Trust, Verification & Safety (Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))
 
 #### 84. List Own Profile Photos — `GET /v1/profiles/me/photos`
 - **Auth**: Bearer JWT
@@ -814,7 +814,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Behavioral Intelligence & Telemetry (Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))
+### Behavioral Intelligence & Telemetry (Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))
 
 #### 95. Batch Ingest Telemetry Events — `POST /v1/telemetry/events`
 - **Auth**: Bearer JWT
@@ -848,7 +848,7 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### JESTER AI Context & Copilot System (Platform Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))
+### JESTER AI Context & Copilot System (Platform Architecture Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))
 
 #### 99. Generate Contextual JESTER Insight / Copilot Response — `POST /v1/ai/insight`
 - **Auth**: Bearer JWT

@@ -312,12 +312,12 @@ Each asset in `mercury_corpus.json` contains machine-readable provenance:
 ## 13. Backend Exposure Changes
 
 Per Part 18 scope discipline, only the minimal necessary changes were made to expose `mercury_sign`:
-- **Models modified:** [`backend/app/astrology/models.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/astrology/models.py)
+- **Models modified:** [`backend/app/astrology/models.py`](../../../backend/app/astrology/models.py)
   - `SafeDerivedAstrology`: added `mercury_sign: str | None = None`
   - `SafeDerivedAstrologyResponse`: added `mercury_sign: str | None = None`
-- **Natal calculation modified:** [`backend/app/astrology/natal.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/astrology/natal.py)
+- **Natal calculation modified:** [`backend/app/astrology/natal.py`](../../../backend/app/astrology/natal.py)
   - Passes `mercury_sign=mercury_sign` into `SafeDerivedAstrology` construction.
-- **Router modified:** [`backend/app/astrology/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/astrology/router.py)
+- **Router modified:** [`backend/app/astrology/router.py`](../../../backend/app/astrology/router.py)
   - Passes `mercury_sign=row.get("mercury_sign")` in safe profile response.
 - **Untouched Subsystems:**
   - Zero changes to database tables, migrations, or RLS policies.

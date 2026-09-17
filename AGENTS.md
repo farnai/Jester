@@ -101,6 +101,19 @@ Connection pairs are canonical unordered pairs: the same users must not create d
 
 Blocked or hidden resources must not leak existence. Where the established contract requires it, profiles, safe astrology, compatibility, discovery, and chat must resolve as privacy-safe `404`, not an existence oracle.
 
+### Repository portability
+
+Repository artifacts MUST NOT contain developer-machine-specific absolute filesystem paths, local filesystem URLs, usernames, private workspace locations, or machine-specific links.
+
+Prohibited patterns include:
+- `C:\Users\...` or `C:/Users/...`
+- `file:///C:/Users/...` or any local `file:///` filesystem URLs
+- `/Users/<developer>/...`
+- `/home/<developer>/...`
+- Local storage or workspace sync paths (e.g. `OneDrive\...`, `Desktop\...`)
+
+These patterns are strictly prohibited in documentation, reports, task files, agent skills, configuration, test fixtures, and AI-generated artifacts. Internal repository references must always use portable repository-relative paths or plain identifiers.
+
 ## Demo / Preview Boundary
 
 Demo, smoke-test, preview, seed, and development routes are not automatically production product behavior. Before using or changing one, determine authentication, real-data exposure, connection/privacy rules, intended environment, and production reachability.

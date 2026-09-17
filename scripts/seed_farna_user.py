@@ -1,6 +1,6 @@
 """
-Seed user Farna with password 123, profile, birth data, and Swiss Ephemeris calculations.
-Works with both 'farna@jester.app' and 'farna@gmail.com' (and username 'farna' in the UI).
+Seed local development user with password 123, profile, birth data, and Swiss Ephemeris calculations.
+Works with both 'dev@jester.app' (or legacy aliases) in the UI.
 """
 import sys
 import uuid
@@ -36,34 +36,34 @@ ANON_KEY = (
 USERS_TO_CREATE = [
     {
         "id": "44444444-4444-4444-4444-444444444444",
-        "email": "farna@jester.app",
+        "email": "dev@jester.app",
         "password": "123",
-        "display_name": "Farna",
-        "bio": "Jester Explorer & Visionary. სტრატეგია, დაკვირვება და ადამიანური კავშირები.",
-        "city": "თბილისი",
-        "occupation": "Founder & Creator",
-        "birth_date": "1998-10-24",
-        "birth_time": "14:20:00",
-        "birth_timezone": "Asia/Tbilisi",
-        "latitude": 41.7151,
-        "longitude": 44.8271,
-        "place_label": "თბილისი, საქართველო",
+        "display_name": "Dev User",
+        "bio": "Jester Local Development Persona. Exploration, testing, and connection intelligence.",
+        "city": "London",
+        "occupation": "Developer",
+        "birth_date": "2000-01-01",
+        "birth_time": "12:00:00",
+        "birth_timezone": "UTC",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "place_label": "London, United Kingdom",
         "is_discoverable": True,
     },
     {
         "id": "44444444-4444-4444-4444-444444444445",
-        "email": "farna@gmail.com",
+        "email": "dev-alias@jester.app",
         "password": "123",
-        "display_name": "Farna (Alias)",
-        "bio": "Jester Explorer & Visionary. სტრატეგია, დაკვირვება და ადამიანური კავშირები.",
-        "city": "თბილისი",
-        "occupation": "Founder & Creator",
-        "birth_date": "1998-10-24",
-        "birth_time": "14:20:00",
-        "birth_timezone": "Asia/Tbilisi",
-        "latitude": 41.7151,
-        "longitude": 44.8271,
-        "place_label": "თბილისი, საქართველო",
+        "display_name": "Dev User (Alias)",
+        "bio": "Jester Local Development Persona (Secondary).",
+        "city": "London",
+        "occupation": "Developer",
+        "birth_date": "2000-01-01",
+        "birth_time": "12:00:00",
+        "birth_timezone": "UTC",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "place_label": "London, United Kingdom",
         "is_discoverable": False,
     },
 ]
@@ -220,8 +220,8 @@ def seed_farna():
 
     conn.close()
     print("\n==============================================")
-    print("User Farna successfully created and verified!")
-    print("Email: farna@jester.app (or farna@gmail.com)")
+    print("Dev User successfully created and verified!")
+    print("Email: dev@jester.app (or dev-alias@jester.app)")
     print("Password: 123")
     print("==============================================")
 

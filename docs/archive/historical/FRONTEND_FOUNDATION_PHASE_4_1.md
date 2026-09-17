@@ -3,7 +3,7 @@
 **Document Version:** `1.0.0`  
 **Date:** September 2026  
 **Status:** PHASE 4.1 FOUNDATION COMPLETE & CERTIFIED  
-**Parent Blueprint:** [`docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md) (v1.1.0)  
+**Parent Blueprint:** [`docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md`](../../FRONTEND_ARCHITECTURE_SPECIFICATION.md) (v1.1.0)  
 
 ---
 

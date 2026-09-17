@@ -334,5 +334,5 @@ Under **Content Architecture V2**, the Interpretation Contract remains strictly 
 - **Multi-Asset & Multi-Variant**: One interpretation contract supports unlimited content assets across multiple tones (`witty`, `playful`, `soft`, `bold`, `savage`, `romantic`), contexts (`relationship`, `friendship`, `business`, `daily_energy`), locales (`ka`, `en`), and variants (`variant_a`, `variant_b`, etc.).
 - **Deterministic Resolver**: Evaluates context, locale, tone, and seed-based rotation to select the optimal approved or draft asset.
 
-For complete architectural specifications, storage abstraction, and resolver algorithms, see [JESTER_CONTENT_ARCHITECTURE.md](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_CONTENT_ARCHITECTURE.md).
+For complete architectural specifications, storage abstraction, and resolver algorithms, see [JESTER_CONTENT_ARCHITECTURE.md](JESTER_CONTENT_ARCHITECTURE.md).
 

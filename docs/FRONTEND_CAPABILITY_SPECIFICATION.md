@@ -3,8 +3,8 @@
 **Document Type:** Frontend Functional & Capability Specification  
 **Version:** `1.0.0`  
 **Engine Version Dependency:** `synastry-v1.0.0`  
-**Parent Product Spec:** [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent; active foundation codified in [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md))  
-**Mathematical Engine Spec:** [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md)  
+**Parent Product Spec:** [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent; active foundation codified in [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md))  
+**Mathematical Engine Spec:** [`docs/SYNASTRY_V1_SPEC.md`](SYNASTRY_V1_SPEC.md)  
 **Status:** Complete / Authoritative Frontend Functional Blueprint  
 
 ---
@@ -23,11 +23,11 @@ This specification focuses strictly on **what the user can do, what information 
 
 The requirements in this document are derived directly from the authoritative codebase:
 
-1. **Product Vision & Architecture**: [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md) (historical reference: [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md)) and [`docs/ARCHITECTURE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ARCHITECTURE.md)
-2. **Deterministic Synastry Engine**: [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) and [`backend/app/compatibility/synastry.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/compatibility/synastry.py)
-3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/) (Migrations 001 through 021)
-4. **FastAPI API Contracts & Pydantic Models**: [`backend/app/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/)
-5. **Verified System Behaviors**: 74 passing automated unit, API, and database security tests in [`tests/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/tests/)
+1. **Product Vision & Architecture**: [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md) (historical reference: [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](archive/historical/PRODUCT_SPECIFICATION.md)) and [`docs/ARCHITECTURE.md`](ARCHITECTURE.md)
+2. **Deterministic Synastry Engine**: [`docs/SYNASTRY_V1_SPEC.md`](SYNASTRY_V1_SPEC.md) and [`backend/app/compatibility/synastry.py`](../backend/app/compatibility/synastry.py)
+3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](../supabase/migrations) (Migrations 001 through 021)
+4. **FastAPI API Contracts & Pydantic Models**: [`backend/app/`](../backend/app)
+5. **Verified System Behaviors**: 74 passing automated unit, API, and database security tests in [`tests/`](../tests)
 
 ---
 
@@ -224,7 +224,7 @@ To establish astrological identity, the frontend collects raw birth information 
 - Raw birth data in `public.birth_data` is protected by Row-Level Security (`birth_data_select_own`).
 
 ### 6.4 Interest Onboarding Specification
-*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md))*
 
 Following or alongside birth data entry, the user reaches the Interest step:
 1. **Optional Step**: User may tap "Skip" at any time.
@@ -235,7 +235,7 @@ Following or alongside birth data entry, the user reaches the Interest step:
 6. **Progressive Architecture**: Onboarding is lightweight; additional Secondary Interests can be added later in profile editing.
 
 ### 6.5 Location & Origin Onboarding Specification
-*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](LOCATION_SYSTEM_V1_SPEC.md))*
 
 Alongside profile creation, the user reaches the Location & Origin step:
 1. **Optional Step**: User may tap "Skip for now" at any time.
@@ -250,7 +250,7 @@ Alongside profile creation, the user reaches the Location & Origin step:
    - Exact coordinates are NEVER surfaced to the client UI.
 
 ### 6.6 Lifestyle Snapshot Onboarding Specification
-*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](LIFESTYLE_SYSTEM_V1_SPEC.md))*
 
 Following location entry, the user reaches the rapid Lifestyle Snapshot step:
 1. **Optional Step**: User may tap "Skip for now" at any time.
@@ -261,7 +261,7 @@ Following location entry, the user reaches the rapid Lifestyle Snapshot step:
 3. **Sensitive Item Exclusion**: Drinking, smoking, living situation, and children are **strictly excluded from onboarding** to eliminate friction and prevent discomfort.
 
 ### 6.7 Values Onboarding Specification
-*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md))*
 
 Following lifestyle entry, the user reaches the optional Values step:
 1. **Optional Step**: User may tap "Skip for now" at any time.
@@ -276,7 +276,7 @@ Following lifestyle entry, the user reaches the optional Values step:
 5. **Anti-Diagnosis Invariant**: Zero rating sliders (1–10), zero virtue scores, zero personality diagnoses.
 
 ### 6.8 Social Behavior Onboarding Specification
-*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
 
 Following values selection, the user encounters the optional Social Rhythm Snapshot:
 1. **Optional Step**: User may tap "Skip for now" at any time.
@@ -287,7 +287,7 @@ Following values selection, the user encounters the optional Social Rhythm Snaps
 3. **Anti-Typing Invariant**: Zero personality typing ("Introvert", "Extrovert", "Alpha", MBTI codes); captures functional interaction mechanics only.
 
 ### 6.9 Communication Rhythm Onboarding Specification
-*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md))*
 
 Following social rhythm entry, the user encounters the optional Communication Rhythm Snapshot:
 1. **Optional Step**: User may tap "Skip for now" at any time.
@@ -365,7 +365,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Profile Photo vs. Face Verification Boundary**: Profile photo is an aesthetic, user-managed visual representation; Face Verification is an independent biometric identity verification security concept. They must remain strictly separate concepts.
 
 ### 8.3 Profile Interest Presentation & Management
-*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md))*
 - **Visual Hierarchy**: The profile must NOT become a wall of 20–30 generic tags.
 - **Primary Interests**: The 5 core declared interests receive prominent visual hierarchy and distinct chip styling.
 - **Signature Interest**: If specified, marked with a distinctive highlight badge (*"Which one could you talk about forever?"*).
@@ -373,14 +373,14 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Human-Readable Relational Goal**: An interest should help an observer answer: *"What could I talk to this person about?"* rather than *"This person checked a box."*
 
 ### 8.4 Location & Origin Presentation
-*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](LOCATION_SYSTEM_V1_SPEC.md))*
 - **Primary Location**: Renders prominently as `📍 Tbilisi` (or `📍 Berlin, Germany` if international).
 - **Origin / Hometown**: If configured and `hometown_visible == true`, renders as `🏡 From Kvareli` or `📍 Tbilisi · From Kvareli`.
 - **Privacy Control**: In profile settings, user can toggle hometown visibility on or off at any time.
 - **Coordinate Invariant**: Exact geographic coordinates, street addresses, and live GPS tracking are NEVER displayed or fetched by the client.
 
 ### 8.5 Lifestyle Cadence Presentation & Habit Privacy
-*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](LIFESTYLE_SYSTEM_V1_SPEC.md))*
 - **Cadence Micro-Badges**: Displayed as compact, elegant chips under a "Cadence" card section:
   - `[ 🌙 Night Owl ]` `[ ⚡ Always Moving ]` `[ 💻 Remote ]` `[ 🐕 Has a Dog ]`
 - **Avoid Checkbox Clutter**: Never present lifestyle as a clinical checklist of checkboxes or medical intake form.
@@ -388,7 +388,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Empty State Restraint**: Undeclared attributes simply do not render (no *"Drinking: Not specified"* clutter).
 
 ### 8.6 Values & Guiding Compass Presentation
-*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md))*
 - **Guiding Compass Micro-Badges**: Displayed under a dedicated "Guiding Compass" or "Values" profile section:
   - `⭐ Curiosity (Core)` `[ Growth ]` `[ Honesty ]` `[ Autonomy ]`
 - **Aesthetic Glassmorphism**: Clean, refined badge styling without cluttering the profile.
@@ -396,7 +396,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Strictly Non-Clinical**: Never show percentage bars, personality labels, or diagnostic assessments.
 
 ### 8.7 Social Rhythm Presentation & Preference Privacy
-*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
 - **Social Rhythm Micro-Badges**: Displayed under a dedicated "Social Rhythm" profile section:
   - `[ ☕ One-on-One ]` `[ 🔋 Recharges Solo ]` `[ 👀 Observant First ]` `[ ⚡ Spontaneous ]`
 - **Granular Privacy Toggles**: Users can independently toggle any social behavior attribute on or off in profile settings.
@@ -404,7 +404,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Strictly Non-Diagnostic**: Never display radar charts, psychometric profiles, or clinical labels.
 
 ### 8.8 Communication Rhythm Presentation & Preference Privacy
-*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md))*
 - **Communication Rhythm Micro-Badges**: Displayed under a dedicated "Communication Rhythm" profile section:
   - `[ 🌊 Deep & Meaningful ]` `[ 💡 Exchanges Ideas ]` `[ 🎙️ Voice Notes OK ]` `[ ⏳ Unhurried Pace ]`
 - **Granular Privacy Controls**: Users can independently toggle any communication attribute on or off in profile settings.
@@ -412,7 +412,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Zero Latency Shaming**: Never display response-time averages, read-receipt timers, or typing speed metrics.
 
 ### 8.9 Intent Presentation & "Looking For" Badges
-*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md))*
 - **Looking For Micro-Badges**: Displayed prominently near top of profile under "Looking For":
   - `[ 👥 New Friends (Main) ]` `[ 🧗 Activity Partner ]` `[ 🔍 Just Exploring ]`
 - **Visual Distinction**: Primary intent receives distinct highlight badge with icon; secondary intents render as subtle companion chips.
@@ -420,14 +420,14 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Non-Diagnostic Stance**: Strictly descriptive of current purpose; zero relationship status interrogation.
 
 ### 8.10 Prompts & Self-Expression Presentation
-*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
 - **Prominent Human Voice Cards**: Rendered as distinct speech/quotation cards displaying the standardized prompt question in bold accent typography alongside the user's authentic answer.
 - **Capacity Limits**: Renders up to 3 published prompt cards (`sort_order` 1 to 3).
 - **Interactive Action Anchor**: Every prompt card features a dedicated `[ 💬 Reply to this ]` button, inviting immediate low-friction conversational entry.
 - **Authentic Voice Invariant**: Displays user-authored text exactly as approved. AI never generates profile answers without user review. Empty prompts simply do not render.
 
 ### 8.11 Profile Astrology Presentation
-*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 - **The Big Three Badges**: Displays Sun Sign, Moon Sign, and Ascendant Sign (or *"Unknown"* if birth time was omitted).
 - **Three Functional Themes**:
   - **Communication Rhythm (Mercury sign + element)**: E.g. *"Fast intellectual banter with low patience for small talk."*
@@ -437,7 +437,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Anti-Horoscope Guardrails**: The profile never displays raw degrees, house boundaries, medical claims, fatalistic predictions, or stereotypical zodiac insults.
 
 ### 8.12 Trust, Photo Gallery & Face Verification UI
-*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 - **Multi-Photo Carousel / Grid**: Supports up to 6 photos. Drag/tap to reorder. Clear star badge on Primary Photo (`is_primary = true`).
 - **No-Photo State**: If 0 photos are uploaded, renders a friendly profile banner: *"Add a photo of yourself to appear in Discovery."*
 - **Verified Trust Badge**: If `is_verified = true`, renders subtle accent checkmark `✓ Photo Verified` alongside the display name. Tooltip explains: *"JESTER verified that this person's live selfie matches their profile photo."*
@@ -449,7 +449,7 @@ The frontend calls `GET /v1/astrology/profile/safe-astro` (or `POST /v1/astrolog
 - **Photo Change Invalidation Warning**: If a verified user attempts to change their primary photo, an in-app confirmation warns: *"Changing your primary photo will require re-verifying your face."*
 
 ### 8.13 JESTER AI Copilot & Surface Integration UI
-*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 - **Contextual Copilot Drawer**: User can summon JESTER AI across key surfaces (Main Chat, Candidate Profile Preview, WHY card, and Direct Chat starter bar).
 - **Grounded Explainability Pills**: Responses render subtle, interactive topic chips (e.g. `[ 💡 Grounded in Shared Passion: Photography ]` or `[ ☕ Conversational Starter: Prompt #1 ]`), reassuring users that observations stem from declared human interests.
 - **Graceful Fallback Display**: If the AI network call encounters latency or the Context Safety Gate fails closed, the UI seamlessly renders pre-approved Georgian copy from `ContentLibrary` without error bars or disruption.
@@ -487,40 +487,40 @@ The Discovery UI evaluates three relationship types:
 - **Soft Relevance**: Lifestyle alignment serves as natural conversational context, never as hard exclusionary filters in V1.
 
 ### 9.6 Values & Philosophical Resonance in Discovery
-*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md))*
 - **Shared Values (Direct Resonance)**: Surfaces shared life principles as conversational hooks (e.g. *"Both guided by Curiosity and Growth — endless shared rabbit holes"*).
 - **Complementary Polarities**: Highlights constructive philosophical balances with trademark JESTER wit (e.g. *Autonomy + Loyalty*: *"One brings fierce independence, one brings steadfast loyalty. Space to breathe with a secure tether"*).
 - **Soft Relevance**: In V1, values act as philosophical compatibility signals and conversation bridges, never as hard exclusionary dealbreaker filters.
 
 ### 9.7 Social Dynamics in Discovery Matching
-*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
 - **Gathering Harmony**: Surfaces shared preferences (e.g. *"Both thrive in one-on-one settings — quiet corner cafés over chaotic parties"*).
 - **Battery Awareness**: Highlights mutual or complementary recharge styles (e.g. *"Both need quiet downtime after socializing — zero pressure, zero guilt"*).
 - **Meeting Setting Intelligence**: AI uses mutual comfort zones to suggest optimal low-friction first hangouts.
 - **Soft Relevance**: In V1, social dynamics serve as practical relationship context and meeting aids, never hard exclusionary gates.
 
 ### 9.8 Communication Dynamics in Discovery Matching
-*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md))*
 - **Depth Resonance**: Surfaces shared conversational appetite (e.g. *"Both skip the shallow small talk — conversations here get real quickly"*).
 - **Role Pairing**: Identifies natural flow (e.g. Questioner + Storyteller: *"One draws stories out, one loves narrating vivid experiences"*).
 - **Pacing Reassurance**: Reassures users connecting with unhurried responders (*"Unhurried, thoughtful rhythm — expect quality over immediate speed"*).
 - **Decoupled from Synastry**: Complements the deterministic astrological Mercury score without altering it.
 
 ### 9.9 Intent Partitioning & Alignment in Discovery Matching
-*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md))*
 - **Bilateral Partitioning**: Users seeking exclusively serious dating are never matched with users seeking exclusively platonic friendship or collaboration unless a secondary bridge or `just_exploring` exists.
 - **Shared Intent Boost**: Users sharing identical primary intent receive a prominent relevance boost in discovery ordering.
 - **Multi-Domain Actionable Invitations**: Combines intent with interests and lifestyle to generate concrete invitations (e.g. *"Both seeking activity partners and both love hiking — easy weekend plan"*).
 - **Astrology Primacy Invariant**: Astrological synastry is framed strictly within declared intent; zero romantic assumptions projected onto platonic seekers.
 
 ### 9.10 Prompts in Discovery & Profile Preview
-*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
 - **Human Voice Snippet**: Discovery profile previews highlight the user's #1 prompt as a conversational teaser card (*"What this person actually sounds like"*).
 - **Direct Reply Action**: Viewers can tap `[ 💬 Reply to this ]` directly from the discovery card or full profile view to initiate a connection request quoting that specific prompt.
 - **Differentiation Factor**: Two profiles with similar astrological charts and shared interests are instantly differentiated by their authentic prompt humor, voice, and perspective.
 
 ### 9.11 Discovery Preferences & Feed Architecture
-*(Authoritative Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
 - **Unified Candidate Pool with Contextual Lenses**: Discovery serves candidates through a single coherent feed governed by active preferences, navigable via 4 lenses:
   - `[ ✨ For You ]`: Balanced multi-signal master feed.
   - `[ 📍 Nearby ]`: Local city and neighborhood priority.
@@ -530,14 +530,14 @@ The Discovery UI evaluates three relationship types:
 - **Graceful Pool Depletion**: If tight preferences yield $< 5$ candidates, surfaces an inline notice (*"Your current settings are very specific"*); if exhausted, provides a 1-tap `[ 🌍 Broaden to Entire Country ]` action.
 
 ### 9.12 Astrology in Discovery & Relevance Ranking
-*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 - **Anti-Filtering Invariant**: Astrology is **strictly prohibited** from acting as a hard search filter. Users cannot exclude candidates by zodiac sign or require minimum astrological match thresholds.
 - **10% Soft Relevance Signal**: Contributes a capped 10% weight to candidate ranking to surface relational chemistry without overriding declared human intent (25%), location (20%), interests (20%), values (15%), or prompts (10%).
 - **Qualitative Dynamic Tags**: Surfaces observational hooks on candidate cards (e.g. *"Creative Push-Pull"*, *"Conversational Rapport"*) rather than percentage scores.
 - **Astrology Depth Respect**: If viewer sets `astrology_mode = 'hidden'`, discovery cards suppress all astrological terms and hooks, focusing purely on human interests and shared values.
 
 ### 9.13 Trust & Photo Eligibility in Discovery
-*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 - **Mandatory Photo Gate**: Candidates MUST have at least 1 valid primary photo to appear in the Discovery feed. Accounts without photos remain private.
 - **Unverified Inclusion**: Unverified users with authentic photos appear normally in candidate feeds. Verification is a trust badge, NOT a discriminatory gate.
 - **Badge Presentation**: Verified candidates render the subtle `✓ Photo Verified` badge alongside their display name on candidate cards.
@@ -545,7 +545,7 @@ The Discovery UI evaluates three relationship types:
 - **Instant Block & Report Actions**: Discovery cards feature accessible `[ 🚫 Block ]` and `[ 🚩 Report ]` options directly from the card action menu.
 
 ### 9.14 Behavioral Intelligence & Diversity Controls in Discovery
-*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 - **Transparent Human Explainability**: Candidate cards influenced by behavioral affinity surface humble, respectful rationale chips (*"You've both been exploring analog photography lately"*), avoiding creepy "algorithm knows you" claims.
 - **6 / 3 / 1 Frozen Diversity Delivery**: The client feed preserves candidate variety across 6 Direct Resonance, 3 Complementary Contrast, and 1 Serendipitous Wildcard card per 10-candidate cycle, completely preventing echo-chamber narrowing.
 - **Sanitized Telemetry Dispatch**: The web client batches observable engagement events (profile opens, prompt expansions, dwell time) and flushes via `POST /v1/telemetry/events` every 30 seconds or on feed navigation. Payloads are strictly stripped of coordinates, message text, and private fields.

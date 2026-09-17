@@ -174,7 +174,7 @@ Gender preference has radically different relational meanings depending on decla
 
 ## 6. Location Preferences (Zero GPS, City & Country Semantics)
 
-In accordance with JESTER's core security invariants ([`docs/SECURITY.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SECURITY.md)), JESTER V1 collects **zero GPS coordinates, zero street addresses, and zero real-time location pings**.
+In accordance with JESTER's core security invariants ([`docs/SECURITY.md`](SECURITY.md)), JESTER V1 collects **zero GPS coordinates, zero street addresses, and zero real-time location pings**.
 
 ### 6.1 Location Discovery Scope Options
 Instead of arbitrary distance sliders (*"within 15 km"*), Discovery Preferences defines four clean geographic scopes:
@@ -197,7 +197,7 @@ Instead of arbitrary distance sliders (*"within 15 km"*), Discovery Preferences 
 ## 7. Interest Preferences & Interest Graph Integration
 
 ### 7.1 The Dilemma of Interest Filters
-If users can filter by exact interests (*"Show me only people who like Photography"*), discovery collapses into a search engine. Furthermore, JESTER already possesses an advanced semantic Interest Graph ([`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md)).
+If users can filter by exact interests (*"Show me only people who like Photography"*), discovery collapses into a search engine. Furthermore, JESTER already possesses an advanced semantic Interest Graph ([`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md)).
 
 ### 7.2 V1 Architecture: Contextual Interest Lenses
 - **Primary Unified Feed:** Uses the Interest Graph automatically to calculate interest resonance (Shared, Related, and Complementary clusters). Users do **not** configure hard interest filters for their main feed.
@@ -228,7 +228,7 @@ Lifestyle attributes (`daily_rhythm`, `activity_pace`, `work_style`, sensitive h
 
 ## 9. Values & Worldview in Discovery (Resonance over Moral Sorting)
 
-Values represent self-declared human priorities ([`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md)).
+Values represent self-declared human priorities ([`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md)).
 
 ### 9.1 Non-Exclusionary Philosophy
 - Hard filtering on values (*"I only want ambitious people"*) creates moral hierarchies, virtue signaling, and algorithmic echo chambers.
@@ -242,13 +242,13 @@ Values represent self-declared human priorities ([`docs/VALUES_SYSTEM_V1_SPEC.md
 ## 10. Social Behavior & Communication in Discovery
 
 ### 10.1 Social Rhythm Pairing
-- Social behavior preferences ([`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md)) guide **meeting setting intelligence**, not candidate gatekeeping:
+- Social behavior preferences ([`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md)) guide **meeting setting intelligence**, not candidate gatekeeping:
   - Mutual `one_on_one` preference triggers recommendations for quiet café hangouts.
   - Mutual `recharge_solo` highlights low-pressure social expectations.
 - Zero hard filters on introversion, extroversion, or battery capacity.
 
 ### 10.2 Communication Dynamics & The Anti-Surveillance Invariant
-- Communication preferences ([`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md)) guide **first-conversation icebreakers**:
+- Communication preferences ([`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md)) guide **first-conversation icebreakers**:
   - Pairing a `question_curious` user with a `story_expressive` user.
 - **Strictly Prohibited:**
   - Filtering by reply time or response speed.
@@ -259,7 +259,7 @@ Values represent self-declared human priorities ([`docs/VALUES_SYSTEM_V1_SPEC.md
 
 ## 11. Intent Integration & Bilateral Partitioning
 
-Intent is the single most important structural partition in JESTER Discovery ([`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md)).
+Intent is the single most important structural partition in JESTER Discovery ([`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md)).
 
 ### 11.1 Bilateral Intent Partitioning Matrix
 Discovery candidate generation enforces strict bilateral compatibility:

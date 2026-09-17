@@ -1,7 +1,7 @@
 # JESTER V1 — Product Capability Specification
 
 **Document Type:** Product Capability Specification (Historical Comprehensive Domain Spec)  
-**Authority Reference:** Superseded on core product principles by [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md) and on individual domain schemas by the 14 Domain V1 Specifications (`docs/*_SYSTEM_V1_SPEC.md`).  
+**Authority Reference:** Superseded on core product principles by [`docs/JESTER_PRODUCT_FOUNDATION.md`](../../JESTER_PRODUCT_FOUNDATION.md) and on individual domain schemas by the 14 Domain V1 Specifications (`docs/*_SYSTEM_V1_SPEC.md`).  
 **Version:** V1.0  
 **Purpose:** Functional capability reference across early JESTER V1 domains.
 
@@ -142,7 +142,7 @@ Blocked users must not be able to access protected profile information or safe a
 
 ## 3.3 Separation of Profile Photo and Face Verification & Trust System V1
 
-*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](../../TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 
 JESTER enforces a strict conceptual, architectural, and security boundary:
 * **Profile Photo (User Gallery):** An aesthetic, user-controlled element for visual social presentation and self-expression (supporting 1 to 6 photos, with 1 primary photo).
@@ -296,7 +296,7 @@ JESTER defines a dedicated **Discovery Preferences System** to govern candidate 
 
 # 4. Interest System & Interest Graph V1
 
-*(Authoritative Specification: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Authoritative Specification: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](../../INTEREST_SYSTEM_V1_SPEC.md))*
 
 ## 4.1 Core Principle: Shared Semantic Layer
 
@@ -524,7 +524,7 @@ Modalities:
 
 # 7. Astrological Data Boundaries & Integration System V1
 
-*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](../../ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 
 JESTER establishes a strict 5-layer architectural pipeline separating sensitive inputs from mathematical calculations, structured facts, and consumer presentation:
 
@@ -1127,7 +1127,7 @@ The AI must not invent underlying astronomical facts or override canonical inter
 
 # 27. Messaging
 
-*(Detailed Platform Architecture Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Detailed Platform Architecture Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](../../CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
 JESTER supports direct, calm 1-on-1 communication between connected users.
 
@@ -1332,9 +1332,9 @@ Astrology Int. V1    ██████████  Specified & Audited
 ```
 
 The mathematical specifications are authoritatively defined in:
-- [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md) (Platform Astrology Architecture)
-- [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md) (Synastry Engine V1)
-- [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md) (Discovery Preferences & 10% Astrology Weight)
+- [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](../../ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md) (Platform Astrology Architecture)
+- [`docs/SYNASTRY_V1_SPEC.md`](../../SYNASTRY_V1_SPEC.md) (Synastry Engine V1)
+- [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](../../DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md) (Discovery Preferences & 10% Astrology Weight)
 
 All calculations are verified by 83 automated astrology/compatibility tests and 290 tests repository-wide.
 
@@ -1342,7 +1342,7 @@ All calculations are verified by 83 automated astrology/compatibility tests and 
 
 # 36. Behavioral Intelligence System V1
 
-*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](../../BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 
 JESTER introduces a disciplined, observable Behavioral Intelligence system to enhance candidate relevance and conversation starters without engaging in psychological profiling, surveillance, or feedback-loop manipulation.
 
@@ -1369,7 +1369,7 @@ Behavioral affinity is strictly restricted to ranking candidates *within* their 
 
 # 37. JESTER AI Context System V1
 
-*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](../../JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 
 JESTER establishes an explicit, controlled context assembly subsystem (`ContextAssemblerService`) to manage what JESTER AI knows, what it does not know, and how it translates product data into relational intelligence.
 
@@ -1395,7 +1395,7 @@ $$\text{DECLARED HUMAN TRUTH} \gg \text{OBSERVED PRODUCT BEHAVIOR} \gg \text{INF
 
 # 38. Connection & Messaging System V1
 
-*(Detailed Platform & Product Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Detailed Platform & Product Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](../../CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
 JESTER establishes a dignified, intent-aware connection and messaging subsystem that governs interpersonal permission transitions after discovery.
 

@@ -45,7 +45,7 @@ RESOLVED USER COPY (Safe, jargon-free, rendering-ready JSON)
 
 ## 🏛️ 2. Domain Models & Architecture
 
-All domain models are formally defined in [backend/app/interpretation/models.py](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/models.py).
+All domain models are formally defined in [backend/app/interpretation/models.py](../backend/app/interpretation/models.py).
 
 ### 2.1 The `ContentAsset` Domain Model
 
@@ -114,7 +114,7 @@ class ContentAsset(BaseModel):
 
 ## ⚙️ 3. Deterministic Content Resolution Algorithm
 
-The resolution algorithm ([ContentResolver](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/library.py)) deterministically maps runtime requests to the optimal content asset:
+The resolution algorithm ([ContentResolver](../backend/app/interpretation/library.py)) deterministically maps runtime requests to the optimal content asset:
 
 ```text
 Resolver Inputs:
@@ -201,7 +201,7 @@ When scaling to tens of thousands of assets with headless CMS tooling (e.g., Str
 
 ## 🔒 6. Security & Role-Based Content Access Matrix
 
-Mutation of content assets is strictly protected via `require_copywriter_or_admin` in [backend/app/auth/dependencies.py](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/auth/dependencies.py):
+Mutation of content assets is strictly protected via `require_copywriter_or_admin` in [backend/app/auth/dependencies.py](../backend/app/auth/dependencies.py):
 
 | Role / Actor | Read Contracts & Assets | Resolve Copy | Create Asset | Update Asset | Approve Asset | Archive Asset | View Inventory | View Internal Notes |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |

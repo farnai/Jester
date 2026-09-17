@@ -27,6 +27,6 @@ Archived documents:
 ## Authority & Conflict Rule
 
 When any archived document or forensic audit conflicts with the current implementation:
-**Current source code, runtime configuration, automated tests, database migrations, and active canonical specifications under `docs/` ALWAYS take absolute precedence according to the authority hierarchy defined in [`AGENTS.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/AGENTS.md).**
+**Current source code, runtime configuration, automated tests, database migrations, and active canonical specifications under `docs/` ALWAYS take absolute precedence according to the authority hierarchy defined in [`AGENTS.md`](../../AGENTS.md).**
 
 AI coding agents must never cite or adopt specifications from `docs/archive/**` as active product or engineering requirements.

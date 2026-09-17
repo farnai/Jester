@@ -10,7 +10,7 @@
 
 ## ⚠️ How to Read This Document
 
-Unlike [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md), **nothing in this document is a locked product requirement unless explicitly marked `[APPROVED]`**.
+Unlike [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md), **nothing in this document is a locked product requirement unless explicitly marked `[APPROVED]`**.
 
 Every section is strictly tagged with its current status:
 - **`[APPROVED]`**: Validated by product leadership or dictated by hard technical/linguistic constraints.

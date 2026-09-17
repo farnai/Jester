@@ -5,11 +5,11 @@
 **System Domain:** Trust, Profile Authenticity, Verification & Moderation  
 **System Version:** `trust-v1.0.0`  
 **Parent Specifications:**
-- [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent)
-- [`docs/SECURITY.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SECURITY.md)
-- [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md)
-- [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_CAPABILITY_SPECIFICATION.md)
-- [`docs/AI.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/AI.md)  
+- [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent)
+- [`docs/SECURITY.md`](SECURITY.md)
+- [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md)
+- [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](FRONTEND_CAPABILITY_SPECIFICATION.md)
+- [`docs/AI.md`](AI.md)  
 **Status:** Authoritative Architectural Specification (V1 Frozen)
 
 ---
@@ -44,7 +44,7 @@ SAFETY & MODERATION
 
 ## 2. Current System Audit
 
-A thorough audit of the active repository ([`backend/app/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/), [`supabase/migrations/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/), and [`docs/`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/)) establishes the current baseline:
+A thorough audit of the active repository ([`backend/app/`](../backend/app), [`supabase/migrations/`](../supabase/migrations), and [`docs/`](.)) establishes the current baseline:
 
 ### 2.1 Implemented & Active Code
 1. **Profiles (`public.profiles`):**

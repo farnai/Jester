@@ -128,7 +128,7 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 ## 🔮 Astrology Integration System V1 Schema Specification
 
-*(Detailed Product & Platform Specification: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 
 The Astrology subsystem strictly separates sensitive raw inputs from deterministic calculations and public safe summaries:
 
@@ -139,7 +139,7 @@ The Astrology subsystem strictly separates sensitive raw inputs from determinist
 
 ## 🌐 Interest Graph V1 Schema Specification (Architecture Blueprint)
 
-*(Detailed Product & Platform Specification: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md))*
 
 The Interest System introduces 6 conceptual entities supporting canonical taxonomy management, graph edges, and dual-layer user affinity:
 
@@ -609,7 +609,7 @@ To give users transparent control over who and what JESTER shows them without cr
 
 ## 🛡️ Trust & Verification System V1 Schema Specification (Architecture Blueprint)
 
-*(Detailed Product & Platform Specification: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 
 To decouple profile presentation from verification and ensure safety without building a surveillance score, the Trust & Verification System V1 defines the following 6 core entities:
 
@@ -672,7 +672,7 @@ To decouple profile presentation from verification and ensure safety without bui
 
 ## 🧠 Behavioral Intelligence System V1 Schema Specification (Architecture Blueprint)
 
-*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 
 To enable observable product personalization without psychological profiling or surveillance, the Behavioral Intelligence System V1 defines the following 4 entities:
 
@@ -723,7 +723,7 @@ To enable observable product personalization without psychological profiling or 
 
 ## 🤖 JESTER AI Context System V1 (Data Architecture Blueprint)
 
-*(Detailed Product & Platform Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 
 The JESTER AI Context System operates as an **ephemeral, read-only aggregation and safety layer**. It deliberately introduces **zero new persistent database tables** to prevent data duplication and stale profile caching:
 
@@ -737,7 +737,7 @@ The JESTER AI Context System operates as an **ephemeral, read-only aggregation a
 
 ## 🤝 Connection & Messaging System V1 Schema Specification (Architecture Blueprint)
 
-*(Detailed Product & Platform Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Detailed Product & Platform Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
 To power intentional connection requests, inaugural message seeding, and non-surveillance direct chat without schema redundancy:
 

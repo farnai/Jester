@@ -3,8 +3,8 @@
 **Document Version:** `1.1.0`  
 **System Roles:** Lead Product Architect, Senior Frontend Systems Architect, React Native / Expo Architect, Design Systems Architect  
 **Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 188/188 passing tests)  
-**Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/FRONTEND_CAPABILITY_SPECIFICATION.md)  
-**Parent Product Spec:** [`docs/JESTER_PRODUCT_FOUNDATION.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_PRODUCT_FOUNDATION.md)  
+**Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](FRONTEND_CAPABILITY_SPECIFICATION.md)  
+**Parent Product Spec:** [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md)  
 **Status:** Authoritative Frontend Architectural Blueprint (Cross-Platform / Universal Target Architecture)  
 
 ---

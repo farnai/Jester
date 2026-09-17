@@ -4,7 +4,7 @@
 
 > **Status:** FINAL PRE-GENERATION SPECIFICATION & QUALITY GATES  
 > **Subsystem:** Natal Self-Understanding Intelligence ("ME" / `self.*`)  
-> **Governing Documents:** [`docs/ME_SEMANTIC_ARCHITECTURE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ME_SEMANTIC_ARCHITECTURE.md), [`docs/ME_CONTENT_MATRIX.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ME_CONTENT_MATRIX.md)  
+> **Governing Documents:** [`docs/ME_SEMANTIC_ARCHITECTURE.md`](ME_SEMANTIC_ARCHITECTURE.md), [`docs/ME_CONTENT_MATRIX.md`](ME_CONTENT_MATRIX.md)  
 > **Source of Truth:** Swiss Ephemeris (`pyswisseph`), `backend/app/astrology/natal.py`, `calculator.py`, `content_corpus.json`  
 > **Core Axiom:** **TRUTH > SEMANTIC VALUE > QUALITY > VARIETY > VOLUME.**
 
@@ -110,7 +110,7 @@ Grounded in `element_primary` $\times$ `modality_primary` to deliver the crownin
 ## 4. NATAL ASPECTS FEASIBILITY STUDY
 
 ### Product & Astrological Reality
-The mathematical function [`aspects.py:detect_aspect()`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/astrology/aspects.py#L119) calculates exact angular distances and quadratic strength decays. However, calling it across a user's single chart is **currently not wired in `natal.py`**.
+The mathematical function [`aspects.py:detect_aspect()`](../backend/app/astrology/aspects.py#L119) calculates exact angular distances and quadratic strength decays. However, calling it across a user's single chart is **currently not wired in `natal.py`**.
 
 ### Priority Aspect Classification for Future Engine Inclusion
 

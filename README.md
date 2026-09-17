@@ -228,4 +228,4 @@ Executes `tsc` type checking and `vite build` to guarantee zero compile-time err
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.

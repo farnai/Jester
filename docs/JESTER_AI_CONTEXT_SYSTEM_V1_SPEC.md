@@ -65,10 +65,10 @@ A comprehensive audit of the repository and documentation was conducted to recon
 
 | Dimension | Existing Implementation | Documented Architecture | Proposed V1 Context Architecture |
 | :--- | :--- | :--- | :--- |
-| **Prompt Assembly** | `prompts.py` builds hardcoded prompts strictly for single `InterpretationContract` signals and Deep Analysis blocks ([`backend/app/interpretation/prompts.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/prompts.py)). | High-level domain invariants documented in [`docs/AI.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/AI.md). | Unified `ContextAssemblerService` generating strongly typed, validated `JesterAiContextV1` across 7 distinct product surfaces. |
-| **Data Scope & Sourcing** | `/v1/compare` and `/people/{id}/why` fetch only birth data and synastry signals ([`backend/app/comparisons/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/comparisons/router.py)). | Multi-domain context (Interests, Values, Lifestyle, Social, Comm, Intent, Prompts) documented across V1 specs. | Centralized multi-domain context assembly joining declared human truth, safe astrology, and aggregated behavioral signals. |
-| **Declared vs. Inferred** | No distinction exists in runtime prompt structures; signals are passed as raw flat strings. | Conceptually distinguished in [`INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md) and [`BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md). | Explicit structural separation directly inside the context contract (`declared` vs. `observed_affinities` vs. `inferred_signals`). |
-| **Safety Filtering** | Basic jargon regex check in `jester.py` ([`backend/app/interpretation/jester.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/jester.py)). | High-level privacy invariants in [`docs/SECURITY.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SECURITY.md). | Deterministic `ContextSafetyGate` that validates context payloads and fails closed before LLM invocation. |
+| **Prompt Assembly** | `prompts.py` builds hardcoded prompts strictly for single `InterpretationContract` signals and Deep Analysis blocks ([`backend/app/interpretation/prompts.py`](../backend/app/interpretation/prompts.py)). | High-level domain invariants documented in [`docs/AI.md`](AI.md). | Unified `ContextAssemblerService` generating strongly typed, validated `JesterAiContextV1` across 7 distinct product surfaces. |
+| **Data Scope & Sourcing** | `/v1/compare` and `/people/{id}/why` fetch only birth data and synastry signals ([`backend/app/comparisons/router.py`](../backend/app/comparisons/router.py)). | Multi-domain context (Interests, Values, Lifestyle, Social, Comm, Intent, Prompts) documented across V1 specs. | Centralized multi-domain context assembly joining declared human truth, safe astrology, and aggregated behavioral signals. |
+| **Declared vs. Inferred** | No distinction exists in runtime prompt structures; signals are passed as raw flat strings. | Conceptually distinguished in [`INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md) and [`BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md). | Explicit structural separation directly inside the context contract (`declared` vs. `observed_affinities` vs. `inferred_signals`). |
+| **Safety Filtering** | Basic jargon regex check in `jester.py` ([`backend/app/interpretation/jester.py`](../backend/app/interpretation/jester.py)). | High-level privacy invariants in [`docs/SECURITY.md`](SECURITY.md). | Deterministic `ContextSafetyGate` that validates context payloads and fails closed before LLM invocation. |
 | **Conflict Resolution** | Ad-hoc or undefined when signals conflict. | Stated conceptually ("declared outranks inferred"). | Formally codified conflict resolution rules engine with deterministic priority arbitration. |
 
 ---
@@ -366,7 +366,7 @@ The following table authoritatively defines the platform's forbidden-context bou
 
 ## 11. Behavioral Intelligence Integration Rules
 
-Context consumption from [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md) is strictly regulated:
+Context consumption from [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md) is strictly regulated:
 
 ```json
 // APPROVED BEHAVIORAL CONTEXT STRUCTURE:

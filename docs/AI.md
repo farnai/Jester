@@ -82,7 +82,7 @@ In the content pipeline, the daily insight is the user's **first personal taste 
 
 ## 🌐 Interest Graph as Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTEREST_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/INTEREST_SYSTEM_V1_SPEC.md`](INTEREST_SYSTEM_V1_SPEC.md))*
 
 JESTER AI integrates declared interests and the semantic Interest Graph as grounding context for relationship interpretation, profile prompts, and conversation starters.
 
@@ -95,7 +95,7 @@ JESTER AI integrates declared interests and the semantic Interest Graph as groun
 
 ## 📍 Location & Origin as Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LOCATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/LOCATION_SYSTEM_V1_SPEC.md`](LOCATION_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests safe location and origin tokens (City, Country, and relational flags) to provide warm, human conversational context without compromising privacy:
 
@@ -108,7 +108,7 @@ JESTER AI ingests safe location and origin tokens (City, Country, and relational
 
 ## 🌿 Lifestyle & Daily Rhythm Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/LIFESTYLE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/LIFESTYLE_SYSTEM_V1_SPEC.md`](LIFESTYLE_SYSTEM_V1_SPEC.md))*
 
 JESTER AI integrates declared daily rhythm, activity pace, and work reality to craft empathetic, witty, and schedule-aware interpretations:
 
@@ -121,7 +121,7 @@ JESTER AI integrates declared daily rhythm, activity pace, and work reality to c
 
 ## 💎 Values & Guiding Compass Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/VALUES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/VALUES_SYSTEM_V1_SPEC.md`](VALUES_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests structured values tokens (Core Value and chosen guiding values) to generate warm, witty, and philosophically resonant relational interpretations:
 
@@ -135,7 +135,7 @@ JESTER AI ingests structured values tokens (Core Value and chosen guiding values
 
 ## 👥 Social Dynamics & Battery Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md`](SOCIAL_BEHAVIOR_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests declared social preferences (gathering scale, social battery, warm-up pacing, and comfort zone) to deliver practical, low-friction meeting suggestions and empathetic relational dynamics:
 
@@ -149,7 +149,7 @@ JESTER AI ingests declared social preferences (gathering scale, social battery, 
 
 ## 💬 Communication Dynamics & Conversational Pacing Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests declared communication tokens (conversation depth, conversational role, preferred medium, and pacing expectations) to deliver empathetic, low-pressure conversation starters and relational interaction insights:
 
@@ -164,7 +164,7 @@ JESTER AI ingests declared communication tokens (conversation depth, conversatio
 
 ## 🎯 Intent Alignment & Relational Framing Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/INTENT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/INTENT_SYSTEM_V1_SPEC.md`](INTENT_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests declared intent tokens (Primary Intent, Secondary Intents, and alignment status) to ensure all generated commentary, comparison insights, and conversation starters are framed appropriately:
 
@@ -181,7 +181,7 @@ JESTER AI ingests declared intent tokens (Primary Intent, Secondary Intents, and
 
 ## ✍️ Prompts & Human Voice Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md`](PROMPTS_SELF_EXPRESSION_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests approved, user-authored prompt questions and answers (`public.user_prompts`) as rich conversational context and authentic voice anchors:
 
@@ -195,7 +195,7 @@ JESTER AI ingests approved, user-authored prompt questions and answers (`public.
 
 ## 🧭 Discovery Preferences & Explainability Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md`](DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests active discovery preferences to generate warm, empathetic, and human explainability copy on discovery cards (`GET /v1/discovery/feed`):
 
@@ -209,7 +209,7 @@ JESTER AI ingests active discovery preferences to generate warm, empathetic, and
 
 ## 🔮 Structured Astrology & Relational Dynamics Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests structured astronomical facts and pre-resolved synastry signals as grounding context for profile commentary, conversational icebreakers, and relationship explainability:
 
@@ -224,7 +224,7 @@ JESTER AI ingests structured astronomical facts and pre-resolved synastry signal
 
 ## 🛡️ Trust, Verification & Safety Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests high-level trust state to ensure conversation starters and relationship commentary respect safety boundaries without imposing moralistic judgments:
 
@@ -239,7 +239,7 @@ JESTER AI ingests high-level trust state to ensure conversation starters and rel
 
 ## 🧠 Behavioral Intelligence & Anti-Profiling Context for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 
 JESTER AI ingests aggregated behavioral affinity tags and macro engagement metrics strictly to surface warm, relevant conversation topics and explain candidate connections, without crossing into psychoanalysis:
 
@@ -254,7 +254,7 @@ JESTER AI ingests aggregated behavioral affinity tags and macro engagement metri
 
 ## 🏛️ JESTER AI Context System V1 (Platform Architecture Blueprint)
 
-*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Detailed Platform & Data Architecture Specification: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 
 The JESTER AI Context System defines the controlled, privacy-preserving context assembly layer between JESTER's multi-domain data systems and the JESTER AI relational copilot:
 
@@ -283,7 +283,7 @@ User Data (Multi-Domain) → Context Assembler Service → Context Safety Gate (
 
 ## 💬 Conversation Starters & Direct Messaging Guidance for JESTER AI
 
-*(Authoritative Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Authoritative Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
 JESTER AI acts as a witty, observant relational wingman during the initial connection and direct messaging phases, governed by strict privacy and user-sovereignty guardrails:
 

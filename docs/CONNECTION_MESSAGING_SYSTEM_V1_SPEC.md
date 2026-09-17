@@ -53,12 +53,12 @@ A forensic audit of existing backend code, database schemas, and documentation r
 
 | Subsystem | Existing Implementation | Documented Status | Proposed V1 Target Architecture |
 | :--- | :--- | :--- | :--- |
-| **Connections Schema** | `public.connections` ([007_connections.sql](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/007_connections.sql)) has `user_a_id`, `user_b_id`, `status`, `initiated_by`, `blocked_by`. | States: `pending`, `accepted`, `declined`, `blocked`, `removed`. | Preserves canonical pair constraint (`user_a_id < user_b_id`); enhances request metadata (`connection_reason`, `prompt_reference_id`, `invitation_note`). |
-| **Connection Requests** | `POST /connections` creates request with `target_user_id` only ([`backend/app/connections/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/connections/router.py)). | Request reasons and quoted prompts documented conceptually. | Fully typed `ConnectionCreateRequest` supporting optional 1-tap `connection_reason`, `prompt_reference_id`, and `invitation_note` (max 200 chars). |
-| **Conversations** | Direct conversations created via `POST /conversations` ([`backend/app/conversations/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/conversations/router.py)). | Requires `has_active_connection`. | Lazy creation or automatic thread initialization upon request acceptance, with invitation note pre-seeded as first message. |
-| **Messages Schema** | `public.messages` ([012_messages.sql](file:///c:/Users/fiord/OneDrive/Desktop/Jester/supabase/migrations/012_messages.sql)) stores `id`, `conversation_id`, `sender_user_id`, `body`, `created_at`. | Minimal text messaging without media attachments. | Enforces text-only (max 2,000 chars), emoji support, read markers (`last_read_message_id` in member table), and zero message body profiling. |
-| **Disconnect vs Block** | Disconnect maps to `action = 'remove'` (sets status to `removed`). Block maps to `action = 'block'` ([`backend/app/connections/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/connections/router.py)). | Distinction documented in `ARCHITECTURE.md`. | Formalizes three distinct actions: `DISCONNECT` (unfriending; chat locked; 48h cooldown), `BLOCK` (reciprocal 404 wipe), and `REPORT` (confidential platform moderation signal). |
-| **WHY to US Transition** | `/v1/people/{id}/why` calls `compare_users` ([`backend/app/comparisons/router.py`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/comparisons/router.py)), requiring active connection. | Pre-connection WHY documented in Discovery Preferences. | Decouples pre-connection `WHY` (exploring resonance) from post-connection `US` (relational territory & conversation starters). |
+| **Connections Schema** | `public.connections` ([007_connections.sql](../supabase/migrations/007_connections.sql)) has `user_a_id`, `user_b_id`, `status`, `initiated_by`, `blocked_by`. | States: `pending`, `accepted`, `declined`, `blocked`, `removed`. | Preserves canonical pair constraint (`user_a_id < user_b_id`); enhances request metadata (`connection_reason`, `prompt_reference_id`, `invitation_note`). |
+| **Connection Requests** | `POST /connections` creates request with `target_user_id` only ([`backend/app/connections/router.py`](../backend/app/connections/router.py)). | Request reasons and quoted prompts documented conceptually. | Fully typed `ConnectionCreateRequest` supporting optional 1-tap `connection_reason`, `prompt_reference_id`, and `invitation_note` (max 200 chars). |
+| **Conversations** | Direct conversations created via `POST /conversations` ([`backend/app/conversations/router.py`](../backend/app/conversations/router.py)). | Requires `has_active_connection`. | Lazy creation or automatic thread initialization upon request acceptance, with invitation note pre-seeded as first message. |
+| **Messages Schema** | `public.messages` ([012_messages.sql](../supabase/migrations/012_messages.sql)) stores `id`, `conversation_id`, `sender_user_id`, `body`, `created_at`. | Minimal text messaging without media attachments. | Enforces text-only (max 2,000 chars), emoji support, read markers (`last_read_message_id` in member table), and zero message body profiling. |
+| **Disconnect vs Block** | Disconnect maps to `action = 'remove'` (sets status to `removed`). Block maps to `action = 'block'` ([`backend/app/connections/router.py`](../backend/app/connections/router.py)). | Distinction documented in `ARCHITECTURE.md`. | Formalizes three distinct actions: `DISCONNECT` (unfriending; chat locked; 48h cooldown), `BLOCK` (reciprocal 404 wipe), and `REPORT` (confidential platform moderation signal). |
+| **WHY to US Transition** | `/v1/people/{id}/why` calls `compare_users` ([`backend/app/comparisons/router.py`](../backend/app/comparisons/router.py)), requiring active connection. | Pre-connection WHY documented in Discovery Preferences. | Decouples pre-connection `WHY` (exploring resonance) from post-connection `US` (relational territory & conversation starters). |
 
 ---
 
@@ -238,7 +238,7 @@ Direct communication in JESTER is designed for **calm, deliberate human connecti
 
 ## 8. Communication Preferences Integration
 
-JESTER integrates declared preferences from [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/COMMUNICATION_SYSTEM_V1_SPEC.md) into the messaging interface:
+JESTER integrates declared preferences from [`docs/COMMUNICATION_SYSTEM_V1_SPEC.md`](COMMUNICATION_SYSTEM_V1_SPEC.md) into the messaging interface:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -276,7 +276,7 @@ When opening a newly accepted conversation thread, JESTER renders an optional **
 
 ## 10. JESTER AI Integration & Boundaries
 
-JESTER AI acts as an empathetic relational copilot in conversation surfaces, governed strictly by [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md):
+JESTER AI acts as an empathetic relational copilot in conversation surfaces, governed strictly by [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md):
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -476,7 +476,7 @@ Every possible client state is mapped deterministically before visual screen des
 
 ## 18. Analytics & Behavioral Telemetry Integration
 
-Adheres strictly to [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md):
+Adheres strictly to [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md):
 
 - **Permitted Behavioral Events:**
   - `connection_request_sent` (context: `has_reason`, `has_prompt`, `has_note`)

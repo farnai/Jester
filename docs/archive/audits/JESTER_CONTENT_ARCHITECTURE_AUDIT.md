@@ -71,7 +71,7 @@ All 13 primary architectural objectives and 43 product guidelines have been met 
 
 ### 4. What new domain models exist?
 
-Formally defined in [backend/app/interpretation/models.py](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/models.py):
+Formally defined in [backend/app/interpretation/models.py](../../../backend/app/interpretation/models.py):
 
 | Model Name | Type | Purpose |
 | :--- | :--- | :--- |
@@ -101,7 +101,7 @@ Formally defined in [backend/app/interpretation/models.py](file:///c:/Users/fior
 
 ### 6. How many content assets exist?
 
-- **Pre-Seeded Production Catalog**: **66 discrete Content Assets** in [seed_data.py](file:///c:/Users/fiord/OneDrive/Desktop/Jester/backend/app/interpretation/seed_data.py).
+- **Pre-Seeded Production Catalog**: **66 discrete Content Assets** in [seed_data.py](../../../backend/app/interpretation/seed_data.py).
 - **Distribution**:
   - Every contract has baseline Georgian (`ka`) and English (`en`) assets.
   - Signature dynamic contracts feature multiple variants (`variant_a`, `variant_b`, `variant_c`) across multiple tones.

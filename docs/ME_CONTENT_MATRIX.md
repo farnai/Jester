@@ -3,7 +3,7 @@
 ### COMPLETE CONTENT MATRIX & COVERAGE SPECIFICATION
 
 > **Status:** SPECIFICATION & CONTENT FACTORY BLUEPRINT  
-> **Authority:** Approved ME Semantic Architecture ([`docs/ME_SEMANTIC_ARCHITECTURE.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ME_SEMANTIC_ARCHITECTURE.md)), Source Code (`backend/app/astrology/`, `backend/app/interpretation/`), Swiss Ephemeris (`pyswisseph`), `content_corpus.json`  
+> **Authority:** Approved ME Semantic Architecture ([`docs/ME_SEMANTIC_ARCHITECTURE.md`](ME_SEMANTIC_ARCHITECTURE.md)), Source Code (`backend/app/astrology/`, `backend/app/interpretation/`), Swiss Ephemeris (`pyswisseph`), `content_corpus.json`  
 > **Core Axiom:** **TRUTH > COVERAGE > VARIETY > VOLUME.**  
 > We do not manufacture text to hit an arbitrary metric. We engineer an exact content matrix derived from real, verified astrological signals, maximizing distinct semantic angles and minimizing repetition without inventing astrology.
 

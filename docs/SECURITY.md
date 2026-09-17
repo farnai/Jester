@@ -120,7 +120,7 @@ PostgreSQL security operates on the **Principle of Least Privilege**, separating
 
 ## 🔒 Security & Privacy Invariants
 
-*(Authoritative Platform Architecture Specs: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md), [`docs/SYNASTRY_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/SYNASTRY_V1_SPEC.md))*
+*(Authoritative Platform Architecture Specs: [`docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md`](ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md), [`docs/SYNASTRY_V1_SPEC.md`](SYNASTRY_V1_SPEC.md))*
 
 These invariants are permanent engineering constraints. Any pull request or refactoring that violates these rules is rejected.
 
@@ -175,7 +175,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
 - **Enforcement:** All database privileges on `public.user_interest_affinity` are revoked from client roles (`authenticated`, `anon`, `public`). The API and JESTER intelligence engine never project unconfirmed behavioral labels (e.g., "You are an adventurous person") onto the user.
 
 ### 9. Separation of Profile Presentation and Identity Verification (Trust System V1)
-*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 - **Invariant:** Public profile imagery (`public.profile_photos`, `profiles.avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
 - **Verification Evidence Isolation:** Ephemeral selfie verification media is stored exclusively in a private, encrypted storage bucket (`verification-evidence`) with `public = false`. All client roles (`authenticated`, `anon`, `public`) have zero access privileges (`REVOKE ALL`).
 - **Zero Biometric Data to JESTER AI:** Verification media, face vectors, and raw selfie frames are **NEVER** passed to LLMs, system prompts, or context synthesizers.
@@ -244,7 +244,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - Hard dealbreakers are restricted to Age, Gender, and Intent; physical, racial, religious, or zodiac-sign filtering is architecturally prohibited.
 
 ### 18. Behavioral Telemetry Hygiene, Anti-Profiling & Right-to-Reset (Behavioral Intelligence V1)
-*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md`](BEHAVIORAL_INTELLIGENCE_SYSTEM_V1_SPEC.md))*
 - **Invariant:** Behavioral telemetry tracks observable in-product events strictly for candidate relevance and conversation starters. The system is fundamentally barred from performing psychological profiling, diagnosing personality traits, computing attractiveness tiers, scoring mental health, or scorekeeping communication response speeds.
 - **Enforcement:**
   - `REVOKE ALL ON public.behavioral_events FROM anon, authenticated, public;`
@@ -254,7 +254,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - Right-to-Reset: Calling `POST /v1/users/me/personalization/reset` immediately purges all derived affinity weights (`user_interest_affinity`) and resets behavioral signals without affecting declared profile truth.
 
 ### 19. JESTER AI Context Isolation, Fail-Closed Boundary & Forbidden Data Blacklist (AI Context V1)
-*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md`](JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md))*
 - **Invariant:** JESTER AI must never receive direct database connections, unvetted SQL access, or unrestricted table queries. Context assembly is mediated exclusively through on-demand strongly typed contracts (`JesterAiContextV1`) and validated by an automated, fail-closed Context Safety Gate.
 - **Enforcement:**
   - **Blacklist Enforcement:** The in-memory `ContextSafetyGate` scans every assembled payload before LLM transmission. Detection of any forbidden key (`messages.body`, `latitude`, `longitude`, `selfie_bytes`, `birth_time`, `report`, `block`, `introvert_score`, `attractiveness_score`) immediately raises `ContextSafetyViolationException` and aborts network transmission.
@@ -263,7 +263,7 @@ These invariants are permanent engineering constraints. Any pull request or refa
   - **Sanitized Logging:** Full context payloads are never serialized in logs or observability pipelines. Only sanitized correlation hashes and latency metrics are retained.
 
 ### 20. Direct Chat Confidentiality, Disconnect Lockdown & Non-Surveillance Messaging (Connection & Messaging V1)
-*(Authoritative Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](file:///c:/Users/fiord/OneDrive/Desktop/Jester/docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
+*(Authoritative Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 - **Invariant:** Direct chat is an intimate, private communication channel between two mutually consented, connected users. Chat messages must never be mined for behavioral profiling, exposed to public or discovery surfaces, accessible to unauthorized third parties, or weaponized via surveillance telemetry (e.g. read-receipt countdowns, typing speed metrics, or psychological sentiment tracking).
 - **Enforcement:**
   - `REVOKE ALL ON public.messages, public.conversations, public.conversation_members FROM anon, public;`
