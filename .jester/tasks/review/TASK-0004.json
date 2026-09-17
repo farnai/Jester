@@ -1,0 +1,63 @@
+{
+  "id": "TASK-0004",
+  "title": "Provider-Agnostic AI Bridge Foundation (Phases 1, 2A, 2B, 2C-1, 2C-2)",
+  "type": "feature",
+  "status": "review",
+  "priority": "high",
+  "role": "executor",
+  "assigned_agent": "gemini-dev",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Implement the vendor-neutral foundation for the JESTER multi-agent AI Bridge, establishing clean separation of Role, Agent, Provider, and Model without vendor coupling.",
+  "scope": [
+    "jester_bridge/",
+    "tests/bridge/",
+    ".jester/config/agents.json",
+    ".jester/config/orchestrator.json",
+    ".jester/tasks/templates/task.template.json",
+    ".agents/skills/jester-orchestrator/SKILL.md",
+    ".jester/project/index.json",
+    "docs/AI_BRIDGE_ARCHITECTURE.md",
+    "scripts/run_bridge_workflow.py"
+  ],
+  "constraints": [
+    "Do not import vendor SDKs in core.",
+    "Do not hardcode gemini or chatgpt in task lifecycle.",
+    "Do not modify product application code.",
+    "Do not modify database migrations.",
+    "Do not modify historical task records.",
+    "Do not commit automatically.",
+    "Do not push automatically."
+  ],
+  "acceptance_criteria": [
+    "Task Protocol v2 supports role and assigned_agent separation.",
+    "Role is independent from provider.",
+    "Agent is independent from provider implementation.",
+    "Provider is an abstraction/interface.",
+    "Model/runtime is not hardcoded into Bridge Core.",
+    "Capabilities can be declared and validated.",
+    "Provider-specific response structures do not leak into core.",
+    "Mock Provider A and Mock Provider B execute through the same core contract.",
+    "Swapping the assigned agent/provider does not require changing the task lifecycle.",
+    "No OpenAI/Gemini SDK dependency exists in Bridge Core.",
+    "No Anthropic/Ollama implementation is added in Phase 1.",
+    "No secrets are introduced.",
+    "Existing relevant tests pass.",
+    "New Phase 1, 2A, 2B, 2C-1, and 2C-2 bridge tests pass.",
+    "Architecture documentation explains how future providers can be added without rewriting the core.",
+    "First live controlled end-to-end multi-agent workflow executed and verified."
+  ],
+  "verification": [
+    "pytest tests/bridge/",
+    "pytest tests/core/test_canonical.py tests/compatibility/test_synastry.py tests/backend/test_profile_identity.py tests/backend/test_registration_onboarding_boundary.py"
+  ],
+  "dependencies": [
+    "TASK-0003"
+  ],
+  "created_at": "2026-09-17T23:35:00+04:00",
+  "updated_at": "2026-09-18T00:43:00+04:00"
+}

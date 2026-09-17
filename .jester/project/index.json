@@ -10,5 +10,6 @@
   "frontend_architecture": "docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md",
   "frontend_capabilities": "docs/FRONTEND_CAPABILITY_SPECIFICATION.md",
   "design": "docs/JESTER_DESIGN_EXPLORATION.md",
+  "ai_bridge": "docs/AI_BRIDGE_ARCHITECTURE.md",
   "agent_governance": "AGENTS.md"
 }

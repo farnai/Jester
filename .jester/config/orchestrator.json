@@ -6,6 +6,7 @@
   "archive_root": "docs/archive",
   "task_root": ".jester/tasks",
   "reports_root": ".jester/reports",
+  "agents_config": ".jester/config/agents.json",
   "git_push": {
     "autonomous": false,
     "requires_explicit_user_instruction": true

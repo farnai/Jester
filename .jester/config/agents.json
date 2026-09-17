@@ -1,0 +1,75 @@
+{
+  "version": "2.0",
+  "role_bindings": {
+    "architect": "chatgpt-lead",
+    "executor": "gemini-dev",
+    "reviewer": "chatgpt-critic",
+    "auditor": "jester-auditor"
+  },
+  "agents": {
+    "chatgpt-lead": {
+      "id": "chatgpt-lead",
+      "role": "architect",
+      "provider": "openai",
+      "model": "o3-mini",
+      "capabilities": [
+        "planning",
+        "reasoning",
+        "repository_read"
+      ],
+      "description": "Architect agent responsible for task decomposition, boundary definition, and dependency analysis."
+    },
+    "gemini-dev": {
+      "id": "gemini-dev",
+      "role": "executor",
+      "provider": "google",
+      "model": "gemini-2.5-pro",
+      "capabilities": [
+        "planning",
+        "reasoning",
+        "repository_read",
+        "repository_write",
+        "command_execution",
+        "testing",
+        "local_runtime",
+        "code_generation"
+      ],
+      "description": "Executor agent responsible for bounded code modifications, test execution, and implementation reports."
+    },
+    "chatgpt-critic": {
+      "id": "chatgpt-critic",
+      "role": "reviewer",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "capabilities": [
+        "reasoning",
+        "repository_read",
+        "review",
+        "testing"
+      ],
+      "description": "Independent reviewer agent validating code diffs, acceptance criteria, and verification suites."
+    },
+    "jester-auditor": {
+      "id": "jester-auditor",
+      "role": "auditor",
+      "provider": "google",
+      "model": "gemini-2.5-pro",
+      "capabilities": [
+        "reasoning",
+        "repository_read",
+        "review"
+      ],
+      "description": "Auditor agent performing compliance sweeps, governance integrity checks, and repository audits."
+    }
+  },
+  "providers": {
+    "openai": {
+      "type": "openai",
+      "description": "OpenAI API provider adapter for ChatGPT models."
+    },
+    "google": {
+      "type": "google",
+      "description": "Google API provider adapter for Gemini models."
+    }
+  }
+}

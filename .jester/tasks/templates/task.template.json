@@ -4,7 +4,14 @@
   "type": "feature",
   "status": "inbox",
   "priority": "normal",
-  "agent": "gemini",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
   "goal": "",
   "scope": [],
   "constraints": [],

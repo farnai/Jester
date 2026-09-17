@@ -57,7 +57,7 @@ AGENTS.md
 
 ## 4. Task Protocol & Lifecycle
 
-Tasks are structured JSON documents conforming to Task Protocol v1 ([`.jester/tasks/templates/task.template.json`](../../../.jester/tasks/templates/task.template.json)).
+Tasks are structured JSON documents conforming to **Task Protocol v2** ([`.jester/tasks/templates/task.template.json`](../../../.jester/tasks/templates/task.template.json)).
 
 ### Lifecycle State Transitions
 
@@ -81,7 +81,9 @@ Tasks are structured JSON documents conforming to Task Protocol v1 ([`.jester/ta
    - `id`: Unique identifier (`TASK-XXXX`).
    - `title`: Concise summary.
    - `status`: Must be `"inbox"`.
-   - `agent`: Must be `"gemini"` (or explicitly authorized agent).
+   - `role`: Canonical role (`executor`, `architect`, `reviewer`, `auditor`).
+   - `assigned_agent`: Logical agent identifier or null (backward-compatible with v1 `agent`).
+   - `required_capabilities`: List of operational capabilities needed.
    - `scope`: Bounded list of authorized targets.
    - `constraints`: Specific guardrails.
    - `acceptance_criteria`: Discrete testable statements.
