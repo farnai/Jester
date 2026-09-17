@@ -1,0 +1,40 @@
+{
+  "id": "TASK-0001",
+  "title": "Validate JESTER control plane",
+  "type": "audit",
+  "status": "review",
+  "priority": "normal",
+  "agent": "gemini",
+  "goal": "Validate that the JESTER AI Development Control Plane is correctly bootstrapped and operational.",
+  "scope": [
+    ".jester/",
+    ".agents/skills/jester-orchestrator/SKILL.md",
+    "AGENTS.md"
+  ],
+  "constraints": [
+    "Do not modify application code.",
+    "Do not modify canonical documentation.",
+    "Do not modify database migrations.",
+    "Do not modify tests.",
+    "Do not commit.",
+    "Do not push."
+  ],
+  "acceptance_criteria": [
+    "The JESTER control-plane structure exists and matches the documented structure.",
+    "The JESTER Agent Skill exists and is readable.",
+    "The orchestrator configuration points to the correct task and report roots.",
+    "The project index resolves to existing canonical documentation.",
+    "Git push remains explicitly prohibited.",
+    "A factual audit report is produced under .jester/reports/audits/."
+  ],
+  "verification": [
+    "Verify .jester/ directory structure.",
+    "Validate .jester/config/orchestrator.json as JSON.",
+    "Validate .jester/project/index.json as JSON and verify mapped paths exist.",
+    "Verify .agents/skills/jester-orchestrator/SKILL.md exists.",
+    "Verify Git status and confirm no unexpected changes."
+  ],
+  "dependencies": [],
+  "created_at": "2026-09-17T17:00:00+04:00",
+  "updated_at": "2026-09-17T21:46:00+04:00"
+}

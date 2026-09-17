@@ -1,0 +1,51 @@
+{
+  "id": "TASK-0002",
+  "title": "Add defensive self-pair validation to canonical_pair_seed",
+  "type": "feature",
+  "status": "blocked",
+  "priority": "normal",
+  "agent": "gemini",
+  "goal": "Prove that the JESTER control plane can safely execute a small real code change, verify it, and produce a structured implementation report.",
+  "scope": [
+    "backend/app/core/canonical.py",
+    "tests/core/test_canonical.py",
+    ".jester/tasks/",
+    ".jester/reports/implementations/"
+  ],
+  "constraints": [
+    "Do not modify database migrations.",
+    "Do not modify security architecture.",
+    "Do not modify authentication or authorization behavior.",
+    "Do not modify birth-data privacy boundaries.",
+    "Do not modify canonical product or architecture specifications.",
+    "Do not modify AGENTS.md.",
+    "Do not modify .agents/rules/.",
+    "Do not modify the jester-orchestrator skill.",
+    "Do not introduce new dependencies.",
+    "Do not perform unrelated refactoring.",
+    "Do not commit.",
+    "Do not push."
+  ],
+  "acceptance_criteria": [
+    "Exactly one small, justified application-code improvement is implemented.",
+    "The change is directly relevant to an existing application behavior.",
+    "Existing behavior outside the selected improvement remains unchanged.",
+    "Relevant tests or verification pass.",
+    "A factual implementation report is produced under .jester/reports/implementations/.",
+    "The task reaches review state and does not move to completed without explicit reviewer approval."
+  ],
+  "verification": [
+    "Inspect the selected file and identify the smallest reasonable improvement.",
+    "Implement the improvement without unrelated changes.",
+    "Run the narrowest relevant tests first.",
+    "Run the appropriate broader verification if required.",
+    "Inspect git diff and git status.",
+    "Confirm no prohibited files were changed.",
+    "Write the implementation report.",
+    "Move the task from active to review."
+  ],
+  "dependencies": [],
+  "blocked_reason": "Execution was manually interrupted during implementation; recovery was successful; no code changes remain; the task's original implementation scope was intentionally too open-ended for this orchestration validation; a new controlled task will be used instead.",
+  "created_at": "2026-09-17T21:51:00+04:00",
+  "updated_at": "2026-09-17T21:56:00+04:00"
+}
