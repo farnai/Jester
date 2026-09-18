@@ -226,6 +226,15 @@
       background-color: #f87171;
     }
 
+    .btn-warning {
+      background-color: var(--accent-amber);
+      color: #000;
+      font-weight: 700;
+    }
+    .btn-warning:hover {
+      background-color: #d97706;
+    }
+
     .btn-secondary {
       background-color: var(--bg-card);
       color: var(--text-main);
@@ -481,6 +490,30 @@
       font-weight: 800;
     }
 
+    .timeline-step.rework .timeline-node {
+      border-color: var(--accent-amber);
+      background-color: var(--accent-amber);
+      color: #000;
+      box-shadow: 0 0 10px var(--accent-amber);
+    }
+
+    .timeline-step.rework .timeline-label {
+      color: var(--accent-amber);
+      font-weight: 800;
+    }
+
+    .timeline-step.failed .timeline-node {
+      border-color: var(--accent-red);
+      background-color: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 10px var(--accent-red);
+    }
+
+    .timeline-step.failed .timeline-label {
+      color: var(--accent-red);
+      font-weight: 800;
+    }
+
     /* Human Signoff Callout Gate */
     .signoff-gate-banner {
       margin: 14px 24px 0 24px;
@@ -724,7 +757,7 @@
         <form id="taskForm" onsubmit="handleTaskSubmit(event)">
           <div class="form-group">
             <label for="taskIntent">Natural Language Request</label>
-            <textarea id="taskIntent" placeholder="e.g. Add a health check endpoint for bridge services" required></textarea>
+            <textarea id="taskIntent" placeholder="What do you want JESTER to do? (e.g. Create a simple test that verifies the health endpoint returns status ok)" required></textarea>
           </div>
           <div class="form-group">
             <div class="input-row">
@@ -737,6 +770,12 @@
                 <input type="text" id="taskScope" placeholder="Auto-detect" />
               </div>
             </div>
+          </div>
+          <div class="form-group">
+            <label for="taskRuntime">Target Runtime (Optional)</label>
+            <select id="taskRuntime" style="width: 100%; background: #030712; border: 1px solid var(--border); color: var(--text-main); padding: 6px 8px; border-radius: 4px; font-size: 12px;">
+              <option value="">Auto-select (Default)</option>
+            </select>
           </div>
           <button type="submit" id="submitBtn" class="btn btn-primary btn-full">
             <span>⚡ Dispatch to Bridge</span>
@@ -790,12 +829,32 @@
             <span class="meta-value" id="viewRole">—</span>
           </div>
           <div class="meta-item">
+            <span class="meta-label">Agent</span>
+            <span class="meta-value" id="viewAgent">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Provider</span>
+            <span class="meta-value" id="viewProvider">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Runtime</span>
+            <span class="meta-value" id="viewRuntime">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Model</span>
+            <span class="meta-value" id="viewModel">—</span>
+          </div>
+          <div class="meta-item">
             <span class="meta-label">Verification</span>
             <span class="meta-value" id="viewVerificationStatus">—</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Review Verdict</span>
             <span class="meta-value" id="viewReviewVerdict">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Rework Cycles</span>
+            <span class="meta-value" id="viewReworkCount">0</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Total Tokens</span>
@@ -825,12 +884,16 @@
             <div class="timeline-node">5</div>
             <span class="timeline-label">Review</span>
           </div>
-          <div class="timeline-step" id="step-signoff">
+          <div class="timeline-step" id="step-rework">
             <div class="timeline-node">6</div>
+            <span class="timeline-label">Rework</span>
+          </div>
+          <div class="timeline-step" id="step-signoff">
+            <div class="timeline-node">7</div>
             <span class="timeline-label">Signoff</span>
           </div>
           <div class="timeline-step" id="step-delivery">
-            <div class="timeline-node">7</div>
+            <div class="timeline-node">8</div>
             <span class="timeline-label">Git</span>
           </div>
         </div>
@@ -845,6 +908,17 @@
         <div class="gate-actions">
           <button class="btn btn-success" onclick="openSignoffModal('approve')">✓ APPROVE &amp; COMMIT</button>
           <button class="btn btn-danger" onclick="openSignoffModal('reject')">✕ REJECT / REWORK</button>
+        </div>
+      </div>
+
+      <!-- Rework Required Callout Banner -->
+      <div id="reworkBanner" class="signoff-gate-banner" style="display: none; border-color: var(--accent-amber); background: linear-gradient(90deg, #382404 0%, #1f1d24 100%);">
+        <div class="gate-message">
+          <h3 style="color: var(--accent-amber);">🔄 REWORK REQUIRED</h3>
+          <p>The Reviewer or human sign-off requested rework for this task. You can trigger a new controlled rework cycle.</p>
+        </div>
+        <div class="gate-actions">
+          <button class="btn btn-warning" onclick="handleReworkTrigger()">🔄 Trigger Rework Cycle</button>
         </div>
       </div>
 
@@ -866,6 +940,10 @@
         <div id="tab-diff" class="panel active">
           <div class="card-panel">
             <h4>Code Modifications (Unified Diff)</h4>
+            <div id="filesModifiedBox" style="margin-bottom: 12px; font-size: 12px; color: var(--text-main); background: #030712; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border);">
+              <strong style="color: var(--text-muted); text-transform: uppercase; font-size: 11px; margin-right: 8px;">Files Modified:</strong>
+              <span id="viewFilesModified" style="color: var(--accent-cyan);">None</span>
+            </div>
             <div id="diffViewer" class="code-block">No code diff available for this execution.</div>
           </div>
         </div>
@@ -1023,8 +1101,30 @@
       }
     }
 
+    async function loadRuntimes() {
+      try {
+        const res = await fetch('/api/runtimes');
+        if (!res.ok) return;
+        const data = await res.json();
+        const sel = document.getElementById('taskRuntime');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Auto-select (Default)</option>';
+        if (data && data.runtimes) {
+          data.runtimes.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.runtime_id;
+            opt.innerText = `${r.account_label || r.runtime_id} [${r.model}] (${r.status})`;
+            sel.appendChild(opt);
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load runtimes", e);
+      }
+    }
+
     async function init() {
       await checkHealth();
+      await loadRuntimes();
       await loadExecutions();
       const params = new URLSearchParams(window.location.search);
       const urlExecId = params.get('exec_id');
@@ -1114,7 +1214,14 @@
       }
       document.getElementById('viewExecId').innerText = rec.execution_id;
       document.getElementById('viewCurrentStage').innerText = rec.current_stage || '—';
-      document.getElementById('viewRole').innerText = rec.overall_status === 'COMPLETED' ? 'reviewer' : 'executor';
+
+      const runtimeInfo = data.active_runtime || {};
+      document.getElementById('viewRole').innerText = runtimeInfo.role || (rec.overall_status === 'COMPLETED' ? 'reviewer' : 'executor');
+      document.getElementById('viewAgent').innerText = runtimeInfo.agent_id || '—';
+      document.getElementById('viewProvider').innerText = runtimeInfo.provider || '—';
+      document.getElementById('viewRuntime').innerText = runtimeInfo.runtime_id || runtimeInfo.runtime_type || '—';
+      document.getElementById('viewModel').innerText = runtimeInfo.model || '—';
+      document.getElementById('viewReworkCount').innerText = data.rework_count != null ? data.rework_count : 0;
       document.getElementById('viewTokens').innerText = rec.total_tokens ? rec.total_tokens.toLocaleString() : '—';
 
       // Status Badge
@@ -1145,12 +1252,29 @@
       // Timeline Steps
       updateTimeline(rec.current_stage, rec.overall_status);
 
-      // Human Signoff Gate Callout
+      // Human Signoff Gate Callout Banner & Rework Banner
       const gateBanner = document.getElementById('signoffGateBanner');
+      const reworkBanner = document.getElementById('reworkBanner');
       if (rec.overall_status === 'AWAITING_HUMAN_SIGNOFF') {
         gateBanner.style.display = 'flex';
+        if (reworkBanner) reworkBanner.style.display = 'none';
+      } else if (rec.overall_status === 'REWORK_REQUIRED') {
+        gateBanner.style.display = 'none';
+        if (reworkBanner) reworkBanner.style.display = 'flex';
       } else {
         gateBanner.style.display = 'none';
+        if (reworkBanner) reworkBanner.style.display = 'none';
+      }
+
+      // Files Modified List
+      const filesMod = data.files_modified || [];
+      const filesEl = document.getElementById('viewFilesModified');
+      if (filesEl) {
+        if (filesMod.length > 0) {
+          filesEl.innerHTML = filesMod.map(f => `<code style="background: rgba(6,182,212,0.1); padding: 2px 6px; border-radius: 4px; margin-right: 6px;">${escapeHtml(f)}</code>`).join(' ');
+        } else {
+          filesEl.innerText = 'None';
+        }
       }
 
       // Diff
@@ -1229,44 +1353,75 @@
     }
 
     function updateTimeline(stage, overallStatus) {
-      const steps = ['inbox', 'architect', 'executor', 'verification', 'reviewer', 'signoff', 'delivery'];
+      const steps = ['inbox', 'architect', 'executor', 'verification', 'reviewer', 'rework', 'signoff', 'delivery'];
       steps.forEach(s => {
         const el = document.getElementById(`step-${s}`);
-        el.className = 'timeline-step';
+        if (el) el.className = 'timeline-step';
       });
 
       const s = (stage || '').toLowerCase();
       const status = (overallStatus || '').toLowerCase();
 
+      const markDone = (stepName) => {
+        const el = document.getElementById(`step-${stepName}`);
+        if (el) el.classList.add('completed');
+      };
+      const markActive = (stepName) => {
+        const el = document.getElementById(`step-${stepName}`);
+        if (el) el.classList.add('active');
+      };
+      const markFailed = (stepName) => {
+        const el = document.getElementById(`step-${stepName}`);
+        if (el) el.classList.add('failed');
+      };
+
+      if (status.includes('blocked') || status.includes('fail')) {
+        if (s.includes('preflight') || s.includes('inbox')) {
+          markFailed('inbox');
+        } else if (s.includes('architect')) {
+          markDone('inbox');
+          markFailed('architect');
+        } else if (s.includes('executor') || s.includes('active')) {
+          markDone('inbox'); markDone('architect');
+          markFailed('executor');
+        } else if (s.includes('verification')) {
+          markDone('inbox'); markDone('architect'); markDone('executor');
+          markFailed('verification');
+        } else if (s.includes('reviewer') || s.includes('review')) {
+          markDone('inbox'); markDone('architect'); markDone('executor'); markDone('verification');
+          markFailed('reviewer');
+        } else {
+          markDone('inbox');
+          markFailed('executor');
+        }
+        return;
+      }
+
       if (s.includes('inbox') || s.includes('preflight')) {
-        document.getElementById('step-inbox').classList.add('active');
+        markActive('inbox');
       } else if (s.includes('architect')) {
-        document.getElementById('step-inbox').classList.add('completed');
-        document.getElementById('step-architect').classList.add('active');
+        markDone('inbox');
+        markActive('architect');
       } else if (s.includes('executor') || s.includes('active')) {
-        document.getElementById('step-inbox').classList.add('completed');
-        document.getElementById('step-architect').classList.add('completed');
-        document.getElementById('step-executor').classList.add('active');
+        markDone('inbox'); markDone('architect');
+        markActive('executor');
       } else if (s.includes('verification')) {
-        document.getElementById('step-inbox').classList.add('completed');
-        document.getElementById('step-architect').classList.add('completed');
-        document.getElementById('step-executor').classList.add('completed');
-        document.getElementById('step-verification').classList.add('active');
-      } else if (s.includes('review')) {
-        document.getElementById('step-inbox').classList.add('completed');
-        document.getElementById('step-architect').classList.add('completed');
-        document.getElementById('step-executor').classList.add('completed');
-        document.getElementById('step-verification').classList.add('completed');
-        document.getElementById('step-reviewer').classList.add('active');
+        markDone('inbox'); markDone('architect'); markDone('executor');
+        markActive('verification');
+      } else if (s.includes('review') && !status.includes('rework') && !status.includes('awaiting')) {
+        markDone('inbox'); markDone('architect'); markDone('executor'); markDone('verification');
+        markActive('reviewer');
+      } else if (status.includes('rework_required') || s.includes('rework')) {
+        markDone('inbox'); markDone('architect'); markDone('executor'); markDone('verification'); markDone('reviewer');
+        const reworkEl = document.getElementById('step-rework');
+        if (reworkEl) reworkEl.classList.add('rework');
       } else if (status.includes('awaiting_human_signoff')) {
-        ['inbox', 'architect', 'executor', 'verification', 'reviewer'].forEach(x => {
-          document.getElementById(`step-${x}`).classList.add('completed');
-        });
-        document.getElementById('step-signoff').classList.add('awaiting');
+        markDone('inbox'); markDone('architect'); markDone('executor'); markDone('verification'); markDone('reviewer');
+        markDone('rework');
+        const signoffEl = document.getElementById('step-signoff');
+        if (signoffEl) signoffEl.classList.add('awaiting');
       } else if (status.includes('completed')) {
-        steps.forEach(x => {
-          document.getElementById(`step-${x}`).classList.add('completed');
-        });
+        steps.forEach(x => markDone(x));
       }
     }
 
@@ -1276,21 +1431,26 @@
       const taskId = document.getElementById('taskIdInput').value.trim() || null;
       const scopeStr = document.getElementById('taskScope').value.trim();
       const scope = scopeStr ? scopeStr.split(',').map(s => s.trim()) : null;
+      const targetRuntime = document.getElementById('taskRuntime')?.value || null;
 
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
       submitBtn.innerText = 'Submitting...';
 
       try {
+        const payload = {
+          intent: intent,
+          task_id: taskId,
+          scope: scope,
+          sync: false,
+        };
+        if (targetRuntime) {
+          payload.target_runtime_id = targetRuntime;
+        }
         const res = await fetch('/api/tasks', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            intent: intent,
-            task_id: taskId,
-            scope: scope,
-            sync: false
-          })
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (res.ok) {
@@ -1306,6 +1466,29 @@
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = '⚡ Dispatch to Bridge';
+      }
+    }
+
+    async function handleReworkTrigger() {
+      if (!currentExecId) return;
+      if (!confirm("Trigger a new controlled rework cycle for this task?")) return;
+      try {
+        const res = await fetch(`/api/executions/${currentExecId}/rework`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rework_feedback: "Founder initiated rework cycle via Local Interface.",
+            sync: false
+          })
+        });
+        if (res.ok) {
+          setTimeout(() => loadExecutionDetails(currentExecId), 500);
+        } else {
+          const data = await res.json();
+          alert("Rework trigger failed: " + (data.detail || "Unknown error"));
+        }
+      } catch (e) {
+        alert("Network error triggering rework: " + e.message);
       }
     }
 

@@ -76,7 +76,7 @@ class CLIRuntimeAdapter(AgentProvider):
         cli_profile: Optional[str] = None,
         allowed_executables: Optional[Set[str]] = None,
         extra_env: Optional[Dict[str, str]] = None,
-        timeout: float = 60.0,
+        timeout: float = 120.0,
         supported_capabilities: Optional[Set[str]] = None,
         runner_fn: Optional[Callable[..., Any]] = None,
     ):

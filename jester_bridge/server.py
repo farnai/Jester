@@ -56,6 +56,9 @@ class TaskCreateRequest(BaseModel):
     auto_apply: bool = True
     simulate_all: bool = False
     sync: bool = False
+    target_runtime_id: Optional[str] = None
+    target_account: Optional[str] = None
+    role_bindings: Optional[Dict[str, str]] = None
 
 
 class HumanSignoffRequest(BaseModel):
@@ -243,6 +246,9 @@ def create_bridge_app(
             r.core.register_provider(GoogleProvider())
             r.core._simulated = False
 
+        if req.role_bindings and r.core and hasattr(r.core, "config") and r.core.config:
+            r.core.config.role_bindings.update(req.role_bindings)
+
         def _execute():
             try:
                 outcome = r.run_e2e_workflow(
@@ -254,6 +260,8 @@ def create_bridge_app(
                     verification=req.verification,
                     auto_apply=req.auto_apply,
                     check_credentials=not req.simulate_all,
+                    target_runtime_id=req.target_runtime_id,
+                    target_account=req.target_account,
                 )
                 with _session_lock:
                     if outcome.execution_id:
@@ -273,6 +281,8 @@ def create_bridge_app(
                 verification=req.verification,
                 auto_apply=req.auto_apply,
                 check_credentials=not req.simulate_all,
+                target_runtime_id=req.target_runtime_id,
+                target_account=req.target_account,
             )
             with _session_lock:
                 if outcome.execution_id:
@@ -442,11 +452,65 @@ def create_bridge_app(
             if session.reviewer_handoff:
                 handoffs["reviewer"] = session.reviewer_handoff.model_dump()
 
+        # Resolve files_modified from all available sources
+        files_modified = []
+        if outcome and outcome.runtime_result and outcome.runtime_result.files_modified:
+            files_modified = outcome.runtime_result.files_modified
+        elif session and session.executor_result and session.executor_result.files_modified:
+            files_modified = session.executor_result.files_modified
+        elif session and session.executor_handoff and session.executor_handoff.files_modified:
+            files_modified = session.executor_handoff.files_modified
+        elif record.metadata and "files_modified" in record.metadata:
+            files_modified = record.metadata.get("files_modified") or []
+        elif diff_content:
+            diff_files = re.findall(r"^\+\+\+\s+(?:b/)?([^\s]+)", diff_content, flags=re.MULTILINE)
+            files_modified = sorted(list(set(f for f in diff_files if f != "/dev/null")))
+
+        # Resolve rework_count
+        rework_count = session.rework_count if session else (record.metadata.get("rework_count", 0) if record.metadata else 0)
+
+        # Resolve active runtime metadata
+        active_runtime = {
+            "role": "executor",
+            "agent_id": None,
+            "provider": None,
+            "runtime_id": None,
+            "runtime_type": None,
+            "account_id": None,
+            "model": None,
+        }
+        for ev in reversed(events):
+            if ev.provider or ev.model or (ev.metadata and "runtime_id" in ev.metadata):
+                active_runtime["role"] = ev.role or active_runtime["role"]
+                active_runtime["agent_id"] = ev.agent_id
+                active_runtime["provider"] = ev.provider
+                active_runtime["model"] = ev.model
+                if ev.metadata:
+                    active_runtime["runtime_id"] = ev.metadata.get("runtime_id")
+                    active_runtime["runtime_type"] = ev.metadata.get("runtime_type")
+                    active_runtime["account_id"] = ev.metadata.get("account_id")
+                break
+
+        if not active_runtime["provider"] and record.metadata and "runtimes" in record.metadata:
+            runtimes_map = record.metadata.get("runtimes", {})
+            for role_name in ("executor", "reviewer", "architect"):
+                if role_name in runtimes_map:
+                    rm = runtimes_map[role_name]
+                    active_runtime["role"] = role_name
+                    active_runtime["runtime_id"] = rm.get("runtime_id")
+                    active_runtime["runtime_type"] = rm.get("runtime_type")
+                    active_runtime["account_id"] = rm.get("account_id")
+                    active_runtime["model"] = rm.get("model")
+                    break
+
         return {
             "record": record.model_dump(),
             "summary": summary,
             "events": [e.model_dump() for e in events],
             "diff": diff_content,
+            "files_modified": files_modified,
+            "rework_count": rework_count,
+            "active_runtime": active_runtime,
             "reviewer_feedback": reviewer_feedback,
             "handoffs": handoffs,
             "is_awaiting_signoff": record.overall_status == OrchestrationStage.AWAITING_HUMAN_SIGNOFF.value,

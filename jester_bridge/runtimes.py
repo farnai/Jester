@@ -250,7 +250,7 @@ class RuntimeRegistry:
 def create_antigravity_runtime(
     account_id: str = "google-ai-pro",
     account_label: str = "Google AI Pro (Antigravity CLI)",
-    model: str = "gemini-3.8-flash-high",
+    model: str = "gemini-3.8-flash-low",
     priority: int = 5,
     adapter: Optional[Any] = None,
     capabilities: Optional[Set[str]] = None,

@@ -237,11 +237,14 @@ class BridgeCore:
             runtime_type = runtime.runtime_type.value
             account_id = runtime.account.account_id
             routing_reason = routing.reason
-            model_name = (
-                agent.model
-                if (agent.model and agent.model != "default")
-                else (runtime.model or agent.model or "default")
-            )
+            if runtime.runtime_type == RuntimeType.CLI and runtime.model and (not agent.model or agent.model in ("default", "gemini-2.5-pro", "gemini-1.5-pro")):
+                model_name = runtime.model
+            else:
+                model_name = (
+                    agent.model
+                    if (agent.model and agent.model != "default")
+                    else (runtime.model or agent.model or "default")
+                )
         else:
             # Fallback if no matching runtimes were found in registry or direct provider
             provider = self.resolve_provider(agent)

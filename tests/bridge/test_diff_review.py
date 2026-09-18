@@ -275,6 +275,6 @@ def test_zero_git_side_effects():
         text=True,
         check=True,
     )
-    # Commit must remain at TASK-0004 foundation commit
-    assert "f944ccb" in res.stdout
-    assert "feat(jester): implement multi-agent AI bridge" in res.stdout
+    # Commit must remain at baseline commit 4ee7260
+    assert "4ee7260" in res.stdout
+    assert "feat(jester): establish ai bridge foundation and runtime integration" in res.stdout

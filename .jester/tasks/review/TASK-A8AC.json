@@ -1,0 +1,30 @@
+{
+  "id": "TASK-A8AC",
+  "title": "Task: Create a new file at tests/bridge/task_0011_ui_e2e_probe.py ",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "code_generation",
+    "reasoning"
+  ],
+  "goal": "Create a new file at tests/bridge/task_0011_ui_e2e_probe.py containing a single pytest test that verifies the value 2 + 2 equals 4.\n\nDo not modify any existing files.\nDo not modify application code.\nDo not modify .jester historical task files.\nDo not modify configuration files.\nDo not commit or push anything.\n\nAcceptance criteria:\n1. Create only tests/bridge/task_0011_ui_e2e_probe.py.\n2. The file contains one simple pytest test.\n3. The test passes.\n4. The generated diff contains only this new file.\n5. Reviewer should confirm the change is minimal and correct.\n6. Execution must reach AWAITING_HUMAN_SIGNOFF.\n7. Do not perform Git commit or push automatically.",
+  "scope": [
+    "components/task-a8ac/"
+  ],
+  "constraints": [
+    "Preserve repository invariants",
+    "Do not modify migrations"
+  ],
+  "acceptance_criteria": [
+    "Verification commands succeed"
+  ],
+  "verification": [
+    "pytest tests/bridge"
+  ],
+  "dependencies": [],
+  "created_at": "",
+  "updated_at": "2026-09-17T23:15:52.451428+00:00"
+}

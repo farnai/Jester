@@ -466,3 +466,103 @@ def test_sensitive_credential_redaction(tmp_path):
     assert "sk-proj-" not in clean
     assert "[REDACTED_API_KEY]" in clean
     assert "[REDACTED_TOKEN]" in clean
+
+
+def test_task_0017_ui_html_contains_runtime_and_rework_controls(tmp_path):
+    """Verifies that GET / renders all TASK-0017 controls: runtime selector, rework timeline step, and metadata fields."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    res = client.get("/")
+    assert res.status_code == 200
+    html = res.text
+    # Task intake enhancements
+    assert 'id="taskRuntime"' in html
+    assert "What do you want JESTER to do?" in html
+    # Active execution metadata items
+    assert 'id="viewAgent"' in html
+    assert 'id="viewProvider"' in html
+    assert 'id="viewRuntime"' in html
+    assert 'id="viewModel"' in html
+    assert 'id="viewReworkCount"' in html
+    assert 'id="viewFilesModified"' in html
+    # Rework timeline and banner
+    assert 'id="step-rework"' in html
+    assert 'id="reworkBanner"' in html
+    assert "Trigger Rework Cycle" in html
+
+
+def test_task_0017_task_create_with_target_runtime_and_role_bindings(tmp_path):
+    """Verifies that POST /api/tasks accepts target_runtime_id and role_bindings and applies them."""
+    client, runner, _, _, _ = _setup_test_env(tmp_path)
+    payload = {
+        "intent": "Task intake with explicit runtime and role bindings",
+        "task_id": "TASK-F017-1",
+        "scope": ["src/founder_test.py"],
+        "verification": ["python -c \"print('ok')\""],
+        "sync": True,
+        "target_runtime_id": "test-runtime-id",
+        "role_bindings": {"executor": "gemini-dev"},
+    }
+    res = client.post("/api/tasks", json=payload)
+    assert res.status_code == 201
+    data = res.json()
+    assert data["task_id"] == "TASK-F017-1"
+    assert data["execution_id"] is not None
+    assert runner.core.config.role_bindings["executor"] == "gemini-dev"
+
+
+def test_task_0017_execution_details_surfaces_active_runtime_and_files_modified(tmp_path):
+    """Verifies that GET /api/executions/{id} returns enriched active_runtime and files_modified fields."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    create_res = client.post("/api/tasks", json={
+        "intent": "Verify execution details enrichment",
+        "task_id": "TASK-F017-2",
+        "scope": ["src/founder_test.py"],
+        "verification": ["python -c \"print('ok')\""],
+        "sync": True,
+    })
+    exec_id = create_res.json()["execution_id"]
+
+    res = client.get(f"/api/executions/{exec_id}")
+    assert res.status_code == 200
+    details = res.json()
+    assert "active_runtime" in details
+    assert "files_modified" in details
+    assert "rework_count" in details
+    assert isinstance(details["files_modified"], list)
+    assert details["rework_count"] == 0
+    assert details["active_runtime"]["provider"] in ["google", "openai", None]
+
+
+def test_task_0017_reviewer_pass_strictly_halts_at_awaiting_human_signoff(tmp_path):
+    """Verifies that Reviewer PASS strictly halts at AWAITING_HUMAN_SIGNOFF and does NOT complete."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    create_res = client.post("/api/tasks", json={
+        "intent": "Test signoff gate integrity",
+        "task_id": "TASK-F017-3",
+        "scope": ["src/founder_test.py"],
+        "verification": ["python -c \"print('ok')\""],
+        "sync": True,
+    })
+    exec_id = create_res.json()["execution_id"]
+    res = client.get(f"/api/executions/{exec_id}")
+    details = res.json()
+    assert details["record"]["overall_status"] == "AWAITING_HUMAN_SIGNOFF"
+    assert details["is_awaiting_signoff"] is True
+    assert details["record"]["git_commit_hash"] is None
+    assert details["record"]["git_pushed"] is None
+
+    # Verify task file is in review/, not completed/
+    review_file = tmp_path / ".jester" / "tasks" / "review" / "TASK-F017-3.json"
+    completed_file = tmp_path / ".jester" / "tasks" / "completed" / "TASK-F017-3.json"
+    assert review_file.exists()
+    assert not completed_file.exists()
+
+
+def test_task_0017_runtimes_endpoint_returns_registered_runtimes(tmp_path):
+    """Verifies that GET /api/runtimes returns registered runtimes list with status and metadata."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    res = client.get("/api/runtimes")
+    assert res.status_code == 200
+    data = res.json()
+    assert "runtimes" in data
+    assert isinstance(data["runtimes"], list)

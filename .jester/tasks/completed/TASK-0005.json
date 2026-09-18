@@ -1,0 +1,31 @@
+{
+  "id": "TASK-0005",
+  "title": "Task: Create a bridge diagnostics helper",
+  "type": "feature",
+  "status": "completed",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "code_generation",
+    "reasoning"
+  ],
+  "goal": "Create a bridge diagnostics helper",
+  "scope": [
+    "jester_bridge/diagnostics.py",
+    "tests/bridge/test_diagnostics.py"
+  ],
+  "constraints": [
+    "Preserve repository invariants",
+    "Do not modify migrations"
+  ],
+  "acceptance_criteria": [
+    "Verification commands succeed"
+  ],
+  "verification": [
+    "pytest tests/bridge/test_diagnostics.py"
+  ],
+  "dependencies": [],
+  "created_at": "",
+  "updated_at": "2026-09-17T20:56:21.992901+00:00"
+}
