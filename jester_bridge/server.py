@@ -39,6 +39,7 @@ from .google_provider import GoogleProvider
 from .openai_provider import OpenAIProvider
 from .orchestration import OrchestrationSession, OrchestrationStage, ReviewVerdict
 from .protocol import Task, load_task_from_file
+from .runtimes import RuntimeStatus
 from .testing import MockProviderA, MockProviderB
 from .workflow import ControlledWorkflowRunner, WorkflowOutcome
 
@@ -177,6 +178,13 @@ def create_bridge_app(
     def get_health():
         """Health check returning bridge readiness status."""
         provider_status = {}
+        runtimes_summary = {
+            "total_runtimes": 0,
+            "ready_runtimes_count": 0,
+            "ready_runtimes": [],
+            "primary_ready_runtime": None,
+        }
+
         if app.state.runner and app.state.runner.core:
             for pid, prov in app.state.runner.core.providers.items():
                 is_mock = isinstance(prov, (MockProviderA, MockProviderB))
@@ -185,14 +193,46 @@ def create_bridge_app(
                     "provider_type": "mock" if is_mock else "live",
                 }
 
+            if hasattr(app.state.runner.core, "runtime_registry"):
+                all_runtimes = sorted(
+                    app.state.runner.core.runtime_registry.list_runtimes(),
+                    key=lambda x: getattr(x, "priority", 100),
+                )
+                runtimes_summary["total_runtimes"] = len(all_runtimes)
+                for r in all_runtimes:
+                    try:
+                        readiness = r.check_readiness()
+                        if readiness.status == RuntimeStatus.READY:
+                            runtimes_summary["ready_runtimes_count"] += 1
+                            runtimes_summary["ready_runtimes"].append(r.runtime_id)
+                            if runtimes_summary["primary_ready_runtime"] is None:
+                                runtimes_summary["primary_ready_runtime"] = {
+                                    "runtime_id": r.runtime_id,
+                                    "provider_id": r.provider_id,
+                                    "provider": r.provider_id,
+                                    "runtime_type": r.runtime_type.value,
+                                    "account_id": r.account.account_id,
+                                    "account_label": r.account.label,
+                                    "model": r.model,
+                                }
+                    except Exception:
+                        pass
+
+        bridge_ready = (
+            runtimes_summary["ready_runtimes_count"] > 0
+            or any(p.get("healthy") for p in provider_status.values())
+        )
+
         return {
             "status": "healthy",
+            "bridge_ready": bridge_ready,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "repository": str(app.state.repo_root.name),
             "runner_ready": app.state.runner is not None,
             "git_ready": app.state.git_controller is not None,
             "history_ready": app.state.history_store is not None,
             "providers": provider_status,
+            "runtimes_summary": runtimes_summary,
         }
 
     @app.get("/api/runtimes")
@@ -205,6 +245,7 @@ def create_bridge_app(
                 runtimes_data.append({
                     "runtime_id": r.runtime_id,
                     "provider_id": r.provider_id,
+                    "provider": r.provider_id,
                     "runtime_type": r.runtime_type.value,
                     "account_id": r.account.account_id,
                     "account_label": r.account.label,
@@ -264,14 +305,11 @@ def create_bridge_app(
                     target_account=req.target_account,
                 )
                 with _session_lock:
-                    if outcome.execution_id:
-                        _active_sessions[outcome.execution_id] = outcome.session
-                        _active_outcomes[outcome.execution_id] = outcome
-            except Exception:
+                    _active_outcomes[outcome.execution_id] = outcome
+            except Exception as e:
                 pass
 
         if req.sync:
-            # Synchronous execution (useful for testing and deterministic inspection)
             outcome = r.run_e2e_workflow(
                 intent=req.intent,
                 target_task_id=task_id,
@@ -289,13 +327,12 @@ def create_bridge_app(
                     _active_sessions[outcome.execution_id] = outcome.session
                     _active_outcomes[outcome.execution_id] = outcome
             return {
-                "task_id": task_id,
+                "task_id": outcome.task_id,
                 "execution_id": outcome.execution_id,
                 "stage": outcome.stage.value if hasattr(outcome.stage, "value") else str(outcome.stage),
                 "error": outcome.error_message,
             }
         else:
-            # Asynchronous background thread execution
             worker_thread = threading.Thread(target=_execute, daemon=True)
             worker_thread.start()
             with _session_lock:
@@ -357,28 +394,105 @@ def create_bridge_app(
         raise HTTPException(status_code=404, detail=f"Task '{task_id}' not found in .jester/tasks/")
 
     @app.get("/api/executions")
-    def list_executions(limit: int = Query(50, ge=1, le=200)):
-        """Lists recent execution records from Persistent Execution History."""
+    def list_executions(
+        limit: int = Query(50, ge=1, le=200),
+        status: Optional[str] = Query(None, description="Filter by status (all, active, needs_signoff, completed, failed)"),
+        task_id: Optional[str] = Query(None, description="Filter by task ID"),
+    ):
+        """Lists recent execution records from Persistent Execution History with categorization and filtering."""
         s: ExecutionHistoryStore = app.state.history_store
-        records = s.list_recent_executions(limit=limit)
+        if task_id:
+            records = s.get_executions_for_task(task_id=task_id, limit=limit)
+        else:
+            records = s.list_recent_executions(limit=limit)
+
+        active_stages = {"pending", "architect", "executor", "verification", "reviewer", "active", "rework_required"}
+        counts = {
+            "all": len(records),
+            "active": 0,
+            "needs_signoff": 0,
+            "completed": 0,
+            "failed": 0,
+        }
+        awaiting_signoff_ids = []
+
+        for r in records:
+            st = (r.overall_status or "").upper()
+            st_raw = (r.overall_status or "").lower()
+            if st == "AWAITING_HUMAN_SIGNOFF":
+                counts["needs_signoff"] += 1
+                awaiting_signoff_ids.append(r.execution_id)
+            elif st == "COMPLETED":
+                counts["completed"] += 1
+            elif st in ("FAILED", "BLOCKED"):
+                counts["failed"] += 1
+            elif st_raw in active_stages or (r.current_stage and r.current_stage.lower() in active_stages):
+                counts["active"] += 1
+
+        filtered_records = records
+        if status and status.lower() != "all":
+            stat_low = status.lower()
+            if stat_low in ("needs_signoff", "signoff", "awaiting_human_signoff"):
+                filtered_records = [r for r in records if (r.overall_status or "").upper() == "AWAITING_HUMAN_SIGNOFF"]
+            elif stat_low == "completed":
+                filtered_records = [r for r in records if (r.overall_status or "").upper() == "COMPLETED"]
+            elif stat_low in ("failed", "blocked"):
+                filtered_records = [r for r in records if (r.overall_status or "").upper() in ("FAILED", "BLOCKED")]
+            elif stat_low == "active":
+                filtered_records = [r for r in records if (r.overall_status or "").lower() in active_stages or (r.current_stage and r.current_stage.lower() in active_stages)]
+
+        # Group records by task_id to identify multiple runs
+        task_runs: Dict[str, List[str]] = {}
+        for r in records:
+            if r.task_id not in task_runs:
+                task_runs[r.task_id] = []
+            task_runs[r.task_id].append(r.execution_id)
+
+        items = []
+        for r in filtered_records:
+            all_for_task = task_runs.get(r.task_id, [])
+            total_runs_for_task = len(all_for_task)
+            try:
+                run_index = total_runs_for_task - all_for_task.index(r.execution_id)
+            except ValueError:
+                run_index = 1
+
+            meta = r.metadata or {}
+            runtimes_meta = meta.get("runtimes", {})
+            runtime_id = meta.get("runtime_id")
+            model_name = meta.get("model")
+            for stage_key in ("reviewer", "executor", "architect"):
+                if stage_key in runtimes_meta:
+                    runtime_id = runtimes_meta[stage_key].get("runtime_id") or runtime_id
+                    model_name = runtimes_meta[stage_key].get("model") or model_name
+                    if runtime_id:
+                        break
+
+            items.append({
+                "execution_id": r.execution_id,
+                "task_id": r.task_id,
+                "task_title": r.task_title,
+                "overall_status": r.overall_status,
+                "current_stage": r.current_stage,
+                "created_at": r.created_at,
+                "completed_at": r.completed_at,
+                "verification_passed": r.verification_passed,
+                "reviewer_verdict": r.reviewer_verdict,
+                "human_signoff_by": r.human_signoff_by,
+                "git_commit_hash": r.git_commit_hash,
+                "total_tokens": r.total_tokens,
+                "error_message": _sanitize_sensitive_strings(r.error_message),
+                "run_index": run_index,
+                "total_runs": total_runs_for_task,
+                "runtime_id": runtime_id,
+                "model": model_name,
+            })
+
         return {
-            "executions": [
-                {
-                    "execution_id": r.execution_id,
-                    "task_id": r.task_id,
-                    "task_title": r.task_title,
-                    "overall_status": r.overall_status,
-                    "current_stage": r.current_stage,
-                    "created_at": r.created_at,
-                    "completed_at": r.completed_at,
-                    "verification_passed": r.verification_passed,
-                    "reviewer_verdict": r.reviewer_verdict,
-                    "human_signoff_by": r.human_signoff_by,
-                    "git_commit_hash": r.git_commit_hash,
-                    "total_tokens": r.total_tokens,
-                }
-                for r in records
-            ]
+            "executions": items,
+            "counts": counts,
+            "has_awaiting_signoff": counts["needs_signoff"] > 0,
+            "awaiting_signoff_ids": awaiting_signoff_ids,
         }
 
     @app.get("/api/executions/latest")

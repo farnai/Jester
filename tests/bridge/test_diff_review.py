@@ -42,6 +42,14 @@ from jester_bridge.runtime import (
 from jester_bridge.testing import MockProviderA, MockProviderB
 from jester_bridge.workflow import ControlledWorkflowRunner
 
+# Capture baseline repository HEAD at test module start
+_INITIAL_HEAD = subprocess.run(
+    ["git", "rev-parse", "HEAD"],
+    capture_output=True,
+    text=True,
+    check=True,
+).stdout.strip()
+
 
 def test_unified_diff_generation(tmp_path: Path):
     runtime = BoundedWorkspaceRuntime(repo_root=tmp_path)
@@ -269,12 +277,22 @@ def test_workflow_generates_diff_in_reports(tmp_path: Path):
 
 def test_zero_git_side_effects():
     """TEST 9: Verifies that no git operations (commit, push, stage) were triggered."""
-    res = subprocess.run(
-        ["git", "log", "-1", "--oneline"],
+    current_head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
         capture_output=True,
         text=True,
         check=True,
-    )
-    # Commit must remain at baseline commit 4ee7260
-    assert "4ee7260" in res.stdout
-    assert "feat(jester): establish ai bridge foundation and runtime integration" in res.stdout
+    ).stdout.strip()
+
+    # Commit must remain unchanged from baseline
+    assert current_head == _INITIAL_HEAD
+    assert len(current_head) == 40
+
+    # No files should have been staged in the repository
+    staged = subprocess.run(
+        ["git", "diff", "--staged", "--name-only"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    assert staged == ""

@@ -566,3 +566,248 @@ def test_task_0017_runtimes_endpoint_returns_registered_runtimes(tmp_path):
     data = res.json()
     assert "runtimes" in data
     assert isinstance(data["runtimes"], list)
+
+
+# ---------------------------------------------------------------------------
+# TASK-0018 Tests: Execution History & Runtime State UX
+# ---------------------------------------------------------------------------
+
+def test_task_0018_health_endpoint_distinguishes_provider_and_runtime_readiness(tmp_path):
+    """Verifies that /api/health returns runtimes_summary and bridge_ready independently of direct provider health."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    res = client.get("/api/health")
+    assert res.status_code == 200
+    data = res.json()
+    assert "runtimes_summary" in data
+    assert "bridge_ready" in data
+    assert "providers" in data
+    summary = data["runtimes_summary"]
+    assert "total_runtimes" in summary
+    assert "ready_runtimes_count" in summary
+    assert "ready_runtimes" in summary
+    assert "primary_ready_runtime" in summary
+
+
+def test_task_0018_antigravity_runtime_readiness_truthful_when_provider_api_unconfigured(tmp_path):
+    """Verifies that an authenticated Antigravity CLI runtime produces bridge_ready=True even if direct API keys are unconfigured."""
+    from jester_bridge.runtimes import (
+        AccountIdentity,
+        AuthReference,
+        AuthType,
+        RuntimeEntry,
+        RuntimeReadiness,
+        RuntimeStatus,
+        RuntimeType,
+    )
+    client, runner, _, _, _ = _setup_test_env(tmp_path)
+
+    # Force direct provider API check to return unconfigured (healthy=False)
+    for p in runner.core.providers.values():
+        p.health_check = MagicMock(return_value=False)
+
+    # Register Antigravity CLI runtime entry with Google AI Pro
+    mock_adapter = MagicMock()
+    mock_adapter.check_readiness.return_value = RuntimeReadiness(
+        status=RuntimeStatus.READY,
+        message="Antigravity CLI verified and authenticated (Google AI Pro).",
+    )
+
+    antigravity_entry = RuntimeEntry(
+        runtime_id="google-antigravity-cli",
+        provider_id="google",
+        runtime_type=RuntimeType.CLI,
+        account=AccountIdentity(
+            account_id="google-ai-pro",
+            label="Google AI Pro",
+            provider="google",
+            auth_ref=AuthReference(auth_type=AuthType.CLI_PROFILE),
+        ),
+        model="gemini-3.8-flash-low",
+        capabilities={"code_generation", "planning", "reasoning", "repository_read"},
+        priority=10,
+        provider_adapter=mock_adapter,
+    )
+
+    runner.core.register_runtime(antigravity_entry)
+
+    # Check /api/health
+    res_health = client.get("/api/health")
+    assert res_health.status_code == 200
+    health_data = res_health.json()
+
+    # Direct providers are unconfigured
+    assert health_data["providers"]["openai"]["healthy"] is False
+    assert health_data["providers"]["google"]["healthy"] is False
+
+    # But bridge is READY because Antigravity CLI runtime is ready!
+    assert health_data["bridge_ready"] is True
+    summary = health_data["runtimes_summary"]
+    assert summary["ready_runtimes_count"] >= 1
+    assert "google-antigravity-cli" in summary["ready_runtimes"]
+    primary = summary["primary_ready_runtime"]
+    assert primary is not None
+    assert primary["runtime_id"] == "google-antigravity-cli"
+    assert primary["account_label"] == "Google AI Pro"
+    assert primary["model"] == "gemini-3.8-flash-low"
+
+    # Check /api/runtimes exposes it with status READY
+    res_runtimes = client.get("/api/runtimes")
+    assert res_runtimes.status_code == 200
+    runtimes = res_runtimes.json()["runtimes"]
+    cli_item = next(r for r in runtimes if r["runtime_id"] == "google-antigravity-cli")
+    assert cli_item["status"] == "READY"
+    assert cli_item["account_label"] == "Google AI Pro"
+    assert cli_item["model"] == "gemini-3.8-flash-low"
+    assert "provider" in cli_item
+
+
+def test_task_0018_runtimes_endpoint_exposes_metadata_without_secrets(tmp_path):
+    """Verifies /api/runtimes exposes registered runtime readiness and metadata with zero credential leakage."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    res = client.get("/api/runtimes")
+    assert res.status_code == 200
+    data = res.json()
+    assert "runtimes" in data
+    json_text = json.dumps(data).lower()
+    for sensitive in ["api_key", "secret", "bearer", "password", "token="]:
+        assert sensitive not in json_text
+
+
+def test_task_0018_execution_history_filtering_and_counts(tmp_path):
+    """Verifies /api/executions exposes counts, supports status filtering, and flags signoff priority."""
+    client, _, store, _, _ = _setup_test_env(tmp_path)
+
+    # Record 1: Awaiting signoff
+    rec1 = ExecutionRecord(
+        execution_id="exec-signoff-1",
+        task_id="TASK-T18-1",
+        overall_status="AWAITING_HUMAN_SIGNOFF",
+        task_title="Signoff Needed Task",
+        total_tokens=1500,
+        metadata={"runtime_id": "google-antigravity-cli", "model": "gemini-3.8-flash-low"},
+    )
+    # Record 2: Completed
+    rec2 = ExecutionRecord(
+        execution_id="exec-comp-2",
+        task_id="TASK-T18-2",
+        overall_status="COMPLETED",
+        task_title="Completed Task",
+        total_tokens=2200,
+        metadata={"runtime_id": "google-antigravity-cli", "model": "gemini-3.8-flash-low"},
+    )
+    # Record 3: Failed
+    rec3 = ExecutionRecord(
+        execution_id="exec-fail-3",
+        task_id="TASK-T18-3",
+        overall_status="FAILED",
+        task_title="Failed Task",
+        total_tokens=800,
+        metadata={"runtime_id": "openai-mock", "model": "gpt-5-mock"},
+        error_message="Verification check timed out",
+    )
+    # Record 4: Active
+    rec4 = ExecutionRecord(
+        execution_id="exec-act-4",
+        task_id="TASK-T18-4",
+        overall_status="ACTIVE",
+        task_title="Active Task",
+        total_tokens=300,
+    )
+
+    store.create_execution(rec1)
+    store.create_execution(rec2)
+    store.create_execution(rec3)
+    store.create_execution(rec4)
+
+    # 1. Query all
+    res_all = client.get("/api/executions")
+    assert res_all.status_code == 200
+    data_all = res_all.json()
+    assert "counts" in data_all
+    assert data_all["counts"]["all"] >= 4
+    assert data_all["counts"]["needs_signoff"] >= 1
+    assert data_all["counts"]["completed"] >= 1
+    assert data_all["counts"]["failed"] >= 1
+    assert data_all["counts"]["active"] >= 1
+    assert data_all["has_awaiting_signoff"] is True
+    assert "exec-signoff-1" in data_all["awaiting_signoff_ids"]
+
+    # 2. Filter: needs_signoff
+    res_signoff = client.get("/api/executions?status=needs_signoff")
+    assert res_signoff.status_code == 200
+    items_signoff = res_signoff.json()["executions"]
+    assert any(i["execution_id"] == "exec-signoff-1" for i in items_signoff)
+    assert all(i["overall_status"] == "AWAITING_HUMAN_SIGNOFF" for i in items_signoff)
+
+    # 3. Filter: completed
+    res_comp = client.get("/api/executions?status=completed")
+    assert res_comp.status_code == 200
+    items_comp = res_comp.json()["executions"]
+    assert any(i["execution_id"] == "exec-comp-2" for i in items_comp)
+    assert all(i["overall_status"] == "COMPLETED" for i in items_comp)
+
+    # 4. Filter: failed
+    res_fail = client.get("/api/executions?status=failed")
+    assert res_fail.status_code == 200
+    items_fail = res_fail.json()["executions"]
+    assert any(i["execution_id"] == "exec-fail-3" for i in items_fail)
+    assert all(i["overall_status"] in ["FAILED", "BLOCKED"] for i in items_fail)
+    # Check error message is enriched
+    failed_item = next(i for i in items_fail if i["execution_id"] == "exec-fail-3")
+    assert failed_item["error_message"] == "Verification check timed out"
+
+
+def test_task_0018_multiple_executions_of_same_task_distinct_with_run_indices(tmp_path):
+    """Verifies that multiple executions of the same task remain distinct records and receive run indices."""
+    client, _, store, _, _ = _setup_test_env(tmp_path)
+
+    # Two runs of the same task
+    rec_run1 = ExecutionRecord(
+        execution_id="exec-run-1",
+        task_id="TASK-T18-MULTI",
+        overall_status="FAILED",
+        task_title="Multi-run Feature",
+        error_message="First attempt failed",
+    )
+    rec_run2 = ExecutionRecord(
+        execution_id="exec-run-2",
+        task_id="TASK-T18-MULTI",
+        overall_status="COMPLETED",
+        task_title="Multi-run Feature",
+    )
+    store.create_execution(rec_run1)
+    store.create_execution(rec_run2)
+
+    res = client.get("/api/executions?task_id=TASK-T18-MULTI")
+    assert res.status_code == 200
+    data = res.json()
+    items = data["executions"]
+    assert len(items) == 2
+
+    # Both executions remain distinct
+    ids = {i["execution_id"] for i in items}
+    assert ids == {"exec-run-1", "exec-run-2"}
+
+    # Run indices computed accurately: run 1 has run_index=1, run 2 has run_index=2
+    item1 = next(i for i in items if i["execution_id"] == "exec-run-1")
+    item2 = next(i for i in items if i["execution_id"] == "exec-run-2")
+    assert item1["total_runs"] == 2
+    assert item2["total_runs"] == 2
+    assert item1["run_index"] == 1
+    assert item2["run_index"] == 2
+
+
+def test_task_0018_ui_html_structure_and_controls(tmp_path):
+    """Verifies that GET / renders HTML containing history filters, attention banner, and runtime modal."""
+    client, _, _, _, _ = _setup_test_env(tmp_path)
+    res = client.get("/")
+    assert res.status_code == 200
+    html = res.text
+    assert 'id="statusIndicatorBox"' in html
+    assert 'id="runtimeSelectedHint"' in html
+    assert 'id="attentionBanner"' in html
+    assert 'id="historyFilters"' in html
+    assert 'data-filter="needs_signoff"' in html
+    assert 'id="runtimeStateModal"' in html
+    assert 'item-run-badge' in html
+    assert 'signoff-pending' in html

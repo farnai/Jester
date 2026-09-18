@@ -248,6 +248,100 @@
       width: 100%;
     }
 
+    /* Needs Attention Callout Banner */
+    .attention-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(6, 182, 212, 0.1));
+      border: 1px solid var(--accent-amber);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+    }
+    .attention-banner:hover {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(6, 182, 212, 0.2));
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+      transform: translateY(-1px);
+    }
+    .attention-icon {
+      font-size: 16px;
+      animation: pulse 1.5s infinite;
+    }
+    .attention-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .attention-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+    }
+    .attention-desc {
+      font-size: 12px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .attention-arrow {
+      font-size: 14px;
+      color: var(--accent-amber);
+      font-weight: 700;
+    }
+
+    /* History Filter Tabs */
+    .history-filters {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 4px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+    .filter-btn.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+    .filter-btn.needs-signoff-btn.has-items {
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+    .filter-btn.needs-signoff-btn.active {
+      background: var(--accent-amber);
+      color: #000;
+      border-color: var(--accent-amber);
+    }
+    .filter-count {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
     /* Execution List */
     .executions-list {
       flex: 1;
@@ -262,6 +356,7 @@
       margin-bottom: 6px;
       cursor: pointer;
       border: 1px solid transparent;
+      border-left: 3px solid transparent;
       transition: all 0.15s;
     }
 
@@ -270,9 +365,20 @@
       border-color: var(--border);
     }
 
-    .execution-item.active {
+    .execution-item.active, .execution-item.selected {
       border-color: var(--accent-cyan);
+      border-left: 3px solid var(--accent-cyan);
       background-color: #1e293b;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+    }
+
+    .execution-item.signoff-pending {
+      border-left: 3px solid var(--accent-amber);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), var(--bg-card));
+    }
+
+    .execution-item.failed-item {
+      border-left: 3px solid var(--accent-red);
     }
 
     .item-header {
@@ -287,6 +393,16 @@
       font-weight: 700;
       font-size: 12px;
       color: var(--accent-cyan);
+    }
+
+    .item-run-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: #111827;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
     }
 
     .badge {
@@ -321,6 +437,38 @@
       color: var(--text-muted);
       display: flex;
       justify-content: space-between;
+    }
+
+    .item-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag-chip {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(55, 65, 81, 0.6);
+      color: var(--text-muted);
+    }
+
+    .tag-chip.tag-cyan {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    .tag-chip.tag-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+    }
+
+    .tag-chip.tag-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
     }
 
     /* Right Main Inspector Area */
@@ -737,9 +885,10 @@
       <span style="font-size: 11px; color: var(--text-muted);">AI Bridge v2</span>
     </div>
     <div class="header-status">
-      <div class="status-indicator">
+      <div class="status-indicator" id="statusIndicatorBox" style="cursor: pointer;" onclick="openRuntimeModal()" title="Click to inspect registered Runtimes & Provider State">
         <div id="liveDot" class="dot"></div>
         <span id="bridgeStatusText">Bridge Ready</span>
+        <span style="font-size: 10px; text-decoration: underline; color: var(--accent-cyan); margin-left: 4px; font-weight: 700;">[RUNTIME STATE]</span>
       </div>
       <button class="btn btn-secondary" onclick="refreshCurrentState()">↻ Refresh</button>
     </div>
@@ -776,6 +925,7 @@
             <select id="taskRuntime" style="width: 100%; background: #030712; border: 1px solid var(--border); color: var(--text-main); padding: 6px 8px; border-radius: 4px; font-size: 12px;">
               <option value="">Auto-select (Default)</option>
             </select>
+            <div id="runtimeSelectedHint" style="font-size: 10px; color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
           </div>
           <button type="submit" id="submitBtn" class="btn btn-primary btn-full">
             <span>⚡ Dispatch to Bridge</span>
@@ -788,6 +938,35 @@
         <div class="sidebar-title">
           <span>Execution History</span>
           <span id="execCount" style="font-size: 10px; color: var(--text-muted);">0</span>
+        </div>
+
+        <!-- Attention Banner for Signoff Priority -->
+        <div id="attentionBanner" class="attention-banner" style="display: none;" onclick="jumpToSignoff()">
+          <div class="attention-icon">⚠️</div>
+          <div class="attention-content">
+            <div class="attention-title">NEEDS YOUR ATTENTION</div>
+            <div class="attention-desc" id="attentionDesc">1 execution awaiting signoff</div>
+          </div>
+          <div class="attention-arrow">→</div>
+        </div>
+
+        <!-- History Filter Tabs -->
+        <div class="history-filters" id="historyFilters">
+          <button class="filter-btn active" data-filter="all" onclick="setHistoryFilter('all')">
+            <span>All</span> <span class="filter-count" id="countAll">0</span>
+          </button>
+          <button class="filter-btn" data-filter="active" onclick="setHistoryFilter('active')">
+            <span>Active</span> <span class="filter-count" id="countActive">0</span>
+          </button>
+          <button class="filter-btn needs-signoff-btn" data-filter="needs_signoff" onclick="setHistoryFilter('needs_signoff')">
+            <span>Signoff</span> <span class="filter-count" id="countSignoff">0</span>
+          </button>
+          <button class="filter-btn" data-filter="completed" onclick="setHistoryFilter('completed')">
+            <span>Completed</span> <span class="filter-count" id="countCompleted">0</span>
+          </button>
+          <button class="filter-btn" data-filter="failed" onclick="setHistoryFilter('failed')">
+            <span>Failed</span> <span class="filter-count" id="countFailed">0</span>
+          </button>
         </div>
       </div>
       <div class="executions-list" id="executionsList">
@@ -1062,38 +1241,76 @@
     </div>
   </div>
 
+  <!-- Runtime & Provider State Modal -->
+  <div id="runtimeStateModal" class="modal-overlay">
+    <div class="modal-dialog" style="width: 600px; max-width: 92vw;">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <span>⚡</span>
+          <span>Runtime &amp; Provider State</span>
+        </h3>
+        <button onclick="closeRuntimeModal()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">✕</button>
+      </div>
+      <div id="runtimeModalContent" style="max-height: 70vh; overflow-y: auto; padding-right: 4px;">
+        <div style="color: var(--text-muted); text-align: center; padding: 20px;">Loading runtime state...</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeRuntimeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Client Logic -->
   <script>
     let currentExecId = null;
     let pollInterval = null;
+    let currentFilter = 'all';
+    let registeredRuntimes = [];
+    let lastHealthData = null;
+    let awaitingSignoffExecId = null;
+
+    function formatRelativeTime(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '';
+        const now = new Date();
+        const diffSec = Math.floor((now - d) / 1000);
+        if (diffSec < 45) return 'Just now';
+        if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+        if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+        return `${Math.floor(diffSec / 86400)}d ago`;
+      } catch (e) {
+        return '';
+      }
+    }
 
     async function checkHealth() {
       try {
         const res = await fetch('/api/health');
         if (!res.ok) return;
         const data = await res.json();
+        lastHealthData = data;
         const dot = document.getElementById('liveDot');
         const statusText = document.getElementById('bridgeStatusText');
 
-        let allHealthy = true;
-        let provDetails = [];
-        if (data.providers) {
-          for (const [pid, pinfo] of Object.entries(data.providers)) {
-            if (!pinfo.healthy) {
-              allHealthy = false;
-              provDetails.push(`${pid}: unconfigured`);
-            } else {
-              provDetails.push(`${pid}: ready`);
-            }
-          }
+        if (data.bridge_ready) {
+          dot.style.backgroundColor = 'var(--accent-green)';
+          const primary = data.runtimes_summary ? data.runtimes_summary.primary_ready_runtime : null;
+          const account = primary?.account_label || primary?.runtime_id || 'Antigravity CLI';
+          const model = primary?.model ? ` [${primary.model}]` : '';
+          statusText.innerText = `Bridge Ready (${account}${model})`;
+        } else if (data.runtimes_summary && data.runtimes_summary.ready_runtimes_count > 0) {
+          dot.style.backgroundColor = 'var(--accent-green)';
+          statusText.innerText = `Bridge Ready (${data.runtimes_summary.ready_runtimes_count} ready runtimes)`;
+        } else {
+          dot.style.backgroundColor = 'var(--accent-amber)';
+          statusText.innerText = 'Bridge Waiting (No runtimes ready)';
         }
 
-        if (!allHealthy) {
-          dot.style.backgroundColor = 'var(--accent-amber)';
-          statusText.innerText = `Provider Unavailable (${provDetails.join(', ')})`;
-        } else {
-          dot.style.backgroundColor = 'var(--accent-green)';
-          statusText.innerText = `Bridge Ready (${provDetails.join(', ')})`;
+        const modal = document.getElementById('runtimeStateModal');
+        if (modal && modal.classList.contains('open')) {
+          updateRuntimeModalContent();
         }
       } catch (e) {
         document.getElementById('liveDot').style.backgroundColor = 'var(--accent-red)';
@@ -1101,24 +1318,194 @@
       }
     }
 
+    function openRuntimeModal() {
+      document.getElementById('runtimeStateModal').classList.add('open');
+      updateRuntimeModalContent();
+    }
+
+    function closeRuntimeModal() {
+      document.getElementById('runtimeStateModal').classList.remove('open');
+    }
+
+    function updateRuntimeModalContent() {
+      const container = document.getElementById('runtimeModalContent');
+      if (!container) return;
+
+      const health = lastHealthData || {};
+      const runtimes = registeredRuntimes || [];
+      const summary = health.runtimes_summary || {};
+
+      let html = '';
+
+      // Top Status Banner
+      if (health.bridge_ready) {
+        html += `
+          <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--accent-green); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="color: var(--accent-green); font-weight: 700; font-size: 12px; text-transform: uppercase;">● Bridge Operational</div>
+              <div style="font-size: 11px; color: var(--text-main); margin-top: 2px;">Local CLI runtime verified and authenticated. Tasks can execute directly.</div>
+            </div>
+            <span class="badge badge-completed" style="font-size: 10px;">READY</span>
+          </div>
+        `;
+      } else {
+        html += `
+          <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid var(--accent-amber); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="color: var(--accent-amber); font-weight: 700; font-size: 12px; text-transform: uppercase;">▲ Runtimes Pending Configuration</div>
+              <div style="font-size: 11px; color: var(--text-main); margin-top: 2px;">No registered runtimes are currently in READY state.</div>
+            </div>
+            <span class="badge badge-awaiting" style="font-size: 10px;">WAITING</span>
+          </div>
+        `;
+      }
+
+      // Section 1: Registered Runtimes (Authoritative)
+      html += `
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
+            Registered Runtimes (Authoritative Registry)
+          </div>
+      `;
+
+      if (runtimes.length === 0) {
+        html += `<div style="color: var(--text-muted); font-size: 12px; padding: 8px;">No registered runtimes found.</div>`;
+      } else {
+        runtimes.forEach(r => {
+          const isReady = r.status === 'READY';
+          const badgeColor = isReady ? 'var(--accent-green)' : (r.status === 'DEGRADED' ? 'var(--accent-amber)' : 'var(--accent-red)');
+          const badgeBg = isReady ? 'rgba(16, 185, 129, 0.15)' : (r.status === 'DEGRADED' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)');
+          html += `
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid ${badgeColor}; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--text-main); font-family: var(--font-mono);">
+                  ${escapeHtml(r.runtime_id)}
+                </div>
+                <span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: ${badgeBg}; color: ${badgeColor}; text-transform: uppercase;">
+                  ${escapeHtml(r.status)}
+                </span>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: 11px;">
+                <span class="tag-chip tag-cyan">Provider: ${escapeHtml(r.provider)}</span>
+                <span class="tag-chip">Type: ${escapeHtml(r.runtime_type || 'cli')}</span>
+                ${r.account_label ? `<span class="tag-chip tag-amber">Account: ${escapeHtml(r.account_label)}</span>` : ''}
+                <span class="tag-chip">Model: ${escapeHtml(r.model || '—')}</span>
+              </div>
+              ${r.details ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; border-top: 1px dashed rgba(55,65,81,0.5); padding-top: 4px;">${escapeHtml(r.details)}</div>` : ''}
+            </div>
+          `;
+        });
+      }
+      html += `</div>`;
+
+      // Section 2: Direct Provider API Status (Informational)
+      html += `
+        <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;">
+            Direct Provider API Configuration (Optional)
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;">
+            Direct API keys (<code style="color:var(--accent-cyan);">OPENAI_API_KEY</code>, <code style="color:var(--accent-cyan);">GEMINI_API_KEY</code>) are only required when invoking direct API providers. They are not required when using local CLI runtimes (such as Google Antigravity CLI with Google AI Pro).
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      `;
+
+      if (health.providers) {
+        for (const [pid, pinfo] of Object.entries(health.providers)) {
+          const isHealthy = pinfo.healthy;
+          const statusLbl = isHealthy ? 'CONFIGURED' : 'UNCONFIGURED';
+          const statusCol = isHealthy ? 'var(--accent-green)' : 'var(--text-muted)';
+          html += `
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 600; text-transform: uppercase; font-size: 11px; color: var(--text-main);">${escapeHtml(pid)} API</span>
+              <span style="font-size: 10px; font-weight: 700; color: ${statusCol}; font-family: var(--font-mono);">${statusLbl}</span>
+            </div>
+          `;
+        }
+      } else {
+        html += `<div style="color: var(--text-muted); font-size: 11px;">Provider data not available.</div>`;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
     async function loadRuntimes() {
       try {
         const res = await fetch('/api/runtimes');
         if (!res.ok) return;
         const data = await res.json();
+        registeredRuntimes = data.runtimes || [];
         const sel = document.getElementById('taskRuntime');
         if (!sel) return;
-        sel.innerHTML = '<option value="">Auto-select (Default)</option>';
-        if (data && data.runtimes) {
-          data.runtimes.forEach(r => {
-            const opt = document.createElement('option');
-            opt.value = r.runtime_id;
-            opt.innerText = `${r.account_label || r.runtime_id} [${r.model}] (${r.status})`;
-            sel.appendChild(opt);
-          });
-        }
+
+        const readyRuntime = registeredRuntimes.find(r => r.status === 'READY');
+        const defaultLabel = readyRuntime
+          ? `Auto-select (Default: ${readyRuntime.account_label || readyRuntime.runtime_id})`
+          : 'Auto-select (Default)';
+
+        sel.innerHTML = `<option value="">${escapeHtml(defaultLabel)}</option>`;
+
+        registeredRuntimes.forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.runtime_id;
+          const account = r.account_label ? `${r.account_label} - ` : '';
+          opt.innerText = `${r.runtime_id} [${account}${r.model}] (${r.status})`;
+          sel.appendChild(opt);
+        });
+
+        sel.onchange = updateRuntimeHint;
+        updateRuntimeHint();
       } catch (e) {
         console.error("Failed to load runtimes", e);
+      }
+    }
+
+    function updateRuntimeHint() {
+      const sel = document.getElementById('taskRuntime');
+      const hintEl = document.getElementById('runtimeSelectedHint');
+      if (!sel || !hintEl) return;
+
+      const selectedId = sel.value;
+      let target = null;
+      if (selectedId) {
+        target = registeredRuntimes.find(r => r.runtime_id === selectedId);
+      } else {
+        target = registeredRuntimes.find(r => r.status === 'READY') || registeredRuntimes[0];
+      }
+
+      if (target) {
+        const isReady = target.status === 'READY';
+        const color = isReady ? 'var(--accent-green)' : 'var(--accent-amber)';
+        const account = target.account_label ? `${target.account_label} • ` : '';
+        hintEl.innerHTML = `Active: <span style="color: var(--accent-cyan); font-weight:600;">${escapeHtml(target.runtime_id)}</span> (${escapeHtml(account)}${escapeHtml(target.model || '')}) <span style="color: ${color}; font-weight: 700;">[${escapeHtml(target.status)}]</span>`;
+      } else {
+        hintEl.innerText = '';
+      }
+    }
+
+    function setHistoryFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+      loadExecutions(false);
+    }
+
+    function jumpToSignoff() {
+      if (awaitingSignoffExecId) {
+        loadExecutionDetails(awaitingSignoffExecId);
+        switchTab('tab-review');
+        const gate = document.getElementById('signoffGateBanner');
+        if (gate) {
+          gate.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        setHistoryFilter('needs_signoff');
       }
     }
 
@@ -1158,41 +1545,112 @@
 
     async function loadExecutions(updateSelected = true) {
       try {
-        const res = await fetch('/api/executions?limit=50');
+        const queryParam = currentFilter && currentFilter !== 'all' ? `&status=${encodeURIComponent(currentFilter)}` : '';
+        const res = await fetch(`/api/executions?limit=50${queryParam}`);
         const data = await res.json();
         const listEl = document.getElementById('executionsList');
-        document.getElementById('execCount').innerText = data.executions.length;
 
-        if (data.executions.length === 0) {
-          listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">No executions found.</div>';
-          return;
+        // Update counts
+        if (data.counts) {
+          document.getElementById('countAll').innerText = data.counts.all || 0;
+          document.getElementById('countActive').innerText = data.counts.active || 0;
+          document.getElementById('countSignoff').innerText = data.counts.needs_signoff || 0;
+          document.getElementById('countCompleted').innerText = data.counts.completed || 0;
+          document.getElementById('countFailed').innerText = data.counts.failed || 0;
+          document.getElementById('execCount').innerText = data.counts[currentFilter] != null ? data.counts[currentFilter] : data.executions.length;
+        } else {
+          document.getElementById('execCount').innerText = data.executions.length;
         }
 
-        listEl.innerHTML = data.executions.map(ex => {
-          const isActive = ex.execution_id === currentExecId;
-          const badgeClass = getBadgeClass(ex.overall_status);
-          const timeStr = ex.created_at ? new Date(ex.created_at).toLocaleTimeString() : '';
-          return `
-            <div class="execution-item ${isActive ? 'active' : ''}" onclick="loadExecutionDetails('${ex.execution_id}')">
-              <div class="item-header">
-                <span class="item-task-id">${ex.task_id}</span>
-                <span class="badge ${badgeClass}">${ex.overall_status}</span>
-              </div>
-              <div class="item-title">${escapeHtml(ex.task_title || 'Untitled Task')}</div>
-              <div class="item-meta">
-                <span>${ex.execution_id}</span>
-                <span>${timeStr}</span>
-              </div>
-            </div>
-          `;
-        }).join('');
+        // Handle Attention Banner for Signoff Priority
+        const banner = document.getElementById('attentionBanner');
+        const signoffFilterBtn = document.querySelector('.filter-btn.needs-signoff-btn');
+        if (data.has_awaiting_signoff && data.awaiting_signoff_ids && data.awaiting_signoff_ids.length > 0) {
+          banner.style.display = 'flex';
+          awaitingSignoffExecId = data.awaiting_signoff_ids[0];
+          const count = data.awaiting_signoff_ids.length;
+          document.getElementById('attentionDesc').innerText = `${count} execution${count > 1 ? 's' : ''} awaiting founder signoff`;
+          signoffFilterBtn?.classList.add('has-items');
+        } else {
+          banner.style.display = 'none';
+          signoffFilterBtn?.classList.remove('has-items');
+          awaitingSignoffExecId = null;
+        }
+
+        renderExecutionsList(data.executions || []);
       } catch (e) {
         console.error("Failed to load executions", e);
       }
     }
 
+    function renderExecutionsList(executions) {
+      const listEl = document.getElementById('executionsList');
+      if (!listEl) return;
+
+      if (!executions || executions.length === 0) {
+        let emptyMsg = 'No executions found.';
+        if (currentFilter === 'needs_signoff') emptyMsg = 'No executions awaiting sign-off.';
+        else if (currentFilter === 'active') emptyMsg = 'No active tasks running.';
+        else if (currentFilter === 'failed') emptyMsg = 'No failed executions.';
+        else if (currentFilter === 'completed') emptyMsg = 'No completed executions.';
+        listEl.innerHTML = `<div style="padding: 24px 16px; text-align: center; color: var(--text-muted); font-size: 12px;">${emptyMsg}</div>`;
+        return;
+      }
+
+      listEl.innerHTML = executions.map(ex => {
+        const isSelected = ex.execution_id === currentExecId;
+        const isSignoff = ex.overall_status === 'AWAITING_HUMAN_SIGNOFF';
+        const isFailed = ex.overall_status === 'FAILED' || ex.overall_status === 'BLOCKED';
+        const badgeClass = getBadgeClass(ex.overall_status);
+        const timeRelative = formatRelativeTime(ex.created_at);
+        const timeFormatted = ex.created_at ? new Date(ex.created_at).toLocaleTimeString() : '';
+
+        // Run index indicator for multiple executions of same task
+        const hasMultipleRuns = (ex.total_runs && ex.total_runs > 1);
+        const runBadgeHtml = hasMultipleRuns ? `<span class="item-run-badge">Run ${ex.run_index}/${ex.total_runs}</span>` : '';
+
+        // Tags
+        const modelLabel = ex.model ? `${escapeHtml(ex.runtime_id || 'cli')} • ${escapeHtml(ex.model)}` : (ex.runtime_id || '');
+        const tokensLabel = ex.total_tokens ? `${ex.total_tokens.toLocaleString()} tok` : '';
+
+        let itemClasses = 'execution-item';
+        if (isSelected) itemClasses += ' selected active';
+        if (isSignoff) itemClasses += ' signoff-pending';
+        if (isFailed) itemClasses += ' failed-item';
+
+        return `
+          <div class="${itemClasses}" onclick="loadExecutionDetails('${ex.execution_id}')">
+            <div class="item-header">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="item-task-id">${escapeHtml(ex.task_id)}</span>
+                ${runBadgeHtml}
+              </div>
+              <span class="badge ${badgeClass}">${escapeHtml(ex.overall_status)}</span>
+            </div>
+            <div class="item-title">${escapeHtml(ex.task_title || 'Untitled Task')}</div>
+            <div class="item-meta">
+              <span style="font-family: var(--font-mono); font-size: 10px;">${escapeHtml(ex.execution_id)}</span>
+              <span title="${timeFormatted}">${timeRelative || timeFormatted}</span>
+            </div>
+            <div class="item-tags">
+              ${modelLabel ? `<span class="tag-chip tag-cyan">${modelLabel}</span>` : ''}
+              ${tokensLabel ? `<span class="tag-chip">${tokensLabel}</span>` : ''}
+              ${isSignoff ? `<span class="tag-chip tag-amber">⚠️ Signoff Required</span>` : ''}
+              ${ex.error_message ? `<span class="tag-chip tag-red" title="${escapeHtml(ex.error_message)}">Error</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     async function loadExecutionDetails(execId, showLoading = true) {
       currentExecId = execId;
+      document.querySelectorAll('.execution-item').forEach(item => item.classList.remove('selected', 'active'));
+      document.querySelectorAll('.execution-item').forEach(item => {
+        if (item.getAttribute('onclick')?.includes(execId)) {
+          item.classList.add('selected', 'active');
+        }
+      });
       try {
         const res = await fetch(`/api/executions/${execId}`);
         if (!res.ok) return;
