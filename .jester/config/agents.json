@@ -60,6 +60,31 @@
         "review"
       ],
       "description": "Auditor agent performing compliance sweeps, governance integrity checks, and repository audits."
+    },
+    "gemini-architect": {
+      "id": "gemini-architect",
+      "role": "architect",
+      "provider": "google",
+      "model": "gemini-3.8-flash-high",
+      "capabilities": [
+        "planning",
+        "reasoning",
+        "repository_read"
+      ],
+      "description": "Google-backed Architect agent responsible for task decomposition and specification."
+    },
+    "gemini-reviewer": {
+      "id": "gemini-reviewer",
+      "role": "reviewer",
+      "provider": "google",
+      "model": "gemini-3.8-flash-high",
+      "capabilities": [
+        "reasoning",
+        "repository_read",
+        "review",
+        "testing"
+      ],
+      "description": "Google-backed Reviewer agent validating code diffs and acceptance criteria."
     }
   },
   "providers": {

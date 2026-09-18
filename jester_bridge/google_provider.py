@@ -116,8 +116,12 @@ class GoogleProvider(AgentProvider):
         elif role == Role.REVIEWER.value:
             return (
                 "You are an independent code reviewer in the JESTER engineering workflow. "
-                "Your objective is to inspect code diffs, verify acceptance criteria, check test outcomes, "
-                "and identify regressions or security violations."
+                "Your objective is to independently inspect the UNIFIED CODE DIFF, verify acceptance criteria, "
+                "check test outcomes, identify potential regressions, syntax errors, security, or privacy invariant "
+                "violations, and issue an objective verification report with a clear verdict. "
+                "CRITICAL: Do NOT rely solely on the executor summary. If the unified code diff contains defects, "
+                "logic errors, or contradicts the requirements, you MUST reject the implementation and emit "
+                "REWORK_REQUIRED or FAILED with specific feedback citing the defect in the diff."
             )
         elif role == Role.AUDITOR.value:
             return (
@@ -161,9 +165,22 @@ class GoogleProvider(AgentProvider):
             for item in verification:
                 lines.append(f"  - {item}")
 
-        extra_keys = set(payload.keys()) - {
-            "title", "goal", "scope", "constraints", "acceptance_criteria", "verification", "dependencies"
+        # Structured repository context (for Executor)
+        code_context = payload.get("code_context")
+        if code_context:
+            lines.append(f"\n{code_context}")
+
+        # Unified code diff (for Reviewer)
+        diff = payload.get("diff")
+        if diff:
+            lines.append(f"\nUNIFIED CODE DIFF (CRITICAL EVIDENCE):\n```diff\n{diff}\n```")
+
+        # Any extra context (e.g. error traces, notes)
+        handled_keys = {
+            "title", "goal", "scope", "constraints", "acceptance_criteria",
+            "verification", "dependencies", "code_context", "context_bundle", "diff",
         }
+        extra_keys = set(payload.keys()) - handled_keys
         for key in sorted(extra_keys):
             lines.append(f"\n{key.upper()}:\n{payload[key]}")
 

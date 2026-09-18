@@ -1,0 +1,33 @@
+{
+  "id": "TASK-0015",
+  "title": "Task: Create a new file at tests/bridge/task_0015_antigravity_cli_",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "code_generation",
+    "reasoning"
+  ],
+  "goal": "Create a new file at tests/bridge/task_0015_antigravity_cli_e2e_probe.py containing a single minimal pytest test that proves 2 + 2 equals 4. Include a standard docstring and 'assert 2 + 2 == 4'.",
+  "scope": [
+    "tests/bridge/task_0015_antigravity_cli_e2e_probe.py"
+  ],
+  "constraints": [
+    "Create only tests/bridge/task_0015_antigravity_cli_e2e_probe.py.",
+    "Do not modify any other files.",
+    "Keep the test minimal and conform to pytest standards."
+  ],
+  "acceptance_criteria": [
+    "File tests/bridge/task_0015_antigravity_cli_e2e_probe.py must exist on disk.",
+    "Must define a test function that asserts 2 + 2 == 4.",
+    "Pytest must pass cleanly."
+  ],
+  "verification": [
+    "pytest tests/bridge/task_0015_antigravity_cli_e2e_probe.py -v"
+  ],
+  "dependencies": [],
+  "created_at": "",
+  "updated_at": "2026-09-18T12:35:05.967257+00:00"
+}

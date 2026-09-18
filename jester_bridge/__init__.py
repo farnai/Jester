@@ -12,6 +12,10 @@ from .contracts import (
     InvocationResult,
     InvocationStatus,
     UsageMetrics,
+    BaseHandoff,
+    ArchitectHandoff,
+    ExecutorHandoff,
+    ReviewerHandoff,
 )
 from .protocol import Task, load_task_from_dict, load_task_from_file
 from .config import BridgeConfig, load_bridge_config
@@ -39,12 +43,62 @@ from .runtime import (
     ScopeViolationError,
     is_path_in_scope,
     extract_file_changes_from_text,
+    task_expects_code_changes,
 )
 from .preflight import PreflightValidator, PreflightReport
-from .workflow import ControlledWorkflowRunner, WorkflowOutcome
+from .workflow import (
+    ControlledWorkflowRunner,
+    WorkflowOutcome,
+    extract_safe_target_paths,
+)
+from .context import (
+    ContextEngine,
+    ContextBundle,
+    FileContext,
+    ContextPackage,
+    ContextSnapshot,
+    ContextPriority,
+    SourceType,
+    ContextItemProvenance,
+)
+from .git_controller import (
+    GitController,
+    CommitAuthorization,
+    PushAuthorization,
+    GitOperationResult,
+    GitStatusResult,
+    GitControllerError,
+    GitSecurityError,
+    GitAuthorizationError,
+    GitDiffMismatchError,
+)
+from .execution_history import (
+    ExecutionRecord,
+    ExecutionEvent,
+    ExecutionHistoryStore,
+    ExecutionHistoryError,
+)
+from .server import create_bridge_app
+from .runtimes import (
+    RuntimeType,
+    RuntimeStatus,
+    AuthType,
+    AuthReference,
+    AccountIdentity,
+    RuntimeReadiness,
+    RuntimeEntry,
+    FallbackEvent,
+    RoutingDecision,
+    RuntimeRegistry,
+    RuntimeRouter,
+    create_antigravity_runtime,
+)
+from .adapters import CLIRuntimeAdapter, LocalRuntimeAdapter
 
 __all__ = [
+    "create_bridge_app",
     "Role",
+
     "get_canonical_roles",
     "is_valid_role",
     "Capability",
@@ -83,8 +137,49 @@ __all__ = [
     "ScopeViolationError",
     "is_path_in_scope",
     "extract_file_changes_from_text",
+    "task_expects_code_changes",
     "PreflightValidator",
     "PreflightReport",
     "ControlledWorkflowRunner",
     "WorkflowOutcome",
+    "extract_safe_target_paths",
+    "ContextEngine",
+    "ContextBundle",
+    "FileContext",
+    "ContextPackage",
+    "ContextSnapshot",
+    "ContextPriority",
+    "SourceType",
+    "ContextItemProvenance",
+    "BaseHandoff",
+    "ArchitectHandoff",
+    "ExecutorHandoff",
+    "ReviewerHandoff",
+    "GitController",
+    "CommitAuthorization",
+    "PushAuthorization",
+    "GitOperationResult",
+    "GitStatusResult",
+    "GitControllerError",
+    "GitSecurityError",
+    "GitAuthorizationError",
+    "GitDiffMismatchError",
+    "ExecutionRecord",
+    "ExecutionEvent",
+    "ExecutionHistoryStore",
+    "ExecutionHistoryError",
+    "RuntimeType",
+    "RuntimeStatus",
+    "AuthType",
+    "AuthReference",
+    "AccountIdentity",
+    "RuntimeReadiness",
+    "RuntimeEntry",
+    "FallbackEvent",
+    "RoutingDecision",
+    "RuntimeRegistry",
+    "RuntimeRouter",
+    "create_antigravity_runtime",
+    "CLIRuntimeAdapter",
+    "LocalRuntimeAdapter",
 ]

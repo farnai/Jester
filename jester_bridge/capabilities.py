@@ -9,7 +9,7 @@ from typing import Set, Tuple
 
 
 class Capability(str, Enum):
-    """Standardized capability identifiers for JESTER agents and providers."""
+    """Standardized capability identifiers for JESTER agents, providers, and runtimes."""
     PLANNING = "planning"
     REASONING = "reasoning"
     REPOSITORY_READ = "repository_read"
@@ -18,6 +18,15 @@ class Capability(str, Enum):
     TESTING = "testing"
     REVIEW = "review"
     LOCAL_RUNTIME = "local_runtime"
+    CODE_GENERATION = "code_generation"
+    CODE_EDITING = "code_editing"
+    SHELL_EXECUTION = "shell_execution"
+    LARGE_CONTEXT = "large_context"
+    STRUCTURED_OUTPUT = "structured_output"
+    TOOL_USE = "tool_use"
+    STREAMING = "streaming"
+    LOCAL_EXECUTION = "local_execution"
+    REMOTE_EXECUTION = "remote_execution"
 
 
 def validate_capabilities(

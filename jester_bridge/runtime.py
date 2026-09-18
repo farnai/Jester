@@ -9,6 +9,7 @@ Provides safe, bounded, and auditable repository execution capabilities:
 - Supports automatic rollback upon test failure or abort.
 - Contains zero provider-specific or vendor SDK logic.
 """
+import difflib
 import os
 from pathlib import Path
 import re
@@ -46,6 +47,7 @@ class RuntimeExecutionResult(BaseModel):
     """Normalized output produced by the BoundedWorkspaceRuntime."""
     status: InvocationStatus
     files_modified: List[str] = Field(default_factory=list)
+    diff: str = ""
     verification_passed: bool = False
     verification_output: str = ""
     error_message: Optional[str] = None
@@ -80,6 +82,19 @@ def is_path_in_scope(target_path: str, allowed_scopes: List[str]) -> bool:
         else:
             if normalized_target == normalized_scope or normalized_target.startswith(f"{normalized_scope}/"):
                 return True
+    return False
+
+
+def task_expects_code_changes(task: Task) -> bool:
+    """
+    Determines whether a task semantically expects repository code/file modifications.
+    Tasks requiring code_generation or refactoring capabilities, or tasks of type
+    feature, bugfix, refactor, or implementation are expected to produce changes.
+    """
+    if "code_generation" in task.required_capabilities or "refactoring" in task.required_capabilities:
+        return True
+    if task.type.lower() in ("feature", "bugfix", "refactor", "implementation"):
+        return True
     return False
 
 
@@ -243,6 +258,43 @@ class BoundedWorkspaceRuntime:
 
         return all_passed, "\n---\n".join(combined_output)
 
+    def generate_unified_diff(
+        self, backups: Dict[str, Optional[str]], modified_paths: List[str]
+    ) -> str:
+        """
+        Generates a standard unified diff comparing original file states (from backups)
+        against the current modified states on disk.
+        """
+        diff_chunks: List[str] = []
+        for rel_path in modified_paths:
+            orig_content = backups.get(rel_path)
+            abs_path = self.repo_root / rel_path
+            try:
+                curr_content = abs_path.read_text(encoding="utf-8") if abs_path.exists() else ""
+            except Exception:
+                curr_content = ""
+
+            orig_lines = orig_content.splitlines(keepends=True) if orig_content is not None else []
+            curr_lines = curr_content.splitlines(keepends=True)
+
+            fromfile = f"a/{rel_path}" if orig_content is not None else "/dev/null"
+            tofile = f"b/{rel_path}"
+
+            chunk = list(
+                difflib.unified_diff(
+                    orig_lines,
+                    curr_lines,
+                    fromfile=fromfile,
+                    tofile=tofile,
+                )
+            )
+            if chunk:
+                diff_chunks.append("".join(chunk))
+
+        if not diff_chunks:
+            return "No file changes detected."
+        return "\n".join(diff_chunks)
+
     def execute_and_verify(
         self,
         changes: List[FileChange],
@@ -253,16 +305,41 @@ class BoundedWorkspaceRuntime:
         Full atomic execution cycle:
         1. Validates scope
         2. Applies changes to disk
-        3. Runs task.verification commands
-        4. Rolls back if verification fails (if auto_rollback_on_failure=True)
-        5. Returns structured RuntimeExecutionResult
+        3. Generates unified diff of changes
+        4. Runs task.verification commands
+        5. Rolls back if verification fails (if auto_rollback_on_failure=True)
+        6. Returns structured RuntimeExecutionResult
         """
         if not changes:
+            if task_expects_code_changes(task):
+                return RuntimeExecutionResult(
+                    status=InvocationStatus.FAILED,
+                    files_modified=[],
+                    diff="No file changes detected.",
+                    verification_passed=False,
+                    verification_output="No code changes were produced for a task requiring code modifications.",
+                    error_message="Execution produced zero file changes for an implementation task.",
+                    reverted=False,
+                )
+            # Legitimate no-change task (e.g. audit, investigation, docs without edits)
+            if task.verification:
+                passed, verification_output = self.run_verification(task)
+                return RuntimeExecutionResult(
+                    status=InvocationStatus.SUCCESS if passed else InvocationStatus.FAILED,
+                    files_modified=[],
+                    diff="No file changes detected.",
+                    verification_passed=passed,
+                    verification_output=verification_output,
+                    error_message=None if passed else "Verification failed.",
+                    reverted=False,
+                )
             return RuntimeExecutionResult(
                 status=InvocationStatus.SUCCESS,
                 files_modified=[],
+                diff="No file changes detected.",
                 verification_passed=True,
-                verification_output="No file changes to apply.",
+                verification_output="No file changes to apply; task does not require code modifications.",
+                reverted=False,
             )
 
         try:
@@ -271,9 +348,13 @@ class BoundedWorkspaceRuntime:
             return RuntimeExecutionResult(
                 status=InvocationStatus.FAILED,
                 files_modified=[],
+                diff="",
                 verification_passed=False,
                 error_message=f"Failed to apply changes: {str(e)}",
             )
+
+        # Capture unified diff of applied changes before verification/potential rollback
+        diff = self.generate_unified_diff(backups, modified_paths)
 
         passed, verification_output = self.run_verification(task)
 
@@ -282,6 +363,7 @@ class BoundedWorkspaceRuntime:
             return RuntimeExecutionResult(
                 status=InvocationStatus.FAILED,
                 files_modified=[],
+                diff=diff,
                 verification_passed=False,
                 verification_output=verification_output,
                 error_message="Verification commands failed. Changes rolled back.",
@@ -291,6 +373,7 @@ class BoundedWorkspaceRuntime:
         return RuntimeExecutionResult(
             status=InvocationStatus.SUCCESS if passed else InvocationStatus.FAILED,
             files_modified=modified_paths,
+            diff=diff,
             verification_passed=passed,
             verification_output=verification_output,
             error_message=None if passed else "Verification failed.",

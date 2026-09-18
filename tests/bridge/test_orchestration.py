@@ -368,3 +368,105 @@ def test_orchestration_no_provider_specific_data_leakage():
     assert not hasattr(session.executor_result, "candidates")
     assert isinstance(session.executor_result.files_modified, list)
     assert isinstance(session.executor_result.summary, str)
+
+
+def test_parse_review_verdict_rework_regression():
+    """
+    TASK-0016 Regression Test:
+    Verifies that _parse_review_verdict correctly parses 'REWORK_REQUIRED' and its
+    common variants (including 'Review: REWORK_REQUIRED (attempt 1)') without
+    failing on regex word boundaries, while preserving negative matching for
+    clean test passes.
+    """
+    core, _, _, _, _ = _setup_multi_provider_core()
+    orchestrator = BridgeOrchestrator(core=core)
+
+    def _make_res(summary: str) -> InvocationResult:
+        return InvocationResult(
+            request_id="req-verdict-probe",
+            task_id="TASK-VERDICT",
+            status=InvocationStatus.SUCCESS,
+            agent_id="test-reviewer",
+            provider="openai",
+            model="gpt-4o",
+            summary=summary,
+            completed_at="2026-09-18T00:00:00Z",
+        )
+
+    # 1. Direct confirmed regression string from test_orchestration_max_rework_exceeded_blocks_task
+    res1 = _make_res("Review: REWORK_REQUIRED (attempt 1)")
+    assert orchestrator._parse_review_verdict(res1) == ReviewVerdict.REWORK_REQUIRED
+
+    # 2. Other common Reviewer prompt output formats
+    res2 = _make_res("Review verdict: REWORK_REQUIRED.\nFlaws detected in code.")
+    assert orchestrator._parse_review_verdict(res2) == ReviewVerdict.REWORK_REQUIRED
+
+    res3 = _make_res("VERDICT: REWORK_REQUIRED")
+    assert orchestrator._parse_review_verdict(res3) == ReviewVerdict.REWORK_REQUIRED
+
+    res4 = _make_res("REWORK_REQUIRED: Must add docstrings.")
+    assert orchestrator._parse_review_verdict(res4) == ReviewVerdict.REWORK_REQUIRED
+
+    res5 = _make_res("Review: REWORK needed for tests.")
+    assert orchestrator._parse_review_verdict(res5) == ReviewVerdict.REWORK_REQUIRED
+
+    res_rework_space = _make_res("REWORK REQUIRED")
+    assert orchestrator._parse_review_verdict(res_rework_space) == ReviewVerdict.REWORK_REQUIRED
+
+    res_rework_bare = _make_res("REWORK")
+    assert orchestrator._parse_review_verdict(res_rework_bare) == ReviewVerdict.REWORK_REQUIRED
+
+    # 3. Blocked and failed verdict handling
+    res_blocked = _make_res("VERDICT: BLOCKED")
+    assert orchestrator._parse_review_verdict(res_blocked) == ReviewVerdict.BLOCKED
+
+    res_blocked_bare = _make_res("BLOCKED due to missing dependencies.")
+    assert orchestrator._parse_review_verdict(res_blocked_bare) == ReviewVerdict.BLOCKED
+
+    res_failed = _make_res("VERDICT: FAILED")
+    assert orchestrator._parse_review_verdict(res_failed) == ReviewVerdict.FAILED
+
+    res_fail_bare = _make_res("FAIL: syntax error on line 42")
+    assert orchestrator._parse_review_verdict(res_fail_bare) == ReviewVerdict.FAILED
+
+    # 4. Preserves PASS detection and does not false-positive on natural language
+    res_pass1 = _make_res("passes pytest execution without any warnings or failures.\nVERDICT: PASS")
+    assert orchestrator._parse_review_verdict(res_pass1) == ReviewVerdict.PASS
+
+    res_pass2 = _make_res("VERDICT: PASS")
+    assert orchestrator._parse_review_verdict(res_pass2) == ReviewVerdict.PASS
+
+    res_pass_bare = _make_res("PASS")
+    assert orchestrator._parse_review_verdict(res_pass_bare) == ReviewVerdict.PASS
+
+    res_pass3 = _make_res("All tests pass cleanly with zero defects.")
+    assert orchestrator._parse_review_verdict(res_pass3) == ReviewVerdict.PASS
+
+    # 5. Explicit negative rework safeguards (NO REWORK, WITHOUT REWORK, ZERO REWORK)
+    res_pass4 = _make_res("All tests pass cleanly. No rework required.")
+    assert orchestrator._parse_review_verdict(res_pass4) == ReviewVerdict.PASS
+
+    res_pass5 = _make_res("All tests pass without any rework.")
+    assert orchestrator._parse_review_verdict(res_pass5) == ReviewVerdict.PASS
+
+    res_pass6 = _make_res("Implementation complete with zero rework needed.")
+    assert orchestrator._parse_review_verdict(res_pass6) == ReviewVerdict.PASS
+
+    res_pass7 = _make_res("Complete without rework.")
+    assert orchestrator._parse_review_verdict(res_pass7) == ReviewVerdict.PASS
+
+    res_pass8 = _make_res("All done with zero rework.")
+    assert orchestrator._parse_review_verdict(res_pass8) == ReviewVerdict.PASS
+
+    # 6. Explicit negative failure safeguards (NO FAILURES, WITHOUT FAILURES, ZERO FAILURES)
+    res_fail_neg1 = _make_res("All checks passed with no failures.")
+    assert orchestrator._parse_review_verdict(res_fail_neg1) == ReviewVerdict.PASS
+
+    res_fail_neg2 = _make_res("Validation succeeded without failures.")
+    assert orchestrator._parse_review_verdict(res_fail_neg2) == ReviewVerdict.PASS
+
+    res_fail_neg3 = _make_res("Validation succeeded without any failures.")
+    assert orchestrator._parse_review_verdict(res_fail_neg3) == ReviewVerdict.PASS
+
+    res_fail_neg4 = _make_res("Zero failures recorded during verification.")
+    assert orchestrator._parse_review_verdict(res_fail_neg4) == ReviewVerdict.PASS

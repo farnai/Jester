@@ -38,6 +38,7 @@ class PreflightValidator:
         task: Task,
         check_credentials: bool = True,
         check_all_roles: bool = False,
+        target_runtime_id: Optional[str] = None,
     ) -> PreflightReport:
         """
         Runs comprehensive preflight checks against task, workspace, and registered providers.
@@ -99,12 +100,28 @@ class PreflightValidator:
             except Exception as e:
                 errors.append(f"Capability check failed: {str(e)}")
 
-            # 5. Provider Readiness / Health Check
+            # 5. Runtime Router / Provider Readiness
             if check_credentials:
-                if not provider.health_check():
+                routing = self.core.runtime_router.route(
+                    task=task,
+                    target_role=task.role,
+                    target_provider=agent.provider,
+                    target_runtime_id=target_runtime_id,
+                )
+                if routing.status == "SUCCESS" and routing.selected_runtime:
+                    passed.append(
+                        f"Runtime '{routing.selected_runtime.runtime_id}' "
+                        f"(account='{routing.selected_runtime.account.account_id}') readiness verified"
+                    )
+                elif routing.candidates_evaluated:
                     errors.append(
-                        f"Provider '{provider.provider_id}' failed readiness check. "
-                        f"Verify required API key or credentials in environment or .env."
+                        f"PROVIDER_UNAVAILABLE: Provider '{provider.provider_id}' for role '{task.role}' "
+                        f"failed readiness check ({routing.reason})."
+                    )
+                elif not provider.health_check():
+                    errors.append(
+                        f"PROVIDER_UNAVAILABLE: Provider '{provider.provider_id}' for role '{task.role}' "
+                        f"failed readiness check (credentials not configured)."
                     )
                 else:
                     passed.append(f"Provider '{provider.provider_id}' readiness verified")
@@ -122,10 +139,20 @@ class PreflightValidator:
                         errors.append(f"No configured agent found for required workflow role '{role_name}'.")
                         continue
                     role_provider = self.core.resolve_provider(role_agent)
-                    if check_credentials and not role_provider.health_check():
-                        errors.append(
-                            f"Provider '{role_provider.provider_id}' for role '{role_name}' failed readiness check."
+                    if check_credentials:
+                        role_routing = self.core.runtime_router.route(
+                            task=task,
+                            target_role=role_name,
+                            target_provider=role_agent.provider,
+                            target_runtime_id=target_runtime_id,
                         )
+                        if role_routing.status == "SUCCESS":
+                            passed.append(f"Role '{role_name}' runtime readiness verified")
+                        elif not role_provider.health_check():
+                            errors.append(
+                                f"PROVIDER_UNAVAILABLE: Provider '{role_provider.provider_id}' for role '{role_name}' "
+                                f"failed readiness check (credentials not configured)."
+                            )
                 except Exception as e:
                     errors.append(f"Workflow role check failed for '{role_name}': {str(e)}")
 

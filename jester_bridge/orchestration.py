@@ -10,10 +10,20 @@ Contains zero provider-specific logic or SDK dependencies.
 """
 from datetime import datetime, timezone
 from enum import Enum
+import re
 from typing import Any, Dict, List, Optional, Set, Tuple
 from pydantic import BaseModel, Field
 
-from .contracts import InvocationRequest, InvocationResult, InvocationStatus, UsageMetrics
+from .contracts import (
+    ArchitectHandoff,
+    BaseHandoff,
+    ExecutorHandoff,
+    InvocationRequest,
+    InvocationResult,
+    InvocationStatus,
+    ReviewerHandoff,
+    UsageMetrics,
+)
 from .core import BridgeCore, BridgeError, CapabilityMismatchError, ConfigurationError
 from .protocol import Task, load_task_from_dict
 from .roles import Role
@@ -69,6 +79,7 @@ class ArchitectResult(BaseModel):
     task: Task
     summary: str
     raw_result: InvocationResult
+    handoff: Optional[ArchitectHandoff] = None
 
 
 class ExecutorInput(BaseModel):
@@ -85,8 +96,10 @@ class ExecutorResult(BaseModel):
     summary: str
     files_modified: List[str] = Field(default_factory=list)
     reports_generated: List[str] = Field(default_factory=list)
+    diff: str = ""
     error_message: Optional[str] = None
     raw_result: InvocationResult
+    handoff: Optional[ExecutorHandoff] = None
 
 
 class ReviewInput(BaseModel):
@@ -95,6 +108,7 @@ class ReviewInput(BaseModel):
     executor_summary: str
     files_modified: List[str] = Field(default_factory=list)
     reports_generated: List[str] = Field(default_factory=list)
+    diff: str = Field(default="")
     verification_output: Optional[str] = None
     extra_context: Dict[str, Any] = Field(default_factory=dict)
 
@@ -107,6 +121,7 @@ class ReviewResult(BaseModel):
     feedback: Optional[str] = None
     error_message: Optional[str] = None
     raw_result: InvocationResult
+    handoff: Optional[ReviewerHandoff] = None
 
 
 class OrchestrationSession(BaseModel):
@@ -122,6 +137,10 @@ class OrchestrationSession(BaseModel):
     architect_result: Optional[ArchitectResult] = None
     executor_result: Optional[ExecutorResult] = None
     review_result: Optional[ReviewResult] = None
+    architect_handoff: Optional[ArchitectHandoff] = None
+    executor_handoff: Optional[ExecutorHandoff] = None
+    reviewer_handoff: Optional[ReviewerHandoff] = None
+    current_context_id: Optional[str] = None
     human_signoff_by: Optional[str] = None
     human_signoff_notes: Optional[str] = None
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -244,10 +263,38 @@ class BridgeOrchestrator:
             raise OrchestrationError("Architect output failed Task Protocol v2 validation: missing required fields.")
 
         session.task = validated_task
+
+        # Context lineage resolution
+        ctx_id = None
+        parent_ctx_id = None
+        if architect_input.context and isinstance(architect_input.context, dict):
+            arch_bundle = architect_input.context.get("architect_context_bundle")
+            if isinstance(arch_bundle, dict):
+                ctx_id = arch_bundle.get("context_id")
+                parent_ctx_id = arch_bundle.get("parent_context_id")
+
+        arch_handoff = ArchitectHandoff(
+            task_id=validated_task.id,
+            task_objective=validated_task.goal,
+            implementation_intent=architect_input.intent,
+            affected_areas=list(validated_task.scope or []),
+            expected_files=list(validated_task.scope or []),
+            constraints=list(validated_task.constraints or []),
+            acceptance_criteria=list(validated_task.acceptance_criteria or []),
+            risks=[],
+            architectural_notes=inv_result.summary,
+            relevant_context_references=list(validated_task.scope or []),
+            context_package_metadata={"intent": architect_input.intent},
+            context_id=ctx_id,
+            parent_context_id=parent_ctx_id,
+        )
+        session.architect_handoff = arch_handoff
+        session.current_context_id = ctx_id
         session.architect_result = ArchitectResult(
             task=validated_task,
             summary=inv_result.summary,
             raw_result=inv_result,
+            handoff=arch_handoff,
         )
         session.current_stage = OrchestrationStage.ARCHITECT
         session.updated_at = datetime.now(timezone.utc).isoformat()
@@ -257,6 +304,7 @@ class BridgeOrchestrator:
         self,
         session: OrchestrationSession,
         extra_context: Optional[Dict[str, Any]] = None,
+        architect_handoff: Optional[ArchitectHandoff] = None,
     ) -> OrchestrationSession:
         """
         Executes the EXECUTOR stage.
@@ -272,6 +320,9 @@ class BridgeOrchestrator:
                 f"Cannot transition to EXECUTOR from stage {session.current_stage}"
             )
 
+        if architect_handoff:
+            session.architect_handoff = architect_handoff
+
         task = session.task
         # Update task status to active (.jester lifecycle integration)
         task.status = "active"
@@ -280,6 +331,16 @@ class BridgeOrchestrator:
         payload = dict(extra_context or {})
         if session.review_result and session.review_result.verdict == ReviewVerdict.REWORK_REQUIRED:
             payload["rework_feedback"] = session.review_result.feedback or session.review_result.summary
+
+        # Context lineage resolution
+        ctx_id = None
+        parent_ctx_id = session.architect_handoff.context_id if session.architect_handoff else None
+        if extra_context and isinstance(extra_context, dict):
+            ctx_bundle = extra_context.get("context_bundle")
+            if isinstance(ctx_bundle, dict):
+                ctx_id = ctx_bundle.get("context_id")
+                if ctx_bundle.get("parent_context_id"):
+                    parent_ctx_id = ctx_bundle.get("parent_context_id")
 
         # Dispatch execution task through BridgeCore
         inv_result = self.core.dispatch(task, payload)
@@ -290,16 +351,51 @@ class BridgeOrchestrator:
                 if inv_result.status == InvocationStatus.BLOCKED
                 else OrchestrationStage.FAILED
             )
+            exec_fail_handoff = ExecutorHandoff(
+                task_id=task.id,
+                implementation_summary=inv_result.summary,
+                files_modified=[],
+                tests_changed=[],
+                verification_passed=False,
+                verification_output=None,
+                diff="",
+                relevant_context_references=[],
+                known_limitations=[],
+                warnings=[inv_result.error_message or "Execution failed."],
+                usage_metrics=inv_result.usage,
+                context_id=ctx_id,
+                parent_context_id=parent_ctx_id,
+            )
+            session.executor_handoff = exec_fail_handoff
+            session.current_context_id = ctx_id
             session.executor_result = ExecutorResult(
                 task_id=task.id,
                 status=inv_result.status,
                 summary=inv_result.summary,
                 error_message=inv_result.error_message,
                 raw_result=inv_result,
+                handoff=exec_fail_handoff,
             )
             session.updated_at = datetime.now(timezone.utc).isoformat()
             return session
 
+        exec_success_handoff = ExecutorHandoff(
+            task_id=task.id,
+            implementation_summary=inv_result.summary,
+            files_modified=inv_result.files_modified,
+            tests_changed=[],
+            verification_passed=True,
+            verification_output=None,
+            diff="",
+            relevant_context_references=inv_result.files_modified,
+            known_limitations=[],
+            warnings=[],
+            usage_metrics=inv_result.usage,
+            context_id=ctx_id,
+            parent_context_id=parent_ctx_id,
+        )
+        session.executor_handoff = exec_success_handoff
+        session.current_context_id = ctx_id
         session.executor_result = ExecutorResult(
             task_id=task.id,
             status=InvocationStatus.SUCCESS,
@@ -307,6 +403,7 @@ class BridgeOrchestrator:
             files_modified=inv_result.files_modified,
             reports_generated=inv_result.reports_generated,
             raw_result=inv_result,
+            handoff=exec_success_handoff,
         )
         session.current_stage = OrchestrationStage.EXECUTOR
         session.updated_at = datetime.now(timezone.utc).isoformat()
@@ -316,7 +413,9 @@ class BridgeOrchestrator:
         self,
         session: OrchestrationSession,
         verification_output: Optional[str] = None,
+        diff: Optional[str] = None,
         extra_context: Optional[Dict[str, Any]] = None,
+        executor_handoff: Optional[ExecutorHandoff] = None,
     ) -> OrchestrationSession:
         """
         Executes the REVIEWER stage.
@@ -327,6 +426,9 @@ class BridgeOrchestrator:
                 f"Cannot transition to REVIEWER from stage {session.current_stage}. "
                 "Executor stage must complete successfully before review."
             )
+
+        if executor_handoff:
+            session.executor_handoff = executor_handoff
 
         task = session.task
         # Update task status to review (.jester lifecycle integration)
@@ -345,12 +447,36 @@ class BridgeOrchestrator:
         )
 
         exec_res = session.executor_result
+
+        # Resolve files_modified from all available sources
+        files_mod = []
+        if extra_context and isinstance(extra_context, dict) and "files_modified" in extra_context:
+            files_mod = extra_context.get("files_modified") or []
+        elif exec_res and hasattr(exec_res, "files_modified") and exec_res.files_modified:
+            files_mod = exec_res.files_modified
+        elif session.executor_handoff and hasattr(session.executor_handoff, "files_modified") and session.executor_handoff.files_modified:
+            files_mod = session.executor_handoff.files_modified
+
+        # Determine diff content
+        diff_explicitly_provided = diff is not None
+        if diff is not None:
+            actual_diff = diff
+        elif exec_res and hasattr(exec_res, "diff") and exec_res.diff:
+            actual_diff = exec_res.diff
+            diff_explicitly_provided = True
+        else:
+            actual_diff = "No file changes detected."
+            diff_explicitly_provided = False
+
         payload: Dict[str, Any] = {
             "executor_summary": exec_res.summary if exec_res else "",
-            "files_modified": exec_res.files_modified if exec_res else [],
+            "files_modified": files_mod,
             "reports_generated": exec_res.reports_generated if exec_res else [],
             "verification_output": verification_output or "All test assertions passed.",
+            "diff": actual_diff,
         }
+        if session.architect_handoff:
+            payload["architect_intent"] = session.architect_handoff.implementation_intent
         if extra_context:
             payload.update(extra_context)
 
@@ -360,6 +486,54 @@ class BridgeOrchestrator:
         # Parse normalized review verdict
         verdict = self._parse_review_verdict(inv_result)
 
+        # Integrity Invariant: If task semantically requires code changes,
+        # an empty diff or lack of modified files MUST NOT pass review.
+        from .runtime import task_expects_code_changes
+        expects_code = task_expects_code_changes(task)
+
+        diff_has_content = bool(
+            actual_diff
+            and actual_diff.strip()
+            and actual_diff.strip() != "No file changes detected."
+        )
+        has_real_diff = diff_has_content or bool(files_mod)
+
+        if expects_code and diff_explicitly_provided and not has_real_diff:
+            if verdict == ReviewVerdict.PASS:
+                verdict = ReviewVerdict.REWORK_REQUIRED
+            defect_msg = (
+                "Integrity check failed: Task requires implementation changes, "
+                "but no code diff or file modifications were produced for review."
+            )
+            inv_result.error_message = defect_msg
+            if not inv_result.summary or inv_result.summary.startswith("["):
+                inv_result.summary = f"Review verdict: REWORK_REQUIRED. {defect_msg}"
+
+        # Context lineage resolution
+        ctx_id = None
+        parent_ctx_id = session.executor_handoff.context_id if session.executor_handoff else None
+        if extra_context and isinstance(extra_context, dict):
+            rev_bundle = extra_context.get("reviewer_context_bundle")
+            if isinstance(rev_bundle, dict):
+                ctx_id = rev_bundle.get("context_id")
+                if rev_bundle.get("parent_context_id"):
+                    parent_ctx_id = rev_bundle.get("parent_context_id")
+
+        rev_handoff = ReviewerHandoff(
+            task_id=task.id,
+            verdict=verdict.value,
+            summary=inv_result.summary,
+            feedback=inv_result.error_message if verdict != ReviewVerdict.PASS else None,
+            criteria_verified={c: (verdict == ReviewVerdict.PASS) for c in (task.acceptance_criteria or [])},
+            diff_inspected=has_real_diff if diff_explicitly_provided else True,
+            defect_details=inv_result.error_message if verdict != ReviewVerdict.PASS else None,
+            usage_metrics=inv_result.usage,
+            context_id=ctx_id,
+            parent_context_id=parent_ctx_id,
+            executor_context_id=(session.executor_handoff.context_id if session.executor_handoff else None),
+        )
+        session.reviewer_handoff = rev_handoff
+        session.current_context_id = ctx_id
         session.review_result = ReviewResult(
             task_id=task.id,
             verdict=verdict,
@@ -367,6 +541,7 @@ class BridgeOrchestrator:
             feedback=inv_result.error_message if verdict != ReviewVerdict.PASS else None,
             error_message=inv_result.error_message,
             raw_result=inv_result,
+            handoff=rev_handoff,
         )
 
         if verdict == ReviewVerdict.PASS:
@@ -391,6 +566,7 @@ class BridgeOrchestrator:
         session.updated_at = datetime.now(timezone.utc).isoformat()
         return session
 
+
     def _parse_review_verdict(self, result: InvocationResult) -> ReviewVerdict:
         """Parses a normalized review verdict from the InvocationResult."""
         if result.status == InvocationStatus.FAILED:
@@ -400,13 +576,38 @@ class BridgeOrchestrator:
         if result.status == InvocationStatus.REWORK_REQUIRED:
             return ReviewVerdict.REWORK_REQUIRED
 
-        summary_upper = result.summary.upper()
-        if "REWORK" in summary_upper:
+        summary_upper = result.summary.upper() if result.summary else ""
+
+        # 1. Look for explicit VERDICT: or REVIEW: declarations first (e.g. "VERDICT: PASS", "Review: REWORK_REQUIRED")
+        verdict_match = re.search(r"(?:VERDICT|REVIEW(?:\s+VERDICT)?|STATUS):\s*([A-Z_]+)", summary_upper)
+        if verdict_match:
+            v = verdict_match.group(1).strip()
+            if "PASS" in v:
+                return ReviewVerdict.PASS
+            if "REWORK" in v:
+                return ReviewVerdict.REWORK_REQUIRED
+            if "BLOCK" in v:
+                return ReviewVerdict.BLOCKED
+            if "FAIL" in v:
+                return ReviewVerdict.FAILED
+
+        # 2. Heuristic fallback with word boundaries and phrase negation handling
+        has_rework = bool(re.search(r"\bREWORK(?:[_\s]+REQUIRED)?\b", summary_upper))
+        rework_negated = bool(re.search(r"\b(ZERO|NO|WITHOUT)\s+(?:\w+\s+){0,3}REWORK", summary_upper))
+        if has_rework and not rework_negated:
             return ReviewVerdict.REWORK_REQUIRED
-        if "FAIL" in summary_upper:
-            return ReviewVerdict.FAILED
-        if "BLOCK" in summary_upper:
+
+        if re.search(r"\bBLOCK(?:ED)?\b", summary_upper):
             return ReviewVerdict.BLOCKED
+
+        # Match FAIL only if not preceded by zero/no/without
+        has_fail = bool(re.search(r"\bFAIL(?:ED|URE|URES)?\b", summary_upper))
+        fail_negated = bool(re.search(r"\b(ZERO|NO|WITHOUT)\s+(?:\w+\s+){0,3}FAIL", summary_upper))
+        if has_fail and not fail_negated:
+            return ReviewVerdict.FAILED
+
+        if re.search(r"\bPASS(?:ED)?\b", summary_upper):
+            return ReviewVerdict.PASS
 
         return ReviewVerdict.PASS
 
