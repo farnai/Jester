@@ -135,12 +135,14 @@ class BridgeCore:
             raise ConfigurationError(f"Task {task.id} specifies unknown role: '{role}'")
         return role
 
-    def resolve_agent(self, task: Task) -> AgentProfile:
+    def resolve_agent(self, task: Task, target_provider: Optional[str] = None) -> AgentProfile:
         """
         Resolves the AgentProfile for a task.
         Priority:
         1. Task's explicitly assigned_agent (or legacy agent field)
-        2. Configured role binding for task.role
+        2. Configured role binding for task.role (if compatible with target_provider)
+        3. Provider-compatible agent configured for task.role (if target_provider specified)
+        4. Default role binding fallback
         """
         role = self.resolve_role(task)
 
@@ -151,10 +153,21 @@ class BridgeCore:
             if agent:
                 return agent
 
-        # 2. Role binding fallback
-        agent = self.config.get_agent_for_role(role)
-        if agent:
-            return agent
+        # 2. Configured role binding for task.role (if matches target_provider or no target_provider)
+        bound_agent = self.config.get_agent_for_role(role)
+        if bound_agent and (not target_provider or bound_agent.provider == target_provider):
+            return bound_agent
+
+        # 3. If target_provider is specified and bound_agent belongs to another provider,
+        # find an agent defined for this role under the target provider.
+        if target_provider:
+            for agent in self.config.agents.values():
+                if agent.role == role and agent.provider == target_provider:
+                    return agent
+
+        # 4. Fallback to bound agent if no provider-matched agent found
+        if bound_agent:
+            return bound_agent
 
         raise ConfigurationError(
             f"Unable to resolve an agent for task '{task.id}' (role='{role}', assigned_agent='{agent_id}')"
@@ -208,7 +221,6 @@ class BridgeCore:
         a normalized InvocationRequest ready for dispatch.
         """
         role = self.resolve_role(task)
-        agent = self.resolve_agent(task)
 
         if payload:
             for source_dict in [payload, payload.get("context"), payload.get("extra_context")]:
@@ -219,6 +231,19 @@ class BridgeCore:
                         target_account = source_dict.get("target_account")
                     if target_runtime_type is None:
                         target_runtime_type = source_dict.get("target_runtime_type")
+
+        # Reconcile target runtime and provider
+        target_provider = None
+        if target_runtime_id:
+            selected_runtime_entry = self.runtime_registry.get_runtime(target_runtime_id)
+            if not selected_runtime_entry:
+                raise ConfigurationError(
+                    f"Target runtime '{target_runtime_id}' is not registered."
+                )
+            target_provider = selected_runtime_entry.provider_id
+
+        # Resolve agent respecting the target provider if explicit runtime was provided
+        agent = self.resolve_agent(task, target_provider=target_provider)
 
         # 1. Deterministic Runtime Routing
         routing = self.runtime_router.route(
@@ -245,8 +270,13 @@ class BridgeCore:
                     if (agent.model and agent.model != "default")
                     else (runtime.model or agent.model or "default")
                 )
+        elif target_runtime_id:
+            # Fail closed when explicit runtime targeting failed
+            raise ConfigurationError(
+                f"Routing failed for explicit target_runtime_id='{target_runtime_id}' on role '{role}': {routing.reason}"
+            )
         else:
-            # Fallback if no matching runtimes were found in registry or direct provider
+            # Fallback if no matching runtimes were found in registry or direct provider (only when no explicit runtime requested)
             provider = self.resolve_provider(agent)
             runtime_id = None
             runtime_type = None

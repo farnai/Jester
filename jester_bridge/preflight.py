@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 from .core import BridgeCore
 from .protocol import Task
-from .roles import Role
+from .roles import Role, get_default_capabilities_for_role
 from .runtime import PROTECTED_PATHS
 
 
@@ -85,9 +85,18 @@ class PreflightValidator:
             if not has_dangerous_scope:
                 passed.append(f"Task scope bounded and safe: {task.scope}")
 
+        # 2b. Explicit Runtime Pre-Validation
+        target_provider_id = None
+        if target_runtime_id:
+            target_runtime_entry = self.core.runtime_registry.get_runtime(target_runtime_id)
+            if not target_runtime_entry:
+                errors.append(f"TARGET_RUNTIME_NOT_FOUND: Target runtime '{target_runtime_id}' is not registered.")
+            else:
+                target_provider_id = target_runtime_entry.provider_id
+
         # 3. Agent & Provider Resolution for Task
         try:
-            agent = self.core.resolve_agent(task)
+            agent = self.core.resolve_agent(task, target_provider=target_provider_id)
             passed.append(f"Agent resolved: {agent.id} (role={agent.role}, provider={agent.provider})")
 
             provider = self.core.resolve_provider(agent)
@@ -113,6 +122,11 @@ class PreflightValidator:
                         f"Runtime '{routing.selected_runtime.runtime_id}' "
                         f"(account='{routing.selected_runtime.account.account_id}') readiness verified"
                     )
+                elif target_runtime_id:
+                    errors.append(
+                        f"TARGET_RUNTIME_UNAVAILABLE: Target runtime '{target_runtime_id}' for role '{task.role}' "
+                        f"failed readiness check ({routing.reason})."
+                    )
                 elif routing.candidates_evaluated:
                     errors.append(
                         f"PROVIDER_UNAVAILABLE: Provider '{provider.provider_id}' for role '{task.role}' "
@@ -134,25 +148,37 @@ class PreflightValidator:
             workflow_roles = [Role.ARCHITECT.value, Role.EXECUTOR.value, Role.REVIEWER.value]
             for role_name in workflow_roles:
                 try:
-                    role_agent = self.core.config.get_agent_for_role(role_name)
+                    dummy_task = Task(
+                        id=task.id,
+                        title=task.title,
+                        role=role_name,
+                        required_capabilities=get_default_capabilities_for_role(Role(role_name)),
+                    )
+                    role_agent = self.core.resolve_agent(dummy_task, target_provider=target_provider_id)
                     if not role_agent:
                         errors.append(f"No configured agent found for required workflow role '{role_name}'.")
                         continue
-                    role_provider = self.core.resolve_provider(role_agent)
                     if check_credentials:
                         role_routing = self.core.runtime_router.route(
-                            task=task,
+                            task=dummy_task,
                             target_role=role_name,
                             target_provider=role_agent.provider,
                             target_runtime_id=target_runtime_id,
                         )
                         if role_routing.status == "SUCCESS":
                             passed.append(f"Role '{role_name}' runtime readiness verified")
-                        elif not role_provider.health_check():
+                        elif target_runtime_id:
                             errors.append(
-                                f"PROVIDER_UNAVAILABLE: Provider '{role_provider.provider_id}' for role '{role_name}' "
-                                f"failed readiness check (credentials not configured)."
+                                f"TARGET_RUNTIME_UNAVAILABLE: Target runtime '{target_runtime_id}' for role '{role_name}' "
+                                f"failed readiness check ({role_routing.reason})."
                             )
+                        else:
+                            role_provider = self.core.resolve_provider(role_agent)
+                            if not role_provider.health_check():
+                                errors.append(
+                                    f"PROVIDER_UNAVAILABLE: Provider '{role_provider.provider_id}' for role '{role_name}' "
+                                    f"failed readiness check (credentials not configured)."
+                                )
                 except Exception as e:
                     errors.append(f"Workflow role check failed for '{role_name}': {str(e)}")
 

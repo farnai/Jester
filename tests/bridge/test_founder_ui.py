@@ -36,6 +36,7 @@ from jester_bridge.protocol import Task
 from jester_bridge.runtime import BoundedWorkspaceRuntime
 from jester_bridge.server import create_bridge_app
 from jester_bridge.testing import MockProviderA, MockProviderB
+from jester_bridge.runtimes import AccountIdentity, RuntimeEntry, RuntimeType
 from jester_bridge.workflow import ControlledWorkflowRunner
 
 
@@ -79,10 +80,24 @@ def _setup_test_env(tmp_path: Path):
             "chatgpt-lead": AgentProfile(id="chatgpt-lead", role="architect", provider="openai", capabilities={"planning", "reasoning", "repository_read"}),
             "gemini-dev": AgentProfile(id="gemini-dev", role="executor", provider="google", capabilities={"planning", "reasoning", "code_generation", "repository_read"}),
             "chatgpt-critic": AgentProfile(id="chatgpt-critic", role="reviewer", provider="openai", capabilities={"reasoning", "repository_read", "review"}),
+            "gemini-architect": AgentProfile(id="gemini-architect", role="architect", provider="google", capabilities={"planning", "reasoning", "repository_read"}),
+            "gemini-reviewer": AgentProfile(id="gemini-reviewer", role="reviewer", provider="google", capabilities={"reasoning", "repository_read", "review"}),
         },
     )
 
     core = BridgeCore(config=config, providers={"openai": prov_openai, "google": prov_google})
+    core.register_runtime(
+        RuntimeEntry(
+            runtime_id="test-runtime-id",
+            provider_id="google",
+            runtime_type=RuntimeType.CLI,
+            account=AccountIdentity(account_id="test-account", provider="google"),
+            model="gemini-2.5-pro",
+            capabilities={"code_generation", "reasoning", "planning", "review"},
+            priority=10,
+            provider_adapter=prov_google,
+        )
+    )
     runtime = BoundedWorkspaceRuntime(repo_root=tmp_path)
     store = ExecutionHistoryStore(repo_root=tmp_path)
     git = GitController(repo_root=tmp_path)

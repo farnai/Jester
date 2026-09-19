@@ -270,6 +270,14 @@ def create_bridge_app(
         if not r:
             raise HTTPException(status_code=500, detail="ControlledWorkflowRunner is not initialized.")
 
+        # Validate explicit runtime targeting
+        if req.target_runtime_id and r.core:
+            if not r.core.runtime_registry.get_runtime(req.target_runtime_id):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Target runtime '{req.target_runtime_id}' is not registered in runtime registry.",
+                )
+
         # Determine task ID
         task_id = req.task_id
         if not task_id:
