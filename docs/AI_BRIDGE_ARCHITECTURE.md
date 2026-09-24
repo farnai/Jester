@@ -1,3 +1,39 @@
+# JESTER AI Bridge — Migration & Standalone Repository Notice
+
+> **IMPORTANT NOTICE:**  
+> The **JESTER AI Bridge** subsystem, along with its provider-agnostic multi-agent orchestration engine, CLI/API adapters, prompt compilation pipeline, Founder Command Interface, automated test suite, and operational documentation, has been completely migrated to a dedicated, independent repository:
+> 
+> **Repository:** [https://github.com/farnai/JesterBridge](https://github.com/farnai/JesterBridge)  
+> **Canonical Documentation:** [JesterBridge docs/ARCHITECTURE.md](https://github.com/farnai/JesterBridge/blob/main/docs/ARCHITECTURE.md)
+
+---
+
+## 1. Summary of Migration
+
+1. **Single Source of Truth:**
+   All future development, architectural decisions, configuration, adapters (Gemini, OpenAI, Antigravity CLI, Ollama), runtime selection, and testing for the Bridge live exclusively in arnai/JesterBridge.
+
+2. **Main JESTER Repository Boundary:**
+   The main JESTER repository focuses exclusively on the core relationship discovery application (astrology engine, deterministic synastry, Supabase persistence/RLS, FastAPI backend, and React/Vite web application).
+
+3. **Getting Started with the Bridge:**
+   To install, configure, start, or test JesterBridge:
+   `ash
+   git clone https://github.com/farnai/JesterBridge.git
+   cd JesterBridge
+   pip install -r requirements.txt
+   pytest
+   python scripts/run_founder_ui.py
+   `
+
+---
+
+## 2. Historical Reference
+
+The content below is retained as a frozen historical snapshot from when the Bridge was initially conceptualized in the main JESTER monorepo. For the active, canonical specification, consult docs/ARCHITECTURE.md in the JesterBridge repository.
+
+---
+
 # JESTER AI Bridge Architecture: Provider-Agnostic Foundation
 
 ## 1. Overview
