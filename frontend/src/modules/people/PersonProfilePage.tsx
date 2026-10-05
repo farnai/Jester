@@ -155,7 +155,11 @@ export const PersonProfilePage: React.FC = () => {
 
   if (!profile) return null;
 
-  const score = preview ? Math.round(preview.score) : 60;
+  const hasScore =
+    preview?.score !== undefined &&
+    preview?.score !== null &&
+    !isNaN(preview.score);
+  const score = hasScore ? Math.round(preview!.score) : null;
   const relationshipHook =
     preview?.interpretation?.text ||
     preview?.deep_analysis?.core_dynamic?.text ||
@@ -163,22 +167,24 @@ export const PersonProfilePage: React.FC = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      {/* 1. Breadcrumb Navigation */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link
-          to="/discover"
-          style={{
-            textDecoration: "none",
-            color: "#6366f1",
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            gap: "0.35rem",
-          }}
-        >
-          ← აღმოჩენის სიაში დაბრუნება
-        </Link>
+      {/* 1. Breadcrumb Navigation Trail */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.875rem", fontWeight: 600 }}>
+          <Link
+            to="/discover"
+            style={{
+              textDecoration: "none",
+              color: "#6366f1",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            🧭 აღმოჩენა
+          </Link>
+          <span style={{ color: "#94a3b8" }}>/</span>
+          <span style={{ color: "#0f172a" }}>{profile.display_name}</span>
+        </div>
         {isSelf && (
           <Badge variant="brand" size="sm">
             ეს თქვენი პროფილია
@@ -239,31 +245,40 @@ export const PersonProfilePage: React.FC = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ fontSize: "1.3rem" }}>💡</span>
-              <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#1e1b4b" }}>
-                რატომ ეს ადამიანი თქვენთვის?
-              </h2>
+              <div>
+                <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#1e1b4b" }}>
+                  სინასტრიული ხედვა (Synastry Perspective)
+                </h2>
+                <div style={{ fontSize: "0.8rem", color: "#6b21a8", marginTop: "0.15rem", fontWeight: 500 }}>
+                  JESTER-ის წინასწარი ხედვა თქვენს თანხვედრაზე
+                </div>
+              </div>
             </div>
 
             {/* Restrained Curiosity Score */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                backgroundColor: "#ffffff",
-                border: "1px solid #f0abfc",
-                borderRadius: "20px",
-                padding: "0.3rem 0.75rem",
-              }}
-              title="სინასტრიული თანხვედრა (Curiosity Signal)"
-            >
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
-                თანხვედრა
-              </span>
-              <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#9333ea" }}>
-                {score}
-              </span>
-            </div>
+            {loadingPreview ? (
+              <Skeleton width="90px" height="32px" borderRadius="20px" />
+            ) : hasScore && score !== null ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #f0abfc",
+                  borderRadius: "20px",
+                  padding: "0.3rem 0.75rem",
+                }}
+                title="სინასტრიული თანხვედრა (Curiosity Signal)"
+              >
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
+                  თანხვედრა
+                </span>
+                <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#9333ea" }}>
+                  {score}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           {loadingPreview ? (
@@ -304,7 +319,7 @@ export const PersonProfilePage: React.FC = () => {
                   boxShadow: "0 4px 12px rgba(147, 51, 234, 0.2)",
                 }}
               >
-                💡 რატომ ეს ადამიანი? (See Why) →
+                💡 გაიგე რატომ (Explore Why) →
               </Button>
             </Link>
           </div>

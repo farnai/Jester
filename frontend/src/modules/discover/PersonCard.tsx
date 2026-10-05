@@ -9,7 +9,8 @@ export interface PersonCardProps {
 }
 
 export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus = "none" }) => {
-  const score = Math.round(person.compatibility_score ?? 60);
+  const hasScore = person.compatibility_score != null;
+  const score = hasScore ? Math.round(person.compatibility_score!) : null;
   const hookText = person.hook_observation?.text;
 
   // Sign labels in Georgian
@@ -33,13 +34,25 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {/* 1. Header: Avatar + Identity + Curiosity Score */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.85rem" }}>
-          <div style={{ display: "flex", gap: "0.85rem", alignItems: "center" }}>
+          <Link
+            to={`/people/${person.id}`}
+            style={{
+              display: "flex",
+              gap: "0.85rem",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "inherit",
+              flex: 1,
+              minWidth: 0,
+            }}
+            title={`${person.display_name} — პროფილის ნახვა`}
+          >
             <Avatar
               src={person.avatar_url}
               name={person.display_name}
               size="lg"
             />
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
                 <h3
                   style={{
@@ -49,6 +62,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
                     color: "#0f172a",
                     letterSpacing: "-0.01em",
                   }}
+                  className="person-card-name"
                 >
                   {person.display_name}
                 </h3>
@@ -70,45 +84,47 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
               </div>
 
               {(person.occupation || person.city) && (
-                <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.2rem", fontWeight: 500 }}>
+                <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.2rem", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {[person.occupation, person.city].filter(Boolean).join(" • ")}
                 </div>
               )}
             </div>
-          </div>
+          </Link>
 
-          {/* Curiosity Score Pill */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#faf5ff",
-              border: "1px solid #e9d5ff",
-              borderRadius: "12px",
-              padding: "0.35rem 0.65rem",
-              minWidth: "48px",
-              flexShrink: 0,
-            }}
-            title="სინასტრიული თანხვედრის ინდექსი (Curiosity Score)"
-          >
-            <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#9333ea", lineHeight: 1 }}>
-              {score}
-            </span>
-            <span
+          {/* Curiosity Score Pill (Rendered only when real score is available) */}
+          {hasScore && score !== null && (
+            <div
               style={{
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                color: "#a855f7",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                marginTop: "0.15rem",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#faf5ff",
+                border: "1px solid #e9d5ff",
+                borderRadius: "12px",
+                padding: "0.35rem 0.65rem",
+                minWidth: "48px",
+                flexShrink: 0,
               }}
+              title="სინასტრიული თანხვედრის ინდექსი (Curiosity Score)"
             >
-              თანხვედრა
-            </span>
-          </div>
+              <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#9333ea", lineHeight: 1 }}>
+                {score}
+              </span>
+              <span
+                style={{
+                  fontSize: "0.6rem",
+                  fontWeight: 700,
+                  color: "#a855f7",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  marginTop: "0.15rem",
+                }}
+              >
+                თანხვედრა
+              </span>
+            </div>
+          )}
         </div>
 
         {/* 2. JESTER Human-First Hook / Observation & Discovery Signal Metadata */}
@@ -181,25 +197,26 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
         </div>
       </div>
 
-      {/* 4. Action Row: Primary "რატომ?" (Why) + Secondary "პროფილი" (Profile) */}
+      {/* 4. Action Row: Primary "გაიცანი (Profile)" + Secondary "რატომ? (Why)" */}
       <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", paddingTop: "0.25rem" }}>
-        <Link to={`/people/${person.id}/why`} style={{ flex: 1, textDecoration: "none" }}>
+        <Link to={`/people/${person.id}`} style={{ flex: 1, textDecoration: "none" }}>
           <Button
             variant="brand"
             size="md"
             fullWidth
             style={{ minHeight: "44px", fontWeight: 700 }}
           >
-            რატომ? (Why) →
+            გაიცანი პროფილი →
           </Button>
         </Link>
-        <Link to={`/people/${person.id}`} style={{ textDecoration: "none" }}>
+        <Link to={`/people/${person.id}/why`} style={{ textDecoration: "none" }}>
           <Button
             variant="outline"
             size="md"
-            style={{ minHeight: "44px", padding: "0 1.1rem" }}
+            style={{ minHeight: "44px", padding: "0 1.1rem", fontWeight: 600 }}
+            title="რატომ ეს ადამიანი? (Why this connection)"
           >
-            პროფილი
+            💡 რატომ?
           </Button>
         </Link>
       </div>

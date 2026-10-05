@@ -180,7 +180,11 @@ export const WhyPage: React.FC = () => {
 
   if (!data) return null;
 
-  const score = Math.round(data.score);
+  const hasScore =
+    data.score !== undefined &&
+    data.score !== null &&
+    !isNaN(data.score);
+  const score = hasScore ? Math.round(data.score) : null;
   const primaryInsight =
     data.interpretation?.text ||
     data.deepAnalysis?.core_dynamic?.text ||
@@ -197,7 +201,35 @@ export const WhyPage: React.FC = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      {/* 1. Header & Person Identity Context */}
+      {/* 1. Breadcrumb Trail: Discover -> Person -> Why */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.875rem", fontWeight: 600 }}>
+        <Link
+          to="/discover"
+          style={{
+            textDecoration: "none",
+            color: "#6366f1",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.3rem",
+          }}
+        >
+          🧭 აღმოჩენა
+        </Link>
+        <span style={{ color: "#94a3b8" }}>/</span>
+        <Link
+          to={`/people/${targetId}`}
+          style={{
+            textDecoration: "none",
+            color: "#6366f1",
+          }}
+        >
+          {profile?.display_name || "პროფილი"}
+        </Link>
+        <span style={{ color: "#94a3b8" }}>/</span>
+        <span style={{ color: "#0f172a" }}>💡 რატომ?</span>
+      </div>
+
+      {/* Header & Person Identity Context */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {profile && (
@@ -238,25 +270,27 @@ export const WhyPage: React.FC = () => {
           </Badge>
 
           {/* Restrained Curiosity Score */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              backgroundColor: "#ffffff",
-              border: "1px solid #f0abfc",
-              borderRadius: "20px",
-              padding: "0.25rem 0.7rem",
-            }}
-            title="სინასტრიული თანხვედრა"
-          >
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
-              თანხვედრა
-            </span>
-            <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "#9333ea" }}>
-              {score} / 100
-            </span>
-          </div>
+          {hasScore && score !== null && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                backgroundColor: "#ffffff",
+                border: "1px solid #f0abfc",
+                borderRadius: "20px",
+                padding: "0.25rem 0.7rem",
+              }}
+              title="სინასტრიული თანხვედრა"
+            >
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
+                თანხვედრა
+              </span>
+              <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "#9333ea" }}>
+                {score} / 100
+              </span>
+            </div>
+          )}
         </div>
 
         <p
@@ -268,16 +302,16 @@ export const WhyPage: React.FC = () => {
             fontWeight: 500,
           }}
         >
-            {primaryInsight}
-          </p>
-        </Card>
+          {primaryInsight}
+        </p>
+      </Card>
 
       {/* 2.5 Dedicated Connection Invitation: The insight becomes the invitation */}
       <Card padded style={{ padding: "1.25rem 1.5rem", borderLeft: "4px solid #8b5cf6" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
           <span style={{ fontSize: "1.1rem" }}>✉️</span>
           <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 800, color: "#4c1d95" }}>
-            Connection Invitation (The insight becomes the invitation)
+            კავშირის მიწვევა — ინსაითი ხდება მოწვევა
           </h3>
         </div>
         <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
@@ -286,7 +320,7 @@ export const WhyPage: React.FC = () => {
       </Card>
 
       {/* 3. Supporting Relationship Dynamics (2–4 Human-Readable Signals) */}
-      {supportingSignals.length > 0 && (
+      {supportingSignals.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800, color: "#0f172a" }}>
@@ -343,6 +377,15 @@ export const WhyPage: React.FC = () => {
             })}
           </div>
         </div>
+      ) : (
+        <Card padded style={{ padding: "1.25rem 1.5rem", backgroundColor: "#f8fafc" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#64748b", fontSize: "0.9rem", lineHeight: 1.5 }}>
+            <span>ℹ️</span>
+            <span>
+              დამატებითი პლანეტარული ასპექტები არ არის ხელმისაწვდომი (საჭიროებს დაბადების ზუსტ მონაცემებს). ძირითადი სინასტრიული ხედვა და თემები წარმოდგენილია ზემოთ.
+            </span>
+          </div>
+        </Card>
       )}
 
       {/* 4. Actionable Conversation Starters & Topics */}
@@ -376,12 +419,30 @@ export const WhyPage: React.FC = () => {
                 ⚖️ სრული შედარება (US) →
               </Button>
             </Link>
+          ) : relState === "pending_out" ? (
+            <Badge variant="warning" size="md" style={{ padding: "0.5rem 0.85rem" }}>
+              ⏳ მოთხოვნა გაგზავნილია
+            </Badge>
+          ) : relState === "pending_in" ? (
+            <Button
+              variant="brand"
+              size="md"
+              isLoading={transitionMutation.isPending}
+              onClick={() => transitionMutation.mutate("accept")}
+            >
+              ✓ მიღება (Accept)
+            </Button>
           ) : (
-            <Link to={`/people/${targetId}`} style={{ textDecoration: "none" }}>
-              <Button variant="outline" size="md">
-                პროფილის ნახვა
-              </Button>
-            </Link>
+            <Button
+              variant="brand"
+              size="md"
+              isLoading={connectMutation.isPending}
+              onClick={() => connectMutation.mutate()}
+              icon={<span>🤝</span>}
+              style={{ minHeight: "42px" }}
+            >
+              კავშირის შეთავაზება (Connect)
+            </Button>
           )}
         </div>
       </Card>
