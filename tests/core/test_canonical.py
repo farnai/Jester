@@ -7,7 +7,7 @@ C. Seed symmetry: canonical_pair_seed(A, vA, B, vB) == canonical_pair_seed(B, vB
 D. Known-value regression: exact format "{user_low}:{user_high}:{ver_low}:{ver_high}"
 E. Different pair separation: different UUIDs produce distinct canonical pairs and seeds
 F. Version sensitivity: version updates alter the seed string deterministically
-G. Self-pair behavior: canonical_pair(A, A) raises ValueError
+G. Self-pair behavior: canonical_pair(A, A) and canonical_pair_seed(A, vA, A, vB) raise ValueError
 H. Application wrapper: connections.router.get_canonical_pair raises JesterAPIException(invalid_pair)
 """
 import uuid
@@ -102,6 +102,29 @@ def test_canonical_pair_self_rejection():
 
     with pytest.raises(ValueError, match="Cannot pair a user with themselves"):
         canonical_pair(u1, u1)
+
+
+def test_canonical_pair_self_rejection_distinct_instances():
+    u1 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    u2 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+    with pytest.raises(ValueError, match="Cannot pair a user with themselves"):
+        canonical_pair(u1, u2)
+
+
+def test_canonical_pair_seed_self_rejection():
+    u1 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+    with pytest.raises(ValueError, match="Cannot pair a user with themselves"):
+        canonical_pair_seed(u1, 1, u1, 1)
+
+
+def test_canonical_pair_seed_self_rejection_different_versions():
+    u1 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    u2 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+    with pytest.raises(ValueError, match="Cannot pair a user with themselves"):
+        canonical_pair_seed(u1, 1, u2, 2)
 
 
 def test_connections_router_wrapper_preserves_jester_api_exception():
