@@ -92,6 +92,10 @@ export default {
         lg: "16px",
         xl: "24px",
       },
+      fontFamily: {
+        sans: ['"Noto Sans Georgian"', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['Georgia', 'serif'],
+      },
     },
   },
   plugins: [],

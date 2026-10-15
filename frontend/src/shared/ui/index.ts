@@ -5,5 +5,6 @@ export * from "./Avatar";
 export * from "./Badge";
 export * from "./Skeleton";
 export * from "./CitySelector";
+export * from "./JesterLogo";
 export * from "../StatusState";
 
