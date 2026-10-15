@@ -1,0 +1,142 @@
+{
+  "$description": "JESTER design system v1 — selected visual direction; hex values are implementation proposals, not pixel samples.",
+  "palette": {
+    "brand": {
+      "orange-50": "#FFF6F0",
+      "orange-100": "#FFE7D7",
+      "orange-200": "#FFD0B2",
+      "orange-300": "#FFB185",
+      "orange-400": "#FF925A",
+      "orange-500": "#FF7A2F",
+      "orange-600": "#E9681F",
+      "orange-700": "#C95618",
+      "orange-800": "#9E4215",
+      "orange-900": "#713111"
+    },
+    "surface": {
+      "canvas": "#FAF7F2",
+      "base": "#FFFDFA",
+      "card": "#FFFFFF",
+      "alt": "#F3EEE6",
+      "raised": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#222630",
+      "secondary": "#6A716F",
+      "tertiary-decorative": "#8B918F",
+      "inverse": "#FFFFFF"
+    },
+    "support": {
+      "sage-50": "#F4F8F1",
+      "sage-100": "#E8EFE2",
+      "sage-200": "#D6E1CD",
+      "sage-300": "#BACAAC",
+      "sage-400": "#95A686",
+      "sage-500": "#788A69",
+      "sage-ink": "#4B6242"
+    },
+    "accent": {
+      "peach": "#F5DDD1",
+      "peach-soft": "#FBEEE7"
+    },
+    "border": {
+      "soft": "#E6E0D7",
+      "muted": "#D8D1C7",
+      "interactive": "#8F8A83"
+    },
+    "semantic": {
+      "success": "#4B6242",
+      "success-soft": "#EAF4EA",
+      "warning": "#925C18",
+      "warning-soft": "#FFF3DE",
+      "error": "#AE3534",
+      "error-soft": "#FBE9E8",
+      "info": "#396F87",
+      "info-soft": "#EAF1F7"
+    }
+  },
+  "semantic": {
+    "color": {
+      "bg": {
+        "app": "{surface.canvas}",
+        "surface": "{surface.card}",
+        "subtle": "{surface.alt}",
+        "card": "{surface.card}"
+      },
+      "text": {
+        "primary": "{text.primary}",
+        "secondary": "{text.secondary}",
+        "muted-decorative": "{text.tertiary-decorative}",
+        "on-primary": "{text.primary}",
+        "on-primary-dark": "{text.inverse}"
+      },
+      "action": {
+        "primary": "{brand.orange-500}",
+        "primary-hover": "{brand.orange-600}",
+        "primary-pressed": "{brand.orange-700}",
+        "primary-white-label-variant": "{brand.orange-800}",
+        "focus-outline": "{brand.orange-800}",
+        "selection-bg": "{brand.orange-100}",
+        "selection-text": "{brand.orange-900}"
+      },
+      "border": {
+        "default": "{border.soft}",
+        "input": "{border.interactive}",
+        "focus": "{brand.orange-800}"
+      },
+      "insight": {
+        "warm-bg": "{accent.peach-soft}",
+        "warm-text": "{text.primary}",
+        "calm-bg": "{support.sage-100}",
+        "calm-text": "{support.sage-ink}"
+      },
+      "status": {
+        "success-text": "{semantic.success}",
+        "success-bg": "{semantic.success-soft}",
+        "warning-text": "{semantic.warning}",
+        "warning-bg": "{semantic.warning-soft}",
+        "error-text": "{semantic.error}",
+        "error-bg": "{semantic.error-soft}",
+        "info-text": "{semantic.info}",
+        "info-bg": "{semantic.info-soft}"
+      },
+      "chart": {
+        "primary": "{brand.orange-500}",
+        "track": "{surface.alt}",
+        "secondary": "{support.sage-500}"
+      }
+    },
+    "radius": {
+      "sm": "8px",
+      "md": "12px",
+      "lg": "18px",
+      "xl": "24px",
+      "pill": "999px"
+    },
+    "spacing": {
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "20px",
+      "6": "24px",
+      "8": "32px",
+      "10": "40px",
+      "12": "48px"
+    },
+    "motion": {
+      "fast": "120ms",
+      "normal": "180ms",
+      "reduced-motion": "respect prefers-reduced-motion"
+    },
+    "typography": {
+      "font-family": "Noto Sans Georgian, system-ui, sans-serif",
+      "body-mobile": "14-16px",
+      "body-desktop": "16px",
+      "caption": "12-14px",
+      "heading": "24-32px",
+      "line-height-body": "1.5-1.65"
+    }
+  },
+  "$format_note": "Reference JSON palette and semantic aliases for Gemini to map to existing architecture; not a Design Tokens Community Group-compliant file."
+}

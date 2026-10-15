@@ -1,0 +1,75 @@
+/* JESTER / Color & Design System v1. Reference handoff only.
+   Merge into the real repo's existing token structure; DO NOT import blindly.
+   Main orange is intentionally paired with DARK label text for contrast. */
+:root {
+  --jester-brand-orange-50: #FFF6F0;
+  --jester-brand-orange-100: #FFE7D7;
+  --jester-brand-orange-200: #FFD0B2;
+  --jester-brand-orange-300: #FFB185;
+  --jester-brand-orange-400: #FF925A;
+  --jester-brand-orange-500: #FF7A2F;
+  --jester-brand-orange-600: #E9681F;
+  --jester-brand-orange-700: #C95618;
+  --jester-brand-orange-800: #9E4215;
+  --jester-brand-orange-900: #713111;
+  --jester-surface-canvas: #FAF7F2;
+  --jester-surface-base: #FFFDFA;
+  --jester-surface-card: #FFFFFF;
+  --jester-surface-alt: #F3EEE6;
+  --jester-surface-raised: #FFFFFF;
+  --jester-text-primary: #222630;
+  --jester-text-secondary: #6A716F;
+  --jester-text-tertiary-decorative: #8B918F;
+  --jester-text-inverse: #FFFFFF;
+  --jester-support-sage-50: #F4F8F1;
+  --jester-support-sage-100: #E8EFE2;
+  --jester-support-sage-200: #D6E1CD;
+  --jester-support-sage-300: #BACAAC;
+  --jester-support-sage-400: #95A686;
+  --jester-support-sage-500: #788A69;
+  --jester-support-sage-ink: #4B6242;
+  --jester-accent-peach: #F5DDD1;
+  --jester-accent-peach-soft: #FBEEE7;
+  --jester-border-soft: #E6E0D7;
+  --jester-border-muted: #D8D1C7;
+  --jester-border-interactive: #8F8A83;
+  --jester-semantic-success: #4B6242;
+  --jester-semantic-success-soft: #EAF4EA;
+  --jester-semantic-warning: #925C18;
+  --jester-semantic-warning-soft: #FFF3DE;
+  --jester-semantic-error: #AE3534;
+  --jester-semantic-error-soft: #FBE9E8;
+  --jester-semantic-info: #396F87;
+  --jester-semantic-info-soft: #EAF1F7;
+
+  /* semantic aliases — preferred component API */
+  --jester-bg-app: var(--jester-surface-canvas);
+  --jester-bg-card: var(--jester-surface-card);
+  --jester-bg-subtle: var(--jester-surface-alt);
+  --jester-fg-primary: var(--jester-text-primary);
+  --jester-fg-secondary: var(--jester-text-secondary);
+  --jester-action-primary: var(--jester-brand-orange-500);
+  --jester-action-primary-hover: var(--jester-brand-orange-600);
+  --jester-action-primary-label: var(--jester-text-primary);
+  --jester-action-primary-dark: var(--jester-brand-orange-800);
+  --jester-action-primary-dark-label: var(--jester-text-inverse);
+  --jester-action-focus: var(--jester-brand-orange-800);
+  --jester-input-border: var(--jester-border-interactive);
+  --jester-border-default: var(--jester-border-soft);
+  --jester-insight-warm-bg: var(--jester-accent-peach-soft);
+  --jester-insight-calm-bg: var(--jester-support-sage-100);
+  --jester-insight-calm-fg: var(--jester-support-sage-ink);
+}
+
+/* Reference pattern only; map onto existing components after repo inspection. */
+.jester-primary-button {
+  color: var(--jester-action-primary-label);
+  background: var(--jester-action-primary);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-weight: 700;
+}
+.jester-primary-button:hover { background: var(--jester-action-primary-hover); }
+.jester-primary-button:focus-visible { outline: 2px solid var(--jester-action-focus); outline-offset: 3px; }
+.jester-primary-button[disabled] { opacity: .55; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) { .jester-primary-button { transition: none; } }
