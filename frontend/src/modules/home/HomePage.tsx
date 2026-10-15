@@ -74,10 +74,10 @@ export const HomePage: React.FC = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <Avatar src={profile?.avatar_url} name={greetingName} size="lg" />
           <div>
-            <div style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 600 }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--jester-text-secondary)", fontWeight: 600 }}>
               {timeGreeting} 👋
             </div>
-            <h1 style={{ margin: 0, fontSize: "1.45rem", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
+            <h1 style={{ margin: 0, fontSize: "1.45rem", fontWeight: 800, color: "var(--jester-text-primary)", letterSpacing: "-0.01em" }}>
               {greetingName}
             </h1>
           </div>
@@ -106,7 +106,7 @@ export const HomePage: React.FC = () => {
                 ☀️ დღის ხედვა & ენერგია
               </Badge>
               {/* Single clean date badge */}
-              <span style={{ fontSize: "0.825rem", color: "#64748b", fontWeight: 500 }}>
+              <span style={{ fontSize: "0.825rem", color: "var(--jester-text-secondary)", fontWeight: 500 }}>
                 {new Date().toLocaleDateString("ka-GE", { weekday: "long", month: "short", day: "numeric" })}
               </span>
             </div>
@@ -121,11 +121,11 @@ export const HomePage: React.FC = () => {
             <ErrorState error={errorDaily as Error} onRetry={refetchDaily} />
           ) : dailyEnergy ? (
             <div>
-              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.25rem", color: "#1e1b4b", fontWeight: 800 }}>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.25rem", color: "var(--jester-text-primary)", fontWeight: 800 }}>
                 {dailyEnergy.label}
               </h2>
 
-              <p style={{ margin: "0 0 1.25rem 0", color: "#334155", fontSize: "0.95rem", lineHeight: 1.65 }}>
+              <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-text-primary)", fontSize: "0.95rem", lineHeight: 1.65 }}>
                 {dailyEnergy.interpretation?.text ||
                   "დღევანდელი ენერგია ხელს უწყობს პირდაპირ კომუნიკაციას და ახალი კონტაქტების გაცნობას."}
               </p>
@@ -137,15 +137,15 @@ export const HomePage: React.FC = () => {
                     <div
                       style={{
                         padding: "0.75rem 0.9rem",
-                        backgroundColor: "#f0fdf4",
-                        border: "1px solid #bbf7d0",
+                        backgroundColor: "var(--jester-support-sage-50)",
+                        border: "1px solid var(--jester-support-sage-200)",
                         borderRadius: "10px",
                         fontSize: "0.85rem",
-                        color: "#166534",
+                        color: "var(--jester-support-sage-ink)",
                         lineHeight: 1.5,
                       }}
                     >
-                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#15803d", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--jester-support-sage-ink)", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                         <span>✓</span> DO
                       </div>
                       <div>
@@ -165,15 +165,15 @@ export const HomePage: React.FC = () => {
                     <div
                       style={{
                         padding: "0.75rem 0.9rem",
-                        backgroundColor: "#fef2f2",
+                        backgroundColor: "var(--jester-semantic-error-soft)",
                         border: "1px solid #fecaca",
                         borderRadius: "10px",
                         fontSize: "0.85rem",
-                        color: "#991b1b",
+                        color: "var(--jester-semantic-error)",
                         lineHeight: 1.5,
                       }}
                     >
-                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#b91c1c", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                      <div style={{ fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--jester-semantic-error)", marginBottom: "0.25rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                         <span>✕</span> DON'T
                       </div>
                       <div>
@@ -193,14 +193,14 @@ export const HomePage: React.FC = () => {
               )}
 
               {/* Collapsible "See Why / Context" */}
-              <div style={{ borderTop: "1px solid #f5d0fe", paddingTop: "0.75rem" }}>
+              <div style={{ borderTop: "1px solid var(--jester-border-soft)", paddingTop: "0.75rem" }}>
                 <button
                   onClick={() => setShowTransitWhy(!showTransitWhy)}
                   style={{
                     background: "none",
                     border: "none",
                     padding: 0,
-                    color: "#9333ea",
+                    color: "var(--jester-brand-orange-800)",
                     fontSize: "0.85rem",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -221,7 +221,7 @@ export const HomePage: React.FC = () => {
                       backgroundColor: "rgba(255, 255, 255, 0.7)",
                       borderRadius: "8px",
                       fontSize: "0.825rem",
-                      color: "#475569",
+                      color: "var(--jester-text-secondary)",
                       lineHeight: 1.5,
                     }}
                   >
@@ -257,18 +257,18 @@ export const HomePage: React.FC = () => {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "1.2rem" }}>🤝</span>
-                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "#0f172a" }}>
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "var(--jester-text-primary)" }}>
                   ჩემი კავშირები & შეტყობინებები
                 </h3>
               </div>
-              <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.2rem" }}>
+              <div style={{ fontSize: "0.85rem", color: "var(--jester-text-secondary)", marginTop: "0.2rem" }}>
                 {loadingConnections ? (
                   "კავშირების სტატუსი იტვირთება..."
                 ) : (
                   <>
                     <span><strong>{acceptedConnections.length}</strong> აქტიური კავშირი</span>
                     {incomingRequests.length > 0 && (
-                      <span style={{ color: "#d97706", marginLeft: "0.6rem", fontWeight: 700 }}>
+                      <span style={{ color: "var(--jester-semantic-warning)", marginLeft: "0.6rem", fontWeight: 700 }}>
                         • <strong>{incomingRequests.length}</strong> ახალი მოთხოვნა
                       </span>
                     )}
@@ -297,10 +297,10 @@ export const HomePage: React.FC = () => {
       <section>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "#0f172a" }}>
+            <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "var(--jester-text-primary)" }}>
               ადამიანები აღმოსაჩენად
             </h2>
-            <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.15rem" }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
               მაღალი სინასტრიული თანხვედრა და საინტერესო დინამიკა
             </div>
           </div>
@@ -323,10 +323,10 @@ export const HomePage: React.FC = () => {
         ) : topPeople.length === 0 ? (
           <Card padded style={{ textAlign: "center", padding: "2rem" }}>
             <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🧭</div>
-            <div style={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.3rem" }}>
+            <div style={{ fontWeight: 700, color: "var(--jester-text-primary)", marginBottom: "0.3rem" }}>
               ამ მომენტში ახალი პროფილები არ ჩანს
             </div>
-            <p style={{ color: "#64748b", fontSize: "0.85rem", margin: 0 }}>
+            <p style={{ color: "var(--jester-text-secondary)", fontSize: "0.85rem", margin: 0 }}>
               გადაამოწმეთ ცოტა ხანში ან განაახლეთ აღმოჩენის სია.
             </p>
           </Card>
@@ -353,11 +353,11 @@ export const HomePage: React.FC = () => {
                       <div style={{ display: "flex", gap: "0.65rem", alignItems: "center" }}>
                         <Avatar src={person.avatar_url} name={person.display_name} size="md" />
                         <div>
-                          <div style={{ fontWeight: 700, fontSize: "0.975rem", color: "#0f172a" }}>
+                          <div style={{ fontWeight: 700, fontSize: "0.975rem", color: "var(--jester-text-primary)" }}>
                             {person.display_name}
                           </div>
                           {(person.occupation || person.city) && (
-                            <div style={{ fontSize: "0.775rem", color: "#64748b" }}>
+                            <div style={{ fontSize: "0.775rem", color: "var(--jester-text-secondary)" }}>
                               {[person.occupation, person.city].filter(Boolean).join(" • ")}
                             </div>
                           )}
@@ -367,8 +367,8 @@ export const HomePage: React.FC = () => {
                       {/* Score Badge */}
                       <div
                         style={{
-                          backgroundColor: "#fdf4ff",
-                          border: "1px solid #f0abfc",
+                          backgroundColor: "var(--jester-accent-peach-soft)",
+                          border: "1px solid var(--jester-accent-peach)",
                           borderRadius: "8px",
                           padding: "0.2rem 0.5rem",
                           textAlign: "center",
@@ -376,7 +376,7 @@ export const HomePage: React.FC = () => {
                         }}
                         title="სინასტრიული თანხვედრა"
                       >
-                        <span style={{ fontSize: "1rem", fontWeight: 800, color: "#9333ea" }}>
+                        <span style={{ fontSize: "1rem", fontWeight: 800, color: "var(--jester-brand-orange-800)" }}>
                           {Math.round(score)}
                         </span>
                       </div>
@@ -402,7 +402,7 @@ export const HomePage: React.FC = () => {
                         style={{
                           margin: "0.6rem 0 0 0",
                           fontSize: "0.825rem",
-                          color: "#334155",
+                          color: "var(--jester-text-primary)",
                           lineHeight: 1.45,
                           fontStyle: "italic",
                           display: "-webkit-box",
@@ -438,12 +438,12 @@ export const HomePage: React.FC = () => {
 
       {/* 5. Natural Path into Discover Loop Banner */}
       <section>
-        <Card variant="default" padded style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", backgroundColor: "#f8fafc" }}>
+        <Card variant="subtle" padded style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <h3 style={{ margin: "0 0 0.25rem 0", fontSize: "1.1rem", color: "#0f172a" }}>
+            <h3 style={{ margin: "0 0 0.25rem 0", fontSize: "1.1rem", color: "var(--jester-text-primary)" }}>
               გსურს მეტი ადამიანის აღმოჩენა?
             </h3>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
+            <p style={{ margin: 0, color: "var(--jester-text-secondary)", fontSize: "0.875rem" }}>
               დაათვალიერე სრული სია, გაიგე ურთიერთობის დინამიკა და დაიწყე ახალი საუბრები.
             </p>
           </div>

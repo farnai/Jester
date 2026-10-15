@@ -1,0 +1,61 @@
+{
+  "id": "TASK-0016",
+  "title": "Implement Founder-selected JESTER Color & Design System v1",
+  "type": "feature",
+  "status": "completed",
+  "priority": "high",
+  "role": "executor",
+  "assigned_agent": "gemini",
+  "required_capabilities": [
+    "design_tokens",
+    "css_architecture",
+    "react_typescript",
+    "accessibility_audit"
+  ],
+  "goal": "Implement Founder-selected JESTER Color & Design System v1 with vivid Carrot Orange primary accent, dark-label accessibility compliance (5.82:1), warm paper surfaces, support sage, peach insights, and updated shared components across representative screens (Home, Discover, Person/Why, Compare, Register, VisualLab).",
+  "scope": [
+    "frontend/src/ui/tokens/colors.ts",
+    "frontend/tailwind.config.js",
+    "frontend/src/index.css",
+    "frontend/src/shared/ui/Button.tsx",
+    "frontend/src/shared/ui/Card.tsx",
+    "frontend/src/shared/ui/Input.tsx",
+    "frontend/src/shared/ui/Badge.tsx",
+    "frontend/src/ui/primitives/Button.tsx",
+    "frontend/src/ui/primitives/Card.tsx",
+    "frontend/src/ui/primitives/Input.tsx",
+    "frontend/src/ui/primitives/Badge.tsx",
+    "frontend/src/shared/AppShell.tsx",
+    "frontend/src/modules/home/HomePage.tsx",
+    "frontend/src/modules/discover/PersonCard.tsx",
+    "frontend/src/modules/compatibility/WhyPage.tsx",
+    "frontend/src/modules/compatibility/components/RelationshipHeader.tsx",
+    "frontend/src/modules/compatibility/components/DimensionCards.tsx",
+    "frontend/src/modules/auth/RegisterPage.tsx",
+    "frontend/src/ui/VisualLab.tsx"
+  ],
+  "constraints": [
+    "Preserve all existing application behavior and authorization boundaries.",
+    "Do not touch or revert uncommitted backend canonical changes.",
+    "Do not redesign or recolor the three-point JESTER logo.",
+    "Ensure WCAG AA contrast: dark #222630 text on bright #FF7A2F primary button (5.82:1); no white normal text on #FF7A2F.",
+    "Preserve Georgian-first text; no English copy leakage into Georgian UI.",
+    "No autonomous git push or automatic commit."
+  ],
+  "acceptance_criteria": [
+    "Token architecture mapped and implemented in frontend/src/ui/tokens/colors.ts, frontend/tailwind.config.js, and frontend/src/index.css.",
+    "Primary button uses #FF7A2F with dark label #222630 meeting WCAG AA contrast ratio >= 4.5:1.",
+    "Shared UI components (Button, Card, Input, Badge) updated to use semantic tokens.",
+    "Representative screens (Home, Discover, Person/Why, Compare, Register) migrated to new design system.",
+    "VisualLab updated and verified for design tokens and accessible component states.",
+    "TypeScript and frontend build succeed cleanly (npm run build -> exit code 0).",
+    "Existing backend tests pass cleanly (pytest -> exit code 0)."
+  ],
+  "verification": [
+    "npm run build",
+    "pytest tests/core/test_canonical.py"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-15T04:35:00Z",
+  "updated_at": "2026-10-15T19:00:00Z"
+}

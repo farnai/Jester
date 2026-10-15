@@ -9,6 +9,7 @@ E. Different pair separation: different UUIDs produce distinct canonical pairs a
 F. Version sensitivity: version updates alter the seed string deterministically
 G. Self-pair behavior: canonical_pair(A, A) and canonical_pair_seed(A, vA, A, vB) raise ValueError
 H. Application wrapper: connections.router.get_canonical_pair raises JesterAPIException(invalid_pair)
+I. Defensive version validation: canonical_pair_seed with negative version raises ValueError
 """
 import uuid
 import pytest
@@ -125,6 +126,34 @@ def test_canonical_pair_seed_self_rejection_different_versions():
 
     with pytest.raises(ValueError, match="Cannot pair a user with themselves"):
         canonical_pair_seed(u1, 1, u2, 2)
+
+
+def test_canonical_pair_seed_negative_version_rejection():
+    u1 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    u2 = uuid.UUID("22222222-2222-2222-2222-222222222222")
+
+    with pytest.raises(ValueError, match="Version must be non-negative: ver1=-1"):
+        canonical_pair_seed(u1, -1, u2, 1)
+
+    with pytest.raises(ValueError, match="Version must be non-negative: ver2=-1"):
+        canonical_pair_seed(u1, 1, u2, -1)
+
+    with pytest.raises(ValueError, match="Version must be non-negative: ver1=-1, ver2=-1"):
+        canonical_pair_seed(u1, -1, u2, -1)
+
+
+def test_canonical_pair_seed_zero_version_allowed():
+    u1 = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    u2 = uuid.UUID("22222222-2222-2222-2222-222222222222")
+
+    seed_0_0 = canonical_pair_seed(u1, 0, u2, 0)
+    assert seed_0_0 == "11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222:0:0"
+
+    seed_0_2 = canonical_pair_seed(u1, 0, u2, 2)
+    assert seed_0_2 == "11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222:0:2"
+
+    seed_2_0 = canonical_pair_seed(u1, 2, u2, 0)
+    assert seed_2_0 == "11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222:2:0"
 
 
 def test_connections_router_wrapper_preserves_jester_api_exception():

@@ -93,12 +93,12 @@ export const LoginPage: React.FC = () => {
               margin: "0 0 0.4rem 0",
               fontSize: "1.45rem",
               fontWeight: 800,
-              color: "#0f172a",
+              color: "var(--jester-text-primary)",
             }}
           >
             Log In to JESTER
           </h2>
-          <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>
+          <p style={{ margin: 0, color: "var(--jester-text-secondary)", fontSize: "0.85rem" }}>
             შედით თქვენს ანგარიშში ასტროლოგიური პროფილისა და კავშირების სანახავად.
           </p>
         </div>
@@ -108,10 +108,10 @@ export const LoginPage: React.FC = () => {
             style={{
               padding: "0.75rem",
               marginBottom: "1.2rem",
-              background: "#fff1f0",
-              border: "1px solid #ff4d4f",
+              background: "var(--jester-semantic-error-soft)",
+              border: "1px solid var(--jester-semantic-error)",
               borderRadius: "6px",
-              color: "#cf1322",
+              color: "var(--jester-semantic-error)",
               fontSize: "0.85rem",
             }}
           >
@@ -122,10 +122,10 @@ export const LoginPage: React.FC = () => {
         {/* Social Authentication */}
         <SocialAuthButtons onError={(err) => setError(err)} disabled={loading} />
 
-        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "#94a3b8" }}>
-          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "var(--jester-text-secondary)" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--jester-border-soft)" }} />
           <span style={{ padding: "0 0.75rem", fontSize: "0.8rem", textTransform: "uppercase" }}>ან ელფოსტით</span>
-          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+          <div style={{ flex: 1, height: "1px", background: "var(--jester-border-soft)" }} />
         </div>
 
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -155,7 +155,7 @@ export const LoginPage: React.FC = () => {
               <Link
                 to="/auth/reset-password"
                 state={{ email }}
-                style={{ fontSize: "0.8rem", color: "#6366f1", textDecoration: "none" }}
+                style={{ fontSize: "0.8rem", color: "var(--jester-brand-orange-800)", textDecoration: "none" }}
               >
                 დაგავიწყდათ პაროლი?
               </Link>
@@ -180,13 +180,13 @@ export const LoginPage: React.FC = () => {
             marginTop: "1.5rem",
             textAlign: "center",
             fontSize: "0.85rem",
-            borderTop: "1px solid #f1f5f9",
+            borderTop: "1px solid var(--jester-border-soft)",
             paddingTop: "1rem",
-            color: "#64748b",
+            color: "var(--jester-text-secondary)",
           }}
         >
           არ გაქვთ ანგარიში?{" "}
-          <Link to="/auth/register" style={{ color: "#6366f1", fontWeight: "bold", textDecoration: "none" }}>
+          <Link to="/auth/register" style={{ color: "var(--jester-brand-orange-800)", fontWeight: "bold", textDecoration: "none" }}>
             რეგისტრაცია (Create account)
           </Link>
         </div>

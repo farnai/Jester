@@ -207,7 +207,7 @@ export const WhyPage: React.FC = () => {
           to="/discover"
           style={{
             textDecoration: "none",
-            color: "#6366f1",
+            color: "var(--jester-brand-orange-800)",
             display: "flex",
             alignItems: "center",
             gap: "0.3rem",
@@ -215,18 +215,18 @@ export const WhyPage: React.FC = () => {
         >
           🧭 აღმოჩენა
         </Link>
-        <span style={{ color: "#94a3b8" }}>/</span>
+        <span style={{ color: "var(--jester-border-interactive)" }}>/</span>
         <Link
           to={`/people/${targetId}`}
           style={{
             textDecoration: "none",
-            color: "#6366f1",
+            color: "var(--jester-brand-orange-800)",
           }}
         >
           {profile?.display_name || "პროფილი"}
         </Link>
-        <span style={{ color: "#94a3b8" }}>/</span>
-        <span style={{ color: "#0f172a" }}>💡 რატომ?</span>
+        <span style={{ color: "var(--jester-border-interactive)" }}>/</span>
+        <span style={{ color: "var(--jester-text-primary)" }}>💡 რატომ?</span>
       </div>
 
       {/* Header & Person Identity Context */}
@@ -238,11 +238,11 @@ export const WhyPage: React.FC = () => {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
               <span style={{ fontSize: "1.25rem" }}>💡</span>
-              <h1 style={{ margin: 0, fontSize: "1.35rem", fontWeight: 800, color: "#0f172a" }}>
+              <h1 style={{ margin: 0, fontSize: "1.35rem", fontWeight: 800, color: "var(--jester-text-primary)" }}>
                 რატომ {profile?.display_name || "ეს ადამიანი"}?
               </h1>
             </div>
-            <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.15rem" }}>
+            <div style={{ fontSize: "0.825rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
               ურთიერთობის დინამიკა და JESTER-ის ანალიზი
             </div>
           </div>
@@ -276,17 +276,17 @@ export const WhyPage: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                backgroundColor: "#ffffff",
-                border: "1px solid #f0abfc",
+                backgroundColor: "var(--jester-surface-card)",
+                border: "1px solid var(--jester-accent-peach)",
                 borderRadius: "20px",
                 padding: "0.25rem 0.7rem",
               }}
               title="სინასტრიული თანხვედრა"
             >
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-800)" }}>
                 თანხვედრა
               </span>
-              <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "#9333ea" }}>
+              <span style={{ fontSize: "1.05rem", fontWeight: 800, color: "var(--jester-brand-orange-800)" }}>
                 {score} / 100
               </span>
             </div>
@@ -296,7 +296,7 @@ export const WhyPage: React.FC = () => {
         <p
           style={{
             margin: "0 0 1.25rem 0",
-            color: "#1e1b4b",
+            color: "var(--jester-text-primary)",
             fontSize: "1.1rem",
             lineHeight: 1.7,
             fontWeight: 500,
@@ -307,14 +307,14 @@ export const WhyPage: React.FC = () => {
       </Card>
 
       {/* 2.5 Dedicated Connection Invitation: The insight becomes the invitation */}
-      <Card padded style={{ padding: "1.25rem 1.5rem", borderLeft: "4px solid #8b5cf6" }}>
+      <Card padded style={{ padding: "1.25rem 1.5rem", borderLeft: "4px solid var(--jester-brand-orange-500)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
           <span style={{ fontSize: "1.1rem" }}>✉️</span>
-          <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 800, color: "#4c1d95" }}>
+          <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 800, color: "var(--jester-brand-orange-900)" }}>
             კავშირის მიწვევა — ინსაითი ხდება მოწვევა
           </h3>
         </div>
-        <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
+        <p style={{ margin: 0, color: "var(--jester-text-primary)", fontSize: "0.95rem", lineHeight: 1.6, fontStyle: "italic" }}>
           "{data.connection_invitation?.text || "ინსაითი მოგეწონათ? გაუგზავნეთ კავშირის მოთხოვნა საუბრის დასაწყებად."}"
         </p>
       </Card>
@@ -323,10 +323,10 @@ export const WhyPage: React.FC = () => {
       {supportingSignals.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800, color: "#0f172a" }}>
+            <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800, color: "var(--jester-text-primary)" }}>
               ურთიერთობის დინამიკის მახასიათებლები
             </h2>
-            <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.15rem" }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
               გამოკვეთილი საერთო ასპექტები და ენერგეტიკული თანხვედრა
             </div>
           </div>
@@ -357,18 +357,18 @@ export const WhyPage: React.FC = () => {
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "1rem" }}>{meta.icon}</span>
-                      <span style={{ fontSize: "0.825rem", fontWeight: 700, color: "#7e22ce", textTransform: "uppercase" }}>
+                      <span style={{ fontSize: "0.825rem", fontWeight: 700, color: "var(--jester-brand-orange-800)", textTransform: "uppercase" }}>
                         {meta.label}
                       </span>
                     </div>
 
-                    <p style={{ margin: 0, fontSize: "0.925rem", color: "#334155", lineHeight: 1.55 }}>
+                    <p style={{ margin: 0, fontSize: "0.925rem", color: "var(--jester-text-primary)", lineHeight: 1.55 }}>
                       {text}
                     </p>
                   </div>
 
                   {sig.strength && (
-                    <div style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 500 }}>
+                    <div style={{ fontSize: "0.75rem", color: "var(--jester-text-secondary)", fontWeight: 500 }}>
                       ინტენსივობა: <strong>{sig.strength}</strong>
                     </div>
                   )}
@@ -378,8 +378,8 @@ export const WhyPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <Card padded style={{ padding: "1.25rem 1.5rem", backgroundColor: "#f8fafc" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#64748b", fontSize: "0.9rem", lineHeight: 1.5 }}>
+        <Card variant="subtle" padded style={{ padding: "1.25rem 1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--jester-text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
             <span>ℹ️</span>
             <span>
               დამატებითი პლანეტარული ასპექტები არ არის ხელმისაწვდომი (საჭიროებს დაბადების ზუსტ მონაცემებს). ძირითადი სინასტრიული ხედვა და თემები წარმოდგენილია ზემოთ.
@@ -397,15 +397,15 @@ export const WhyPage: React.FC = () => {
       />
 
       {/* 5. US / Compare Transition Card */}
-      <Card padded style={{ padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", backgroundColor: "#fdf4ff", border: "1px solid #f5d0fe" }}>
+      <Card padded style={{ padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", backgroundColor: "var(--jester-accent-peach-soft)", border: "1px solid var(--jester-accent-peach)" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
             <span style={{ fontSize: "1.2rem" }}>⚖️</span>
-            <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800, color: "#1e1b4b" }}>
+            <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800, color: "var(--jester-text-primary)" }}>
               რა შეიძლება არსებობდეს ჩვენ შორის? (US)
             </h3>
           </div>
-          <p style={{ margin: "0.3rem 0 0 0", color: "#475569", fontSize: "0.875rem", lineHeight: 1.5 }}>
+          <p style={{ margin: "0.3rem 0 0 0", color: "var(--jester-text-secondary)", fontSize: "0.875rem", lineHeight: 1.5 }}>
             {relState === "accepted"
               ? "თქვენი კავშირი აქტიურია. შეგიძლიათ ნახოთ სრული მრავალგანზომილებიანი სინასტრიული ანალიზი."
               : "ღრმა მრავალგანზომილებიანი შედარება (US) ხელმისაწვდომი ხდება კავშირის დამყარების შემდეგ."}
@@ -448,10 +448,10 @@ export const WhyPage: React.FC = () => {
       </Card>
 
       {/* 6. Connection Invitation (INSIGHT -> INVITATION) */}
-      <Card padded style={{ padding: "1.25rem 1.5rem", backgroundColor: "#ffffff" }}>
+      <Card padded style={{ padding: "1.25rem 1.5rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "0.975rem", color: "#0f172a" }}>
+            <div style={{ fontWeight: 700, fontSize: "0.975rem", color: "var(--jester-text-primary)" }}>
               {relState === "accepted"
                 ? "თქვენ უკვე დაკავშირებული ხართ"
                 : relState === "pending_out"
@@ -460,7 +460,7 @@ export const WhyPage: React.FC = () => {
                 ? "ამ ადამიანმა გამოგიგზავნათ კავშირის მოთხოვნა"
                 : "ინსაითი მოგეწონათ? დაიწყეთ საუბარი"}
             </div>
-            <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "0.15rem" }}>
+            <div style={{ fontSize: "0.85rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
               {relState === "accepted"
                 ? "გადადით ჩატში ან გაუგზავნეთ ზემოთ მოცემული სასაუბრო ფრაზა."
                 : relState === "pending_out"

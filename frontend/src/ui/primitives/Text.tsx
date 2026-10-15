@@ -6,7 +6,7 @@ import { typography } from "../tokens/typography";
 export interface TextProps extends RNTextProps {
   variant?: keyof typeof typography.fontSize;
   weight?: keyof typeof typography.fontWeight;
-  color?: "primary" | "secondary" | "muted" | "inverse" | "accent" | "danger" | "success" | "highlight" | "warning";
+  color?: "primary" | "secondary" | "muted" | "inverse" | "accent" | "danger" | "success" | "highlight" | "warning" | "sage";
   align?: "left" | "center" | "right";
   style?: TextStyle;
   children?: React.ReactNode;
@@ -31,6 +31,7 @@ export const Text: React.FC<TextProps> = ({
     success: colors.success,
     highlight: colors.highlight,
     warning: colors.warning,
+    sage: colors.supportSageInk,
   };
 
   const computedStyle: TextStyle = {

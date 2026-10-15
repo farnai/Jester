@@ -17,45 +17,45 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variantStyles: Record<string, React.CSSProperties> = {
     default: {
-      backgroundColor: "#f1f5f9",
-      color: "#475569",
-      border: "1px solid #e2e8f0",
+      backgroundColor: "#F3EEE6",
+      color: "#6A716F",
+      border: "1px solid #E6E0D7",
     },
     brand: {
-      backgroundColor: "#eef2ff",
-      color: "#4338ca",
-      border: "1px solid #c7d2fe",
+      backgroundColor: "#FFE7D7",
+      color: "#713111",
+      border: "1px solid #FFD0B2",
     },
     score: {
-      backgroundColor: "#fdf4ff",
-      color: "#9333ea",
-      border: "1px solid #f0abfc",
+      backgroundColor: "#FBEEE7",
+      color: "#9E4215",
+      border: "1px solid #F5DDD1",
       fontWeight: 700,
     },
     success: {
-      backgroundColor: "#f0fdf4",
-      color: "#15803d",
-      border: "1px solid #bbf7d0",
+      backgroundColor: "#EAF4EA",
+      color: "#4B6242",
+      border: "1px solid #BACAAC",
     },
     warning: {
-      backgroundColor: "#fffbeb",
-      color: "#b45309",
-      border: "1px solid #fde68a",
+      backgroundColor: "#FFF3DE",
+      color: "#925C18",
+      border: "1px solid #FFE0B2",
     },
     danger: {
-      backgroundColor: "#fef2f2",
-      color: "#b91c1c",
-      border: "1px solid #fecaca",
+      backgroundColor: "#FBE9E8",
+      color: "#AE3534",
+      border: "1px solid #F5C6C5",
     },
     astrology: {
-      backgroundColor: "#faf5ff",
-      color: "#7e22ce",
-      border: "1px solid #e9d5ff",
+      backgroundColor: "#E8EFE2",
+      color: "#4B6242",
+      border: "1px solid #D6E1CD",
     },
     outline: {
       backgroundColor: "transparent",
-      color: "#64748b",
-      border: "1px solid #cbd5e1",
+      color: "#6A716F",
+      border: "1px solid #D8D1C7",
     },
   };
 

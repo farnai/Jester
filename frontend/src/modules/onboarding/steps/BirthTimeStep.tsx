@@ -81,8 +81,8 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
           onClick={() => handlePrecisionChange("exact")}
           style={{
             padding: "1rem",
-            borderColor: precision === "exact" ? "#6366f1" : "#e2e8f0",
-            backgroundColor: precision === "exact" ? "#f5f3ff" : "#ffffff",
+            borderColor: precision === "exact" ? "var(--jester-brand-orange-500)" : "var(--jester-border-soft)",
+            backgroundColor: precision === "exact" ? "var(--jester-brand-orange-50)" : "var(--jester-surface-card)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -91,13 +91,13 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
               name="precision"
               checked={precision === "exact"}
               onChange={() => handlePrecisionChange("exact")}
-              style={{ accentColor: "#6366f1", width: "18px", height: "18px", cursor: "pointer" }}
+              style={{ accentColor: "var(--jester-brand-orange-500)", width: "18px", height: "18px", cursor: "pointer" }}
             />
             <div>
-              <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.95rem" }}>
+              <div style={{ fontWeight: 700, color: "var(--jester-text-primary)", fontSize: "0.95rem" }}>
                 1. ზუსტი დრო (Exact)
               </div>
-              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+              <div style={{ fontSize: "0.8rem", color: "var(--jester-text-secondary)" }}>
                 ზუსტად ვიცი დაბადების საათი და წუთი
               </div>
             </div>
@@ -111,8 +111,8 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
           onClick={() => handlePrecisionChange("approximate")}
           style={{
             padding: "1rem",
-            borderColor: precision === "approximate" ? "#6366f1" : "#e2e8f0",
-            backgroundColor: precision === "approximate" ? "#f5f3ff" : "#ffffff",
+            borderColor: precision === "approximate" ? "var(--jester-brand-orange-500)" : "var(--jester-border-soft)",
+            backgroundColor: precision === "approximate" ? "var(--jester-brand-orange-50)" : "var(--jester-surface-card)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -121,13 +121,13 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
               name="precision"
               checked={precision === "approximate"}
               onChange={() => handlePrecisionChange("approximate")}
-              style={{ accentColor: "#6366f1", width: "18px", height: "18px", cursor: "pointer" }}
+              style={{ accentColor: "var(--jester-brand-orange-500)", width: "18px", height: "18px", cursor: "pointer" }}
             />
             <div>
-              <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.95rem" }}>
+              <div style={{ fontWeight: 700, color: "var(--jester-text-primary)", fontSize: "0.95rem" }}>
                 2. მიახლოებითი დრო (Approximate)
               </div>
-              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+              <div style={{ fontSize: "0.8rem", color: "var(--jester-text-secondary)" }}>
                 ვიცი მიახლოებითი საათი (შენარჩუნდება როგორც მიახლოებითი)
               </div>
             </div>
@@ -141,8 +141,8 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
           onClick={() => handlePrecisionChange("unknown")}
           style={{
             padding: "1rem",
-            borderColor: precision === "unknown" ? "#6366f1" : "#e2e8f0",
-            backgroundColor: precision === "unknown" ? "#f5f3ff" : "#ffffff",
+            borderColor: precision === "unknown" ? "var(--jester-brand-orange-500)" : "var(--jester-border-soft)",
+            backgroundColor: precision === "unknown" ? "var(--jester-brand-orange-50)" : "var(--jester-surface-card)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -151,13 +151,13 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
               name="precision"
               checked={precision === "unknown"}
               onChange={() => handlePrecisionChange("unknown")}
-              style={{ accentColor: "#6366f1", width: "18px", height: "18px", cursor: "pointer" }}
+              style={{ accentColor: "var(--jester-brand-orange-500)", width: "18px", height: "18px", cursor: "pointer" }}
             />
             <div>
-              <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.95rem" }}>
+              <div style={{ fontWeight: 700, color: "var(--jester-text-primary)", fontSize: "0.95rem" }}>
                 3. არ ვიცი (I don't know)
               </div>
-              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+              <div style={{ fontSize: "0.8rem", color: "var(--jester-text-secondary)" }}>
                 დრო უცნობია — შეგიძლიათ გააგრძელოთ დროის გარეშე
               </div>
             </div>

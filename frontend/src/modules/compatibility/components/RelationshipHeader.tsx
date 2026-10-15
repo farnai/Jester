@@ -31,11 +31,11 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
         display: "flex",
         flexDirection: "column",
         gap: "1.25rem",
-        backgroundColor: "#ffffff",
-        border: "1px solid #e2e8f0",
+        backgroundColor: "var(--jester-surface-card)",
+        border: "1px solid var(--jester-border-soft)",
         borderRadius: "16px",
         padding: "1.75rem 1.5rem",
-        boxShadow: "0 2px 8px rgba(15, 23, 42, 0.03)",
+        boxShadow: "0 2px 8px rgba(34, 38, 48, 0.04)",
       }}
     >
       {/* Top Navigation Row */}
@@ -52,7 +52,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
           to={targetProfile ? `/people/${targetProfile.id}` : "/discover"}
           style={{ textDecoration: "none" }}
         >
-          <Button variant="ghost" size="sm" style={{ paddingLeft: 0, color: "#64748b" }}>
+          <Button variant="ghost" size="sm" style={{ paddingLeft: 0, color: "var(--jester-text-secondary)" }}>
             ← {targetName}-ის პროფილი
           </Button>
         </Link>
@@ -63,7 +63,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
             {Math.round(score)}% სინერგია
           </Badge>
           {dataQuality?.confidence !== undefined && (
-            <Badge variant="default" size="sm" style={{ color: "#64748b" }}>
+            <Badge variant="default" size="sm" style={{ color: "var(--jester-text-secondary)" }}>
               {confidencePercent}% სიზუსტე
             </Badge>
           )}
@@ -95,7 +95,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
             style={{
               width: "24px",
               height: "2px",
-              backgroundColor: "#c084fc",
+              backgroundColor: "var(--jester-brand-orange-400)",
               margin: "0 -4px",
               zIndex: 1,
             }}
@@ -120,7 +120,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.06em",
-              color: "#9333ea",
+              color: "var(--jester-brand-orange-800)",
               marginBottom: "0.2rem",
             }}
           >
@@ -131,7 +131,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
               margin: 0,
               fontSize: "1.35rem",
               fontWeight: 800,
-              color: "#0f172a",
+              color: "var(--jester-text-primary)",
               lineHeight: 1.25,
             }}
           >
@@ -144,13 +144,13 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
       {interpretation?.hook && (
         <div
           style={{
-            backgroundColor: "#faf5ff",
-            borderLeft: "3px solid #a855f7",
+            backgroundColor: "var(--jester-accent-peach-soft)",
+            borderLeft: "3px solid var(--jester-brand-orange-500)",
             padding: "0.75rem 1rem",
             borderRadius: "0 8px 8px 0",
             fontSize: "0.95rem",
             fontWeight: 500,
-            color: "#6b21a8",
+            color: "var(--jester-text-primary)",
             lineHeight: 1.4,
           }}
         >

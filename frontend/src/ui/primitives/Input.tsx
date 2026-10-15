@@ -56,7 +56,7 @@ export const Input: React.FC<InputProps> = ({
               ? colors.danger
               : isFocused
               ? colors.borderFocus
-              : colors.border,
+              : colors.borderInteractive,
             borderRadius: radii.md,
             paddingHorizontal: 14,
             paddingVertical: 10,

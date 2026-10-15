@@ -6,7 +6,7 @@ import { Text } from "./Text";
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: "brand" | "highlight" | "neutral" | "success" | "danger" | "warning";
+  variant?: "brand" | "highlight" | "neutral" | "success" | "danger" | "warning" | "sage";
   size?: "sm" | "md";
   style?: ViewStyle;
 }
@@ -17,10 +17,11 @@ export const Badge: React.FC<BadgeProps> = ({
   size = "md",
   style,
 }) => {
-  const variantStyles: Record<string, { bg: string; border: string; textColor: "accent" | "highlight" | "secondary" | "success" | "danger" | "warning" }> = {
-    brand: { bg: colors.accentSubtle, border: colors.accentBorder, textColor: "accent" },
-    highlight: { bg: colors.highlightSubtle, border: colors.highlightBorder, textColor: "highlight" },
+  const variantStyles: Record<string, { bg: string; border: string; textColor: "accent" | "highlight" | "secondary" | "success" | "danger" | "warning" | "sage" | "primary" }> = {
+    brand: { bg: colors.accentSubtle, border: colors.accentBorder, textColor: "primary" },
+    highlight: { bg: colors.highlightSubtle, border: colors.highlightBorder, textColor: "primary" },
     neutral: { bg: colors.surfaceSubtle, border: colors.border, textColor: "secondary" },
+    sage: { bg: colors.supportSageSoft, border: colors.supportSage, textColor: "sage" },
     success: { bg: colors.successSubtle, border: colors.success, textColor: "success" },
     danger: { bg: colors.dangerSubtle, border: colors.danger, textColor: "danger" },
     warning: { bg: colors.warningSubtle, border: colors.warning, textColor: "warning" },

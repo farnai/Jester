@@ -25,7 +25,7 @@ export const SignalBlock: React.FC<SignalBlockProps> = ({
     <RuntimeInfoBlock
       title={title}
       badge={`${signals.length} Active`}
-      badgeColor="#9333ea"
+      badgeColor="#C95618"
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
         {signals.map((sig, idx) => {

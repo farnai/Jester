@@ -1,13 +1,13 @@
 import React from "react";
 import { Pressable, ViewStyle, ActivityIndicator } from "react-native";
-import { colors } from "../tokens/colors";
+import { colors, palette } from "../tokens/colors";
 import { radii } from "../tokens/radii";
 import { Text } from "./Text";
 
 export interface ButtonProps {
   onPress?: () => void;
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "highlight";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "highlight" | "primaryDark";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   disabled?: boolean;
@@ -32,9 +32,9 @@ export const Button: React.FC<ButtonProps> = ({
   const isDisabled = disabled || isLoading;
 
   const sizeStyles: Record<string, ViewStyle> = {
-    sm: { paddingVertical: 8, paddingHorizontal: 12, minHeight: 36 },
-    md: { paddingVertical: 12, paddingHorizontal: 18, minHeight: 44 },
-    lg: { paddingVertical: 14, paddingHorizontal: 24, minHeight: 52 },
+    sm: { paddingVertical: 8, paddingHorizontal: 14, minHeight: 36 },
+    md: { paddingVertical: 12, paddingHorizontal: 20, minHeight: 44 }, // Accessible 44px touch target
+    lg: { paddingVertical: 14, paddingHorizontal: 26, minHeight: 52 },
   };
 
   const getVariantStyle = (pressed: boolean): ViewStyle => {
@@ -43,19 +43,25 @@ export const Button: React.FC<ButtonProps> = ({
         return {
           backgroundColor: pressed ? colors.accentHover : colors.accent,
           borderWidth: 1,
-          borderColor: colors.accent,
+          borderColor: colors.accentHover,
+        };
+      case "primaryDark":
+        return {
+          backgroundColor: pressed ? palette.brand.orange900 : colors.accentDark,
+          borderWidth: 1,
+          borderColor: colors.accentDark,
         };
       case "secondary":
         return {
-          backgroundColor: pressed ? colors.surfaceMuted : colors.surfaceSubtle,
+          backgroundColor: pressed ? colors.surfaceSubtle : colors.surface,
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: colors.borderDark,
         };
       case "outline":
         return {
           backgroundColor: pressed ? colors.accentSubtle : "transparent",
-          borderWidth: 1,
-          borderColor: colors.accentBorder,
+          borderWidth: 1.5,
+          borderColor: colors.borderInteractive,
         };
       case "ghost":
         return {
@@ -70,7 +76,7 @@ export const Button: React.FC<ButtonProps> = ({
         };
       case "highlight":
         return {
-          backgroundColor: colors.highlight,
+          backgroundColor: colors.highlightSubtle,
           borderWidth: 1,
           borderColor: colors.highlightBorder,
         };
@@ -91,7 +97,7 @@ export const Button: React.FC<ButtonProps> = ({
         justifyContent: "center",
         borderRadius: radii.md,
         width: fullWidth ? "100%" : "auto",
-        opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1,
+        opacity: isDisabled ? 0.55 : pressed ? 0.88 : 1,
         ...sizeStyles[size],
         ...getVariantStyle(pressed),
         ...style,
@@ -100,7 +106,7 @@ export const Button: React.FC<ButtonProps> = ({
       {isLoading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "primary" || variant === "highlight" ? colors.textInverse : colors.accent}
+          color={variant === "primaryDark" ? colors.textInverse : colors.textPrimary}
           style={{ marginRight: 8 }}
         />
       ) : icon ? (
@@ -108,14 +114,16 @@ export const Button: React.FC<ButtonProps> = ({
       ) : null}
       <Text
         variant={size === "sm" ? "sm" : size === "lg" ? "lg" : "base"}
-        weight="semibold"
+        weight="bold"
         color={
-          variant === "primary" || variant === "highlight"
-            ? "inverse"
+          variant === "primary"
+            ? "primary" // CRITICAL WCAG AA: 5.82:1 dark text on #FF7A2F! (Not white text which is only 2.60:1)
+            : variant === "primaryDark"
+            ? "inverse" // White text on #9E4215 has 6.47:1 contrast
             : variant === "danger"
             ? "danger"
             : variant === "outline"
-            ? "accent"
+            ? "primary"
             : "primary"
         }
       >

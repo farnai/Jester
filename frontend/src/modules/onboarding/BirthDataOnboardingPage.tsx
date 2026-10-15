@@ -414,7 +414,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
             style={{
               height: "5px",
               width: "100%",
-              background: "#f1f5f9",
+              background: "var(--jester-surface-alt)",
               borderRadius: "3px",
               overflow: "hidden",
             }}
@@ -423,7 +423,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
               style={{
                 height: "100%",
                 width: `${(currentStep / 8) * 100}%`,
-                background: "#6366f1",
+                background: "var(--jester-brand-orange-500)",
                 transition: "width 0.3s ease",
               }}
             />
@@ -435,10 +435,10 @@ export const BirthDataOnboardingPage: React.FC = () => {
           <div
             style={{
               padding: "0.75rem",
-              background: "#fff1f0",
-              border: "1px solid #ff4d4f",
+              background: "var(--jester-semantic-error-soft)",
+              border: "1px solid var(--jester-semantic-error)",
               borderRadius: "6px",
-              color: "#cf1322",
+              color: "var(--jester-semantic-error)",
               fontSize: "0.85rem",
               marginBottom: "1rem",
             }}
@@ -449,7 +449,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
 
         {/* Loading Spinner for async transition */}
         {savingStep && (
-          <div style={{ padding: "0.5rem 0", color: "#6366f1", fontSize: "0.85rem", textAlign: "center" }}>
+          <div style={{ padding: "0.5rem 0", color: "var(--jester-brand-orange-800)", fontSize: "0.85rem", textAlign: "center" }}>
             მონაცემების შენახვა...
           </div>
         )}

@@ -17,7 +17,7 @@ export const TransitEvidenceBlock: React.FC<TransitEvidenceBlockProps> = ({ dail
       <RuntimeInfoBlock
         title="Energy Evidence & Archetype Mapping"
         badge={daily.detection_mode || (primary ? "real_transit" : "fallback")}
-        badgeColor="#9333ea"
+        badgeColor="#C95618"
         items={[
           {
             label: "Detected Primary",

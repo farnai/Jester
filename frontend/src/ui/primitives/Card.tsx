@@ -6,7 +6,7 @@ import { shadows } from "../tokens/shadows";
 
 export interface CardProps extends ViewProps {
   elevation?: "none" | "sm" | "md" | "lg";
-  variant?: "surface" | "subtle" | "highlight" | "bordered";
+  variant?: "surface" | "subtle" | "highlight" | "bordered" | "calm";
   padding?: number;
   rounded?: keyof typeof radii;
   style?: ViewStyle;
@@ -34,13 +34,20 @@ export const Card: React.FC<CardProps> = ({
       borderWidth: 1,
     },
     highlight: {
+      // Warm peach insight card
       backgroundColor: colors.highlightSubtle,
       borderColor: colors.highlightBorder,
       borderWidth: 1,
     },
+    calm: {
+      // Measured sage supportive insight card
+      backgroundColor: colors.supportSageSoft,
+      borderColor: colors.supportSage,
+      borderWidth: 1,
+    },
     bordered: {
       backgroundColor: colors.surface,
-      borderColor: colors.accentBorder,
+      borderColor: colors.borderInteractive,
       borderWidth: 1.5,
     },
   };

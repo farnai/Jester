@@ -63,7 +63,7 @@ export const AppShell: React.FC = () => {
               fontWeight: 800,
               fontSize: "1.25rem",
               textDecoration: "none",
-              color: "#0f172a",
+              color: "#222630",
               letterSpacing: "0.02em",
             }}
           >
@@ -171,12 +171,12 @@ export const AppShell: React.FC = () => {
             to="/smoke-test"
             style={{
               fontSize: "0.775rem",
-              color: "#6366f1",
-              backgroundColor: "#eef2ff",
+              color: "#4B6242",
+              backgroundColor: "#E8EFE2",
               padding: "0.35rem 0.6rem",
               borderRadius: "6px",
               textDecoration: "none",
-              border: "1px solid #c7d2fe",
+              border: "1px solid #D6E1CD",
               fontWeight: 600,
             }}
             title="ქართული კონტენტის აუდიტი (Developer Surface)"
@@ -189,13 +189,13 @@ export const AppShell: React.FC = () => {
             to="/visual-lab"
             style={{
               fontSize: "0.775rem",
-              color: "#9333ea",
-              backgroundColor: "#fdf4ff",
+              color: "#9E4215",
+              backgroundColor: "#FFE7D7",
               padding: "0.35rem 0.6rem",
               borderRadius: "6px",
               textDecoration: "none",
-              border: "1px solid #f0abfc",
-              fontWeight: 600,
+              border: "1px solid #FFD0B2",
+              fontWeight: 700,
             }}
             title="უნივერსალური დიზაინ სისტემის ლაბორატორია (Visual Lab)"
           >
@@ -207,12 +207,12 @@ export const AppShell: React.FC = () => {
             to="/__debug/backend-audit"
             style={{
               fontSize: "0.775rem",
-              color: "#0284c7",
-              backgroundColor: "#f0f9ff",
+              color: "#396F87",
+              backgroundColor: "#EAF1F7",
               padding: "0.35rem 0.6rem",
               borderRadius: "6px",
               textDecoration: "none",
-              border: "1px solid #bae6fd",
+              border: "1px solid #BCE0EE",
               fontWeight: 600,
             }}
             title="მონაცემთა მთლიანობის აუდიტი (Backend Data Integrity Audit)"
@@ -229,11 +229,11 @@ export const AppShell: React.FC = () => {
               gap: "0.3rem",
               padding: "0.4rem 0.75rem",
               cursor: "pointer",
-              border: "1px solid #ffa39e",
-              backgroundColor: "#fff1f0",
-              color: "#cf1322",
-              borderRadius: "6px",
-              fontWeight: 600,
+              border: "1px solid #F5C6C5",
+              backgroundColor: "#FBE9E8",
+              color: "#AE3534",
+              borderRadius: "8px",
+              fontWeight: 700,
               fontSize: "0.825rem",
               minHeight: "36px",
             }}

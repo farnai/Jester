@@ -36,15 +36,15 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   // Deterministic color palette for avatar fallback
   const getBgColor = (n?: string | null) => {
-    if (!n) return "#6366f1";
+    if (!n) return "#FF7A2F";
     const colors = [
-      "#6366f1", // indigo
-      "#8b5cf6", // purple
-      "#ec4899", // pink
-      "#06b6d4", // cyan
-      "#10b981", // emerald
-      "#f59e0b", // amber
-      "#3b82f6", // blue
+      "#FF7A2F", // brand orange
+      "#C95618", // deep orange
+      "#788A69", // sage
+      "#4B6242", // sage ink
+      "#C7614B", // terracotta
+      "#C8966B", // copper
+      "#396F87", // slate blue
     ];
     let hash = 0;
     for (let i = 0; i < n.length; i++) {

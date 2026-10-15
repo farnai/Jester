@@ -19,29 +19,29 @@ const DIMENSIONS_CONFIG: DimensionConfig[] = [
     key: "emotional_harmony",
     title: "ემოციური კავშირი",
     icon: "🌊",
-    accentColor: "#2563eb",
-    barColor: "#3b82f6",
+    accentColor: "var(--jester-brand-orange-800)",
+    barColor: "var(--jester-brand-orange-500)",
   },
   {
     key: "communication",
     title: "კომუნიკაცია & აზროვნება",
     icon: "💡",
-    accentColor: "#4f46e5",
-    barColor: "#6366f1",
+    accentColor: "var(--jester-brand-orange-800)",
+    barColor: "var(--jester-brand-orange-500)",
   },
   {
     key: "attraction",
     title: "მიზიდულობა & ქიმია",
     icon: "🔥",
-    accentColor: "#db2777",
-    barColor: "#ec4899",
+    accentColor: "var(--jester-brand-orange-800)",
+    barColor: "var(--jester-brand-orange-500)",
   },
   {
     key: "growth_long_term",
     title: "პიროვნული ზრდა",
     icon: "🌱",
-    accentColor: "#059669",
-    barColor: "#10b981",
+    accentColor: "var(--jester-support-sage-ink)",
+    barColor: "var(--jester-support-sage-500)",
   },
 ];
 
@@ -65,12 +65,12 @@ export const DimensionCards: React.FC<DimensionCardsProps> = ({ dimensions }) =>
             margin: "0 0 0.25rem 0",
             fontSize: "1.15rem",
             fontWeight: 700,
-            color: "#0f172a",
+            color: "var(--jester-text-primary)",
           }}
         >
           ურთიერთობის 4 განზომილება
         </h2>
-        <p style={{ margin: 0, fontSize: "0.88rem", color: "#64748b" }}>
+        <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--jester-text-secondary)" }}>
           სინასტრიული ბალანსი ოთხ ძირითად მიმართულებაში.
         </p>
       </div>
@@ -92,8 +92,8 @@ export const DimensionCards: React.FC<DimensionCardsProps> = ({ dimensions }) =>
               key={dim.key}
               padded
               style={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #f1f5f9",
+                backgroundColor: "var(--jester-surface-card)",
+                border: "1px solid var(--jester-border-soft)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -114,7 +114,7 @@ export const DimensionCards: React.FC<DimensionCardsProps> = ({ dimensions }) =>
                     style={{
                       fontSize: "0.92rem",
                       fontWeight: 600,
-                      color: "#1e293b",
+                      color: "var(--jester-text-primary)",
                       display: "flex",
                       alignItems: "center",
                       gap: "0.35rem",
@@ -133,7 +133,7 @@ export const DimensionCards: React.FC<DimensionCardsProps> = ({ dimensions }) =>
                   </span>
                 </div>
 
-                <div style={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.4 }}>
+                <div style={{ fontSize: "0.78rem", color: "var(--jester-text-secondary)", lineHeight: 1.4 }}>
                   {qualitative}
                 </div>
               </div>
@@ -142,7 +142,7 @@ export const DimensionCards: React.FC<DimensionCardsProps> = ({ dimensions }) =>
               <div
                 style={{
                   height: "6px",
-                  backgroundColor: "#f1f5f9",
+                  backgroundColor: "var(--jester-surface-alt)",
                   borderRadius: "9999px",
                   overflow: "hidden",
                 }}

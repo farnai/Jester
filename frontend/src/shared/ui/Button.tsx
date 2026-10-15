@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "brand";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "brand" | "primaryDark";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   icon?: React.ReactNode;
@@ -24,56 +24,68 @@ export const Button: React.FC<ButtonProps> = ({
 
   const sizeStyles: Record<string, React.CSSProperties> = {
     sm: {
-      padding: "0.4rem 0.75rem",
+      padding: "0.4rem 0.85rem",
       fontSize: "0.825rem",
       minHeight: "36px",
       gap: "0.4rem",
     },
     md: {
-      padding: "0.6rem 1.1rem",
+      padding: "0.6rem 1.25rem",
       fontSize: "0.9rem",
-      minHeight: "44px", // Touch-friendly minimum target
+      minHeight: "44px", // Accessible 44px touch target
       gap: "0.5rem",
     },
     lg: {
-      padding: "0.75rem 1.5rem",
+      padding: "0.75rem 1.6rem",
       fontSize: "1rem",
-      minHeight: "50px",
+      minHeight: "52px",
       gap: "0.6rem",
     },
   };
 
   const variantStyles: Record<string, React.CSSProperties> = {
     primary: {
-      backgroundColor: "#1890ff",
-      color: "#ffffff",
-      border: "1px solid #1890ff",
+      backgroundColor: "#FF7A2F",
+      color: "#222630", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast (white on #FF7A2F is only 2.60:1)
+      border: "1px solid #E9681F",
+      fontWeight: 700,
     },
     brand: {
-      backgroundColor: "#6366f1",
-      color: "#ffffff",
-      border: "1px solid #6366f1",
-      boxShadow: "0 2px 4px rgba(99, 102, 241, 0.2)",
+      backgroundColor: "#FF7A2F",
+      color: "#222630", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast
+      border: "1px solid #E9681F",
+      boxShadow: "0 2px 6px rgba(255, 122, 47, 0.22)",
+      fontWeight: 700,
+    },
+    primaryDark: {
+      backgroundColor: "#9E4215", // Dark-orange variant when white text is desired (6.47:1)
+      color: "#FFFFFF",
+      border: "1px solid #713111",
+      fontWeight: 700,
     },
     secondary: {
-      backgroundColor: "#f1f5f9",
-      color: "#334155",
-      border: "1px solid #e2e8f0",
+      backgroundColor: "#FFFFFF",
+      color: "#222630",
+      border: "1px solid #D8D1C7",
+      fontWeight: 600,
     },
     outline: {
       backgroundColor: "transparent",
-      color: "#334155",
-      border: "1px solid #cbd5e1",
+      color: "#222630",
+      border: "1px solid #8F8A83",
+      fontWeight: 600,
     },
     ghost: {
       backgroundColor: "transparent",
-      color: "#475569",
+      color: "#6A716F",
       border: "1px solid transparent",
+      fontWeight: 600,
     },
     danger: {
-      backgroundColor: "#fff1f0",
-      color: "#cf1322",
-      border: "1px solid #ffa39e",
+      backgroundColor: "#FBE9E8",
+      color: "#AE3534",
+      border: "1px solid #F5C6C5",
+      fontWeight: 600,
     },
   };
 
@@ -82,10 +94,10 @@ export const Button: React.FC<ButtonProps> = ({
     width: fullWidth ? "100%" : "auto",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: "8px",
-    fontWeight: 600,
+    borderRadius: "12px",
+    fontWeight: 700,
     cursor: isDisabled ? "not-allowed" : "pointer",
-    opacity: isDisabled ? 0.65 : 1,
+    opacity: isDisabled ? 0.55 : 1,
     transition: "all 0.15s ease-in-out",
     boxSizing: "border-box",
     textAlign: "center",

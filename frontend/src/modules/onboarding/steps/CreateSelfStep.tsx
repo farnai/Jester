@@ -243,40 +243,40 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", textAlign: "left" }}>
         {/* Sun Sign */}
         <Card variant="default" style={{ padding: "1rem" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#f59e0b", textTransform: "uppercase" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-600)", textTransform: "uppercase" }}>
             ☀️ მზე (Sun Sign)
           </div>
-          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--jester-text-primary)", marginTop: "4px" }}>
             {sunSignKa}
           </div>
-          <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "capitalize" }}>
+          <div style={{ fontSize: "0.75rem", color: "var(--jester-text-secondary)", textTransform: "capitalize" }}>
             {safeAstro?.sun_sign}
           </div>
         </Card>
 
         {/* Moon Sign */}
         <Card variant="default" style={{ padding: "1rem" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#6366f1", textTransform: "uppercase" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-support-sage-ink)", textTransform: "uppercase" }}>
             🌙 მთვარე (Moon Sign)
           </div>
-          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--jester-text-primary)", marginTop: "4px" }}>
             {moonSignKa}
           </div>
-          <div style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "capitalize" }}>
+          <div style={{ fontSize: "0.75rem", color: "var(--jester-text-secondary)", textTransform: "capitalize" }}>
             {safeAstro?.moon_sign}
           </div>
         </Card>
 
         {/* Ascendant */}
         <Card variant="default" style={{ padding: "1rem", gridColumn: "span 2" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#ec4899", textTransform: "uppercase" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-800)", textTransform: "uppercase" }}>
             🌅 ასცენდენტი (Rising / Ascendant)
           </div>
-          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--jester-text-primary)", marginTop: "4px" }}>
             {ascendantSignKa ? (
               <span>{ascendantSignKa} ({safeAstro?.ascendant_sign})</span>
             ) : (
-              <span style={{ color: "#94a3b8", fontSize: "0.95rem", fontWeight: 500 }}>
+              <span style={{ color: "var(--jester-text-secondary)", fontSize: "0.95rem", fontWeight: 500 }}>
                 არ არის გამოთვლილი (დაბადების დრო უცნობია)
               </span>
             )}

@@ -59,7 +59,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
                     margin: 0,
                     fontWeight: 800,
                     fontSize: "1.1rem",
-                    color: "#0f172a",
+                    color: "var(--jester-text-primary)",
                     letterSpacing: "-0.01em",
                   }}
                   className="person-card-name"
@@ -72,19 +72,19 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
                   </Badge>
                 )}
                 {connectionStatus === "pending_out" && (
-                  <Badge variant="outline" size="sm" style={{ color: "#d97706", borderColor: "#fde68a" }}>
+                  <Badge variant="outline" size="sm" style={{ color: "var(--jester-semantic-warning)", borderColor: "var(--jester-semantic-warning-soft)" }}>
                     ⏳ მოთხოვნა გაგზავნილია
                   </Badge>
                 )}
                 {connectionStatus === "pending_in" && (
-                  <Badge variant="outline" size="sm" style={{ color: "#2563eb", borderColor: "#bfdbfe" }}>
+                  <Badge variant="outline" size="sm" style={{ color: "var(--jester-semantic-info)", borderColor: "var(--jester-semantic-info-soft)" }}>
                     📩 მოთხოვნა შემოსულია
                   </Badge>
                 )}
               </div>
 
               {(person.occupation || person.city) && (
-                <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.2rem", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div style={{ fontSize: "0.825rem", color: "var(--jester-text-secondary)", marginTop: "0.2rem", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {[person.occupation, person.city].filter(Boolean).join(" • ")}
                 </div>
               )}
@@ -99,8 +99,8 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#faf5ff",
-                border: "1px solid #e9d5ff",
+                backgroundColor: "var(--jester-accent-peach-soft)",
+                border: "1px solid var(--jester-accent-peach)",
                 borderRadius: "12px",
                 padding: "0.35rem 0.65rem",
                 minWidth: "48px",
@@ -108,14 +108,14 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
               }}
               title="სინასტრიული თანხვედრის ინდექსი (Curiosity Score)"
             >
-              <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#9333ea", lineHeight: 1 }}>
+              <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--jester-brand-orange-800)", lineHeight: 1 }}>
                 {score}
               </span>
               <span
                 style={{
                   fontSize: "0.6rem",
                   fontWeight: 700,
-                  color: "#a855f7",
+                  color: "var(--jester-brand-orange-700)",
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
                   marginTop: "0.15rem",
@@ -132,11 +132,11 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
           <div
             style={{
               padding: "0.875rem 1rem",
-              backgroundColor: "rgba(248, 250, 252, 0.9)",
-              borderLeft: "3px solid #9333ea",
+              backgroundColor: "var(--jester-accent-peach-soft)",
+              borderLeft: "3px solid var(--jester-brand-orange-500)",
               borderRadius: "0 10px 10px 0",
               fontSize: "0.875rem",
-              color: "#334155",
+              color: "var(--jester-text-primary)",
               lineHeight: 1.55,
               position: "relative",
             }}
@@ -145,7 +145,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
               style={{
                 fontSize: "0.7rem",
                 fontWeight: 700,
-                color: "#7e22ce",
+                color: "var(--jester-brand-orange-800)",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
                 marginBottom: "0.3rem",
@@ -159,7 +159,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, connectionStatus
           <p
             style={{
               fontSize: "0.875rem",
-              color: "#475569",
+              color: "var(--jester-text-secondary)",
               margin: 0,
               lineHeight: 1.5,
               display: "-webkit-box",

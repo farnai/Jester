@@ -174,7 +174,7 @@ export const PersonProfilePage: React.FC = () => {
             to="/discover"
             style={{
               textDecoration: "none",
-              color: "#6366f1",
+              color: "var(--jester-brand-orange-800)",
               display: "flex",
               alignItems: "center",
               gap: "0.3rem",
@@ -182,8 +182,8 @@ export const PersonProfilePage: React.FC = () => {
           >
             🧭 აღმოჩენა
           </Link>
-          <span style={{ color: "#94a3b8" }}>/</span>
-          <span style={{ color: "#0f172a" }}>{profile.display_name}</span>
+          <span style={{ color: "var(--jester-border-interactive)" }}>/</span>
+          <span style={{ color: "var(--jester-text-primary)" }}>{profile.display_name}</span>
         </div>
         {isSelf && (
           <Badge variant="brand" size="sm">
@@ -264,17 +264,17 @@ export const PersonProfilePage: React.FC = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: "0.4rem",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #f0abfc",
+                  backgroundColor: "var(--jester-surface-card)",
+                  border: "1px solid var(--jester-accent-peach)",
                   borderRadius: "20px",
                   padding: "0.3rem 0.75rem",
                 }}
                 title="სინასტრიული თანხვედრა (Curiosity Signal)"
               >
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7e22ce" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-800)" }}>
                   თანხვედრა
                 </span>
-                <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "#9333ea" }}>
+                <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--jester-brand-orange-800)" }}>
                   {score}
                 </span>
               </div>
@@ -291,7 +291,7 @@ export const PersonProfilePage: React.FC = () => {
                 style={{
                   margin: 0,
                   fontSize: "1.05rem",
-                  color: "#1e1b4b",
+                  color: "var(--jester-text-primary)",
                   lineHeight: 1.65,
                   fontWeight: 500,
                 }}
@@ -300,7 +300,7 @@ export const PersonProfilePage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <p style={{ margin: "0 0 1.25rem 0", color: "#475569", fontSize: "0.95rem", lineHeight: 1.6 }}>
+            <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
               თქვენს ასტროლოგიურ რუკებს შორის შეინიშნება უნიკალური სინასტრიული თანხვედრა, რაც კომუნიკაციას განსაკუთრებით საინტერესოს ხდის.
             </p>
           )}
@@ -316,7 +316,7 @@ export const PersonProfilePage: React.FC = () => {
                   minHeight: "48px",
                   fontSize: "1rem",
                   fontWeight: 700,
-                  boxShadow: "0 4px 12px rgba(147, 51, 234, 0.2)",
+                  boxShadow: "0 4px 12px rgba(255, 122, 47, 0.2)",
                 }}
               >
                 💡 გაიგე რატომ (Explore Why) →

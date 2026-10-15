@@ -294,19 +294,19 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
             justifyContent: "space-between",
             padding: "0.85rem 1rem",
             backgroundColor: "#f8fafc",
-            border: "1.5px solid #6366f1",
+            border: "1.5px solid var(--jester-brand-orange-500)",
             borderRadius: "8px",
-            boxShadow: "0 1px 3px rgba(99, 102, 241, 0.1)",
+            boxShadow: "0 1px 3px rgba(255, 122, 47, 0.1)",
             transition: "all 0.15s ease",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
             <span style={{ fontSize: "1.2rem" }}>📍</span>
             <div>
-              <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a" }}>
+              <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--jester-text-primary)" }}>
                 {selectedDisplay}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+              <div style={{ fontSize: "0.75rem", color: "var(--jester-text-secondary)" }}>
                 კანონიკური ლოკაცია დადასტურებულია
               </div>
             </div>
@@ -321,8 +321,8 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
               fontSize: "0.8rem",
               fontWeight: 600,
               backgroundColor: "#ffffff",
-              color: "#6366f1",
-              border: "1px solid #c7d2fe",
+              color: "var(--jester-brand-orange-800)",
+              border: "1px solid var(--jester-accent-peach)",
               borderRadius: "6px",
               cursor: "pointer",
               transition: "all 0.15s ease",
@@ -339,7 +339,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
               display: "flex",
               alignItems: "center",
               backgroundColor: disabled ? "#f8fafc" : "#ffffff",
-              border: `1.5px solid ${error ? "#ef4444" : isOpen ? "#6366f1" : "#cbd5e1"}`,
+              border: `1.5px solid ${error ? "var(--jester-semantic-error)" : isOpen ? "var(--jester-brand-orange-800)" : "var(--jester-border-interactive)"}`,
               borderRadius: "8px",
               padding: "0 0.75rem",
               minHeight: "44px",

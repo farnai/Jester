@@ -137,11 +137,11 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
               style={{
                 padding: "0.5rem 0.85rem",
                 borderRadius: "20px",
-                border: isSelected ? "1px solid #6366f1" : "1px solid #cbd5e1",
-                backgroundColor: isSelected ? "#e0e7ff" : "#f8fafc",
-                color: isSelected ? "#3730a3" : "#334155",
+                border: isSelected ? "1px solid var(--jester-brand-orange-500)" : "1px solid var(--jester-border-soft)",
+                backgroundColor: isSelected ? "var(--jester-brand-orange-100)" : "var(--jester-surface-card)",
+                color: isSelected ? "var(--jester-brand-orange-900)" : "var(--jester-text-primary)",
                 fontSize: "0.85rem",
-                fontWeight: isSelected ? 600 : 400,
+                fontWeight: isSelected ? 700 : 500,
                 cursor: "pointer",
                 transition: "all 0.15s ease",
               }}

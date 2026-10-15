@@ -116,7 +116,7 @@ export const DiscoverPage: React.FC = () => {
                 margin: 0,
                 fontSize: "1.65rem",
                 fontWeight: 800,
-                color: "#0f172a",
+                color: "var(--jester-text-primary)",
                 letterSpacing: "-0.02em",
               }}
             >
@@ -126,7 +126,7 @@ export const DiscoverPage: React.FC = () => {
           <p
             style={{
               margin: "0.35rem 0 0 0",
-              color: "#475569",
+              color: "var(--jester-text-secondary)",
               fontSize: "0.95rem",
               lineHeight: 1.5,
               maxWidth: "600px",

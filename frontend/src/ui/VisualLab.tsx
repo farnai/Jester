@@ -93,7 +93,16 @@ export const VisualLab: React.FC = () => {
               haptics.light();
             }}
           >
-            Primary Action
+            Primary Action (#FF7A2F + Dark Text 5.82:1)
+          </Button>
+
+          <Button
+            variant="primaryDark"
+            onPress={() => {
+              haptics.light();
+            }}
+          >
+            Primary Dark Variant (#9E4215 + White Text 6.47:1)
           </Button>
 
           <Button
@@ -188,23 +197,28 @@ export const VisualLab: React.FC = () => {
         </Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
           <Card elevation="none" variant="subtle" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="primary">Flat Subtle Surface</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="none"</Text>
+            <Text variant="sm" weight="bold" color="primary">Flat Subtle Surface (#F3EEE6)</Text>
+            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="none" variant="subtle"</Text>
           </Card>
 
           <Card elevation="sm" variant="surface" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="primary">Surface Card (SM)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm"</Text>
+            <Text variant="sm" weight="bold" color="primary">Surface Card (#FFFFFF)</Text>
+            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="surface"</Text>
           </Card>
 
-          <Card elevation="md" variant="highlight" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="highlight">Highlight Card (MD)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="md"</Text>
+          <Card elevation="sm" variant="highlight" style={{ flex: 1, minWidth: 200 }}>
+            <Text variant="sm" weight="bold" color="accent">Warm Peach Insight (#FBEEE7)</Text>
+            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="highlight"</Text>
+          </Card>
+
+          <Card elevation="sm" variant="calm" style={{ flex: 1, minWidth: 200 }}>
+            <Text variant="sm" weight="bold" color="sage">Measured Sage Support (#E8EFE2)</Text>
+            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="calm"</Text>
           </Card>
 
           <Card elevation="lg" variant="bordered" style={{ flex: 1, minWidth: 200 }}>
             <Text variant="sm" weight="bold" color="primary">Bordered Card (LG)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="lg"</Text>
+            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="lg" variant="bordered"</Text>
           </Card>
         </View>
       </Card>
@@ -235,8 +249,9 @@ export const VisualLab: React.FC = () => {
           5. Badges & Astrological Category Chips
         </Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-          <Badge variant="brand">♈ მზე ვერძში / Sun Aries</Badge>
-          <Badge variant="highlight">♏ მთვარე მორიელში / Moon Scorpio</Badge>
+          <Badge variant="brand">♈ მზე ვერძში / Brand Orange (#FFE7D7)</Badge>
+          <Badge variant="highlight">🍑 JESTER Insight / Peach Soft (#FBEEE7)</Badge>
+          <Badge variant="sage">🌿 მხარდამჭერი / Measured Sage (#E8EFE2)</Badge>
           <Badge variant="neutral">♌ ასცედენტი ლომში / Rising Leo</Badge>
           <Badge variant="success">🔥 ცეცხლი / Fire Dominant</Badge>
           <Badge variant="warning">⚡ კარდინალური / Cardinal</Badge>
@@ -331,20 +346,20 @@ export const VisualLab: React.FC = () => {
         <Text variant="sm" color="secondary" style={{ marginBottom: 16 }}>
           Exercises NativeWind utility class resolution mapped directly to JESTER design tokens.
         </Text>
-        <View className="bg-accent-subtle p-4 rounded-lg border border-accent-border mb-3">
-          <Text className="text-accent font-bold text-base">
-            NativeWind Class Path: bg-accent-subtle + text-accent
+        <View className="bg-brand-50 p-4 rounded-lg border border-brand-200 mb-3">
+          <Text className="text-brand-800 font-bold text-base">
+            NativeWind Class Path: bg-brand-50 + text-brand-800
           </Text>
           <Text className="text-textSecondary text-sm mt-1">
-            Compiled through Tailwind token mapping: #6366f1 accent on #eef2ff surface.
+            Compiled through Tailwind token mapping: #FF7A2F brand active accent on warm canvas.
           </Text>
         </View>
-        <View className="bg-highlight-subtle p-4 rounded-lg border border-highlight-border">
-          <Text className="text-highlight font-bold text-base">
-            NativeWind Class Path: bg-highlight-subtle + text-highlight
+        <View className="bg-sage-50 p-4 rounded-lg border border-sage-200">
+          <Text className="text-sage-ink font-bold text-base">
+            NativeWind Class Path: bg-sage-50 + text-sage-ink
           </Text>
           <Text className="text-textSecondary text-sm mt-1">
-            Compiled through Tailwind token mapping: #9333ea highlight on #fdf4ff surface.
+            Compiled through Tailwind token mapping: #788A69 / #4B6242 measured supportive sage on #F4F8F1 surface.
           </Text>
         </View>
       </Card>

@@ -257,8 +257,8 @@ export const MePage: React.FC = () => {
             padding: "0.75rem 0.5rem",
             background: "none",
             border: "none",
-            borderBottom: activeTab === "insights" ? "3px solid #6366f1" : "3px solid transparent",
-            color: activeTab === "insights" ? "#6366f1" : "#64748b",
+            borderBottom: activeTab === "insights" ? "3px solid var(--jester-brand-orange-500)" : "3px solid transparent",
+            color: activeTab === "insights" ? "var(--jester-brand-orange-800)" : "var(--jester-text-secondary)",
             fontWeight: activeTab === "insights" ? 800 : 600,
             cursor: "pointer",
             fontSize: "1rem",
@@ -279,8 +279,8 @@ export const MePage: React.FC = () => {
             padding: "0.75rem 0.5rem",
             background: "none",
             border: "none",
-            borderBottom: activeTab === "settings" ? "3px solid #6366f1" : "3px solid transparent",
-            color: activeTab === "settings" ? "#6366f1" : "#64748b",
+            borderBottom: activeTab === "settings" ? "3px solid var(--jester-brand-orange-500)" : "3px solid transparent",
+            color: activeTab === "settings" ? "var(--jester-brand-orange-800)" : "var(--jester-text-secondary)",
             fontWeight: activeTab === "settings" ? 800 : 600,
             cursor: "pointer",
             fontSize: "1rem",
@@ -526,13 +526,13 @@ export const MePage: React.FC = () => {
                   id="discoverable-checkbox"
                   checked={isDiscoverable}
                   onChange={(e) => setIsDiscoverable(e.target.checked)}
-                  style={{ width: "20px", height: "20px", cursor: "pointer", accentColor: "#6366f1" }}
+                  style={{ width: "20px", height: "20px", cursor: "pointer", accentColor: "var(--jester-brand-orange-500)" }}
                 />
                 <div>
-                  <label htmlFor="discoverable-checkbox" style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a", cursor: "pointer" }}>
+                  <label htmlFor="discoverable-checkbox" style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--jester-text-primary)", cursor: "pointer" }}>
                     პროფილი ჩანდეს აღმოჩენის სიაში (Discoverable)
                   </label>
-                  <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.15rem" }}>
+                  <div style={{ fontSize: "0.8rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
                     თუ გამორთავთ, სხვა მომხმარებლები ვერ დაგინახავენ Discover სიაში.
                   </div>
                 </div>
