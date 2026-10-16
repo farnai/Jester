@@ -13,7 +13,7 @@ interface FinishStepProps {
   currentCityLabel: string;
   interestsCount: number;
   avatarUrl: string | null;
-  onSuccess: () => void;
+  onSuccess: () => Promise<void>;
   onBack: () => void;
   onJumpToStep: (step: number) => void;
 }
@@ -43,7 +43,7 @@ export const FinishStep: React.FC<FinishStepProps> = ({
     try {
       // Authoritative backend validation and completion
       await API.profiles.completeOnboarding();
-      onSuccess();
+      await onSuccess();
     } catch (err: any) {
       console.error("Completion error:", err);
       const msg = err.message || "ონბორდინგის დასრულება ვერ მოხერხდა.";

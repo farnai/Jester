@@ -95,7 +95,8 @@ The Application Shell provides the persistent frame, authentication gating, layo
 - **Desktop**: Persistent top header navigation (`HOME`, `DISCOVER`, `MESSAGES`, `ME`), notification indicator with unread count badge, and user identity chip.
 - **Mobile**: Persistent bottom tab bar (`HOME`, `DISCOVER`, `MESSAGES`, `ME`) optimized for thumb navigation and 48px+ touch targets.
 - **Realtime Listener**: Maintains active WebSocket channel to `public:notifications:user_id=eq.{my_id}`.
-- **Onboarding Interceptor**: Evaluates `birth_data` presence; redirects incomplete accounts to `/onboarding/birth-data`.
+- **Onboarding Interceptor**: Uses the backend profile's `onboarding_completed` flag; redirects incomplete accounts to `/onboarding/birth-data`. Profile-load failures show retry recovery rather than assuming an incomplete or empty profile. Successful completion enters Home (`/`).
+- **Email Confirmation**: A successful signup without a session enters `/auth/verify-email`, with resend and login recovery. Supabase processes the confirmation at `/auth/callback`; profile initialization happens only after an authenticated session exists. Local Supabase requires confirmation; hosted deployments must configure confirmation, email delivery, and allowed callback URLs separately.
 
 ---
 

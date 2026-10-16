@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { supabase } from "../../core/realtime/supabase";
 import { useAuth } from "../../core/auth/useAuth";
-import { API } from "../../core/api/endpoints";
 import { Card, Button, Input } from "../../shared/ui";
 import { SocialAuthButtons } from "./SocialAuthButtons";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, onboardingCompleted, isLoading: isAuthLoading, refreshProfile } = useAuth();
+  const { user, onboardingCompleted, isLoading: isAuthLoading } = useAuth();
 
   const initialEmail = (location.state as any)?.email || "";
   const [email, setEmail] = useState(initialEmail);
@@ -17,7 +16,7 @@ export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const from = (location.state as any)?.from?.pathname || "/me";
+  const from = (location.state as any)?.from?.pathname || "/";
 
   // If already authenticated, redirect
   if (!isAuthLoading && user) {
@@ -39,31 +38,21 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (data.user) {
-      let p = await refreshProfile();
-      if (!p) {
-        try {
-          p = await API.profiles.initializeProfile();
-          await refreshProfile();
-        } catch {}
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+      if (authError) {
+        if (authError.code === "email_not_confirmed") {
+          navigate("/auth/verify-email", { state: { email: cleanEmail } });
+          return;
+        }
+        throw authError;
       }
+      if (!data.session) throw new Error("სესიის შექმნა ვერ მოხერხდა. სცადეთ ხელახლა.");
+      // AuthProvider hydrates the authoritative profile before the redirect above.
+    } catch (err: any) {
+      setError(err?.message || "შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.");
+    } finally {
       setLoading(false);
-      if (p?.onboarding_completed) {
-        navigate(from, { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
     }
   };
 

@@ -1,0 +1,22 @@
+{
+  "id": "TASK-REGISTRATION-FIDELITY",
+  "title": "Founder-reference registration reconstruction",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": ["repository_read", "repository_write", "command_execution", "testing"],
+  "goal": "Reconstruct the supplied approved registration composition while preserving auth integration.",
+  "scope": ["frontend/src/modules/auth/RegisterPage.tsx", "frontend/src/modules/auth/RegistrationScene.tsx", "frontend/src/modules/auth/registration.css", "frontend/src/assets/registration/panorama-editorial-v2.png", "scripts/registration-visual-qa.cjs", "scripts/registration-functional-qa.cjs", ".jester/reports"],
+  "constraints": ["No backend or auth API changes", "No commit or push", "Preserve existing supplied assets", "No machine-specific paths in artifacts"],
+  "acceptance_criteria": ["Single accessible working form", "Reference-led desktop and mobile composition", "Actual screenshots at all six requested sizes", "Inspect and correct initial visual discrepancies", "Report asset, navigation and email-verification limitations"],
+  "verification": ["cd frontend && npm run build", "node scripts/registration-visual-qa.cjs", "node scripts/registration-functional-qa.cjs", "pytest tests/backend/test_registration_onboarding_boundary.py"],
+  "dependencies": [],
+  "created_at": "2026-10-16",
+  "updated_at": "2026-10-16",
+  "intake_note": "Direct user task; inbox was empty. Scope and authorization were supplied in the conversation.",
+  "followup": "Founder requests targeted desktop aspect-ratio, portrait, card and panoramic-depth corrections. Preserve mobile and auth logic. Resume for screenshot-driven correction; no image regeneration.",
+  "report": ".jester/reports/implementations/TASK-REGISTRATION-FIDELITY_correction.md",
+  "review_note": "Targeted founder corrections implemented and browser-verified. Original photography/logo/handwriting differences remain disclosed. Founder approval pending; not completed."
+}

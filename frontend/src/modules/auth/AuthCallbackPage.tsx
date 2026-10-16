@@ -1,57 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "../../core/realtime/supabase";
-import { API } from "../../core/api/endpoints";
+import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "../../core/auth/useAuth";
 import { LoadingState } from "../../shared/StatusState";
 import { Card } from "../../shared/ui";
 
 export const AuthCallbackPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { refreshProfile } = useAuth();
-  const [error, setError] = useState<string | null>(null);
-
+  const { user, isLoading, onboardingCompleted, profileError } = useAuth();
+  const [linkError] = useState(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const query = new URLSearchParams(window.location.search);
+    return params.get("error_description") || query.get("error_description");
+  });
+  const [timedOut, setTimedOut] = useState(false);
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        // 1. Get authenticated session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError || !session) {
-          // Wait briefly in case session exchange is pending
-          const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-            if (newSession) {
-              authListener.subscription.unsubscribe();
-              await processSession();
-            }
-          });
-          return;
-        }
-
-        await processSession();
-      } catch (err: any) {
-        setError(err?.message || "ავტორიზაციის დამუშავებისას დაფიქსირდა შეცდომა.");
-      }
-    };
-
-    const processSession = async () => {
-      try {
-        // 2. Explicitly initialize/verify profile via backend API
-        const profile = await API.profiles.initializeProfile();
-        await refreshProfile();
-
-        // 3. Route according to authoritative onboarding completion status
-        if (profile.onboarding_completed) {
-          navigate("/me", { replace: true });
-        } else {
-          navigate("/onboarding", { replace: true });
-        }
-      } catch (err: any) {
-        setError(err?.message || "პროფილის ინიციალიზაციისას დაფიქსირდა შეცდომა.");
-      }
-    };
-
-    handleAuthCallback();
-  }, [navigate, refreshProfile]);
+    const timer = window.setTimeout(() => setTimedOut(true), 15000);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const error = linkError || profileError || ((!isLoading && !user) || timedOut ? "დადასტურების ბმული არასწორია ან ვადაგასულია. მოითხოვეთ ახალი წერილი." : null);
+  if (!error && !isLoading && user) return <Navigate to={onboardingCompleted ? "/" : "/onboarding"} replace />;
 
   if (error) {
     return (
@@ -68,6 +34,7 @@ export const AuthCallbackPage: React.FC = () => {
           <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⚠️</div>
           <h3 style={{ margin: "0 0 0.5rem 0", color: "#dc2626" }}>ავტორიზაციის შეცდომა</h3>
           <p style={{ color: "#64748b", fontSize: "0.9rem", marginBottom: "1.5rem" }}>{error}</p>
+          <p><Link to="/auth/verify-email">დადასტურების წერილის ხელახლა გაგზავნა</Link></p>
           <Link
             to="/auth/login"
             style={{

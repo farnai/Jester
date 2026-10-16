@@ -16,13 +16,15 @@ import { ProfilePhotoStep } from "./steps/ProfilePhotoStep";
 import { FinishStep } from "./steps/FinishStep";
 
 export const BirthDataOnboardingPage: React.FC = () => {
-  const { user, profile, refreshProfile, onboardingCompleted, signOut } = useAuth();
+  const { user, refreshProfile, onboardingCompleted, signOut } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Active step in onboarding wizard (1 through 8)
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [loadingInitial, setLoadingInitial] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [savingStep, setSavingStep] = useState(false);
   const [stepError, setStepError] = useState<string | null>(null);
 
@@ -62,28 +64,20 @@ export const BirthDataOnboardingPage: React.FC = () => {
       return;
     }
 
-    // If user already completed onboarding, route to /me immediately
+    // Completed onboarding enters Home.
     if (onboardingCompleted) {
-      navigate("/me", { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 
     let isMounted = true;
 
-    const profilePromise = profile
-      ? Promise.resolve(profile)
-      : API.profiles.getMyProfile().catch(async () => {
-          try {
-            return await API.profiles.initializeProfile();
-          } catch {
-            return null;
-          }
-        });
-
+    setLoadingInitial(true);
+    setLoadError(false);
     Promise.all([
-      profilePromise,
-      API.astrology.getBirthData(user.id).catch(() => null),
-      API.interests.getMyInterests().catch(() => ({ interest_ids: [] })),
+      API.profiles.getMyProfile(),
+      API.astrology.getBirthData(user.id),
+      API.interests.getMyInterests(),
     ])
       .then(async ([savedProfile, savedBirthData, userInterests]) => {
         if (!isMounted) return;
@@ -140,7 +134,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
           resumeStep = Math.max(2, Math.min(resumeStep, 2));
         } else if (persistedStep <= 3) {
           resumeStep = 3;
-        } else if (!savedBirthData?.birth_city_id) {
+        } else if (persistedStep <= 4 || !savedBirthData?.birth_city_id) {
           resumeStep = 4;
         } else if (!savedProfile?.current_city_id) {
           resumeStep = 5;
@@ -151,6 +145,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
 
         setCurrentStep(resumeStep);
       })
+      .catch(() => { if (isMounted) setLoadError(true); })
       .finally(() => {
         if (isMounted) setLoadingInitial(false);
       });
@@ -158,13 +153,16 @@ export const BirthDataOnboardingPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [user, onboardingCompleted, navigate]);
+  }, [user?.id, onboardingCompleted, navigate, loadAttempt]);
 
   // Step 1: Back to Registration
   const handleStep1Back = async () => {
     try {
       await signOut();
-    } catch {}
+    } catch {
+      setStepError("გამოსვლა ვერ მოხერხდა. სცადეთ ხელახლა.");
+      return;
+    }
     navigate("/auth/register", { replace: true });
   };
 
@@ -173,20 +171,11 @@ export const BirthDataOnboardingPage: React.FC = () => {
     setStepError(null);
     setSavingStep(true);
     try {
-      let updated: any;
-      try {
-        updated = await API.profiles.updateMyProfile({
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          onboarding_step: 2,
-        });
-      } catch {
-        updated = await API.profiles.initializeProfile({
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-        });
-        await API.profiles.updateMyProfile({ onboarding_step: 2 });
-      }
+      const updated = await API.profiles.updateMyProfile({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        onboarding_step: 2,
+      });
       if (updated.display_name) {
         setDisplayName(updated.display_name);
       }
@@ -246,15 +235,19 @@ export const BirthDataOnboardingPage: React.FC = () => {
     setStepError(null);
     setSavingStep(true);
     try {
+      // Resolve the selected city before saving; its preview request may still
+      // be in flight when the user presses Continue or selects another city.
+      const canonical = await API.geo.getCity(birthCityId);
       await API.astrology.updateBirthData(user.id, {
         birth_city_id: birthCityId,
         place_label: birthCityLabel,
-        latitude: latitude,
-        longitude: longitude,
-        birth_timezone: birthTimezone,
+        latitude: canonical.latitude,
+        longitude: canonical.longitude,
+        birth_timezone: canonical.timezone,
       });
-      // Trigger astrology calculation in background
-      API.astrology.recalculate().catch((err) => console.warn("Background astrology recalc note:", err));
+      setBirthTimezone(canonical.timezone);
+      // Keep this step retryable until the derived profile has been saved.
+      await API.astrology.recalculate();
       await API.profiles.updateMyProfile({ onboarding_step: 5 });
       await refreshProfile();
       setCurrentStep(5);
@@ -358,8 +351,9 @@ export const BirthDataOnboardingPage: React.FC = () => {
     await queryClient.invalidateQueries({ queryKey: ["profile"] });
     await queryClient.invalidateQueries({ queryKey: ["birth-data"] });
     await queryClient.invalidateQueries({ queryKey: ["astrology"] });
-    await refreshProfile();
-    navigate("/me", { replace: true });
+    const completedProfile = await refreshProfile();
+    if (!completedProfile?.onboarding_completed) throw new Error("პროფილის განახლება ვერ მოხერხდა. სცადეთ ხელახლა.");
+    navigate("/", { replace: true });
   };
 
   if (loadingInitial) {
@@ -376,6 +370,11 @@ export const BirthDataOnboardingPage: React.FC = () => {
     7: "პროფილის ფოტო (Photo)",
     8: "გადამოწმება და დასრულება (Finish)",
   };
+
+  if (loadError) return <div role="alert">
+    <p>მონაცემების ჩატვირთვა ვერ მოხერხდა. შენახული მონაცემები უცვლელია.</p>
+    <button onClick={() => setLoadAttempt(value => value + 1)}>ხელახლა ცდა</button>
+  </div>;
 
   return (
     <div
@@ -454,6 +453,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
           </div>
         )}
 
+        <fieldset disabled={savingStep} aria-busy={savingStep} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
         {/* STEP 1: Basic Identity */}
         {currentStep === 1 && (
           <BasicProfileStep
@@ -559,6 +559,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
             onJumpToStep={(step) => setCurrentStep(step)}
           />
         )}
+        </fieldset>
       </Card>
     </div>
   );

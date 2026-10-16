@@ -1,0 +1,17 @@
+{
+  "environment": "local Supabase, real email capture and backend; no API mocks",
+  "checks": [
+    "Unauthenticated UI and API access denied",
+    "Real signup requires email verification; mismatch validation works",
+    "Unconfirmed password login cannot bypass verification",
+    "Delivered confirmation link creates real authenticated session",
+    "Incomplete onboarding cannot enter Home or complete through backend",
+    "Identity and step persist after reload",
+    "Loading locks controls; failed reads block editing and retry restores persisted progress",
+    "Logout/login resumes persisted birth date and unknown-time step",
+    "Canonical places and optional skips persist; final review resumes",
+    "Completion persists, reaches Home, and completed users cannot re-enter onboarding",
+    "Profile outage has retry recovery without restarting onboarding",
+    "Expired confirmation callback offers recovery instead of infinite loading"
+  ]
+}

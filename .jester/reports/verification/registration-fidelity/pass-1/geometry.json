@@ -1,0 +1,242 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "overflow": false,
+    "heading": {
+      "x": 72,
+      "y": 133,
+      "width": 560,
+      "height": 207.1875
+    },
+    "card": {
+      "x": 986.125,
+      "y": 233,
+      "width": 410.6875,
+      "height": 628.421875
+    },
+    "portrait": {
+      "x": 662.40625,
+      "y": 52,
+      "width": 806.390625,
+      "height": 730
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 305,
+        "height": 44
+      },
+      {
+        "width": 251,
+        "height": 44
+      },
+      {
+        "width": 251,
+        "height": 44
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "height": 800,
+    "overflow": false,
+    "heading": {
+      "x": 64,
+      "y": 133,
+      "width": 560,
+      "height": 184.171875
+    },
+    "card": {
+      "x": 876.5625,
+      "y": 233,
+      "width": 365.046875,
+      "height": 623.71875
+    },
+    "portrait": {
+      "x": 588.796875,
+      "y": 52,
+      "width": 716.796875,
+      "height": 730
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 259,
+        "height": 44
+      },
+      {
+        "width": 205,
+        "height": 44
+      },
+      {
+        "width": 205,
+        "height": 44
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "overflow": false,
+    "heading": {
+      "x": 25.796875,
+      "y": 248,
+      "width": 378.40625,
+      "height": 105.234375
+    },
+    "card": {
+      "x": 25.796875,
+      "y": 660.609375,
+      "width": 378.40625,
+      "height": 567.5
+    },
+    "portrait": {
+      "x": 120.40625,
+      "y": 68,
+      "width": 309.59375,
+      "height": 295
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 284,
+        "height": 44
+      },
+      {
+        "width": 230,
+        "height": 44
+      },
+      {
+        "width": 230,
+        "height": 44
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "overflow": false,
+    "heading": {
+      "x": 23.390625,
+      "y": 248,
+      "width": 343.21875,
+      "height": 95.4375
+    },
+    "card": {
+      "x": 23.390625,
+      "y": 670.953125,
+      "width": 343.21875,
+      "height": 567.5
+    },
+    "portrait": {
+      "x": 109.203125,
+      "y": 68,
+      "width": 280.796875,
+      "height": 295
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 249,
+        "height": 44
+      },
+      {
+        "width": 195,
+        "height": 44
+      },
+      {
+        "width": 195,
+        "height": 44
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 360,
+    "height": 800,
+    "overflow": false,
+    "heading": {
+      "x": 21.59375,
+      "y": 248,
+      "width": 316.8125,
+      "height": 90
+    },
+    "card": {
+      "x": 21.59375,
+      "y": 702.953125,
+      "width": 316.8125,
+      "height": 583
+    },
+    "portrait": {
+      "x": 100.8125,
+      "y": 68,
+      "width": 259.1875,
+      "height": 295
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 223,
+        "height": 44
+      },
+      {
+        "width": 169,
+        "height": 44
+      },
+      {
+        "width": 169,
+        "height": 44
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 700,
+    "overflow": false,
+    "heading": {
+      "x": 19.1875,
+      "y": 228,
+      "width": 281.625,
+      "height": 86.390625
+    },
+    "card": {
+      "x": 19.1875,
+      "y": 662.703125,
+      "width": 281.625,
+      "height": 572.1875
+    },
+    "portrait": {
+      "x": 89.609375,
+      "y": 68,
+      "width": 230.390625,
+      "height": 295
+    },
+    "brokenImages": [],
+    "formCount": 1,
+    "inputSizes": [
+      {
+        "width": 204,
+        "height": 44
+      },
+      {
+        "width": 150,
+        "height": 44
+      },
+      {
+        "width": 150,
+        "height": 44
+      }
+    ],
+    "errors": []
+  }
+]

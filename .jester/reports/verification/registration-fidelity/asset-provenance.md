@@ -1,0 +1,10 @@
+# Photographic reconstruction provenance
+
+Output: `frontend/src/assets/registration/panorama-editorial-v2.png`.
+Created 2026-10-16 with the built-in ImageGen tool, opaque PNG, 2048×683. No screenshot/UI was composited into the photograph. The full founder-approved image was inspected as visual guidance; this is a new generated scene, not recovered original photography. The generated original was copied into the app without editing the supplied pre-existing files.
+
+Exact generation prompt:
+
+> Create a standalone high resolution cinematic editorial panoramic landscape PHOTOGRAPH, very wide 3:1 composition, for the lower photographic layer of a warm cream registration webpage. No webpage, no interface, no text or lettering, no frame, no logo. Two young adults viewed from behind, man on left dark brown shirt and woman right cream sweater dark long hair, sitting together on a rocky foreground overlook at the LEFT QUARTER of the photograph. Their heads at about 48% down the image; their seated figures occupy about 18% of total image width. Foreground textured rocks and sparse natural olive foliage fill bottom left and bottom edge. Expansive distant hilly city panorama and a gently winding lake/river toward the BOTTOM RIGHT, distant church-like tower far right. The top HALF is very pale warm ivory-peach sunset sky, soft atmospheric haze, almost cream, bright golden backlight, low contrast distant mauve hills. Horizon at 65% of image height. Sun below the horizon/hidden in haze, no strong visible sun disc. Warm natural photograph, not a saturated orange stock banner. Main requirement: airy pale upper negative space for live text, small people low left, panoramic distant city low right, natural foreground depth. High detail photographic realism.
+
+Other used assets were already present at task start: portrait `hero_woman_highres.jpg`, three feature SVGs, the outlined stacked logo and local Noto Sans Georgian fonts. The portrait's original authorship/license was not provided. The approximate kit crops and original screenshot crops were not used as production photos.

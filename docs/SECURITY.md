@@ -1,5 +1,7 @@
 # JESTER — Security & Privacy Architecture Policy
 
+Onboarding completion is server-owned. Migration `027_onboarding_completion_server_owned.sql` prevents `anon` and `authenticated` database roles from inserting a completed profile or changing `onboarding_completed` directly. Owner profile edits remain governed by existing RLS. The backend completion endpoint validates identity, current city, birth date, and birth city before setting completion; interests, photo, and exact birth time remain optional.
+
 [![Security: RLS Enforced](https://img.shields.io/badge/Security-RLS%20Enforced-success.svg)](#postgresql-role-privileges--row-level-security-rls)
 [![Auth: Asymmetric JWKS](https://img.shields.io/badge/Auth-Asymmetric%20JWKS-blue.svg)](#authentication--token-validation-backendappauth)
 [![Tests: 193 Passed](https://img.shields.io/badge/Tests-193%20Passed-brightgreen.svg)](#automated-security-testing--verification)

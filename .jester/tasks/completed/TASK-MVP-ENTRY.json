@@ -1,0 +1,41 @@
+{
+  "id": "TASK-MVP-ENTRY",
+  "title": "Reliable authentication and resumable onboarding",
+  "type": "bugfix",
+  "status": "completed",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Real registration, email verification, persisted onboarding and Home entry",
+  "scope": [
+    "frontend authentication and onboarding",
+    "targeted verification",
+    "local Supabase auth configuration"
+  ],
+  "constraints": [
+    "No redesign",
+    "Preserve API contracts and unrelated work",
+    "No commit or push"
+  ],
+  "acceptance_criteria": [
+    "Real email-confirmed registration reaches onboarding",
+    "Persisted progress resumes after reload and login",
+    "Required entry steps cannot be bypassed",
+    "Completion reaches Home",
+    "Failure states allow recovery"
+  ],
+  "verification": [
+    "npm --prefix frontend run build",
+    "Targeted auth and onboarding pytest suites",
+    "Real local Supabase browser journey"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-16",
+  "updated_at": "2026-10-16"
+}

@@ -1,0 +1,23 @@
+{
+  "backend": "MOCKED; no live signup/email delivery claim",
+  "results": [
+    {
+      "width": 1440,
+      "checks": "required/email/min-length/mismatch, both visibility controls, loading, payload, server error, duplicate actions: PASS",
+      "emailVerification": "Pending confirmation routes to verification with no password login attempt.",
+      "navigation": "Login and mocked registration → profile initialization → onboarding/birth-data: PASS"
+    },
+    {
+      "width": 390,
+      "checks": "required/email/min-length/mismatch, both visibility controls, loading, payload, server error, duplicate actions: PASS",
+      "emailVerification": "Pending confirmation routes to verification with no password login attempt.",
+      "navigation": "Login and mocked registration → profile initialization → onboarding/birth-data: PASS"
+    },
+    {
+      "width": 320,
+      "checks": "required/email/min-length/mismatch, both visibility controls, loading, payload, server error, duplicate actions: PASS",
+      "emailVerification": "Pending confirmation routes to verification with no password login attempt.",
+      "navigation": "Login and mocked registration → profile initialization → onboarding/birth-data: PASS"
+    }
+  ]
+}

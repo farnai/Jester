@@ -8,7 +8,7 @@ export const ProtectedRoute: React.FC<{
   requireOnboardingComplete?: boolean;
   requireBirthData?: boolean;
 }> = ({ children, requireOnboardingComplete, requireBirthData }) => {
-  const { user, isLoading, onboardingCompleted } = useAuth();
+  const { user, isLoading, onboardingCompleted, profileError, refreshProfile, signOut } = useAuth();
   const location = useLocation();
   const mustBeComplete = requireOnboardingComplete ?? requireBirthData ?? true;
 
@@ -25,6 +25,14 @@ export const ProtectedRoute: React.FC<{
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
+  if (profileError) {
+    return <div role="alert">
+      <p>{profileError}</p>
+      <button onClick={() => { void refreshProfile(); }}>ხელახლა ცდა</button>
+      <button onClick={() => { void signOut().catch(() => {}); }}>გამოსვლა</button>
+    </div>;
+  }
+
   // If user has not completed onboarding and tries to access authenticated main app
   if (mustBeComplete && !onboardingCompleted) {
     if (!location.pathname.startsWith("/onboarding")) {
@@ -34,7 +42,7 @@ export const ProtectedRoute: React.FC<{
 
   // If user has already completed onboarding and tries to access onboarding routes
   if (!mustBeComplete && onboardingCompleted && location.pathname.startsWith("/onboarding")) {
-    return <Navigate to="/me" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;

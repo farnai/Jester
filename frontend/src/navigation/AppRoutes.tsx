@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { RegisterPage } from "../modules/auth/RegisterPage";
 import { WelcomePage } from "../modules/auth/WelcomePage";
 import { AuthChoicePage } from "../modules/auth/AuthChoicePage";
 import { AuthCallbackPage } from "../modules/auth/AuthCallbackPage";
+import { VerifyEmailPage } from "../modules/auth/VerifyEmailPage";
 import { ResetPasswordPage } from "../modules/auth/ResetPasswordPage";
 import { BirthDataOnboardingPage } from "../modules/onboarding/BirthDataOnboardingPage";
 import { HomePage } from "../modules/home/HomePage";
@@ -29,12 +30,20 @@ import { LoadingState } from "../shared/StatusState";
 export const LogoutHandler: React.FC = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    signOut().finally(() => {
+    setFailed(false);
+    signOut().then(() => {
       navigate("/auth/login", { replace: true });
-    });
-  }, [signOut, navigate]);
+    }).catch(() => setFailed(true));
+  }, [signOut, navigate, attempt]);
+
+  if (failed) return <div role="alert">
+    <p>გამოსვლა ვერ მოხერხდა. სცადეთ ხელახლა.</p>
+    <button onClick={() => setAttempt(value => value + 1)}>ხელახლა ცდა</button>
+  </div>;
 
   return <LoadingState message="გამოსვლა / Logging out..." />;
 };
@@ -44,7 +53,7 @@ const OnboardingDispatcher: React.FC = () => {
   const { onboardingCompleted } = useAuth();
 
   if (onboardingCompleted) {
-    return <Navigate to="/me" replace />;
+    return <Navigate to="/" replace />;
   }
   return <Navigate to="/onboarding/birth-data" replace />;
 };
@@ -83,6 +92,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
       <Route path="/logout" element={<LogoutHandler />} />
       <Route path="/auth/logout" element={<LogoutHandler />} />
 

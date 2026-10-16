@@ -114,7 +114,8 @@ export const API = {
         )
         .eq("user_id", userId)
         .maybeSingle();
-      if (error || !data) return null;
+      if (error) throw error;
+      if (!data) return null;
       return data as BirthDataPayload;
     },
     updateBirthData: async (userId: string, partial: Partial<BirthDataPayload>) => {
@@ -271,4 +272,3 @@ export const API = {
       apiRequest<CanonicalCity>(`/v1/geo/cities/${cityId}`),
   },
 };
-

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Registration — approved reference / browser evidence</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #eeeae4; color: #222630; font: 14px system-ui, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  h2 { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+  p { max-width: 1000px; line-height: 1.6; }
+  section { display: flex; align-items: flex-start; gap: 24px; width: max-content; padding: 18px; background: white; margin-bottom: 24px; }
+  figure { margin: 0; }
+  .desktop figure { width: 580px; }
+  .desktop .reference { width: 580px; height: 457px; overflow: hidden; position: relative; }
+  .desktop .reference img { position: absolute; width: 768px; max-width: none; left: -12px; top: -50px; }
+  .desktop .actual { width: 580px; display: block; }
+  .mobile figure { width: 340px; }
+  .mobile .reference { width: 340px; height: 1020px; overflow: hidden; position: relative; }
+  .mobile .reference img { position: absolute; width: 1813.3333px; max-width: none; left: -1435.5556px; top: -188.8889px; }
+  .mobile .actual { width: 340px; display: block; }
+  figcaption { padding-top: 12px; color: #6a716f; font-size: 12px; line-height: 1.5; }
+</style>
+<h1>Founder reference and final browser capture</h1>
+<p>Reference crops exclude the presentation frame and phone status bar. Images are scaled uniformly to the same width; they are not stretched to equal heights. Photography, the available brand vector and annotation still require founder review.</p>
+<section class="desktop" id="desktop">
+  <figure><h2>APPROVED — desktop UI crop</h2><div class="reference"><img src="approved-reference.png" alt="Approved desktop design"></div><figcaption>UI region: x24, y100, width1160, height914 in the supplied 1536×1024 reference.</figcaption></figure>
+  <figure><h2>IMPLEMENTED — full page, 1440×900 viewport</h2><img class="actual" src="final/1440x900-full.png" alt="Final actual desktop render"><figcaption>Full scrollable composition at the same normalized width as the reference. No viewport-height compression.</figcaption></figure>
+</section>
+<section class="mobile" id="mobile">
+  <figure><h2>APPROVED — mobile UI crop</h2><div class="reference"><img src="approved-reference.png" alt="Approved mobile design"></div><figcaption>The supplied reference ends partway through the mobile privacy note.</figcaption></figure>
+  <figure><h2>IMPLEMENTED — 390px full page</h2><img class="actual" src="final/390x844-full.png" alt="Final actual mobile render"><figcaption>Scrollable page at 390×844. Inputs retain 16px text and 44px height.</figcaption></figure>
+</section>
+<section class="desktop" id="desktop-before-after">
+  <figure><h2>BEFORE — full page, 1440px wide</h2><img class="actual" src="correction-before/1440x900-full.png" alt="Desktop before targeted correction"><figcaption>Previous viewport-compressed composition. Same display width as the after image.</figcaption></figure>
+  <figure><h2>AFTER — full page, 1440px wide</h2><img class="actual" src="final/1440x900-full.png" alt="Desktop after targeted correction"><figcaption>Width-based reference proportions, seated body, larger form and deeper foreground. Natural scrolling.</figcaption></figure>
+</section>
+<section class="mobile" id="mobile-before-after">
+  <figure><h2>BEFORE — 390px full page</h2><img class="actual" src="correction-before/390x844-full.png" alt="Mobile before targeted correction"><figcaption>Existing mobile structure.</figcaption></figure>
+  <figure><h2>AFTER — 390px full page</h2><img class="actual" src="final/390x844-full.png" alt="Mobile after targeted correction"><figcaption>Same content geometry and controls. Only the logo symbol viewport ratio was corrected.</figcaption></figure>
+</section>
+</html>
