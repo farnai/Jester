@@ -11,7 +11,7 @@ export function RegistrationHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="registration-header">
-      <Link to="/welcome" className="registration-brand" aria-label="JESTER — მთავარი">
+      <Link to="/" className="registration-brand" aria-label="JESTER — მთავარი">
         {/* Two viewports of the existing outlined brand file; no redrawn paths. */}
         <svg viewBox="320 50 560 340" aria-hidden="true" className="registration-brand-hat">
           <image href={logo} width="1200" height="700" />

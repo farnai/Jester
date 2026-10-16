@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { RegisterPage } from "../modules/auth/RegisterPage";
-import { WelcomePage } from "../modules/auth/WelcomePage";
-import { AuthChoicePage } from "../modules/auth/AuthChoicePage";
 import { AuthCallbackPage } from "../modules/auth/AuthCallbackPage";
 import { VerifyEmailPage } from "../modules/auth/VerifyEmailPage";
 import { ResetPasswordPage } from "../modules/auth/ResetPasswordPage";
@@ -84,9 +82,10 @@ export const AppRoutes: React.FC = () => {
       <Route path="/content-inspector" element={<ContentInspectorPage />} />
       <Route path="/inspector" element={<ContentInspectorPage />} />
 
-      {/* Public Auth Routes */}
-      <Route path="/welcome" element={<WelcomePage />} />
-      <Route path="/auth/choice" element={<AuthChoicePage />} />
+      {/* Public Landing & Auth Routes */}
+      <Route path="/welcome" element={<Navigate to="/auth/register" replace />} />
+      <Route path="/auth/choice" element={<Navigate to="/auth/register" replace />} />
+      <Route path="/get-started" element={<Navigate to="/auth/register" replace />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
