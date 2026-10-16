@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { API } from "../../../core/api/endpoints";
 import { InterestItem } from "../../../core/api/types";
-import { Button } from "../../../shared/ui";
 import { LoadingState } from "../../../shared/StatusState";
+import "./interests.css";
 
 interface InterestsStepProps {
   selectedIds: string[];
@@ -10,6 +10,41 @@ interface InterestsStepProps {
   onSkip: () => void;
   onBack: () => void;
 }
+
+const ICON_MAP: Record<string, string> = {
+  compass: "🧭",
+  utensils: "🍽️",
+  music: "🎧",
+  film: "🎬",
+  "book-open": "📖",
+  palette: "🎨",
+  dumbbell: "🏃",
+  laptop: "💻",
+  code: "💻",
+  atom: "🔬",
+  heart: "❤️",
+  coffee: "☕",
+  sparkles: "✨",
+  globe: "🌍",
+  plane: "✈️",
+  camera: "📷",
+  tv: "📺",
+  gamepad: "🎮",
+  activity: "⚡",
+  smile: "😊",
+  sun: "☀️",
+  moon: "🌙",
+};
+
+const resolveCategoryIcon = (iconName?: string | null, slug?: string): string => {
+  if (iconName && ICON_MAP[iconName.toLowerCase()]) {
+    return ICON_MAP[iconName.toLowerCase()];
+  }
+  if (slug && ICON_MAP[slug.toLowerCase()]) {
+    return ICON_MAP[slug.toLowerCase()];
+  }
+  return "✨";
+};
 
 export const InterestsStep: React.FC<InterestsStepProps> = ({
   selectedIds,
@@ -20,6 +55,7 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
   const [interests, setInterests] = useState<InterestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set(selectedIds));
+  const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,122 +101,153 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
 
     const count = selected.size;
     if (count === 0) {
-      // Zero selected with continue: user can skip or choose
       onSkip();
       return;
     }
     if (count < 3) {
-      setError("გთხოვთ აირჩიოთ მინიმუმ 3 ინტერესი, ან დააჭირეთ 'გამოტოვებას' (Must select at least 3 interests or skip).");
+      setError("გთხოვთ აირჩიოთ მინიმუმ 3 ინტერესი, ან გამოიყენეთ 'გამოტოვება'.");
       return;
     }
 
     onNext(Array.from(selected));
   };
 
+  // Group interests by category
+  const filteredInterests = useMemo(() => {
+    if (!searchQuery.trim()) return interests;
+    const query = searchQuery.toLowerCase().trim();
+    return interests.filter(
+      (item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.category_name.toLowerCase().includes(query)
+    );
+  }, [interests, searchQuery]);
+
+  const categories = useMemo(() => {
+    const map = new Map<string, { name: string; slug: string; icon?: string | null; items: InterestItem[] }>();
+
+    filteredInterests.forEach((item) => {
+      const catKey = item.category_slug || item.category_name || "other";
+      if (!map.has(catKey)) {
+        map.set(catKey, {
+          name: item.category_name || "სხვა",
+          slug: item.category_slug || "other",
+          icon: item.category_icon,
+          items: [],
+        });
+      }
+      map.get(catKey)!.items.push(item);
+    });
+
+    return Array.from(map.values());
+  }, [filteredInterests]);
+
   if (loading) {
     return <LoadingState message="ინტერესების სიის ჩატვირთვა..." />;
   }
 
   const count = selected.size;
+  const isReady = count >= 3;
 
   return (
-    <form onSubmit={handleContinue} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
-          6. თქვენი ინტერესები (Interests)
-        </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
-          აირჩიეთ მინიმუმ 3 ინტერესი, რათა აღმოაჩინოთ საერთო თემები სხვა ადამიანებთან (არასავალდებულო, შეგიძლიათ გამოტოვოთ).
-        </p>
+    <form onSubmit={handleContinue} className="interests-step-container">
+      <div className="interests-step-header">
+        <h2>6. რა გაინტერესებს?</h2>
+        <p>აირჩიე მინიმუმ 3 თემა, რათა JESTER-მა შეძლოს შენთან რეზონანსული ადამიანების პოვნა.</p>
       </div>
 
       {error && (
-        <div
-          style={{
-            padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
-            borderRadius: "6px",
-            color: "#cf1322",
-            fontSize: "0.85rem",
-          }}
-        >
+        <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", color: "#dc2626", fontSize: "12px" }}>
           ⚠️ {error}
         </div>
       )}
 
-      {/* Selected count badge */}
-      <div style={{ fontSize: "0.85rem", color: count >= 3 ? "#16a34a" : "#64748b", fontWeight: 600 }}>
-        არჩეულია: {count} {count < 3 && count > 0 && "(საჭიროა კიდევ " + (3 - count) + ")"}
-      </div>
+      {/* Status Bar with Counter & Search */}
+      <div className="interests-status-bar">
+        <div className={`interests-counter-badge ${isReady ? "ready" : "pending"}`}>
+          <span>{isReady ? "✓" : "●"}</span>
+          <span>
+            არჩეულია: {count} {count > 0 && count < 3 && `(კიდევ ${3 - count})`}
+          </span>
+        </div>
 
-      {/* Pill grid of candidate interests */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.5rem",
-          maxHeight: "280px",
-          overflowY: "auto",
-          padding: "0.5rem",
-          border: "1px solid #e2e8f0",
-          borderRadius: "8px",
-        }}
-      >
-        {interests.map((item) => {
-          const isSelected = selected.has(item.id);
-          return (
+        <div className="interests-search-box">
+          <svg viewBox="0 0 20 20" fill="none" stroke="#9c978f" strokeWidth="1.8" width="14" height="14" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" />
+            <path d="M13 13l4 4" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            placeholder="ძებნა..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
             <button
-              key={item.id}
               type="button"
-              onClick={() => toggleInterest(item.id)}
-              style={{
-                padding: "0.5rem 0.85rem",
-                borderRadius: "20px",
-                border: isSelected ? "1px solid var(--jester-brand-orange-500)" : "1px solid var(--jester-border-soft)",
-                backgroundColor: isSelected ? "var(--jester-brand-orange-100)" : "var(--jester-surface-card)",
-                color: isSelected ? "var(--jester-brand-orange-900)" : "var(--jester-text-primary)",
-                fontSize: "0.85rem",
-                fontWeight: isSelected ? 700 : 500,
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
+              onClick={() => setSearchQuery("")}
+              style={{ border: 0, background: "transparent", color: "#9c978f", cursor: "pointer", fontSize: "12px", padding: 0 }}
             >
-              {isSelected ? "✓ " : "+ "}
-              {item.name}
+              ✕
             </button>
-          );
-        })}
+          )}
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
-        <Button
-          type="button"
-          variant="secondary"
-          size="lg"
-          style={{ flex: 1 }}
-          onClick={onBack}
-        >
+      {/* Categorized Pills Grid */}
+      <div className="interests-categories-wrapper">
+        {categories.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "30px", color: "#8c8880", fontSize: "13px" }}>
+            ინტერესები ვერ მოიძებნა.
+          </div>
+        ) : (
+          categories.map((cat) => {
+            const catIcon = resolveCategoryIcon(cat.icon, cat.slug);
+            return (
+              <div key={cat.slug} className="interests-category-group">
+                <div className="interests-category-title">
+                  <span>{catIcon}</span>
+                  <span>{cat.name}</span>
+                </div>
+                <div className="interests-pills-grid">
+                  {cat.items.map((item) => {
+                    const isSelected = selected.has(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => toggleInterest(item.id)}
+                        className={`interest-pill ${isSelected ? "is-selected" : ""}`}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="interest-pill-check">{isSelected ? "✓" : "+"}</span>
+                        <span>{item.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="interests-actions">
+        <button type="button" className="interests-btn-back" onClick={onBack}>
           ⬅️ უკან
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="lg"
-          style={{ flex: 1 }}
-          onClick={onSkip}
-        >
-          გამოტოვება (Skip)
-        </Button>
-        <Button
+        </button>
+        <button type="button" className="interests-btn-skip" onClick={onSkip}>
+          გამოტოვება
+        </button>
+        <button
           type="submit"
-          variant="brand"
-          size="lg"
-          style={{ flex: 1.5 }}
+          className="interests-btn-next"
           disabled={count > 0 && count < 3}
         >
-          შემდეგი ➡️
-        </Button>
+          <span>შემდეგი</span>
+          <span aria-hidden="true">→</span>
+        </button>
       </div>
     </form>
   );

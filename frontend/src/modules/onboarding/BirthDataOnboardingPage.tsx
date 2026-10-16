@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../core/auth/useAuth";
 import { API } from "../../core/api/endpoints";
-import { Card } from "../../shared/ui";
+import { Card, JesterLogo } from "../../shared/ui";
 import { LoadingState } from "../../shared/StatusState";
 
 import { BasicProfileStep } from "./steps/BasicProfileStep";
@@ -395,6 +395,14 @@ export const BirthDataOnboardingPage: React.FC = () => {
           padding: "2rem",
         }}
       >
+        {/* Onboarding Brand Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.85rem", borderBottom: "1px solid #ebe5dc" }}>
+          <JesterLogo variant="horizontal" height={26} />
+          <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-500)", background: "#fff4eb", padding: "4px 10px", borderRadius: "12px", border: "1px solid #ffd8bf", letterSpacing: "0.3px" }}>
+            ეტაპი {currentStep} / 8
+          </span>
+        </div>
+
         {/* Progress Bar Header */}
         <div style={{ marginBottom: "1.5rem" }}>
           <div
@@ -403,18 +411,19 @@ export const BirthDataOnboardingPage: React.FC = () => {
               justifyContent: "space-between",
               fontSize: "0.825rem",
               color: "#64748b",
-              marginBottom: "0.4rem",
+              fontWeight: 600,
+              marginBottom: "0.45rem",
             }}
           >
             <span>{stepTitles[currentStep]}</span>
-            <span>ეტაპი {currentStep} / 8</span>
+            <span style={{ color: "var(--jester-brand-orange-500)" }}>{Math.round((currentStep / 8) * 100)}%</span>
           </div>
           <div
             style={{
-              height: "5px",
+              height: "6px",
               width: "100%",
-              background: "var(--jester-surface-alt)",
-              borderRadius: "3px",
+              background: "#ebe5dc",
+              borderRadius: "4px",
               overflow: "hidden",
             }}
           >
@@ -422,8 +431,9 @@ export const BirthDataOnboardingPage: React.FC = () => {
               style={{
                 height: "100%",
                 width: `${(currentStep / 8) * 100}%`,
-                background: "var(--jester-brand-orange-500)",
-                transition: "width 0.3s ease",
+                background: "linear-gradient(90deg, #ff7a2f 0%, #f16417 100%)",
+                borderRadius: "4px",
+                transition: "width 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             />
           </div>

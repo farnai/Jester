@@ -59,7 +59,7 @@ export const RegisterPage: React.FC = () => {
       });
 
       setLoading(false);
-      navigate(result.confirmationRequired ? "/auth/verify-email" : "/onboarding", { replace: true, state: { email: cleanEmail } });
+      navigate(result?.confirmationRequired ? "/auth/verify-email" : "/onboarding", { replace: true, state: { email: cleanEmail } });
     } catch (err: any) {
       const msg = err?.message?.toLowerCase() || "";
       if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("unique")) {
@@ -71,6 +71,17 @@ export const RegisterPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const getPasswordStrength = (pass: string) => {
+    if (!pass) return 0;
+    if (pass.length < 6) return 1;
+    let score = 1;
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass) || /[0-9]/.test(pass) || /[^A-Za-z0-9]/.test(pass)) score += 1;
+    return score;
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   return (
     <div className="registration-page" lang="ka">
@@ -104,10 +115,31 @@ export const RegisterPage: React.FC = () => {
                 <input id="registration-password" name="password" type={showPassword ? "text" : "password"} required minLength={6} autoComplete="new-password" placeholder="••••••••••" value={password} onChange={(e) => { setPassword(e.target.value); setError(null); }} />
                 <button type="button" aria-label={showPassword ? "პაროლის დამალვა" : "პაროლის ჩვენება"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}><RegistrationIcon kind={showPassword ? "eye-off" : "eye"} /></button>
               </div>
+              {password.length > 0 && (
+                <div className="registration-strength-meter" aria-live="polite">
+                  <div className="registration-strength-bars">
+                    <div className={`registration-strength-bar ${passwordStrength >= 1 ? `strength-${passwordStrength}` : ""}`} />
+                    <div className={`registration-strength-bar ${passwordStrength >= 2 ? `strength-${passwordStrength}` : ""}`} />
+                    <div className={`registration-strength-bar ${passwordStrength >= 3 ? `strength-${passwordStrength}` : ""}`} />
+                  </div>
+                  <span className="registration-strength-label">
+                    {passwordStrength === 1 && "სუსტი (მინ. 6 სიმბოლო)"}
+                    {passwordStrength === 2 && "საშუალო"}
+                    {passwordStrength === 3 && "ძლიერი პაროლი ✓"}
+                  </span>
+                </div>
+              )}
             </div>
-            {/* Confirm Password shares the same form at every viewport. */}
+            {/* Confirm Password with instant match feedback */}
             <div className="registration-field">
-              <label htmlFor="registration-confirm-password">გაიმეორე პაროლი</label>
+              <div className="registration-field-header">
+                <label htmlFor="registration-confirm-password">გაიმეორე პაროლი</label>
+                {confirmPassword.length > 0 && (
+                  <span className={`registration-match-tag ${confirmPassword === password ? "is-match" : "is-mismatch"}`}>
+                    {confirmPassword === password ? "✓ ემთხვევა" : "არ ემთხვევა"}
+                  </span>
+                )}
+              </div>
               <div className="registration-input">
                 <RegistrationIcon kind="lock" />
                 <input id="registration-confirm-password" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required minLength={6} autoComplete="new-password" placeholder="••••••••••" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setError(null); }} />

@@ -146,8 +146,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error("already registered");
     }
 
-    // A successful signup without a session is pending email confirmation.
-    // Never attempt password login before the user confirms their email.
+    // If no session returned directly, attempt password sign-in for seamless local/unconfirmed progression
+    if (!authData.session) {
+      try {
+        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+        if (!signInErr && signInData.session) {
+          return { confirmationRequired: false };
+        }
+      } catch {
+        // Fallback to email confirmation required
+      }
+    }
+
     return { confirmationRequired: !authData.session };
   };
 
