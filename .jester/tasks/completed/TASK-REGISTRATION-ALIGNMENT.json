@@ -1,0 +1,37 @@
+{
+  "id": "TASK-REGISTRATION-ALIGNMENT",
+  "title": "Align registration content with header container",
+  "type": "feature",
+  "status": "completed",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Share container width and gutters between the header, story and card.",
+  "scope": [
+    "frontend/src/modules/auth/RegisterPage.tsx",
+    "frontend/src/modules/auth/RegistrationScene.tsx",
+    "frontend/src/modules/auth/registration.css"
+  ],
+  "constraints": [
+    "Preserve scenery and authentication behavior"
+  ],
+  "acceptance_criteria": [
+    "Story left and card right align with header content",
+    "No horizontal overflow across responsive breakpoints",
+    "Natural-height layout preserves landscape breathing room; short screens scroll"
+  ],
+  "verification": [
+    "npm run build --prefix frontend",
+    "git diff --check",
+    "Browser geometry at 390, 760, 1024, 1440 and 1920 pixels"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-17",
+  "updated_at": "2026-10-17"
+}

@@ -88,6 +88,7 @@ export const RegisterPage: React.FC = () => {
       <RegistrationHeader />
       <main className="registration-composition">
         <RegistrationScenery />
+        <div className="registration-content">
         <RegistrationStory />
         <section className="registration-card" aria-labelledby="registration-card-title">
           <p className="registration-step">ნაბიჯი 1 / 2</p>
@@ -153,9 +154,10 @@ export const RegisterPage: React.FC = () => {
           <p className="registration-login">უკვე გაქვს ანგარიში? <Link to="/auth/login">შესვლა</Link></p>
           <p className="registration-privacy"><RegistrationIcon kind="lock" /><span>შენი მონაცემები დაცულია და არ გადაეცემა მესამე პირებს. სრული კონფიდენციალურობა.</span></p>
         </section>
+        </div>
         <p className="registration-annotation">შეიგრძენი უფრო<br />ღრმა კავშირები.</p>
-      </main>
       <footer className="registration-footer">JESTER · People Discovery &amp; Relationship Intelligence</footer>
+      </main>
     </div>
   );
 };

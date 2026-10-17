@@ -1,0 +1,40 @@
+{
+  "id": "TASK-REGISTRATION-PLANETS",
+  "title": "Replace registration portrait with subtle planetary connections",
+  "type": "feature",
+  "status": "completed",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Preserve the lower panorama and add an airy animated planetary scene above it.",
+  "scope": [
+    "frontend/src/modules/auth/RegistrationScene.tsx",
+    "frontend/src/modules/auth/RegisterPage.tsx",
+    "frontend/src/modules/auth/registration.css"
+  ],
+  "constraints": [
+    "Preserve panorama asset and layout",
+    "No authentication or copy changes",
+    "Respect reduced motion"
+  ],
+  "acceptance_criteria": [
+    "Preserve landscape breathing room and remove foreground white curve",
+    "Planets remain above the landscape; off-canvas sunset glow replaces sun disc",
+    "Connections complete faster and footer overlays panorama",
+    "Build and responsive verification pass",
+    "First connection originates at lower-right sunset; nine distinct bodies distributed through sky"
+  ],
+  "verification": [
+    "npm run build --prefix frontend",
+    "Browser desktop and mobile visual inspection"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-17",
+  "updated_at": "2026-10-17"
+}

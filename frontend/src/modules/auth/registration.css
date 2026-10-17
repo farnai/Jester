@@ -2,6 +2,8 @@
 .registration-page {
   --registration-orange: var(--jester-brand-orange-500, #ff7a2f);
   --registration-canvas: var(--jester-surface-canvas, #faf7f2);
+  --registration-container-width: 1600px;
+  --registration-gutter: min(5vw, 80px);
   background: var(--registration-canvas);
   color: var(--jester-text-primary, #222630);
   font-family: 'Noto Sans Georgian', sans-serif;
@@ -16,9 +18,9 @@
   position: relative;
   z-index: 3;
   height: 76px;
-  max-width: 1600px;
+  max-width: var(--registration-container-width);
   margin: auto;
-  padding: 0 5%;
+  padding: 0 var(--registration-gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,41 +38,83 @@
 .registration-composition {
   position: relative;
   isolation: isolate;
+  padding: 24px 0 220px;
+  max-width: 1920px;
+  margin: auto;
+}
+.registration-content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 30%);
   align-items: start;
   column-gap: 5%;
-  padding: 28px 3% 50px 5%;
-  min-height: calc(100svh - 110px);
-  max-width: 1920px;
-  margin: auto;
+  width: 100%;
+  max-width: var(--registration-container-width);
+  margin-inline: auto;
+  padding-inline: var(--registration-gutter);
 }
 .registration-scenery { position: absolute; inset: -30px 0 0; z-index: -1; pointer-events: none; overflow: clip; }
-.registration-cream-arc {
-  position: absolute; left: 36%; top: 250px; width: 43%; height: 490px;
-  border-radius: 55% 50% 0 0;
-  background: linear-gradient(125deg, #f3e2ce, #fff9ef 65%);
-  transform: rotate(-22deg);
+.registration-cosmos { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: 1; }
+
+.registration-planet {
+  opacity: .18;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: registration-planet-appear 16s ease-in-out infinite;
 }
-.registration-portrait {
-  position: absolute; top: 0; right: 0; width: 65%; height: 700px;
-  border-radius: 52% 49% 0 0;
-  overflow: hidden;
-  mask-image: linear-gradient(#000 73%, transparent 99%), linear-gradient(to right, transparent, #000 7%);
-  mask-composite: intersect;
+.registration-planet-behind-copy { --planet-rest: .12; --planet-peak: .28; --planet-mid: .18; }
+.registration-connections path {
+  opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: registration-connection 16s ease-in-out infinite;
+  animation-delay: var(--connection-delay);
 }
-.registration-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+.registration-connections .registration-traveler {
+  stroke-dasharray: .025 .975;
+  animation-name: registration-traveler;
+}
+.registration-arrivals circle {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: registration-arrival 16s ease-out 10.8s infinite;
+}
+@keyframes registration-planet-appear {
+  0%, 25%, 100% { opacity: var(--planet-rest, .24); transform: scale(.94); }
+  5%, 15% { opacity: var(--planet-peak, .7); transform: scale(1.06); }
+  10%, 20% { opacity: var(--planet-mid, .45); transform: scale(1); }
+}
+@keyframes registration-connection {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  2% { opacity: .35; }
+  6%, 9% { stroke-dashoffset: 0; opacity: .35; }
+  13%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes registration-traveler {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  2% { opacity: .8; }
+  6% { stroke-dashoffset: 0; opacity: .8; }
+  8%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes registration-arrival {
+  0%, 5% { opacity: 0; transform: scale(.4); }
+  6% { opacity: .7; transform: scale(.8); }
+  13%, 100% { opacity: 0; transform: scale(2); }
+}
+@media (max-width: 760px) {
+  /* The mobile panorama sits below the form; keep its sky connections local. */
+  .registration-person-connection, .registration-arrivals { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .registration-planet { animation: none; opacity: var(--planet-mid, .4); }
+  .registration-connections path { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .16; }
+  .registration-connections .registration-traveler, .registration-arrivals { display: none; }
+}
 .registration-panorama {
   position: absolute; inset: auto 0 0; height: 310px;
   mask-image: linear-gradient(transparent, #000 38%);
 }
 .registration-panorama img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
-.registration-foreground-curve {
-  position: absolute; left: 38%; top: 520px; width: 29%; height: 155px;
-  border-radius: 70% 95% 0 0;
-  background: linear-gradient(170deg, #f9efdf 20%, #faf1e1b3 55%, transparent 80%);
-  transform: rotate(12deg);
-}
 .registration-story { max-width: 520px; }
 .registration-story h1 { margin: 0; font-size: clamp(24px, 2.3vw, 34px); line-height: 1.25; font-weight: 800; letter-spacing: -0.8px; }
 .registration-story h1 span { color: var(--registration-orange); white-space: nowrap; }
@@ -82,7 +126,7 @@
 .registration-feature p { font-size: 11px; line-height: 1.55; color: #6a716f; margin: 0; }
 .registration-card {
   position: relative;
-  margin-top: 45px;
+  margin-top: 0;
   border-radius: 20px;
   padding: 22px;
   background: #fffdfa;
@@ -130,16 +174,25 @@
 .registration-error-actions button { color: #9e4215; background: transparent; border: 0; text-decoration: underline; padding: 4px 0; font-size: 11.5px; }
 .registration-annotation { position: absolute; bottom: 100px; left: 43%; margin: 0; font-size: 13px; line-height: 1.55; text-align: center; transform: rotate(-7deg); font-family: 'Noto Sans Georgian', sans-serif; font-weight: 300; }
 .registration-annotation::after { content: ''; display: block; width: 90px; height: 16px; border-top: 2px solid var(--registration-orange); border-radius: 50%; margin: 8px auto 0; transform: rotate(-7deg); }
-.registration-footer { padding: 10px 16px; text-align: center; color: #6a716f; font-size: 9px; }
+.registration-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 16px; text-align: center; color: #fff9ee; text-shadow: 0 1px 4px #302418; font-size: 9px; background: linear-gradient(transparent, #30241855); }
+.registration-sunset-glow {
+  position: absolute;
+  right: -100px;
+  bottom: 35px;
+  width: min(540px, 50%);
+  height: 320px;
+  background: radial-gradient(ellipse at right bottom, #ffedb075, #ffd08925 40%, transparent 72%);
+  pointer-events: none;
+}
 @media (min-width: 761px) and (max-width: 1199px) {
   .registration-header { height: 70px; }
-  .registration-composition { padding-top: 20px; padding-bottom: 35px; min-height: max(700px, calc(100svh - 105px)); }
-  .registration-card { margin-top: 40px; padding: 20px; }
+  .registration-composition { padding-top: 20px; padding-bottom: 200px; }
+  .registration-card { padding: 20px; }
   .registration-card h2 { font-size: 18px; }
   .registration-card-intro { font-size: 11.5px; }
 }
 @media (min-width: 761px) and (max-width: 1199px) {
-  .registration-composition { grid-template-columns: minmax(0, 1fr) 310px; column-gap: 20px; padding-left: 4%; padding-right: 3%; }
+  .registration-content { grid-template-columns: minmax(0, 1fr) 310px; column-gap: 20px; }
   .registration-story h1 { font-size: clamp(20px, 2.5vw, 27px); letter-spacing: -0.8px; }
   .registration-intro { max-width: 340px; font-size: 12px; }
   .registration-feature { gap: 12px; }
@@ -147,13 +200,11 @@
   .registration-feature h2 { font-size: 11.5px; }
   .registration-feature p { font-size: 10px; }
   .registration-features { max-width: 340px; }
-  .registration-card { padding: 20px; margin-top: 70px; }
-  .registration-portrait { right: 0; width: 60%; height: 600px; }
+  .registration-card { padding: 20px; }
   .registration-navigation { gap: 18px; font-size: 11.5px; }
   .registration-annotation { left: 36%; font-size: 12px; bottom: 75px; }
 }
-/* The approved desktop UI is 1160 x 914. Scale its scene by width, never by
-   viewport height. Normal-flow content can extend it for errors or text zoom. */
+/* Content determines page height; short viewports and expanded forms scroll naturally. */
 @media (min-width: 1200px) {
   .registration-page { --scene-unit: min(.0862069vw, 1.37931px); }
   .registration-header { height: calc(var(--scene-unit) * 64); }
@@ -162,11 +213,10 @@
   .registration-navigation { font-size: calc(var(--scene-unit) * 11); gap: calc(var(--scene-unit) * 32); }
   .registration-header-login { font-size: calc(var(--scene-unit) * 11); padding: 7px 22px; }
   .registration-composition {
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 31%);
-    padding-top: calc(var(--scene-unit) * 44);
-    padding-bottom: calc(var(--scene-unit) * 120);
-    min-height: calc(var(--scene-unit) * 780);
+    padding-top: 20px;
+    padding-bottom: 220px;
   }
+  .registration-content { grid-template-columns: minmax(0, 1fr) minmax(320px, 31%); }
   .registration-story { max-width: calc(var(--scene-unit) * 440); }
   .registration-story h1 { font-size: calc(var(--scene-unit) * 28); line-height: 1.25; letter-spacing: -0.8px; }
   .registration-intro { max-width: calc(var(--scene-unit) * 380); font-size: calc(var(--scene-unit) * 12); margin: 14px 0 20px; line-height: 1.5; }
@@ -175,7 +225,7 @@
   .registration-feature > img { width: calc(var(--scene-unit) * 48); height: calc(var(--scene-unit) * 48); flex-basis: calc(var(--scene-unit) * 48); }
   .registration-feature h2 { font-size: calc(var(--scene-unit) * 11.5); }
   .registration-feature p { font-size: calc(var(--scene-unit) * 10); line-height: 1.5; }
-  .registration-card { margin-top: calc(var(--scene-unit) * 48); padding: calc(var(--scene-unit) * 20); border-radius: calc(var(--scene-unit) * 18); }
+  .registration-card { padding: calc(var(--scene-unit) * 20); border-radius: calc(var(--scene-unit) * 18); }
   .registration-step { font-size: calc(var(--scene-unit) * 10); margin-bottom: 8px; }
   .registration-card h2 { font-size: calc(var(--scene-unit) * 18); letter-spacing: -0.5px; }
   .registration-card-intro { font-size: calc(var(--scene-unit) * 11); margin: 6px 0 14px; }
@@ -187,23 +237,13 @@
   .registration-login { font-size: calc(var(--scene-unit) * 10.5); margin: 14px 0; }
   .registration-privacy { font-size: calc(var(--scene-unit) * 9); line-height: 1.45; }
   .registration-scenery { inset: calc(var(--scene-unit) * -26) 0 0; }
-  .registration-portrait { top: 0; right: 0; width: 62%; height: calc(var(--scene-unit) * 650); border-radius: 0; }
-  .registration-portrait img { width: auto; max-width: none; height: 100%; margin-left: 4%; border-radius: 55% 45% 0 0; object-fit: contain; object-position: left top; }
-  .registration-portrait::after {
-    content: '';
-    position: absolute; top: 0; right: 0; width: calc(var(--scene-unit) * 100); height: 75%;
-    background: url('../../assets/registration/hero_woman_highres.jpg') right 60% / auto 160% no-repeat;
-    mask-image: linear-gradient(to right, transparent 10%, #000 80%), linear-gradient(transparent, #000 12%, #000 75%, transparent);
-    mask-composite: intersect;
-  }
-  .registration-cream-arc { left: 37%; top: 29%; width: 42%; height: 49%; }
-  .registration-foreground-curve { left: 39%; top: 62%; width: 28%; height: 18%; }
   .registration-panorama { height: calc(var(--scene-unit) * 355); mask-image: linear-gradient(transparent, #000 29%); }
   .registration-panorama img { object-position: 50% bottom; }
   .registration-annotation { left: 39%; bottom: 14%; font-size: calc(var(--scene-unit) * 13); }
 }
 @media (max-width: 760px) {
-  .registration-header { height: 68px; padding: 0 6%; gap: 12px; }
+  .registration-page { --registration-gutter: 6vw; }
+  .registration-header { height: 68px; gap: 12px; }
   .registration-brand { gap: 8px; }
   .registration-brand-hat { width: 34px; height: 21px; }
   .registration-brand-name { width: 84px; height: 20px; }
@@ -214,15 +254,12 @@
   .registration-navigation.is-open { display: flex; position: absolute; top: 62px; left: 5%; right: 5%; flex-direction: column; align-items: stretch; gap: 0; padding: 10px 18px; border: 1px solid #e6e0d7; border-radius: 14px; background: #fffdfa; box-shadow: 0 12px 32px #76512a20; }
   .registration-navigation a, .registration-navigation span { padding: 10px 0; font-size: 12px; }
   .registration-mobile-login { display: block; color: #c95618; }
-  .registration-composition { display: flex; flex-direction: column; min-height: 0; padding: 150px 6% 30px; gap: 18px; }
+  .registration-composition { padding: 110px 0 95px; }
+  .registration-content { display: flex; flex-direction: column; gap: 18px; }
   .registration-scenery { inset: -10px 0 0; }
-  .registration-portrait { top: 0; right: 0; width: 72%; height: 270px; border-radius: 52% 46% 0 0; mask-image: linear-gradient(#000 53%, transparent 98%); }
-  .registration-portrait img { object-position: 50% 14%; }
-  .registration-cream-arc { left: 26%; top: 65px; width: 70%; height: 210px; }
-  .registration-foreground-curve { display: none; }
   .registration-panorama { height: 240px; opacity: .45; mask-image: linear-gradient(transparent, #000 65%); }
   .registration-panorama img { object-position: 26% 70%; }
-  .registration-story { width: 100%; max-width: 440px; margin: 0 auto; }
+  .registration-story { width: 100%; max-width: none; margin: 0; }
   .registration-story h1 { font-size: clamp(18px, 4.8vw, 24px); line-height: 1.22; letter-spacing: -0.6px; }
   .registration-intro { font-size: 11px; line-height: 1.5; margin: 10px 0 16px; max-width: 400px; }
   .registration-features { gap: 12px; max-width: 440px; }
@@ -230,7 +267,7 @@
   .registration-feature > img { width: 40px; height: 40px; flex-basis: 40px; }
   .registration-feature h2 { font-size: 11.5px; line-height: 1.4; margin: 0 0 2px; }
   .registration-feature p { font-size: 10px; line-height: 1.5; }
-  .registration-card { width: 100%; max-width: 440px; margin: 0 auto; padding: 20px; border-radius: 16px; box-shadow: 0 10px 35px #76512a0c; }
+  .registration-card { width: 100%; max-width: none; margin: 0; padding: 20px; border-radius: 16px; box-shadow: 0 10px 35px #76512a0c; }
   .registration-step { font-size: 10.5px; margin-bottom: 6px; }
   .registration-card h2 { font-size: 17px; }
   .registration-card-intro { font-size: 11px; margin: 4px 0 14px; }
@@ -242,10 +279,10 @@
   .registration-login { font-size: 11px; margin: 12px 0; }
   .registration-privacy { font-size: 9.5px; gap: 8px; }
   .registration-annotation { display: none; }
-  .registration-footer { font-size: 8.5px; }
+  .registration-footer { font-size: 8.5px; color: #423a30; text-shadow: 0 1px 3px #fff8ec; background: transparent; }
 }
 @media (max-width: 359px) {
-  .registration-composition { padding-top: 135px; }
+  .registration-composition { padding-top: 100px; }
   .registration-story h1 { font-size: 17px; letter-spacing: -0.5px; }
   .registration-feature { gap: 8px; }
   .registration-feature > img { width: 34px; height: 34px; flex-basis: 34px; }
