@@ -1,0 +1,45 @@
+{
+  "id": "TASK-HOME-REDESIGN",
+  "title": "Strategic editorial Home with real personal and relationship content",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": null,
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Implement the owner brief: marketing-led Home, three compared concepts, real data, accessible responsive UI and verification report.",
+  "scope": [
+    "frontend/src/modules/home",
+    "frontend/src/shared/AppShell.tsx",
+    "docs/HOME_EXPERIENCE.md",
+    "scripts/home-model.test.mjs",
+    ".jester/reports"
+  ],
+  "constraints": [
+    "No fabricated people, scores, or insights",
+    "Keep authorization, onboarding, schema and engine unchanged",
+    "Home-only chrome; preserve other routes",
+    "Do not store credentials"
+  ],
+  "acceptance_criteria": [
+    "Personal insight leads to people and accepted relationship detail",
+    "Three concepts evaluated and gaps documented",
+    "Real API content with loading/error/empty/partial states",
+    "375px,768px,1440px verified",
+    "Existing routes and privacy gates preserved"
+  ],
+  "verification": [
+    "npm run build --prefix frontend",
+    "node --experimental-strip-types --test scripts/home-model.test.mjs",
+    "Browser responsive and action checks",
+    "git diff --check"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-17",
+  "updated_at": "2026-10-17"
+}

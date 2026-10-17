@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../core/auth/useAuth";
 import { API } from "../core/api/endpoints";
 import { supabase } from "../core/realtime/supabase";
 import { DebugBar } from "./DebugBar";
+import { HomeNavigation, HomeMobileNavigation } from "../modules/home/HomeNavigation";
 
 export const AppShell: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const isHome = useLocation().pathname === '/';
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   useEffect(() => {
@@ -50,9 +52,9 @@ export const AppShell: React.FC = () => {
   };
 
   return (
-    <div className="app-container">
+    <div className={`app-container${isHome ? ' home-shell' : ''}`}>
       {/* Global Desktop & Mobile Top Header */}
-      <header className="desktop-nav-header">
+      {isHome ? <HomeNavigation unreadCount={unreadCount} signOut={handleSignOut} /> : <header className="desktop-nav-header">
         <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
           <Link
             to="/"
@@ -242,15 +244,15 @@ export const AppShell: React.FC = () => {
             🚪 <span className="signout-label">გასვლა</span>
           </button>
         </div>
-      </header>
+      </header>}
 
       {/* Main Responsive Viewport */}
-      <main className="app-main-viewport">
+      <main className={`app-main-viewport${isHome ? ' home-main-viewport' : ''}`}>
         <Outlet />
       </main>
 
       {/* Mobile Bottom Navigation Bar (HOME | DISCOVER | MESSAGES | ME) */}
-      <nav className="mobile-bottom-nav">
+      {isHome ? <HomeMobileNavigation /> : <nav className="mobile-bottom-nav">
         <NavLink
           to="/"
           end
@@ -280,10 +282,10 @@ export const AppShell: React.FC = () => {
           <span className="tab-icon">👤</span>
           <span>ME</span>
         </NavLink>
-      </nav>
+      </nav>}
 
       {/* Persistent Developer Debug Bar (Development Only) */}
-      <DebugBar />
+      {!isHome && <DebugBar />}
     </div>
   );
 };
