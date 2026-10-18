@@ -74,7 +74,7 @@ These are socially curious individuals who want to:
 
 ## 6. First User Hypothesis
 
-- **Primary Demographic**: Young adults approximately **16–25 years old** (students, young professionals, digitally native social explorers).
+- **Primary Demographic**: Young adults **18–28 years old** (students, young professionals, digitally native social explorers). *Approved Public Policy: First public MVP is strictly 18+; current repository runs in local-only development with dev/test fixtures; server-side enforcement planned as public launch gate.*
 - **Psychographic Profile**: Socially active, curious, meme-fluent, value-conscious, self-reflective, and keen on sharing observations with friends.
 - **Behavioral Pattern**: They already take personality tests, send daily screenshots to group chats, and analyze interactions with friends and romantic interests.
 
@@ -305,15 +305,18 @@ In JESTER:
 
 ---
 
-## 23. Monetization Relationship
+## 23. Monetization Strategy & Architecture (Free, Plus, Credits)
 
 Monetization must never break user trust or gate the core viral loop:
-- **Core Viral Loop (Free)**: Personal profile, Day Vibe, connecting with friends, basic Synastry comparison score and signals.
-- **Premium Value Candidates (Future)**:
-  - Deep-dive synastry analysis and relationship conflict guides.
-  - Multi-person group / team dynamic overlays (e.g., roommate compatibility, co-founder dynamics).
+- **Core Social Foundation (Free)**: Personal profile, Day Vibe, connecting with friends, basic Synastry comparison score and signals, photo browsing (planned multi-photo), interest tags, and unmetered human-to-human messaging.
+- **Jester Plus (Monthly Subscription - Planned)**:
+  - Recurring premium relationship intelligence, deep-dive synastry dynamics, conflict navigation guides.
+  - Multi-person group / team dynamic overlays (e.g., roommate compatibility, creative collab chemistry).
   - Transit timing notifications (*"Best window for difficult conversations"*).
-  - Private / 18+ intimacy dynamic mode (with strict consent and age gating).
+- **Credits (On-Demand AI Usage - Planned)**:
+  - Unit-metered credits for costly generative AI interpretation runs and external LLM synthesis.
+  - Distinct from human-to-human chat (which remains free and unmetered).
+- *Note:* Specific pricing tiers, quota numbers, and payment provider integrations are not yet approved. Wave 1 introduces no payment forms or fake paywalls.
 
 ---
 
@@ -365,7 +368,7 @@ Every marketing initiative and product feature must be tested against this 3-que
 | **"The Insight Becomes the Invitation"** | **STRATEGIC HYPOTHESIS** | Core viral growth model to be validated in initial cohort launch. |
 | **ME → YOU → US → MORE PEOPLE** | **STRATEGIC HYPOTHESIS** | User journey architecture directing frontend onboarding and engagement. |
 | **Day Vibe as Primary Daily Hook** | **STRATEGIC HYPOTHESIS** | Transit engine to be built; tone and retention impact to be tested. |
-| **16–25 Young Adults / Students Target**| **STRATEGIC HYPOTHESIS** | First customer beachhead hypothesis. |
+| **18–28 Young Adults Target (18+ Public MVP)**| **APPROVED POLICY / LAUNCH GATE** | First public MVP policy approved 18+; server enforcement planned as release gate. |
 | **Multi-category comparisons (Roommate, Travel, Gaming)** | **WORKING IDEA** | Conceptually valid; requires backend categorization extension beyond Synastry V1. |
 | **Campus Ambassador Seeding Model** | **WORKING IDEA** | Go-to-market acquisition tactic requiring pilot testing. |
 

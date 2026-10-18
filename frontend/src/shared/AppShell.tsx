@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../core/auth/useAuth";
 import { API } from "../core/api/endpoints";
 import { supabase } from "../core/realtime/supabase";
@@ -9,8 +10,14 @@ import { HomeNavigation, HomeMobileNavigation } from "../modules/home/HomeNaviga
 export const AppShell: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const isHome = useLocation().pathname === '/';
   const [unreadCount, setUnreadCount] = useState<number>(0);
+
+  const profile = useQuery({
+    queryKey: ['profile', 'me'],
+    queryFn: API.profiles.getMyProfile,
+    enabled: !!user,
+    staleTime: 60_000,
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -52,240 +59,26 @@ export const AppShell: React.FC = () => {
   };
 
   return (
-    <div className={`app-container${isHome ? ' home-shell' : ''}`}>
-      {/* Global Desktop & Mobile Top Header */}
-      {isHome ? <HomeNavigation unreadCount={unreadCount} signOut={handleSignOut} /> : <header className="desktop-nav-header">
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-          <Link
-            to="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              fontWeight: 800,
-              fontSize: "1.25rem",
-              textDecoration: "none",
-              color: "#222630",
-              letterSpacing: "0.02em",
-            }}
-          >
-            <span style={{ fontSize: "1.4rem" }}>🃏</span>
-            <span>JESTER</span>
-          </Link>
-
-          {/* Desktop Primary Navigation (HOME | DISCOVER | MESSAGES | ME) */}
-          <nav className="desktop-nav-links">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
-            >
-              <span>🏠</span>
-              <span>HOME</span>
-            </NavLink>
-            <NavLink
-              to="/discover"
-              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
-            >
-              <span>🧭</span>
-              <span>DISCOVER</span>
-            </NavLink>
-            <NavLink
-              to="/messages"
-              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
-            >
-              <span>💬</span>
-              <span>MESSAGES</span>
-            </NavLink>
-            <NavLink
-              to="/me"
-              className={({ isActive }) => `nav-item-link ${isActive ? "active" : ""}`}
-            >
-              <span>👤</span>
-              <span>ME</span>
-            </NavLink>
-          </nav>
-        </div>
-
-        {/* Right Header Area: Notifications, Dev Tools, Account */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          {/* Notifications Indicator (Not a primary pillar, accessible utility) */}
-          <Link
-            to="/notifications"
-            style={{
-              textDecoration: "none",
-              color: "#334155",
-              position: "relative",
-              padding: "0.4rem 0.65rem",
-              borderRadius: "8px",
-              backgroundColor: "#f1f5f9",
-              border: "1px solid #e2e8f0",
-              fontSize: "0.9rem",
-              display: "flex",
-              alignItems: "center",
-            }}
-            title="შეტყობინებები / Notifications"
-          >
-            🔔
-            {unreadCount > 0 && (
-              <span
-                style={{
-                  marginLeft: "0.35rem",
-                  backgroundColor: "#ef4444",
-                  color: "#ffffff",
-                  padding: "0.1rem 0.4rem",
-                  borderRadius: "9999px",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
-                {unreadCount}
-              </span>
-            )}
-          </Link>
-
-          {/* User Email Badge */}
-          {user?.email && (
-            <span
-              style={{
-                fontSize: "0.8rem",
-                color: "#475569",
-                backgroundColor: "#f8fafc",
-                padding: "0.35rem 0.65rem",
-                borderRadius: "9999px",
-                border: "1px solid #e2e8f0",
-                maxWidth: "180px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                display: "none", // Hidden on small screens, visible via CSS media query
-              }}
-              className="user-badge"
-              title={user.email}
-            >
-              {user.email}
-            </span>
-          )}
-
-          {/* Developer Smoke Test Link */}
-          <Link
-            to="/smoke-test"
-            style={{
-              fontSize: "0.775rem",
-              color: "#4B6242",
-              backgroundColor: "#E8EFE2",
-              padding: "0.35rem 0.6rem",
-              borderRadius: "6px",
-              textDecoration: "none",
-              border: "1px solid #D6E1CD",
-              fontWeight: 600,
-            }}
-            title="ქართული კონტენტის აუდიტი (Developer Surface)"
-          >
-            🧪 Smoke
-          </Link>
-
-          {/* Universal Design System Visual Lab */}
-          <Link
-            to="/visual-lab"
-            style={{
-              fontSize: "0.775rem",
-              color: "#9E4215",
-              backgroundColor: "#FFE7D7",
-              padding: "0.35rem 0.6rem",
-              borderRadius: "6px",
-              textDecoration: "none",
-              border: "1px solid #FFD0B2",
-              fontWeight: 700,
-            }}
-            title="უნივერსალური დიზაინ სისტემის ლაბორატორია (Visual Lab)"
-          >
-            🎨 Lab
-          </Link>
-
-          {/* Forensic Backend -> Registered User Data Integrity Audit */}
-          <Link
-            to="/__debug/backend-audit"
-            style={{
-              fontSize: "0.775rem",
-              color: "#396F87",
-              backgroundColor: "#EAF1F7",
-              padding: "0.35rem 0.6rem",
-              borderRadius: "6px",
-              textDecoration: "none",
-              border: "1px solid #BCE0EE",
-              fontWeight: 600,
-            }}
-            title="მონაცემთა მთლიანობის აუდიტი (Backend Data Integrity Audit)"
-          >
-            🔬 Audit
-          </Link>
-
-          {/* Sign Out Button */}
-          <button
-            onClick={handleSignOut}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.3rem",
-              padding: "0.4rem 0.75rem",
-              cursor: "pointer",
-              border: "1px solid #F5C6C5",
-              backgroundColor: "#FBE9E8",
-              color: "#AE3534",
-              borderRadius: "8px",
-              fontWeight: 700,
-              fontSize: "0.825rem",
-              minHeight: "36px",
-            }}
-            title="სისტემიდან გასვლა / Sign Out"
-          >
-            🚪 <span className="signout-label">გასვლა</span>
-          </button>
-        </div>
-      </header>}
+    <div className="app-container home-shell">
+      {/* Global Desktop Header */}
+      <HomeNavigation
+        unreadCount={unreadCount}
+        signOut={handleSignOut}
+        profileName={profile.data?.display_name}
+        avatarUrl={profile.data?.avatar_url}
+        userEmail={user?.email}
+      />
 
       {/* Main Responsive Viewport */}
-      <main className={`app-main-viewport${isHome ? ' home-main-viewport' : ''}`}>
+      <main className="app-main-viewport home-main-viewport">
         <Outlet />
       </main>
 
-      {/* Mobile Bottom Navigation Bar (HOME | DISCOVER | MESSAGES | ME) */}
-      {isHome ? <HomeMobileNavigation /> : <nav className="mobile-bottom-nav">
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
-        >
-          <span className="tab-icon">🏠</span>
-          <span>HOME</span>
-        </NavLink>
-        <NavLink
-          to="/discover"
-          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
-        >
-          <span className="tab-icon">🧭</span>
-          <span>DISCOVER</span>
-        </NavLink>
-        <NavLink
-          to="/messages"
-          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
-        >
-          <span className="tab-icon">💬</span>
-          <span>MESSAGES</span>
-        </NavLink>
-        <NavLink
-          to="/me"
-          className={({ isActive }) => `mobile-nav-tab ${isActive ? "active" : ""}`}
-        >
-          <span className="tab-icon">👤</span>
-          <span>ME</span>
-        </NavLink>
-      </nav>}
+      {/* Mobile Bottom Navigation Bar */}
+      <HomeMobileNavigation />
 
-      {/* Persistent Developer Debug Bar (Development Only) */}
-      {!isHome && <DebugBar />}
+      {/* Development-Only Debug Bar */}
+      <DebugBar />
     </div>
   );
 };

@@ -6,7 +6,22 @@ export function connectionFor(connections: ConnectionResponse[], viewer: string,
 
 export function visibleHomePeople(people: DiscoveryPerson[], connections: ConnectionResponse[], viewer: string) {
   // Preserve the backend's order, never substitute a local compatibility ranking.
-  return people.filter(person => person.id !== viewer && connectionFor(connections, viewer, person.id)?.status !== 'blocked');
+  const seenIds = new Set<string>();
+  const seenCards = new Set<string>();
+  return people.filter(person => {
+    if (!person || !person.id || person.id === viewer) return false;
+    if (seenIds.has(person.id)) return false;
+    seenIds.add(person.id);
+
+    // Deduplicate identical duplicate mock/seed accounts with the same display name in discovery preview
+    if (person.display_name) {
+      const key = `${person.display_name.trim().toLowerCase()}:${person.bio?.trim().toLowerCase() || ''}`;
+      if (seenCards.has(key)) return false;
+      seenCards.add(key);
+    }
+
+    return connectionFor(connections, viewer, person.id)?.status !== 'blocked';
+  });
 }
 
 export function personObservation(person: DiscoveryPerson) {

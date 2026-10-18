@@ -256,8 +256,8 @@ These invariants are immutable architectural rules:
    Blocked entities return privacy-safe HTTP 404 (Not Found) across all endpoints (profiles, safe astrology, compatibility, chat). The system never leaks an existence oracle.
 5. **Anti-Surveillance Messaging:**  
    Private direct messaging between connected users contains zero read-receipt latency clocks, zero typing speed telemetry, and zero sentiment mining.
-6. **Strict 18+ Platform Boundary:**  
-   Users under 18 years of age are strictly barred from registration and onboarding.
+6. **Strict 18+ Platform Boundary (Approved Public MVP Policy):**
+   The first public MVP is strictly 18+. Users under 18 years of age will be barred from registration and social features. *Current state: The platform operates strictly in local development with test fixtures; full server-side age enforcement, birthday boundaries, and moderation workflows are planned public launch gates (PLANNED / NOT YET IMPLEMENTED).*
 
 ---
 

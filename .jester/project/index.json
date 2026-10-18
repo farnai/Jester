@@ -8,6 +8,7 @@
   "synastry": "docs/SYNASTRY_V1_SPEC.md",
   "ai": "docs/AI.md",
   "frontend_architecture": "docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md",
+  "frontend_architecture_v1_2": "docs/architecture/JESTER_PRODUCT_FRONTEND_ARCHITECTURE_V1_2.md",
   "frontend_capabilities": "docs/FRONTEND_CAPABILITY_SPECIFICATION.md",
   "design": "docs/JESTER_DESIGN_EXPLORATION.md",
   "ai_bridge": "docs/AI_BRIDGE_ARCHITECTURE.md",

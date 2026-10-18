@@ -22,64 +22,59 @@ Every section is strictly tagged with its current status:
 
 ## 1. Aesthetic Mood & Character
 
-### 1.1 Aesthetic Direction: "Editorial Digital Luxury" `[PROPOSAL]`
-- **Concept:** A visual synthesis combining high-end editorial print magazines (*Kinfolk*, *Apartamento*), modern typography-led digital tools (Linear, Raycast), and warm, tactile consumer products (Cash App, Arc Browser).
-- **Feeling:** Structured, mature, razor-sharp, and culturally self-assured. It rejects both sterile enterprise SaaS sterility and juvenile, gamified swipe-app aesthetics.
-- **Visual References:**
-  - *Linear / Raycast:* Geometric discipline, crisp micro-borders, clean typography, intentional key-lines.
-  - *Kinfolk / Apartamento:* Editorial whitespace, generous margins, human photography framing.
-  - *Cash App:* Bold, tactile, punchy interactive buttons, micro-interactions with weight and presence.
+### 1.1 Approved Direction: "Warm Modern Editorial Social Discovery" `[APPROVED]`
+- **Concept:** A confident, human-centered, photography-rich editorial aesthetic tailored for adult social discovery. It pairs warm organic canvases with vibrant Carrot Orange accents, sophisticated sage/peach tones, and bold Georgian typography.
+- **Feeling:** Human, observant, lively, warm, and subtly playful. It rejects generic SaaS dashboard cards, corporate financial sterility, neon AI mysticism, and swipe-dating commodification.
+- **Core Principles:**
+  - **Typographic Authority:** Noto Sans Georgian with strong weights (700/800) and generous line heights (1.55+).
+  - **Human Photography First:** Authentic adult portraiture and social moments, not stock models or fake avatars.
+  - **Spatial Composition:** Asymmetrical modern layouts, wide desktop breathing room (1200–1320px), no narrow 600px columns with half-blank viewports.
+  - **Restrained Personality:** Witty, empathetic JESTER voice; astrology serves as deterministic intelligence, not visual clutter.
 
 ### 1.2 Rejected Visual Directions `[REJECTED]`
-- ❌ **Medieval Fantasy / Renaissance Kitsch:** No parchment textures, gothic calligraphy, heraldic shields, or royal crowns.
-- ❌ **Circus Clowns & Carnivals:** No floppy three-pronged hats, bells, oversized shoes, or harlequin diamonds.
-- ❌ **Cartoon Mascots:** JESTER is an invisible editorial presence, not a bouncing mascot (no Clippy, no Duolingo owl).
-- ❌ **Cosmic Occult Temple:** No mystical crystal balls, velvet gradients, zodiac wheels, or planetary degree symbols ($\degree$) in consumer flows.
+- ❌ **Generic SaaS Dashboard Cards:** Sea of equal white rounded boxes, tiny 10px text, repetitive numbered badges (`01`, `02`, `03`).
+- ❌ **Medieval Fantasy / Renaissance Kitsch:** Parchment textures, heraldic shields, tarot cards.
+- ❌ **Circus Clowns & Carnivals:** Floppy three-pronged hats, bells, carnival diamonds.
+- ❌ **Cartoon Mascots:** Bouncing mascots (no Clippy, no Duolingo owl).
+- ❌ **Cosmic Occult Temple:** Mystical crystal balls, purple-violet velvet gradients, zodiac wheels, planetary degree symbols in primary UI.
+- ❌ **Swipe Dating Clichés:** Tinder/Bumble card stacks, swipe gestures, contextless % numbers.
 
 ---
 
-## 2. Color Exploration
+## 2. Approved Brand & Color Tokens
 
-### 2.1 Baseline Token Palette `[PROPOSAL]`
-*(Currently reflected in prototype token files `frontend/src/ui/tokens/colors.ts`)*
+### 2.1 Approved Brand System `[APPROVED]`
+*(Reflected in `frontend/src/index.css` and `frontend/src/modules/home/home.css`)*
 
 ```typescript
-export const colors = {
-  // Foundations & Surfaces
-  background:     "#f8fafc", // Cool alabaster slate
-  surface:        "#ffffff", // Pure crisp white
-  surfaceSubtle:  "#f1f5f9", // Gentle container grey
-  surfaceMuted:   "#e2e8f0", // Divider & boundary tone
-  surfaceInverse: "#0f172a", // Deep midnight obsidian
+export const jesterTokens = {
+  // Brand Primary & Action
+  brandOrange:      "#FF7A2F", // Core Carrot Orange CTA
+  brandOrangeHover: "#E9681F", // Active/Hover state
+  brandOrangeWash:  "#FFF6F0", // Soft pill background
 
-  // Typography Tones
-  textPrimary:    "#0f172a", // Maximum contrast slate-black
-  textSecondary:  "#64748b", // Neutral editorial slate
-  textMuted:      "#94a3b8", // Quiet metadata grey
-  textInverse:    "#ffffff", // High-contrast text on dark surfaces
+  // Surfaces & Canvas
+  surfaceCanvas:    "#FAF7F2", // Warm Canvas background
+  surfaceCard:      "#FFFFFF", // Editorial White card surface
+  surfaceElevated:  "#FFFFFF", // Modal / popover surface
+  surfaceBorder:    "#E6E0D7", // Warm hairline border
 
-  // Primary Accent (Electric Royal Indigo)
-  accent:         "#6366f1", // Main CTAs, active indicators
-  accentHover:    "#4f46e5", // Hover & press states
-  accentSubtle:   "#eef2ff", // Tinted badges & pill backgrounds
-  accentBorder:   "#c7d2fe", // Accent boundaries
+  // Typography
+  textPrimary:      "#222630", // Dark Ink
+  textSecondary:    "#6A716F", // Muted editorial secondary
+  textTertiary:     "#8B918F", // Metadata & captions
+  textInverse:      "#FFFFFF", // White on orange/dark
 
-  // Signature Brand Highlight (JESTER Royal Violet)
-  highlight:      "#9333ea", // Signature hooks, WHY highlights
-  highlightSubtle:"#fdf4ff", // Ambient card glow, preview tint
-  highlightBorder:"#f0abfc", // High-resonance borders
-
-  // Semantic Feedback
-  success:        "#16a34a", // Verification checks, accepted states
-  warning:        "#d97706", // Pending states, friction callouts
-  danger:         "#dc2626", // Disconnect, block, destructive action
-  info:           "#2563eb", // Contextual hints
+  // Supporting Editorial Accents
+  sageAccent:       "#95A686", // Calm botanical green
+  sageWash:         "#E8EFE2", // Sage pill background
+  peachAccent:      "#F5DDD1", // Warm peach glow
+  peachWash:        "#FFF2EB", // Soft peach tint
 };
 ```
 
-### 2.2 Warm Terracotta & Monochromatic Alternatives `[EXPLORATION]`
-- **Terracotta & Warm Paper Exploration:** Testing warm off-whites (`#faf8f5`), rich charcoal (`#1c1917`), and warm terracotta (`#c2410c`) to create an earthy, tactile book-like warmth for Georgian literary feel.
-- **Monochrome Minimalist Exploration:** Pure black/white with a single stark amber or cobalt focal accent.
+### 2.2 Historical Explorations `[ARCHIVED]`
+- Indigo / Violet palette (`#6366f1` / `#9333ea`) explored in early prototypes is archived as superseded by Warm Carrot Orange.
 
 ---
 

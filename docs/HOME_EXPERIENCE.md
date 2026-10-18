@@ -1,45 +1,50 @@
-# Home experience
+# Home Experience Specification (v1.2)
 
-Home is an authenticated entry into self understanding, people discovery and existing relationships. Product intent remains in [Product Foundation](JESTER_PRODUCT_FOUNDATION.md) and [Marketing Foundation](JESTER_STRATEGIC_MARKETING_FOUNDATION.md). This document describes the implemented presentation, not new scoring or discovery policy.
+Home is the authenticated front door to self-understanding, people discovery, and existing relationships. It reflects the product thesis: **ME → YOU → US → MORE PEOPLE**.
 
-## Hierarchy and actions
+## Information Hierarchy & Visual Composition
 
-1. Personal observation: existing daily interpretation, with explicit distinction between computed-day and sun-sign fallback responses. Optional guidance and provenance are disclosures. Mobile long text expands on request. Copy copies the supplied observation locally; it never sends a message.
-2. Existing circle: accepted connection interpretation and index, or a contextual discovery entry when there are no connections. Incoming/outgoing requests link to the established connection tabs. The primary orange action explores an accepted relationship, otherwise discovers people.
-3. People: an observation-first filter and an all-profiles filter, four profiles per page. Preserve server order (currently alphabetical), label it explicitly, and never claim a recommendation ranking. The first visual feature is the first eligible item, not a highest-ranked candidate.
-4. Self profile: a contextual prompt when bio is absent, or a general profile-edit entry.
+1. **Editorial Primary Hero (ME / US Contextual):**
+   - A confident, wide-viewport editorial composition anchored to the user's authentic identity.
+   - Displays one genuine personal observation (`daily.data?.interpretation?.text`) or profile insight.
+   - Clear distinction between computed daily transits (`real_transit`) and natal profile baseline (`fallback_sun_sign`).
+   - One primary action CTA and an accessible, grounded "რატომ ამბობს ამას JESTER?" disclosure explaining signal provenance without exposing raw birth data.
+   - Quick one-tap copy action for the insight with user feedback.
+   - Optional DO / DON'T guidance tags when returned by the API.
 
-The Home navigation exposes Home, Discover, Messages, Me, Notifications and an account menu. Other routes retain their existing shell. Home does not expose developer navigation.
+2. **Contextual Social Moment (Circle / Relationship):**
+   - If user has an accepted connection (`accepted.length > 0`): Shows a genuine relationship moment between the viewer and one connected person (`API.compatibility.why`), with communication/synastry interpretation, grounded compatibility index note ("საინტერესო ნაწილი — ახსნაა"), and direct CTA to `/people/:id/why`.
+   - If incoming connection requests are pending: Displays a clear action banner to review requests.
+   - If user has no connections: Provides an honest, thoughtful first-connection path without fabricated mock data.
 
-## Data and authorization
+3. **Discovery Preview (2–3 Distinct Real People):**
+   - Displays 2–3 distinct, deduplicated profiles from the database (`GET /v1/interpretations/discovery-people`).
+   - Shows real names, avatars/photos, cities, occupations, and genuine observations (if `presence_sign_source` is `sun` or `ascendant`) or authentic user bio.
+   - Dedicated "ყველა ადამიანი" CTA leading to the full `/discover` experience.
+   - Never repeats the same candidate or duplicate generic paragraphs.
 
-| Content | Existing source | Presentation boundary |
+4. **Closing Editorial Action:**
+   - A warm, purposeful invitation to complete/refine the user's own profile and bio.
+
+5. **Shared AppShell Navigation:**
+   - 5 canonical destinations: **მთავარი** (`/`), **აღმოაჩინე** (`/discover`), **კავშირები** (`/connections`), **საუბრები** (`/messages`), **ჩემი პროფილი** (`/me`).
+   - Clean notifications utility with live unread counter (`/notifications`).
+   - User account dropdown with profile links and secure sign-out.
+   - Mobile-first bottom navigation with 48px touch targets and clear active states.
+
+## Data and Authorization
+
+| Content | Source Endpoint | Boundary & Privacy Rule |
 | --- | --- | --- |
-| Viewer name/avatar/bio/timezone | `GET /v1/profiles/me` | Owner data; no email or birth details displayed |
-| Personal observation | `GET /v1/interpretations/daily-energy` (`auto`, `ka`) | Render returned text and guidance; label fallback as profile observation |
-| People | `GET /v1/interpretations/discovery-people` | Authenticated response only; never pass a substitute viewer |
-| Circle and requests | `GET /v1/connections` | Canonical pairs and existing statuses |
-| Relationship interpretation/index | `GET /v1/people/{id}/why` | Only requested for a returned discovery person with an accepted connection; backend remains authoritative |
-| Notifications | Existing AppShell list and realtime subscription | Existing behavior unchanged |
+| Viewer identity / avatar / bio | `GET /v1/profiles/me` | Owner data; no email or raw birth data displayed |
+| Personal observation | `GET /v1/interpretations/daily-energy` (`auto`, `ka`) | Display returned text; label fallback truthfully |
+| Discoverable people | `GET /v1/interpretations/discovery-people` | Authenticated; deduplicated; blocked users filtered |
+| Connections & pending requests | `GET /v1/connections` | Canonical pairs (`user_a_id < user_b_id`) |
+| Relationship why / index | `GET /v1/people/{id}/why` | Only requested for returned person with accepted connection |
+| Notifications | `GET /v1/notifications` + Supabase Realtime | Live unread counter badge |
 
-No new persistence, direct Supabase business queries, ranking, score calculation, messaging mutation or entitlement is introduced. Home shows no discovery score: the current endpoint can supply fallback scores. Candidate hooks are shown only when `presence_sign_source` is `sun` or `ascendant`; default Aries hooks are suppressed. With no supported hook, use a real bio or an honest partial-data message.
+## Verification Requirements
 
-Blocked pairs are filtered defensively in Home, in addition to server filtering. Deep links appear only for accepted pairs. Errors never reuse stale relationship text. If the accepted person is absent from discovery, show the connection count and management route rather than probing a profile.
-
-## Lifecycle and states
-
-Each API section has independent loading, empty and retryable error handling. Broken avatars fall back to initials. No fake observation or percentage fills an empty state. Personal fallback content is explicitly distinguished from a computed daily observation.
-
-React Query reuses established profile, connection and discovery keys. Daily cache keys include viewer and local calendar date; the mounted page checks the date once per minute and cleans up that timer. Relationship results refetch on mount. Existing auth identity-change cache clearing remains in place. API errors are handled per section; authorization remains server-owned.
-
-This does not implement a daily scheduler, push pipeline, personalized recommendation algorithm or public share link. The API currently returns the whole discovery list; four-item pagination bounds rendering, not network payload or backend work. Server cursor pagination needs a separate contract.
-
-## Responsive and accessibility
-
-Desktop uses a reading column beside a narrower relationship column, then a featured profile beside a list. Tablet preserves two columns and uses bottom navigation. Mobile stacks sections, shortens the initial long observation with an explicit expansion control, and retains full content on demand. Typography and colors use the approved existing tokens and Noto Sans Georgian. Focus rings, native details disclosures, named landmarks, state announcements and 44px controls support keyboard/touch use. Skeleton animation stops under reduced motion. There is no fixed page height.
-
-## Verification
-
-Build: `npm run build --prefix frontend`.
-Regression checks: `node --experimental-strip-types --test scripts/home-model.test.mjs`.
-The test file uses existing React/TypeScript dependencies to render real components with isolated API/auth boundaries; no fixture or preview route is bundled into Home. Live browser checks are described in the task implementation report.
+- Build: `npm run build --prefix frontend` must succeed without errors.
+- Automated tests: `node --experimental-strip-types --test scripts/home-model.test.mjs` must pass all tests.
+- Visual verification: Render and inspect desktop (1440×900, 1280×800), tablet (768), and mobile (390×844, 320×700).
