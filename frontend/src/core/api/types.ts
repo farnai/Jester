@@ -328,10 +328,10 @@ export interface DiscoveryPerson {
     element_primary: string | null;
     modality_primary: string | null;
   };
-  compatibility_score: number;
+  compatibility_score: number | null;
   hook_observation?: ResolvedInterpretationModel | null;
-  presence_sign_source?: string;
-  presence_sign?: string;
+  presence_sign_source?: string | null;
+  presence_sign?: string | null;
 }
 
 export interface ComparePreviewRequest {
@@ -339,6 +339,19 @@ export interface ComparePreviewRequest {
   source_user_id?: string | null;
   locale?: string;
   tone?: string | null;
+}
+
+export interface DiscoveryDeckPerson extends DiscoveryPerson {
+  photos: ProfilePhoto[];
+  interests: InterestItem[];
+  common_interest_ids: string[];
+  same_city: boolean;
+  connection_id: string | null;
+  connection_state: 'none' | 'pending_out' | 'pending_in' | 'accepted';
+}
+export interface DiscoveryPageResponse {
+  items: DiscoveryDeckPerson[];
+  next_cursor: string | null;
 }
 
 export interface DeepAnalysisBlock {

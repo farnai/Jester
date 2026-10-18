@@ -87,7 +87,7 @@ Jester/
 │   │   ├── canonical.py      # Authoritative canonical user pair ordering & seed utilities
 │   │   ├── database.py       # psycopg3 connection pool singleton
 │   │   └── errors.py         # API exceptions and global handler
-│   ├── discovery/            # [SPEC] Discovery Preferences & Feed Engine V1 (/v1/discovery/*)
+│   ├── discovery/            # Bounded /v1/discovery/people; ranked Feed Engine remains [SPEC]
 │   ├── interests/            # [SPEC] Interest System & Interest Graph V1
 │   │   ├── models.py         # Taxonomy, user_interests, affinity schemas
 │   │   ├── taxonomy.py       # 18-category canonical taxonomy & alias resolver

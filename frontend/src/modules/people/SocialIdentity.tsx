@@ -5,7 +5,7 @@ import type { ProfilePhoto, ProfileResponse } from '../../core/api/types';
 import { ProfileImage } from '../../shared/ui/ProfileImage';
 import './social-profile.css';
 
-export function SocialIdentity({ profile, editable = false, actions }: { profile: ProfileResponse; editable?: boolean; actions?: ReactNode }) {
+export function SocialIdentity({ profile, editable = false, actions, connectionActions }: { profile: ProfileResponse; editable?: boolean; actions?: ReactNode; connectionActions?: ReactNode }) {
   const cache = useQueryClient();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingPhotos, setEditingPhotos] = useState(false);
@@ -19,6 +19,7 @@ export function SocialIdentity({ profile, editable = false, actions }: { profile
       cache.invalidateQueries({ queryKey: ['profile'] });
       cache.invalidateQueries({ queryKey: ['discovery'] });
       cache.invalidateQueries({ queryKey: ['discovery-people'] });
+      cache.invalidateQueries({ queryKey: ['discovery-deck'] });
     },
   });
   const items = photos.data || [];
@@ -70,6 +71,7 @@ export function SocialIdentity({ profile, editable = false, actions }: { profile
       {editable && <p className="social-visibility">{profile.is_discoverable ? '● პროფილი აღმოჩენადია' : '○ პროფილი დამალულია'}</p>}
       <div className="social-identity-actions">{actions}</div>
       <ProfileInterests owner={profile.id} editable={editable} />
+      {connectionActions}
     </div>
   </section>;
 }
@@ -85,6 +87,7 @@ function ProfileInterests({ owner, editable }: { owner: string; editable: boolea
   const mutation = useMutation({ mutationFn: API.interests.setMyInterests, onSuccess: () => {
     cache.invalidateQueries({ queryKey: ['person-interests'] });
     cache.invalidateQueries({ queryKey: ['my-interests'] });
+    cache.invalidateQueries({ queryKey: ['discovery-deck'] });
     setEditing(false);
   } });
   const common = interests.data?.common_interest_ids || [];

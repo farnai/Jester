@@ -1,0 +1,12 @@
+.connection-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.connection-actions button, .connection-actions a, .connection-dialog button { min-height:44px; padding:10px 15px; border-radius:12px; border:1px solid var(--jester-border-muted); background:var(--jester-surface-base); color:var(--jester-text-primary); font:inherit; font-size:.85rem; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; text-align:center; }
+.connection-actions .connect-primary, .connection-dialog .connect-primary { background:var(--jester-brand-orange-500); border-color:var(--jester-brand-orange-500); color:var(--jester-text-primary); font-weight:700; }
+.connection-actions .connection-pending { color:var(--jester-support-sage-ink); font-size:.8rem; line-height:1.4; }
+.connection-actions button:disabled { opacity:.6; cursor:wait; }
+.connection-dialog { width:min(440px, calc(100vw - 32px)); box-sizing:border-box; margin:auto; padding:26px; border:1px solid var(--jester-border-soft); border-radius:22px; background:var(--jester-surface-canvas); color:var(--jester-text-primary); }
+.connection-dialog::backdrop { background:rgba(34,38,48,.48); }
+.connection-dialog h2 { font-size:1.2rem; line-height:1.5; margin:0 0 14px; }
+.connection-dialog p { line-height:1.7; font-size:.9rem; }
+.connection-dialog > div { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.connection-actions [role=alert] { color:var(--jester-semantic-error); width:100%; }
+.connection-actions :focus-visible, .connection-dialog :focus-visible { outline:3px solid var(--jester-action-focus); outline-offset:3px; }

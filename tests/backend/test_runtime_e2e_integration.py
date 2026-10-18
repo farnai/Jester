@@ -395,7 +395,7 @@ async def test_discovery_presence_fallback_order(db_conn, clean_db):
     Verifies discovery fallback order:
     1. Ascendant available -> discovery.person.presence.{ascendant}.v1
     2. Ascendant missing, Sun available -> discovery.person.presence.{sun}.v1
-    3. Neither available -> discovery.person.presence.taurus.v1 (default router fallback)
+    3. Neither available -> no invented sign or observation.
     """
     viewer = str(uuid.uuid4())
     c1 = str(uuid.uuid4())  # Candidate with Ascendant Pisces
@@ -437,11 +437,11 @@ async def test_discovery_presence_fallback_order(db_conn, clean_db):
         assert p2["presence_sign_source"] == "sun"
         assert p2["hook_observation"]["id"] == "discovery.person.presence.taurus.v1"
 
-        # 3. c3 has no birth data (both Ascendant and Sun missing) -> strictly falls back to Aries
+        # 3. No supported signal means no invented observation.
         p3 = people[c3]
-        assert p3["presence_sign"] == "aries"
-        assert p3["presence_sign_source"] == "fallback"
-        assert p3["hook_observation"]["id"] == "discovery.person.presence.aries.v1"
+        assert p3["presence_sign"] is None
+        assert p3["presence_sign_source"] is None
+        assert p3["hook_observation"] is None
 
 
 # =============================================================================

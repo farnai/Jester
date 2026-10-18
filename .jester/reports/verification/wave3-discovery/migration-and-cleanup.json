@@ -1,0 +1,31 @@
+{
+  "local_only": true,
+  "post_cleanup": {
+    "profiles": 25,
+    "legacy": 5,
+    "cleanup": 0,
+    "private_objects": 0
+  },
+  "latest_migrations": [
+    {
+      "version": "030"
+    },
+    {
+      "version": "029"
+    },
+    {
+      "version": "028"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "profiles_discoverable_city_id",
+      "indexdef": "CREATE INDEX profiles_discoverable_city_id ON public.profiles USING btree (current_city_id, id) WHERE is_discoverable"
+    },
+    {
+      "indexname": "profiles_discoverable_id",
+      "indexdef": "CREATE INDEX profiles_discoverable_id ON public.profiles USING btree (id) WHERE is_discoverable"
+    }
+  ],
+  "preservation": "Original 25 profiles and five legacy photo references retained; all six manifest-verified browser QA accounts removed."
+}

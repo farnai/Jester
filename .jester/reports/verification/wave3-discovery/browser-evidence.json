@@ -1,0 +1,95 @@
+{
+  "checks": [
+    "Initial deck loads only current and next candidate card media; excludes self; three genuine fixture people",
+    "Photo button and tap regions switch real gallery images",
+    "Right swipe opens focused confirmation; Escape cancels without request",
+    "Vertical movement does not advance; left swipe advances; profile return preserves person/filter; strangers see no Why",
+    "Browser Back and keyboard Next preserve usable deck navigation",
+    "Confirmed request persists; recipient receives pending_in and accepts; sender sees accepted",
+    "Accepted profile exposes Why and real direct conversation; astrology expands on demand; four responsive screenshots captured",
+    "Server shared-interest filter, browsable list-to-deck and honest empty state",
+    "Next crosses the 12-person boundary using a real cursor request without a full feed",
+    "Actual offline API failure renders retry; restored network recovers",
+    "Native touch vertical scrolling does not navigate; left advances and right confirms/cancels with reduced motion",
+    "Block removes candidate and denies reverse profile/media access with privacy-safe 404"
+  ],
+  "measurements": [
+    {
+      "surface": "discover",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "actionsTop": 750,
+      "actionsBottom": 819,
+      "navTop": 0
+    },
+    {
+      "surface": "discover",
+      "width": 1280,
+      "height": 800,
+      "scrollWidth": 1280,
+      "actionsTop": 699,
+      "actionsBottom": 768,
+      "navTop": 0
+    },
+    {
+      "surface": "discover",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "actionsTop": 645,
+      "actionsBottom": 706,
+      "navTop": 783
+    },
+    {
+      "surface": "discover",
+      "width": 320,
+      "height": 700,
+      "scrollWidth": 320,
+      "actionsTop": 551,
+      "actionsBottom": 612,
+      "navTop": 647
+    },
+    {
+      "surface": "person",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "actionsTop": 694,
+      "actionsBottom": 738,
+      "navTop": 0
+    },
+    {
+      "surface": "person",
+      "width": 1280,
+      "height": 800,
+      "scrollWidth": 1280,
+      "actionsTop": 687,
+      "actionsBottom": 731,
+      "navTop": 0
+    },
+    {
+      "surface": "person",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "actionsTop": 718,
+      "actionsBottom": 783,
+      "navTop": 783
+    },
+    {
+      "surface": "person",
+      "width": 320,
+      "height": 700,
+      "scrollWidth": 320,
+      "actionsTop": 563,
+      "actionsBottom": 647,
+      "navTop": 647
+    }
+  ],
+  "media": [
+    "/v1/profiles/48b1c496-636d-465c-9fd9-d1e2e9a8f031/photos/03c80a3d-3014-48f1-97e1-de448179d6df/content?size=card",
+    "/v1/profiles/bdb743dc-c4d7-4e4a-a7c7-9bfc4304046e/photos/2ebecb7a-4a9a-4f1d-a734-9d34e99c3150/content?size=card"
+  ],
+  "pageErrors": []
+}

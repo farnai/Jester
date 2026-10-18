@@ -1,186 +1,74 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { API } from "../../core/api/endpoints";
-import { useAuth } from "../../core/auth/useAuth";
-import { DiscoveryPerson, ConnectionResponse } from "../../core/api/types";
-import { Badge, Skeleton, Card, ErrorState, EmptyState } from "../../shared/ui";
-import { PersonCard } from "./PersonCard";
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { API } from '../../core/api/endpoints';
+import { useAuth } from '../../core/auth/useAuth';
+import { CitySelector } from '../../shared/ui';
+import { DiscoverSwipeCard } from './DiscoverSwipeCard';
+import './discovery.css';
 
-export const DiscoverPage: React.FC = () => {
+export const DiscoverPage = () => {
   const { user } = useAuth();
-
-  // 1. Fetch Discovery People (Production Endpoint)
-  const {
-    data: people,
-    isLoading: loadingPeople,
-    error: errorPeople,
-    refetch: refetchPeople,
-  } = useQuery<DiscoveryPerson[]>({
-    queryKey: ["discovery-people", user?.id],
-    queryFn: () => API.interpretations.getDiscoveryPeople(user?.id),
-    enabled: !!user?.id,
+  const [params, setParams] = useSearchParams();
+  const q = params.get('q') || '', city = params.get('city') || '', shared = params.get('shared') === '1';
+  const [search, setSearch] = useState(q);
+  const [filtersOpen, setFiltersOpen] = useState(() => window.innerWidth >= 1000);
+  useEffect(() => { const media = window.matchMedia('(min-width: 1000px)'); const listener = () => setFiltersOpen(media.matches); media.addEventListener('change', listener); return () => media.removeEventListener('change', listener); }, []);
+  const mode = params.get('view') === 'list' ? 'list' : 'deck';
+  const activeId = params.get('person');
+  const page = useInfiniteQuery({
+    queryKey: ['discovery-deck', user?.id, q, city, shared],
+    queryFn: ({ pageParam, signal }) => API.discovery.people({ q, city_id: city, shared_only: shared, after: pageParam || undefined }, signal),
+    initialPageParam: '', getNextPageParam: last => last.next_cursor || undefined,
+    enabled: !!user, refetchOnMount: 'always', refetchInterval: 30000, retry: 1, networkMode: 'always',
   });
-
-  // 2. Fetch Connections to determine relationship states and enforce privacy/block filters
-  const { data: connections, isLoading: loadingConnections } = useQuery<ConnectionResponse[]>({
-    queryKey: ["connections"],
-    queryFn: API.connections.list,
-  });
-
-  // Loading State with Skeletons matching PersonCard structure
-  if (loadingPeople || loadingConnections) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <Skeleton width="220px" height="2rem" />
-            <div style={{ marginTop: "0.5rem" }}>
-              <Skeleton width="340px" height="1rem" />
-            </div>
-          </div>
-          <Skeleton width="80px" height="2rem" borderRadius="20px" />
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {[1, 2, 3, 4].map((n) => (
-            <Card key={n} padded style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                  <Skeleton width="48px" height="48px" borderRadius="9999px" />
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                    <Skeleton width="120px" height="1.1rem" />
-                    <Skeleton width="90px" height="0.8rem" />
-                  </div>
-                </div>
-                <Skeleton width="48px" height="42px" borderRadius="10px" />
-              </div>
-              <Skeleton width="100%" height="4.5rem" borderRadius="8px" />
-              <div style={{ display: "flex", gap: "0.4rem" }}>
-                <Skeleton width="70px" height="1.5rem" borderRadius="12px" />
-                <Skeleton width="70px" height="1.5rem" borderRadius="12px" />
-              </div>
-              <Skeleton width="100%" height="44px" borderRadius="8px" />
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Error State
-  if (errorPeople) {
-    return <ErrorState error={errorPeople as Error} onRetry={refetchPeople} />;
-  }
-
-  const rawPeople = people || [];
-  const connList = connections || [];
-
-  // Build map of connection statuses & exclude blocked users (Privacy Invariant)
-  const connectionMap = new Map<string, ConnectionResponse>();
-  const blockedUserIds = new Set<string>();
-
-  for (const conn of connList) {
-    const otherId = conn.user_a_id === user?.id ? conn.user_b_id : conn.user_a_id;
-    connectionMap.set(otherId, conn);
-    if (conn.status === "blocked") {
-      blockedUserIds.add(otherId);
-    }
-  }
-
-  // Filter out any blocked users to prevent existence leak
-  const visiblePeople = rawPeople.filter((p) => !blockedUserIds.has(p.id));
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      {/* Editorial Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            <span style={{ fontSize: "1.5rem" }}>🧭</span>
-            <h1
-              style={{
-                margin: 0,
-                fontSize: "1.65rem",
-                fontWeight: 800,
-                color: "var(--jester-text-primary)",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              აღმოაჩინე ადამიანები
-            </h1>
-          </div>
-          <p
-            style={{
-              margin: "0.35rem 0 0 0",
-              color: "var(--jester-text-secondary)",
-              fontSize: "0.95rem",
-              lineHeight: 1.5,
-              maxWidth: "600px",
-            }}
-          >
-            ადამიანები, რომელთა გაცნობაც ღირს — სინასტრიული თანხვედრა და JESTER-ის ხედვა.
-          </p>
-        </div>
-
-        <Badge variant="score" size="md">
-          {visiblePeople.length} ხელმისაწვდომი
-        </Badge>
-      </div>
-
-      {/* Main Discover Feed */}
-      {visiblePeople.length === 0 ? (
-        <EmptyState
-          title="ამ ეტაპზე ახალი პროფილები არ ჩანს"
-          description="თქვენ უკვე გაეცანით ყველა ხელმისაწვდომ პროფილს, ან ახალი მონაცემები ემატება. გადაამოწმეთ ცოტა ხანში."
-          actionLabel="განახლება"
-          onAction={() => refetchPeople()}
-        />
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {visiblePeople.map((person) => {
-            const conn = connectionMap.get(person.id);
-            let relStatus: "none" | "pending_out" | "pending_in" | "accepted" | "blocked" = "none";
-
-            if (conn) {
-              if (conn.status === "accepted") {
-                relStatus = "accepted";
-              } else if (conn.status === "pending") {
-                relStatus = conn.initiated_by === user?.id ? "pending_out" : "pending_in";
-              } else if (conn.status === "blocked") {
-                relStatus = "blocked";
-              }
-            }
-
-            return (
-              <PersonCard
-                key={person.id}
-                person={person}
-                connectionStatus={relStatus}
-              />
-            );
-          })}
-        </div>
-      )}
+  const connections = useQuery({ queryKey: ['connections'], queryFn: API.connections.list, refetchInterval: 15000 });
+  const people = (page.data?.pages.flatMap(p => p.items) || []).filter((person, index, all) => all.findIndex(other => other.id === person.id) === index && !connections.data?.some(c => c.status === 'blocked' && (c.user_a_id === person.id || c.user_b_id === person.id)));
+  const foundIndex = activeId ? people.findIndex(p => p.id === activeId) : 0;
+  const activeIndex = Math.max(0, foundIndex);
+  const exhausted = params.get('end') === '1';
+  const person = exhausted ? undefined : people[activeIndex];
+  const [announcement, setAnnouncement] = useState('');
+  const patchParams = (values: Record<string,string>, reset = false) => {
+    const next = new URLSearchParams(params);
+    if (reset) { next.delete('person'); next.delete('end'); }
+    Object.entries(values).forEach(([key,value]) => value ? next.set(key,value) : next.delete(key));
+    setParams(next, { replace: true });
+  };
+  useEffect(() => {
+    if (activeId && foundIndex === -1 && page.hasNextPage && !page.isFetching && !page.isFetchNextPageError) void page.fetchNextPage();
+  }, [activeId, foundIndex, page.hasNextPage, page.isFetching, page.isFetchNextPageError]);
+  const next = async () => {
+    if (page.isFetching) return;
+    if (people[activeIndex + 1]) patchParams({ person: people[activeIndex + 1].id });
+    else if (page.hasNextPage) {
+      const result = await page.fetchNextPage();
+      if (result.isError) return;
+      const items = result.data?.pages.flatMap(p => p.items) || [];
+      const index = items.findIndex(item => item.id === person?.id);
+      const following = items[index + 1];
+      patchParams(following ? { person: following.id } : { end: '1' });
+    } else patchParams({ end: '1' });
+    setAnnouncement('შემდეგი ადამიანი');
+  };
+  const returnTo = `/discover?${params}`;
+  return <div className="discover-experience">
+    <header className="discover-heading"><div><p className="discover-eyebrow">MORE PEOPLE</p><h1>აღმოაჩინე ადამიანები</h1></div><div className="discover-view-switch" aria-label="აღმოჩენის ხედი"><button aria-pressed={mode === 'deck'} onClick={() => patchParams({ view: '' })}>ბარათები</button><button aria-pressed={mode === 'list'} onClick={() => patchParams({ view: 'list' })}>სია</button></div></header>
+    <div className="discover-layout">
+      <aside className="discover-filters"><details open={filtersOpen} onToggle={e => setFiltersOpen(e.currentTarget.open)}><summary>ძიება და ფილტრები</summary><form onSubmit={e => { e.preventDefault(); patchParams({ q: search.trim() }, true); }}><label htmlFor="people-search">სახელით ძიება</label><input id="people-search" value={search} maxLength={80} onChange={e => setSearch(e.target.value)} placeholder="ვის ეძებ?" /><button type="submit">ძებნა</button></form>
+        <CitySelector value={city || null} initialDisplayLabel={params.get('cityLabel') || ''} label="ქალაქი" onChange={c => patchParams({ city: c.city_id, cityLabel: c.display_name }, true)} onClear={() => patchParams({ city: '', cityLabel: '' }, true)} />
+        <label className="discover-check"><input type="checkbox" checked={shared} onChange={e => patchParams({ shared: e.target.checked ? '1' : '' }, true)} /> საერთო ინტერესებით</label>
+        <button onClick={() => { setSearch(''); setParams({}, { replace: true }); }}>ფილტრების გასუფთავება</button>
+      </details><p className="discover-help" id="swipe-instructions">← შემდეგი ადამიანი<br/>→ კავშირის დადასტურება<br/>ფოტოზე შეხება — სხვა ფოტო.<br/>შეგიძლია გამოიყენო ღილაკებიც.</p></aside>
+      <section className="discover-center" aria-label="ადამიანების აღმოჩენა">
+        <span className="discover-sr" role="status" aria-live="polite">{announcement}</span>
+        {page.isPending || (activeId && foundIndex === -1 && page.hasNextPage && page.isFetching) ? <div className="discover-empty" role="status">ადამიანები იტვირთება…</div> : (page.isError && !page.data) ? <div className="discover-empty" role="alert"><p>პროფილები ვერ ჩაიტვირთა.</p><button onClick={() => page.refetch()}>ხელახლა ცდა</button></div> : mode === 'list' ? <div className="discover-list">
+          {people.map(p => <article key={p.id}><h2>{p.display_name}</h2><p>{p.city || 'ქალაქი არ არის მითითებული'}</p><div className="discover-interest-tags">{p.interests.slice(0,3).map(i => <span key={i.id}>{i.name}</span>)}</div><p>{p.common_interest_ids.length > 0 ? `${p.common_interest_ids.length} საერთო ინტერესი` : ''}</p><Link to={`/people/${p.id}?returnTo=${encodeURIComponent(returnTo)}`}>სრული პროფილი →</Link><button onClick={() => patchParams({ view: '', person: p.id, end: '' })}>ბარათის ნახვა</button></article>)}
+          {!people.length && <p>ამ ფილტრებით ადამიანები ვერ მოიძებნა.</p>}{page.hasNextPage && <button disabled={page.isFetching} onClick={() => page.fetchNextPage()}>მეტის ნახვა</button>}
+        </div> : person ? <DiscoverSwipeCard person={person} nextPerson={people[activeIndex+1]} onNext={next} profileLink={`/people/${person.id}?returnTo=${encodeURIComponent(`/discover?${new URLSearchParams({ ...Object.fromEntries(params), person: person.id })}`)}`} /> : <div className="discover-empty"><h2>{exhausted ? 'ამ ეტაპზე სულ ეს იყო' : 'ჯერ ვერავინ მოიძებნა'}</h2><p>შემდეგზე გადასვლა ადამიანს არ ბლოკავს და უარყოფით შეფასებას არ ინახავს.</p><button onClick={() => { patchParams({ person: '', end: '' }); page.refetch(); }}>თავიდან დათვალიერება</button></div>}
+        {page.isFetchNextPageError && <p role="alert">შემდეგი გვერდი ვერ ჩაიტვირთა. <button onClick={() => page.fetchNextPage()}>ხელახლა ცდა</button></p>}
+      </section>
+      <aside className="discover-context"><p className="discover-eyebrow">ერთი ნაბიჯით ახლოს</p><h2>ინტერესი საუბრის დასაწყისია.</h2>{person ? <><h3>{person.display_name}</h3>{person.bio && <p className="discover-context-bio">{person.bio}</p>}<div className="discover-interest-tags">{person.interests.map(i => <span key={i.id} className={person.common_interest_ids.includes(i.id) ? 'shared' : ''}>{i.name}</span>)}</div>{person.hook_observation?.text && <div className="discover-context-hook"><strong>JESTER-ის დაკვირვება</strong><p>{person.hook_observation.text}</p></div>}</> : <p>შეცვალე ფილტრები ან დაათვალიერე სია.</p>}<p className="discover-note">კავშირის მოთხოვნა საუბრის მოწვევაა. ჩატი ორივე ადამიანის თანხმობით იხსნება.</p></aside>
     </div>
-  );
+  </div>;
 };

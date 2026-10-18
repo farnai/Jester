@@ -5,6 +5,7 @@ import warnings
 
 import httpx
 from fastapi import APIRouter, Depends, Request, Response
+from typing import Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
@@ -190,6 +191,7 @@ def delete_photo(photo_id: uuid.UUID, current_user: AuthenticatedUser = Depends(
 
 @router.get('/{owner}/photos/{photo_id}/content')
 def photo_content(owner: uuid.UUID, photo_id: uuid.UUID,
+                  size: Literal['full', 'card'] = 'full',
                   current_user: AuthenticatedUser = Depends(get_current_user), db=Depends(get_db)):
     authorize_profile(db, current_user.id, owner)
     with db.cursor() as cur:
@@ -198,4 +200,10 @@ def photo_content(owner: uuid.UUID, photo_id: uuid.UUID,
     if not row or not row['storage_path']:
         raise PrivacySafeNotFoundException('Photo not found')
     data = storage_request('GET', row['storage_path']).content
+    if size == 'card':
+        with Image.open(io.BytesIO(data)) as source:
+            source.thumbnail((720, 900), Image.Resampling.LANCZOS)
+            output = io.BytesIO()
+            source.save(output, 'WEBP', quality=80)
+            data = output.getvalue()
     return Response(data, media_type='image/webp', headers={'Cache-Control': 'private, no-store', 'Vary': 'Authorization', 'X-Content-Type-Options': 'nosniff'})

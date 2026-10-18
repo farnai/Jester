@@ -45,7 +45,7 @@ try:
         return real_connect(conninfo, *args, **kwargs)
     psycopg.connect = isolated_connect
     import pytest
-    code = pytest.main(['tests', '--ignore=tests/backend/test_social_profiles.py', '-q', '--tb=short'])
+    code = pytest.main(['tests', '--ignore=tests/backend/test_social_profiles.py', '--ignore=tests/backend/test_discovery_deck.py', '-q', '--tb=short'])
     psycopg.connect = real_connect
 finally:
     psycopg.connect = real_connect

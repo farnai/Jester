@@ -249,14 +249,16 @@ Authorization: Bearer <supabase_jwt_token>
 
 #### 29. Discovery Feed — `GET /v1/interpretations/discovery-people`
 - **Auth**: Bearer JWT (Required). Caller identity is strictly bound to `JWT.sub`.
-- **Query Params**: `viewer_id?: UUID` (Optional; if supplied, must strictly match `current_user.id`, otherwise returns `403 Forbidden`).
+- **Query Params**: `viewer_id?: UUID` (if supplied, must match `current_user.id`, otherwise `403`); `limit=12` (1–24), `after?: UUID`, `city_id?: UUID`, `shared_only=false`, `q` (maximum 80 characters).
 - **Response 200**: `list[DiscoveryPerson]`
   - `id`: Target user UUID
   - `display_name`: Display name
   - `bio`, `city`, `occupation`, `avatar_url`: Safe profile attributes
   - `astrology`: Safe derived signals (`sun_sign`, `moon_sign`, `ascendant_sign`, `element_primary`, `modality_primary`)
-  - `compatibility_score`: Server-calculated Synastry V1 score
-  - `hook_observation`: Relationship-level JESTER hook observation (ME → YOU synastry dynamic with fallback to natal hook)
+  - `compatibility_score`: `null`; discovery does not calculate Synastry
+  - `hook_observation`: Optional presence observation from fresh stored safe ascendant/Sun signals; otherwise `null`
+  - Photo, interest and connection metadata follow [Wave 3 discovery](DISCOVERY_WAVE3.md).
+- **Paginated endpoint**: `GET /v1/discovery/people` returns `{items, next_cursor}` with the same filters and auth. The legacy route retains a bounded list response.
 - **Security & Privacy**:
   - Excludes blocked relationships in either direction via `public.is_user_blocked(viewer, candidate)`.
   - Excludes non-discoverable profiles (`is_discoverable = false`).

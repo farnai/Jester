@@ -126,11 +126,8 @@ async def test_discovery_excludes_blocked_users_and_viewer(db_conn, clean_db):
 
 
 @pytest.mark.asyncio
-async def test_discovery_returns_relationship_hook_and_score(db_conn, clean_db):
-    """
-    When birth data is available, discovery computes a real synastry score
-    and generates a relationship-level hook observation (ME -> YOU).
-    """
+async def test_discovery_does_not_calculate_missing_astrology_or_synastry(db_conn, clean_db):
+    """Birth data alone must not trigger per-candidate computation in a feed."""
     u1 = str(uuid.uuid4())
     u2 = str(uuid.uuid4())
     em1 = f"u1_{uuid.uuid4().hex[:6]}@test.jester.app"
@@ -165,9 +162,9 @@ async def test_discovery_returns_relationship_hook_and_score(db_conn, clean_db):
         target = people[0]
         assert target["id"] == u2
         assert target["display_name"] == "Natia"
-        assert target["compatibility_score"] > 0
-        assert target["hook_observation"] is not None
-        assert len(target["hook_observation"]["text"]) > 0
-        # Hook has relationship context or valid resolution
-        assert target["hook_observation"]["locale"] == "ka"
+        assert target["compatibility_score"] is None
+        assert target["hook_observation"] is None
+        with db_conn.cursor() as cur:
+            cur.execute('SELECT count(*) FROM public.astro_private WHERE user_id IN (%s,%s)', (u1,u2))
+            assert cur.fetchone()['count'] == 0
 

@@ -1,5 +1,7 @@
 # Social profiles and private gallery
 
+Wave 3 adds optional `?size=card` authenticated image delivery bounded to 720×900 and social-first Person Profile disclosure. Full-size gallery editing, private authorization and persistence remain unchanged; see [Wave 3 discovery](DISCOVERY_WAVE3.md).
+
 ## Implemented contract
 
 ME manages persisted social identity, gallery and declared interests. Person Profile

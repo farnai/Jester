@@ -496,164 +496,23 @@ async def resolve_natal_profile_interpretations(
 
 
 @router.get("/interpretations/discovery-people", response_model=list[dict[str, Any]])
-async def get_discovery_people(
+def get_discovery_people(
     viewer_id: uuid.UUID | None = None,
+    limit: int = Query(12, ge=1, le=24),
+    after: uuid.UUID | None = None,
+    city_id: uuid.UUID | None = None,
+    shared_only: bool = False,
+    q: str = Query("", max_length=80),
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> list[dict[str, Any]]:
-    """
-    Returns discoverable profiles with their safe derived astrology and a resolved
-    Georgian JESTER hook copy. Also calculates real synastry compatibility score.
-    Strictly authenticated: viewer identity is bound to current_user.id.
-    Excludes blocked relationships and non-discoverable profiles.
-    """
+    """Bounded legacy list contract; cursor envelope is /v1/discovery/people."""
+    from backend.app.discovery.router import discovery_page
     if viewer_id is not None and viewer_id != current_user.id:
-        raise ForbiddenException(
-            message="Cannot request discovery results as another user.",
-            error_code="forbidden_viewer_impersonation",
-        )
-    resolved_viewer_id = current_user.id
-
-    with db.cursor() as cur:
-        # Check if viewer has birth data for compatibility calculations
-        cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (resolved_viewer_id,))
-        calculation_viewer_id = resolved_viewer_id
-        has_bd = cur.fetchone() is not None
-        if not has_bd:
-            # Check if DEFAULT_DEMO_USER_ID has birth data
-            cur.execute("SELECT 1 FROM public.birth_data WHERE user_id = %s;", (DEFAULT_DEMO_USER_ID,))
-            if cur.fetchone():
-                calculation_viewer_id = DEFAULT_DEMO_USER_ID
-                has_bd = True
-
-        viewer_placements = None
-        viewer_bd = {"birth_time_precision": "exact", "data_version": 1}
-        if has_bd:
-            cur.execute("SELECT birth_time_precision, data_version FROM public.birth_data WHERE user_id = %s;", (calculation_viewer_id,))
-            row_bd = cur.fetchone()
-            if row_bd:
-                viewer_bd = row_bd
-
-            cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
-            viewer_placements = cur.fetchone()
-            if not viewer_placements or viewer_placements.get("source_birth_data_version") != viewer_bd["data_version"]:
-                try:
-                    recalculate_user_astrology(calculation_viewer_id, db)
-                    cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (calculation_viewer_id,))
-                    viewer_placements = cur.fetchone()
-                except Exception:
-                    viewer_placements = None
-
-        # Query all discoverable people except viewer, strictly excluding blocked users
-        cur.execute(
-            """
-            SELECT p.id, p.display_name, p.bio, p.city, p.occupation, p.avatar_url,
-                   s.sun_sign, s.moon_sign, s.ascendant_sign, s.element_primary, s.modality_primary
-            FROM public.profiles p
-            LEFT JOIN public.astro_safe_profile s ON p.id = s.user_id
-            WHERE p.is_discoverable = true
-              AND p.id != %s
-              AND NOT public.is_user_blocked(%s, p.id)
-            ORDER BY p.display_name ASC;
-            """,
-            (resolved_viewer_id, resolved_viewer_id),
-        )
-        people_rows = cur.fetchall()
-
-        # Batch-fetch placements and birth data for candidates
-        candidate_ids = [r["id"] for r in people_rows]
-        placements_map: dict[uuid.UUID, Any] = {}
-        bd_map: dict[uuid.UUID, Any] = {}
-        if candidate_ids:
-            cur.execute("SELECT * FROM public.astro_private WHERE user_id = ANY(%s);", (candidate_ids,))
-            placements_map = {r["user_id"]: r for r in cur.fetchall()}
-            cur.execute("SELECT user_id, birth_time_precision, data_version FROM public.birth_data WHERE user_id = ANY(%s);", (candidate_ids,))
-            bd_map = {r["user_id"]: r for r in cur.fetchall()}
-
-    people_list: list[dict[str, Any]] = []
-    feed_used_interpretation_ids: set[str] = set()
-    feed_used_signal_types: set[str] = set()
-    feed_used_asset_ids: set[str] = set()
-
-    for r in people_rows:
-        pid = r["id"]
-
-        target_placements = placements_map.get(pid)
-        target_bd = bd_map.get(pid, {"birth_time_precision": "exact", "data_version": 1})
-        if not target_placements or target_placements.get("source_birth_data_version") != target_bd["data_version"]:
-            try:
-                recalculate_user_astrology(pid, db)
-                with db.cursor() as cur:
-                    cur.execute("SELECT * FROM public.astro_private WHERE user_id = %s;", (pid,))
-                    target_placements = cur.fetchone()
-                    placements_map[pid] = target_placements
-            except Exception:
-                target_placements = None
-
-        # Calculate real Synastry V1 compatibility
-        score = 60.0
-        hook_res = None
-        if target_placements and viewer_placements:
-            try:
-                calc = compatibility_engine_instance.calculate(
-                    person_a_id=calculation_viewer_id,
-                    person_a_version=viewer_bd["data_version"],
-                    person_a_precision=viewer_bd["birth_time_precision"],
-                    person_a_placements=viewer_placements,
-                    person_b_id=pid,
-                    person_b_version=target_bd["data_version"],
-                    person_b_precision=target_bd["birth_time_precision"],
-                    person_b_placements=target_placements,
-                )
-                score = round(calc.score, 1)
-            except Exception:
-                score = 60.0
-
-        # Batch 7 Discovery Presence Hook:
-        # 1. Candidate Ascendant sign
-        # 2. If Ascendant unavailable, candidate Sun sign
-        # 3. Fallback to Aries default sign
-        candidate_asc = r.get("ascendant_sign")
-        candidate_sun = r.get("sun_sign")
-        if candidate_asc:
-            target_sign = candidate_asc.strip().lower()
-            presence_source = "ascendant"
-        elif candidate_sun:
-            target_sign = candidate_sun.strip().lower()
-            presence_source = "sun"
-        else:
-            target_sign = "aries"
-            presence_source = "fallback"
-
-        discovery_interp_id = f"discovery.person.presence.{target_sign}.v1"
-        hook_res = content_library.resolve(
-            interpretation_id=discovery_interp_id,
-            context="discovery",
-            locale="ka",
-            seed=str(pid),
-        )
-
-        people_list.append({
-            "id": str(pid),
-            "display_name": r["display_name"],
-            "bio": r["bio"],
-            "city": r["city"],
-            "occupation": r["occupation"],
-            "avatar_url": r["avatar_url"],
-            "astrology": {
-                "sun_sign": r["sun_sign"],
-                "moon_sign": r["moon_sign"],
-                "ascendant_sign": r["ascendant_sign"],
-                "element_primary": r["element_primary"],
-                "modality_primary": r["modality_primary"],
-            },
-            "compatibility_score": score,
-            "hook_observation": hook_res.model_dump() if hook_res else None,
-            "presence_sign_source": presence_source,
-            "presence_sign": target_sign,
-        })
-
-    return people_list
+        raise ForbiddenException(message="Cannot request discovery results as another user.",
+                                 error_code="forbidden_viewer_impersonation")
+    return [item.model_dump(mode="json") for item in discovery_page(
+        db, current_user.id, limit, after, city_id, shared_only, q.strip()).items]
 
 
 @router.post("/interpretations/compare-preview", response_model=dict[str, Any])

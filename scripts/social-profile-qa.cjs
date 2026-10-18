@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const accounts = JSON.parse(fs.readFileSync('scratch/wave2-accounts.json', 'utf8'));
-const out = '.jester/reports/verification/wave2-social';
+const out = process.env.JESTER_QA_OUTPUT || '.jester/reports/verification/wave2-social';
 fs.mkdirSync(out, { recursive: true });
 const base = process.env.JESTER_URL || 'http://127.0.0.1:3001';
 

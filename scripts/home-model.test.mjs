@@ -53,7 +53,12 @@ function loadSource(relative, overrides = {}) {
   new Function('require', 'module', 'exports', js)(require, module, module.exports);
   return module.exports;
 }
-const elements = loadSource('../frontend/src/modules/home/HomeElements.tsx');
+const elements = loadSource('../frontend/src/modules/home/HomeElements.tsx', { '../../shared/ui/ProfileImage': { ProfileImage: props => React.createElement('img', props) } });
+
+test('distinct people with identical names and bios remain visible', () => {
+  const people = [{ id: 'a', display_name: 'Same', bio: 'Same' }, { id: 'b', display_name: 'Same', bio: 'Same' }];
+  assert.deepEqual(visibleHomePeople([...people, people[0]], [], 'viewer').map(p => p.id), ['a', 'b']);
+});
 const model = loadSource('../frontend/src/modules/home/homeModel.ts');
 const success = data => ({ data, isSuccess: true, refetch() {} });
 function renderHome(states) {

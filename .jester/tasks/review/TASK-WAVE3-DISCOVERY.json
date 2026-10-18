@@ -1,0 +1,52 @@
+{
+  "id": "TASK-WAVE3-DISCOVERY",
+  "title": "Swipe discovery and social profile UX",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Real paginated discovery deck, safe media and connection confirmation",
+  "scope": [
+    "backend/app/discovery",
+    "backend/app/interpretation",
+    "backend/app/profiles",
+    "frontend/src",
+    "supabase/migrations",
+    "scripts",
+    "tests",
+    "docs",
+    ".jester"
+  ],
+  "constraints": [
+    "Preserve Wave 2",
+    "No Likes or Matches model",
+    "No production deployment",
+    "Founder visual review required",
+    "Preserve local user data"
+  ],
+  "acceptance_criteria": [
+    "Bounded deterministic paginated and filtered discovery without batch Synastry",
+    "Accessible swipe and button navigation with restored position",
+    "Confirmed real requests and pending/accepted states",
+    "Private media and block isolation preserved",
+    "Real browser QA at four sizes and profile comparison",
+    "Georgian report and Git delivery"
+  ],
+  "verification": [
+    "python -m scripts.run_isolated_regression",
+    "python -m pytest tests/backend/test_social_profiles.py tests/backend/test_discovery_deck.py -q",
+    "npm --prefix frontend run build",
+    "node scripts/discovery-wave3-qa.cjs"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-18T18:23:43.9212164Z",
+  "updated_at": "2026-10-18T22:39:48.192567+00:00",
+  "report": ".jester/reports/implementations/TASK-WAVE3-DISCOVERY_report.md"
+}

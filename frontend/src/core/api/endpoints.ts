@@ -26,9 +26,17 @@ import {
   UserInterestsResponse,
   ProfilePhoto,
   PersonInterests,
+  DiscoveryPageResponse,
 } from "./types";
 
 export const API = {
+  discovery: {
+    people: (filters: { q?: string; city_id?: string; shared_only?: boolean; after?: string }, signal?: AbortSignal) => {
+      const params = new URLSearchParams({ limit: '12' });
+      Object.entries(filters).forEach(([key, value]) => { if (value) params.set(key, String(value)); });
+      return apiRequest<DiscoveryPageResponse>(`/v1/discovery/people?${params}`, { signal });
+    },
+  },
   // Users & Identity
   users: {
     getMe: () => apiRequest<UserResponse>("/v1/users/me"),

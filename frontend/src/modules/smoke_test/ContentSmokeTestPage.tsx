@@ -403,7 +403,7 @@ export const ContentSmokeTestPage: React.FC = () => {
                         </div>
                         <div className="person-score-badge">
                           <span className="score-val">
-                            {person.compatibility_score.toFixed(0)}%
+                            {person.compatibility_score == null ? '—' : `${person.compatibility_score.toFixed(0)}%`}
                           </span>
                           <span className="score-lbl">თავსებადობა</span>
                         </div>
@@ -500,7 +500,7 @@ export const ContentSmokeTestPage: React.FC = () => {
 
                     <div className="you-score-card">
                       <div className="score-number">
-                        {activePerson.compatibility_score.toFixed(1)}%
+                        {activePerson.compatibility_score == null ? '—' : `${activePerson.compatibility_score.toFixed(1)}%`}
                       </div>
                       <div className="score-desc">სავარაუდო ჰარმონია</div>
                     </div>
