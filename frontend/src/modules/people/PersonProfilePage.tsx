@@ -7,11 +7,12 @@ import {
   Card,
   Button,
   Badge,
-  Avatar,
   Skeleton,
   ErrorState,
   PrivacySafeNotFoundState,
 } from "../../shared/ui";
+
+import { SocialIdentity } from "./SocialIdentity";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -166,7 +167,7 @@ export const PersonProfilePage: React.FC = () => {
     preview?.deep_analysis?.primary_interpretation?.text;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div className="social-page">
       {/* 1. Breadcrumb Navigation Trail */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.875rem", fontWeight: 600 }}>
@@ -192,52 +193,7 @@ export const PersonProfilePage: React.FC = () => {
         )}
       </div>
 
-      {/* 2. Identity Header Card (Clean, Human, Uncluttered) */}
-      <Card padded style={{ padding: "1.5rem" }}>
-        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
-          <Avatar src={profile.avatar_url} name={profile.display_name} size="xl" />
-          <div style={{ flex: 1, minWidth: "220px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: "1.5rem",
-                  fontWeight: 800,
-                  color: "#0f172a",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {profile.display_name}
-              </h1>
-              {astro?.sun_sign && (
-                <Badge variant="astrology" size="sm">
-                  ☀️ {astro.sun_sign}
-                </Badge>
-              )}
-            </div>
-
-            {(profile.occupation || profile.city) && (
-              <div style={{ fontSize: "0.9rem", color: "#64748b", marginTop: "0.25rem", fontWeight: 500 }}>
-                {[profile.occupation, profile.city].filter(Boolean).join(" • ")}
-              </div>
-            )}
-
-            {profile.bio && (
-              <p
-                style={{
-                  margin: "0.75rem 0 0 0",
-                  color: "#334155",
-                  fontSize: "0.925rem",
-                  lineHeight: 1.55,
-                  fontStyle: "italic",
-                }}
-              >
-                "{profile.bio}"
-              </p>
-            )}
-          </div>
-        </div>
-      </Card>
+      <SocialIdentity profile={profile} />
 
       {/* 3. Hero JESTER Relationship Insight (ME -> YOU Dynamic) */}
       {!isSelf && (
@@ -301,13 +257,13 @@ export const PersonProfilePage: React.FC = () => {
             </div>
           ) : (
             <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
-              თქვენს ასტროლოგიურ რუკებს შორის შეინიშნება უნიკალური სინასტრიული თანხვედრა, რაც კომუნიკაციას განსაკუთრებით საინტერესოს ხდის.
+              შედარების წინასწარი ხედვა ამჟამად მიუწვდომელია.
             </p>
           )}
 
           {/* Primary CTA: WHY? (The Natural Next Step) */}
           <div>
-            <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
+            {relState === "accepted" && <Link to={`/people/${targetId}/why`} style={{ textDecoration: "none" }}>
               <Button
                 variant="brand"
                 size="lg"
@@ -321,7 +277,7 @@ export const PersonProfilePage: React.FC = () => {
               >
                 💡 გაიგე რატომ (Explore Why) →
               </Button>
-            </Link>
+            </Link>}
           </div>
         </Card>
       )}
@@ -368,6 +324,7 @@ export const PersonProfilePage: React.FC = () => {
         </Card>
       )}
 
+      {(connectMutation.error || transitionMutation.error) && <p role="alert">{(connectMutation.error || transitionMutation.error)?.message}</p>}
       {/* 5. State-Aware Connection Invitation (INSIGHT -> INVITATION) */}
       {!isSelf && (
         <Card padded style={{ padding: "1.25rem 1.5rem", backgroundColor: "#f8fafc" }}>

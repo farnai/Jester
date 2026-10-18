@@ -1,3 +1,4 @@
+import { ProfileImage } from "../../shared/ui/ProfileImage";
 import { useState, type ReactNode } from 'react';
 
 export function HomeIcon({ kind = 'arrow' }: { kind?: 'arrow' | 'people' | 'message' | 'home' | 'compass' | 'person' | 'bell' | 'copy' | 'exit' | 'sparkles' | 'quote' | 'check' | 'pin' }) {
@@ -23,7 +24,7 @@ export function HomeAvatar({ name, src, large = false }: { name: string; src?: s
   const [failed, setFailed] = useState<string | null>(null);
   const initials = name.trim().split(/\s+/).slice(0, 2).map(word => Array.from(word)[0]).join('') || 'J';
   return <span className={`home-avatar${large ? ' home-avatar-large' : ''}`} aria-hidden="true">
-    {src && failed !== src ? <img src={src} alt="" loading="lazy" onError={() => setFailed(src)} /> : <span>{initials}</span>}
+    {src && failed !== src ? <ProfileImage src={src} alt="" loading="lazy" onError={() => setFailed(src)} /> : <span>{initials}</span>}
   </span>;
 }
 

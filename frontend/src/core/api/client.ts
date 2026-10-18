@@ -18,7 +18,7 @@ export async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const headers = new Headers(options.headers || {});
-  headers.set("Content-Type", "application/json");
+  if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
 
   // Only resolve from Supabase if Authorization header was not explicitly supplied
   if (!headers.has("Authorization")) {

@@ -24,6 +24,8 @@ import {
   CitySearchResponse,
   InterestsListResponse,
   UserInterestsResponse,
+  ProfilePhoto,
+  PersonInterests,
 } from "./types";
 
 export const API = {
@@ -34,6 +36,14 @@ export const API = {
 
   // Profiles
   profiles: {
+    photos: (owner: string) => apiRequest<ProfilePhoto[]>(`/v1/profiles/${owner}/photos`),
+    uploadPhoto: (file: File) => apiRequest<ProfilePhoto[]>('/v1/profiles/me/photos', {
+      method: 'POST', body: file, headers: { 'Content-Type': file.type },
+    }),
+    orderPhotos: (photoIds: string[]) => apiRequest<ProfilePhoto[]>('/v1/profiles/me/photos/order', {
+      method: 'PUT', body: JSON.stringify({ photo_ids: photoIds }),
+    }),
+    deletePhoto: (id: string) => apiRequest<ProfilePhoto[]>(`/v1/profiles/me/photos/${id}`, { method: 'DELETE' }),
     getMyProfile: () => apiRequest<ProfileResponse>("/v1/profiles/me"),
     initializeProfile: (data?: ProfileInitializeRequest) =>
       apiRequest<ProfileResponse>("/v1/profiles/initialize", {
@@ -167,6 +177,7 @@ export const API = {
 
   // Interests
   interests: {
+    forPerson: (id: string) => apiRequest<PersonInterests>(`/v1/interests/people/${id}`),
     list: () => apiRequest<InterestsListResponse>("/v1/interests"),
     getMyInterests: () => apiRequest<UserInterestsResponse>("/v1/interests/me"),
     setMyInterests: (interestIds: string[]) =>

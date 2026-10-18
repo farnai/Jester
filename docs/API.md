@@ -880,3 +880,8 @@ Authorization: Bearer <supabase_jwt_token>
 
 
 
+# Social profile media extension
+
+The implemented gallery, authenticated image delivery, photo DTOs, error responses,
+and authorized person-interest endpoint are documented in [Social profiles and private gallery](SOCIAL_PROFILE_MEDIA.md).
+

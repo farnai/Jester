@@ -1,0 +1,47 @@
+{
+  "id": "TASK-WAVE2-SOCIAL",
+  "title": "Social profiles, private gallery and interests",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Persist and manage up to six photos and interests, with authorized social profile views",
+  "scope": [
+    "backend/app/profiles",
+    "backend/app/interests",
+    "frontend/src",
+    "supabase/migrations",
+    "tests",
+    "scripts",
+    "docs",
+    ".jester"
+  ],
+  "constraints": [
+    "Preserve existing data and Home design",
+    "No deployment or invented product policy",
+    "No destructive tests on local user data"
+  ],
+  "acceptance_criteria": [
+    "Six-photo upload/order/primary/delete persist",
+    "Unauthorized and blocked access rejected",
+    "Legacy avatars preserved",
+    "Interest edit/common interests persisted",
+    "Real service and browser verification at four viewports",
+    "Georgian report with limitations and Git status"
+  ],
+  "verification": [
+    "python -m pytest tests/backend/test_social_profiles.py",
+    "npm --prefix frontend run build",
+    "node scripts/social-profile-qa.cjs"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-18T17:02:40.877948Z",
+  "updated_at": "2026-10-18T17:31:52.0609184Z"
+}

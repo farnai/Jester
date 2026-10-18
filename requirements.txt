@@ -10,3 +10,4 @@ pytest-asyncio>=0.24.0
 cryptography>=43.0.0
 pyswisseph>=2.10.3.2
 openai>=1.0.0
+Pillow>=11.0.0

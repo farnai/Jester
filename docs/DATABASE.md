@@ -782,3 +782,9 @@ To power intentional connection requests, inaugural message seeding, and non-sur
 
 
 
+# Social profile persistence extension
+
+Migrations 028–029 add the private gallery, durable cleanup queue, primary-avatar projection,
+gallery lifecycle flag, and privacy-aware interest reads. See [Social profiles and private gallery](SOCIAL_PROFILE_MEDIA.md)
+for the implemented schema and recovery contract; broader platform blueprints below are not proof of implementation.
+

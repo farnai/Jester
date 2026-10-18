@@ -318,7 +318,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
     setSavingStep(true);
     try {
       if (uploadedUrl) {
-        await API.profiles.updateMyProfile({ avatar_url: uploadedUrl, onboarding_step: 8 });
+        await API.profiles.updateMyProfile({ onboarding_step: 8 });
         setAvatarUrl(uploadedUrl);
       } else {
         await API.profiles.updateMyProfile({ onboarding_step: 8 });

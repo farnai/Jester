@@ -4,12 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "../../core/api/endpoints";
 import { useAuth } from "../../core/auth/useAuth";
 import { ProfileResponse, ProfileUpdate, SafeDerivedAstrologyResponse, NatalResolveResponseItem } from "../../core/api/types";
-import { Card, Button, Input, Badge, Avatar, Skeleton, LoadingState, ErrorState, CitySelector } from "../../shared/ui";
+import { Card, Button, Input, Badge, Skeleton, LoadingState, ErrorState, CitySelector } from "../../shared/ui";
+
+import { SocialIdentity } from "../people/SocialIdentity";
 
 export const MePage: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<"insights" | "settings">("insights");
 
   // 1. Fetch User Profile
@@ -94,7 +96,6 @@ export const MePage: React.FC = () => {
     mutationFn: (updateData: ProfileUpdate) => API.profiles.updateMyProfile(updateData),
     onSuccess: (updated) => {
       queryClient.setQueryData(["profile", "me"], updated);
-      alert("პროფილი წარმატებით განახლდა!");
     },
   });
 
@@ -179,7 +180,6 @@ export const MePage: React.FC = () => {
     }
   };
 
-  const greetingName = profile?.display_name || user?.email?.split("@")[0] || "მომხმარებელი";
 
   if (loadingProfile && !profile) {
     return <LoadingState message="პროფილის მონაცემების ჩატვირთვა..." />;
@@ -195,62 +195,14 @@ export const MePage: React.FC = () => {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      {/* 1. Header Hero Card: Identity & Essence */}
-      <Card padded style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.25rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-          <Avatar src={profile?.avatar_url} name={greetingName} size="xl" />
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-              <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
-                {greetingName}
-              </h1>
-              {astro?.sun_sign && (
-                <Badge variant="astrology" size="md">
-                  ☀️ {astro.sun_sign}
-                </Badge>
-              )}
-              {profile?.is_discoverable && (
-                <Badge variant="success" size="sm">
-                  ✓ აღმოჩენადი
-                </Badge>
-              )}
-            </div>
-
-            <div style={{ fontSize: "0.875rem", color: "#64748b", marginTop: "0.3rem" }}>
-              {user?.email} {[profile?.occupation, profile?.city].filter(Boolean).length > 0 && `• ${[profile?.occupation, profile?.city].filter(Boolean).join(", ")}`}
-            </div>
-
-            {profile?.bio && (
-              <p style={{ margin: "0.5rem 0 0 0", color: "#334155", fontSize: "0.875rem", maxWidth: "560px", lineHeight: 1.5 }}>
-                "{profile.bio}"
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <Link to="/onboarding/birth-data" style={{ textDecoration: "none" }}>
-            <Button variant="outline" size="sm" icon={<span>⚙️</span>}>
-              დაბადების მონაცემები
-            </Button>
-          </Link>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={async () => {
-              await signOut();
-              navigate("/auth/login");
-            }}
-          >
-            🚪 გასვლა
-          </Button>
-        </div>
-      </Card>
+    <div className="social-page">
+      {profile && <SocialIdentity profile={profile} editable actions={<>
+        <Button variant="outline" onClick={() => { setActiveTab("settings"); setTimeout(() => document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth" }), 0); }}>პროფილის რედაქტირება</Button>
+        <Button variant="ghost" onClick={async () => { await signOut(); navigate("/auth/login"); }}>გასვლა</Button>
+      </>} />}
 
       {/* 2. Mode Selector: Personal Insights (ME) vs Profile Settings */}
-      <div style={{ display: "flex", borderBottom: "2px solid #e2e8f0", gap: "1.5rem" }}>
+      <div className="social-tabs">
         <button
           onClick={() => setActiveTab("insights")}
           style={{
@@ -270,7 +222,7 @@ export const MePage: React.FC = () => {
           }}
         >
           <span>💡</span>
-          <span>ჩემი არსი & JESTER დაკვირვებები</span>
+          <span>JESTER დაკვირვებები</span>
         </button>
 
         <button
@@ -373,7 +325,7 @@ export const MePage: React.FC = () => {
               })}
 
               {/* Elemental & Modality Dynamics Breakdown */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))", gap: "1rem", marginTop: "0.5rem" }}>
                 <Card padded>
                   <div style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
                     დომინანტური სტიქია
@@ -400,11 +352,11 @@ export const MePage: React.FC = () => {
               </div>
 
               {/* Recalculate Natal Placements Action */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
                 <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
                   ბოლოს გადათვლილი: {new Date(astro.updated_at).toLocaleDateString("ka-GE")}
                 </span>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -440,8 +392,8 @@ export const MePage: React.FC = () => {
           </div>
 
           <Card padded>
-            <form onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+            <form id="profile-settings" onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: "1rem" }}>
                 <Input
                   label="სახელი / First Name"
                   value={firstName}
@@ -533,7 +485,7 @@ export const MePage: React.FC = () => {
                     პროფილი ჩანდეს აღმოჩენის სიაში (Discoverable)
                   </label>
                   <div style={{ fontSize: "0.8rem", color: "var(--jester-text-secondary)", marginTop: "0.15rem" }}>
-                    თუ გამორთავთ, სხვა მომხმარებლები ვერ დაგინახავენ Discover სიაში.
+                    თუ გამორთავთ, სხვა მომხმარებლებისთვის თქვენი პროფილი, ახალი ფოტოები და ინტერესები დაიმალება. უკვე შენახული ასლების გაუქმება შეუძლებელია.
                   </div>
                 </div>
               </div>
@@ -543,6 +495,8 @@ export const MePage: React.FC = () => {
                   💾 შენახვა / Save Changes
                 </Button>
               </div>
+              {updateMutation.isError && <p role="alert">{updateMutation.error.message}</p>}
+              {updateMutation.isSuccess && <p role="status">პროფილი შენახულია.</p>}
             </form>
           </Card>
 

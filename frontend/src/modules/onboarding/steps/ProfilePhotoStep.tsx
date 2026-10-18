@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { supabase } from "../../../core/realtime/supabase";
+import { API } from "../../../core/api/endpoints";
+import { ProfileImage } from "../../../shared/ui/ProfileImage";
 import { Button } from "../../../shared/ui";
 
 interface ProfilePhotoStepProps {
@@ -11,7 +12,6 @@ interface ProfilePhotoStepProps {
 }
 
 export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
-  userId,
   avatarUrl,
   onNext,
   onSkip,
@@ -35,22 +35,10 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
     setError(null);
 
     try {
-      const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const filePath = `${userId}/${Date.now()}_${cleanName}`;
-
-      const { data, error: uploadErr } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: true,
-        });
-
-      if (uploadErr) {
-        throw uploadErr;
-      }
-
-      const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(data.path);
-      setCurrentAvatar(publicData.publicUrl);
+      const items = await API.profiles.uploadPhoto(file);
+      const uploaded = items[items.length - 1];
+      const ordered = await API.profiles.orderPhotos([uploaded.id, ...items.filter(item => item.id !== uploaded.id).map(item => item.id)]);
+      setCurrentAvatar(ordered[0].url);
     } catch (err: any) {
       console.error("Avatar upload error:", err);
       setError(err.message || "ფოტოს ატვირთვა ვერ მოხერხდა. სცადეთ თავიდან ან გამოტოვეთ.");
@@ -93,7 +81,7 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
       {/* Avatar Preview / Placeholder */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", margin: "1rem 0" }}>
         {currentAvatar ? (
-          <img
+          <ProfileImage
             src={currentAvatar}
             alt="Profile Avatar"
             style={{
@@ -137,7 +125,7 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
               color: "#334155",
             }}
           >
-            {uploading ? "იტვირთება..." : currentAvatar ? "ფოტოს შეცვლა" : "ფოტოს არჩევა"}
+            {uploading ? "იტვირთება..." : currentAvatar ? "კიდევ ერთი ფოტო" : "ფოტოს არჩევა"}
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"

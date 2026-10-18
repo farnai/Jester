@@ -25,3 +25,8 @@ class UserInterestsUpdateRequest(BaseModel):
 
 class UserInterestsResponse(BaseModel):
     interest_ids: list[uuid.UUID]
+
+
+class PersonInterestsResponse(BaseModel):
+    items: list[InterestItem]
+    common_interest_ids: list[uuid.UUID]

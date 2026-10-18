@@ -7,11 +7,13 @@ from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.core.database import get_db
 from backend.app.core.errors import JesterAPIException
+from backend.app.profiles.photos import authorize_profile, lock_owner
 from backend.app.interests.models import (
     InterestItem,
     InterestsListResponse,
     UserInterestsResponse,
     UserInterestsUpdateRequest,
+    PersonInterestsResponse,
 )
 
 router = APIRouter(prefix="/interests", tags=["interests"])
@@ -90,7 +92,8 @@ async def set_my_interests(
             message="მინიმუმ 3 ინტერესის არჩევაა საჭირო, ან გამოტოვეთ ეს ეტაპი (Must select at least 3 interests or skip).",
         )
 
-    with db.cursor(row_factory=dict_row) as cur:
+    with db.transaction(), db.cursor(row_factory=dict_row) as cur:
+        lock_owner(db, current_user.id)
         if unique_ids:
             cur.execute(
                 """
@@ -122,3 +125,22 @@ async def set_my_interests(
             )
 
     return UserInterestsResponse(interest_ids=unique_ids)
+
+
+@router.get('/people/{profile_id}', response_model=PersonInterestsResponse)
+def get_person_interests(profile_id: uuid.UUID,
+                         current_user: AuthenticatedUser = Depends(get_current_user),
+                         db: psycopg.Connection = Depends(get_db)):
+    authorize_profile(db, current_user.id, profile_id)
+    with db.cursor(row_factory=dict_row) as cur:
+        cur.execute('''SELECT i.id, i.category_id, i.name, i.slug, c.name AS category_name,
+            c.slug AS category_slug, c.icon AS category_icon, i.sort_order,
+            EXISTS(SELECT 1 FROM public.user_interests mine WHERE mine.user_id = %s
+                   AND mine.interest_id = i.id) AS shared
+            FROM public.user_interests ui JOIN public.interests i ON i.id = ui.interest_id
+            JOIN public.interest_categories c ON c.id = i.category_id
+            WHERE ui.user_id = %s AND i.status = 'active' AND c.status = 'active'
+            ORDER BY c.sort_order, i.sort_order''', (current_user.id, profile_id))
+        rows = cur.fetchall()
+    return {'items': [InterestItem.model_validate(r) for r in rows],
+            'common_interest_ids': [r['id'] for r in rows if r['shared'] and profile_id != current_user.id]}

@@ -112,7 +112,7 @@ async def initialize_profile(
                 updates["first_name"] = str(first_name).strip()
             if not existing.get("last_name") and last_name:
                 updates["last_name"] = str(last_name).strip()
-            if not existing.get("avatar_url") and avatar_url:
+            if not existing.get("avatar_url") and avatar_url and not existing.get("photo_gallery_managed"):
                 updates["avatar_url"] = avatar_url
 
             fn = updates.get("first_name") or existing.get("first_name")
@@ -196,6 +196,11 @@ async def update_my_profile(
             update_data.display_name = f"{fn} {ln[0].upper()}."
 
     fields = update_data.model_dump(exclude_unset=True)
+    if 'avatar_url' in fields and fields['avatar_url'] != current_profile.avatar_url:
+        with db.cursor() as cur:
+            cur.execute('SELECT 1 FROM public.profile_photos WHERE user_id = %s LIMIT 1', (current_user.id,))
+            if cur.fetchone() or current_row.get('photo_gallery_managed'):
+                raise JesterAPIException(409, 'gallery_manages_avatar', 'Use the photo gallery to change your primary photo.')
     if not fields:
         return current_profile
 

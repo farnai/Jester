@@ -608,3 +608,16 @@ export interface InspectorDataResponse {
   integrity: InspectorIntegrityReport;
 }
 
+export interface ProfilePhoto {
+  id: string;
+  position: number;
+  is_primary: boolean;
+  url: string;
+  is_legacy: boolean;
+}
+
+export interface PersonInterests {
+  items: InterestItem[];
+  common_interest_ids: string[];
+}
+

@@ -325,3 +325,8 @@ We appreciate the efforts of security researchers in keeping JESTER safe. If you
 - **Initial Response:** Within 48 hours of report receipt.
 - **Triage & Assessment:** We will keep you updated as the issue is investigated and patched.
 - **Safe Harbor:** We will not pursue legal action against researchers who report vulnerabilities in good faith and adhere to responsible disclosure standards.
+# Social profile media boundary
+
+New gallery photos are private and served through an authenticated, block-aware proxy.
+Historical public avatars cannot be revoked through RLS. See [Social profiles and private gallery](SOCIAL_PROFILE_MEDIA.md)
+for authorization, caching limitations, legacy compatibility, and physical cleanup behavior.

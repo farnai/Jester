@@ -1,3 +1,4 @@
+import { ProfileImage } from "./ProfileImage";
 import React from "react";
 
 export interface AvatarProps {
@@ -55,7 +56,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   if (src) {
     return (
-      <img
+      <ProfileImage
         src={src}
         alt={alt || name || "User Avatar"}
         style={{
