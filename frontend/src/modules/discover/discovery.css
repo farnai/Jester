@@ -79,3 +79,7 @@
   .discover-center { padding-bottom:env(safe-area-inset-bottom,0px); }
 }
 @media(prefers-reduced-motion:reduce) { .discover-photo { transition:none; transform:none !important; } }
+
+.discover-swipe-hint { position:absolute; top:104px; left:12px; right:12px; display:flex; align-items:center; justify-content:space-between; gap:6px; padding-left:12px; border-radius:12px; background:#222630b8; color:white; font-size:.7rem; pointer-events:none; }
+.discover-swipe-hint button { pointer-events:auto; min-width:44px; min-height:44px; color:white; background:transparent; border:0; font-size:1.25rem; }
+@media(max-width:999px) { .discover-heading { align-items:flex-start; margin-bottom:12px; } .discover-heading h1 { line-height:1.5; padding-top:5px; } }

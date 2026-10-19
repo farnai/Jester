@@ -51,6 +51,13 @@ export const DiscoverPage = () => {
     } else patchParams({ end: '1' });
     setAnnouncement('შემდეგი ადამიანი');
   };
+  const relation = connections.data?.find(c => c.user_a_id === person?.id || c.user_b_id === person?.id);
+  const rightHint = relation?.status === 'accepted' ? 'საუბარი — ღილაკით' : relation?.status === 'pending' ? 'მოთხოვნა მოლოდინშია' : 'კავშირის დადასტურება';
+  const socialCopy = relation?.status === 'accepted' ? ['უკვე დაკავშირებული ხართ', 'საუბრის გასაგრძელებლად გახსენი ჩატი.']
+    : relation?.status === 'pending' ? relation.initiated_by === user?.id
+      ? ['მოთხოვნა გაგზავნილია', 'საუბარი გაიხსნება, როცა მეორე ადამიანი მოთხოვნას მიიღებს.']
+      : ['შენთან დაკავშირება სურს', 'მიიღე მოთხოვნა, თუ საუბრის დაწყება გსურს.']
+    : ['ინტერესი საუბრის დასაწყისია.', 'კავშირის მოთხოვნა საუბრის მოწვევაა. ჩატი ორივე ადამიანის თანხმობით იხსნება.'];
   const returnTo = `/discover?${params}`;
   return <div className="discover-experience">
     <header className="discover-heading"><div><p className="discover-eyebrow">MORE PEOPLE</p><h1>აღმოაჩინე ადამიანები</h1></div><div className="discover-view-switch" aria-label="აღმოჩენის ხედი"><button aria-pressed={mode === 'deck'} onClick={() => patchParams({ view: '' })}>ბარათები</button><button aria-pressed={mode === 'list'} onClick={() => patchParams({ view: 'list' })}>სია</button></div></header>
@@ -59,16 +66,16 @@ export const DiscoverPage = () => {
         <CitySelector value={city || null} initialDisplayLabel={params.get('cityLabel') || ''} label="ქალაქი" onChange={c => patchParams({ city: c.city_id, cityLabel: c.display_name }, true)} onClear={() => patchParams({ city: '', cityLabel: '' }, true)} />
         <label className="discover-check"><input type="checkbox" checked={shared} onChange={e => patchParams({ shared: e.target.checked ? '1' : '' }, true)} /> საერთო ინტერესებით</label>
         <button onClick={() => { setSearch(''); setParams({}, { replace: true }); }}>ფილტრების გასუფთავება</button>
-      </details><p className="discover-help" id="swipe-instructions">← შემდეგი ადამიანი<br/>→ კავშირის დადასტურება<br/>ფოტოზე შეხება — სხვა ფოტო.<br/>შეგიძლია გამოიყენო ღილაკებიც.</p></aside>
+      </details><p className="discover-help" id="swipe-instructions">← შემდეგი ადამიანი<br/>→ {rightHint}<br/>ფოტოზე შეხება — სხვა ფოტო.<br/>შეგიძლია გამოიყენო ღილაკებიც.</p></aside>
       <section className="discover-center" aria-label="ადამიანების აღმოჩენა">
         <span className="discover-sr" role="status" aria-live="polite">{announcement}</span>
         {page.isPending || (activeId && foundIndex === -1 && page.hasNextPage && page.isFetching) ? <div className="discover-empty" role="status">ადამიანები იტვირთება…</div> : (page.isError && !page.data) ? <div className="discover-empty" role="alert"><p>პროფილები ვერ ჩაიტვირთა.</p><button onClick={() => page.refetch()}>ხელახლა ცდა</button></div> : mode === 'list' ? <div className="discover-list">
           {people.map(p => <article key={p.id}><h2>{p.display_name}</h2><p>{p.city || 'ქალაქი არ არის მითითებული'}</p><div className="discover-interest-tags">{p.interests.slice(0,3).map(i => <span key={i.id}>{i.name}</span>)}</div><p>{p.common_interest_ids.length > 0 ? `${p.common_interest_ids.length} საერთო ინტერესი` : ''}</p><Link to={`/people/${p.id}?returnTo=${encodeURIComponent(returnTo)}`}>სრული პროფილი →</Link><button onClick={() => patchParams({ view: '', person: p.id, end: '' })}>ბარათის ნახვა</button></article>)}
           {!people.length && <p>ამ ფილტრებით ადამიანები ვერ მოიძებნა.</p>}{page.hasNextPage && <button disabled={page.isFetching} onClick={() => page.fetchNextPage()}>მეტის ნახვა</button>}
-        </div> : person ? <DiscoverSwipeCard person={person} nextPerson={people[activeIndex+1]} onNext={next} profileLink={`/people/${person.id}?returnTo=${encodeURIComponent(`/discover?${new URLSearchParams({ ...Object.fromEntries(params), person: person.id })}`)}`} /> : <div className="discover-empty"><h2>{exhausted ? 'ამ ეტაპზე სულ ეს იყო' : 'ჯერ ვერავინ მოიძებნა'}</h2><p>შემდეგზე გადასვლა ადამიანს არ ბლოკავს და უარყოფით შეფასებას არ ინახავს.</p><button onClick={() => { patchParams({ person: '', end: '' }); page.refetch(); }}>თავიდან დათვალიერება</button></div>}
+        </div> : person ? <DiscoverSwipeCard rightHint={rightHint} person={person} nextPerson={people[activeIndex+1]} onNext={next} profileLink={`/people/${person.id}?returnTo=${encodeURIComponent(`/discover?${new URLSearchParams({ ...Object.fromEntries(params), person: person.id })}`)}`} /> : <div className="discover-empty"><h2>{exhausted ? 'ამ ეტაპზე სულ ეს იყო' : 'ჯერ ვერავინ მოიძებნა'}</h2><p>შემდეგზე გადასვლა ადამიანს არ ბლოკავს და უარყოფით შეფასებას არ ინახავს.</p><button onClick={() => { patchParams({ person: '', end: '' }); page.refetch(); }}>თავიდან დათვალიერება</button></div>}
         {page.isFetchNextPageError && <p role="alert">შემდეგი გვერდი ვერ ჩაიტვირთა. <button onClick={() => page.fetchNextPage()}>ხელახლა ცდა</button></p>}
       </section>
-      <aside className="discover-context"><p className="discover-eyebrow">ერთი ნაბიჯით ახლოს</p><h2>ინტერესი საუბრის დასაწყისია.</h2>{person ? <><h3>{person.display_name}</h3>{person.bio && <p className="discover-context-bio">{person.bio}</p>}<div className="discover-interest-tags">{person.interests.map(i => <span key={i.id} className={person.common_interest_ids.includes(i.id) ? 'shared' : ''}>{i.name}</span>)}</div>{person.hook_observation?.text && <div className="discover-context-hook"><strong>JESTER-ის დაკვირვება</strong><p>{person.hook_observation.text}</p></div>}</> : <p>შეცვალე ფილტრები ან დაათვალიერე სია.</p>}<p className="discover-note">კავშირის მოთხოვნა საუბრის მოწვევაა. ჩატი ორივე ადამიანის თანხმობით იხსნება.</p></aside>
+      <aside className="discover-context"><p className="discover-eyebrow">ერთი ნაბიჯით ახლოს</p><h2>{socialCopy[0]}</h2>{person?.bio ? <p className="discover-context-bio">{person.bio}</p> : !person && <p>შეცვალე ფილტრები ან დაათვალიერე სია.</p>}<p className="discover-note">{socialCopy[1]}</p></aside>
     </div>
   </div>;
 };

@@ -5,6 +5,7 @@ import { useAuth } from "../core/auth/useAuth";
 import { API } from "../core/api/endpoints";
 import { supabase } from "../core/realtime/supabase";
 import { DebugBar } from "./DebugBar";
+import { SocialSync } from '../core/realtime/SocialSync';
 import { HomeNavigation, HomeMobileNavigation } from "../modules/home/HomeNavigation";
 
 export const AppShell: React.FC = () => {
@@ -60,6 +61,7 @@ export const AppShell: React.FC = () => {
 
   return (
     <div className="app-container home-shell">
+      <SocialSync />
       {/* Global Desktop Header */}
       <HomeNavigation
         unreadCount={unreadCount}

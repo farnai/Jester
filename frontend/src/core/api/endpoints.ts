@@ -7,6 +7,8 @@ import {
   ConnectionResponse,
   ConnectionTransitionPayload,
   ConversationResponse,
+  ConversationInboxResponse,
+  MessagePageResponse,
   DailyEnergyResponse,
   DiscoveryPerson,
   MessageResponse,
@@ -223,6 +225,11 @@ export const API = {
 
   // Messaging & Conversations
   conversations: {
+    list: () => apiRequest<ConversationInboxResponse[]>('/v1/conversations'),
+    messagePage: (conversationId: string, before?: string, signal?: AbortSignal) =>
+      apiRequest<MessagePageResponse>(`/v1/conversations/${conversationId}/messages/page?limit=30${before ? `&before=${encodeURIComponent(before)}` : ''}`, { signal }),
+    markRead: (conversationId: string, last_read_message_id: string) =>
+      apiRequest<{ status: string; unread_count: number }>(`/v1/conversations/${conversationId}/read`, { method: 'PATCH', body: JSON.stringify({ last_read_message_id }) }),
     get: (conversationId: string) =>
       apiRequest<ConversationResponse>(`/v1/conversations/${conversationId}`),
     createOrGetDirect: (targetUserId: string) =>
@@ -232,10 +239,10 @@ export const API = {
       }),
     listMessages: (conversationId: string) =>
       apiRequest<MessageResponse[]>(`/v1/conversations/${conversationId}/messages`),
-    sendMessage: (conversationId: string, body: string) =>
+    sendMessage: (conversationId: string, body: string, client_nonce?: string) =>
       apiRequest<MessageResponse>(`/v1/conversations/${conversationId}/messages`, {
         method: "POST",
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body, client_nonce }),
       }),
   },
 

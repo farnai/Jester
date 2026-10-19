@@ -1,0 +1,46 @@
+{
+  "regression_history": [
+    {
+      "command": "python -m scripts.run_isolated_regression",
+      "passed": 375,
+      "seconds": 23.41,
+      "exit_code": 0,
+      "note": "Initial complete Wave 4 regression, isolated database clone"
+    },
+    {
+      "command": "python -m scripts.run_isolated_regression",
+      "passed": 376,
+      "seconds": 25.84,
+      "exit_code": 0,
+      "note": "After adding the direct INSERT versus block row-lock regression"
+    }
+  ],
+  "final_targeted": {
+    "command": "python -m pytest tests/backend/test_messaging_wave4.py tests/backend/test_social_profiles.py tests/backend/test_discovery_deck.py -q",
+    "passed": 15,
+    "seconds": 13.85,
+    "exit_code": 0,
+    "log": "integration-tests.log"
+  },
+  "frontend": {
+    "messaging_model_passed": 6,
+    "home_model_passed": 8,
+    "build_exit_code": 0,
+    "warning": "Vite bundle exceeds 500 kB; no build errors"
+  },
+  "browser": {
+    "wave4_checks": 13,
+    "wave4_page_errors": 0,
+    "actual_realtime_events": 97,
+    "wave3_checks": 12,
+    "wave3_page_errors": 0,
+    "mocked_business_responses": false,
+    "network_failure_injection": "Browser context offline mode",
+    "physical_mobile_keyboard_verified": false
+  },
+  "final_static_checks": {
+    "git_diff_check_exit_code": 0,
+    "portable_artifacts_and_token_scan": "PASS",
+    "inventoried_files": 69
+  }
+}

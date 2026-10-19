@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../core/api/endpoints';
 import { useAuth } from '../../core/auth/useAuth';
 import './connection-actions.css';
+import { refreshSocial } from '../../core/realtime/SocialSync';
 
 export function ConnectionActions({ target, name, confirmSignal = 0, compact = false }: {
   target: string; name: string; confirmSignal?: number; compact?: boolean;
@@ -26,6 +27,7 @@ export function ConnectionActions({ target, name, confirmSignal = 0, compact = f
     },
     onSuccess: () => {
       setConfirming(false);
+      refreshSocial(cache);
       cache.invalidateQueries({ queryKey: ['connections'] });
       cache.invalidateQueries({ queryKey: ['discovery-deck'] });
       cache.invalidateQueries({ queryKey: ['why-experience', target] });

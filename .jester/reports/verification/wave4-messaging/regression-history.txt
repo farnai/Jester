@@ -1,0 +1,10 @@
+Recorded command results from this implementation session (not a newly replayed test log):
+
+python -m scripts.run_isolated_regression
+Exit 0: 375 passed in 23.41s
+
+After adding the block-versus-direct-INSERT race regression:
+python -m scripts.run_isolated_regression
+Exit 0: 376 passed in 25.84s
+
+Both runs used a disposable local database clone. The clone was dropped by the runner after each run; primary Supabase data was not truncated.

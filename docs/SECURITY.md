@@ -270,9 +270,11 @@ These invariants are permanent engineering constraints. Any pull request or refa
 - **Enforcement:**
   - `REVOKE ALL ON public.messages, public.conversations, public.conversation_members FROM anon, public;`
   - RLS policies on `public.messages` and `public.conversations` strictly enforce membership and active connection status via `public.is_active_direct_conversation(conversation_id, auth.uid())`.
-  - **Disconnect Lockdown:** When a user disconnects (`status = 'removed'`), `public.has_active_connection` immediately returns `false`. This terminates message insertion rights instantly at the database level for both participants. The historical thread locks into an immutable read-only archive for reference and safety reporting.
+  - **Disconnect Lockdown:** When a user disconnects (`status = 'removed'`), `public.has_active_connection` immediately returns `false`. This terminates message insertion rights instantly at the database level for both participants. In the implemented MVP, history and details also become inaccessible; stored messages are retained. A read-only archive is a future design, not current behavior.
+  - **Block Ownership:** Only `blocked_by` may explicitly unblock; the blocked participant receives `404` for every transition. `remove` cannot clear a block, and repeated `block` cannot transfer ownership. Direct client UPDATE/DELETE on connections remains revoked.
+  - **Write Serialization:** API creation/send/read and connection transitions lock the canonical connection. A database INSERT trigger applies the same active-connection gate to direct message writes. Client connection INSERT can create only a pending request, never accepted status.
   - **Block Total Disappearance:** When a user blocks another, all conversation endpoints return `PrivacySafeNotFoundException` (HTTP 404). Neither user can access the conversation list item, details, or message history.
-  - **Anti-Surveillance Reading Pointer:** Read state is tracked via caller-private `last_read_message_id` on `public.conversation_members`. Counterparts receive zero granular timestamps or "Seen at HH:MM" surveillance signals.
+  - **Anti-Surveillance Reading Pointer:** Read state is tracked via caller-private `last_read_message_id` on `public.conversation_reads` (migration 031); authenticated users have owner-only SELECT and no write grant. The backend advances it after authorization. Counterparts receive zero granular timestamps or "Seen at HH:MM" surveillance signals.
   - **Zero Message Mining:** Message bodies (`messages.body`) are permanently blacklisted from behavioral telemetry and JESTER AI context assembly.
 
 ---

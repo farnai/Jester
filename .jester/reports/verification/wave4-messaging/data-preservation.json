@@ -1,0 +1,17 @@
+{
+  "before_migration_031": {
+    "profiles": 25,
+    "conversations": 1,
+    "messages": 3,
+    "connections": 5
+  },
+  "after_all_qa_cleanup": {
+    "profiles": 25,
+    "conversations": 1,
+    "messages": 3,
+    "connections": 5
+  },
+  "pending_private_media_cleanup": 0,
+  "destructive_regression": "Disposable database clone only; primary never truncated",
+  "cleanup": "Only ID/email-verified temporary QA accounts"
+}

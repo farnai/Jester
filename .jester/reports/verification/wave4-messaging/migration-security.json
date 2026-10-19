@@ -1,0 +1,49 @@
+{
+  "migration_031": [
+    {
+      "version": "031",
+      "name": "messaging_mvp"
+    }
+  ],
+  "trigger": [
+    {
+      "tgname": "messages_guard_connection"
+    }
+  ],
+  "nonce_column": [
+    {
+      "column_name": "client_nonce",
+      "data_type": "uuid",
+      "is_nullable": "YES"
+    }
+  ],
+  "read_rls": {
+    "relrowsecurity": true
+  },
+  "read_policy": [
+    {
+      "policyname": "conversation_reads_owner",
+      "cmd": "SELECT",
+      "qual": "((user_id = auth.uid()) AND is_active_direct_conversation(conversation_id, auth.uid()))"
+    }
+  ],
+  "connection_insert_policy": [
+    {
+      "with_check": "((initiated_by = auth.uid()) AND ((user_a_id = auth.uid()) OR (user_b_id = auth.uid())) AND (status = 'pending'::connection_status) AND (blocked_by IS NULL) AND (NOT is_user_blocked(user_a_id, user_b_id)))"
+    }
+  ],
+  "publication": [
+    {
+      "tablename": "connections"
+    },
+    {
+      "tablename": "messages"
+    },
+    {
+      "tablename": "notifications"
+    }
+  ],
+  "historical_body_check": {
+    "convalidated": false
+  }
+}

@@ -95,29 +95,25 @@ Authorization: Bearer <supabase_jwt_token>
 ### Connections & Compatibility
 
 #### 9. List Connections — `GET /v1/connections`
-- **Auth**: Bearer JWT
-- **Response 200**: `list[ConnectionResponse]`
+- **Auth**: Bearer JWT.
+- **Response 200**: `list[ConnectionResponse]`: `id`, `user_a_id`, `user_b_id`, `status`, `initiated_by`, nullable `blocked_by`, `created_at`, `updated_at`, nullable `other_display_name`, nullable `other_avatar_url`.
+- Blocked rows are visible only to their blocking actor. Profile metadata is included only for discoverable, non-blocked counterparts; mutation responses may omit that metadata (null).
 
 #### 10. Send Connection Request — `POST /v1/connections`
-- **Auth**: Bearer JWT
-- **Body**: `ConnectionCreate(target_user_id: UUID, connection_reason?: str, prompt_reference_id?: UUID, invitation_note?: str)`
-  - `connection_reason`: Optional single-tap intent hook (`"shared_curiosity"`, `"creative_collaboration"`, `"philosophical_resonance"`, `"humor_banter"`, `"meaningful_chat"`, `"coffee_walk"`).
-  - `prompt_reference_id`: Optional UUID of target's answered prompt if initiating via profile prompt quote.
-  - `invitation_note`: Optional personal note, max 250 characters. Stripped of raw contact handles/links.
-- **Response 201**: `ConnectionResponse(id: UUID, user_a_id: UUID, user_b_id: UUID, status: str, initiated_by: UUID, connection_reason: str|None, prompt_reference_id: UUID|None, invitation_note: str|None, created_at: datetime, updated_at: datetime)`
-- **Errors**: `400 invalid_pair` (connecting with self); `400 invalid_invitation_note` (>250 chars); `403 forbidden` (blocked or daily cap exceeded: 15/day); `404 PrivacySafeNotFoundException` (target does not exist or blocked).
+- **Auth**: Bearer JWT.
+- **Body**: `{target_user_id: UUID}`.
+- **Response 201**: `ConnectionResponse`. Canonical pair uniqueness is preserved; an existing pending/accepted pair is returned, and removed/declined pairs can return to pending.
+- **Errors**: `400 invalid_pair` for self; privacy-safe `404` for blocked pairs.
+- Invitation notes, prompt references, daily caps and request cooldowns remain proposals, not implemented request fields or enforcement.
 
 #### 11. Transition Connection State — `POST /v1/connections/{connection_id}/transition`
-- **Auth**: Bearer JWT
-- **Body**: `ConnectionTransition(action: Literal["accept", "decline", "block", "unblock", "remove"])`
-- **Response 200**: `ConnectionResponse`
-- **Actions**:
-  - `"accept"`: Target accepts pending request. Transitions to `accepted`. Automatically triggers inaugural message seeding in direct chat thread if `invitation_note` or `prompt_reference_id` was provided.
-  - `"decline"`: Target declines pending request. Transitions to `declined`. Silent to sender (zero decline push notification to preserve dignity).
-  - `"remove"` (Disconnect): Either user disconnects. Transitions to `removed`. Locks direct chat history into read-only archive; bars new messages; 48-hour reconnection cooldown; zero notification to counterpart.
-  - `"block"`: Immediate personal safety block. Transitions to `blocked`, setting `blocked_by`. Reciprocal HTTP 404 across all endpoints; counterpart immediately disappears.
-  - `"unblock"`: Blocker unblocks. Transitions to `removed` (does NOT auto-restore accepted connection).
-- **Errors**: `400 invalid_transition`; `403 forbidden` (unauthorized transition); `404 PrivacySafeNotFoundException`.
+- **Auth**: Bearer JWT.
+- **Body**: `{action: "accept" | "decline" | "block" | "unblock" | "remove"}`; response `200`: `ConnectionResponse`.
+- `accept` / `decline`: pending request recipient only. Acceptance does not automatically seed a conversation message.
+- `remove`: unblocked participant may disconnect/cancel. History and messaging become inaccessible, while stored messages remain; no read-only archive or cooldown is currently implemented.
+- `block`: sets the acting participant as blocker. If already blocked, only the existing blocker can repeat this action idempotently; the other participant cannot take ownership.
+- In blocked state, the blocked participant receives `404` for every transition. The blocker must explicitly `unblock`; `remove` cannot clear a block (`400 invalid_transition`). Unblock results in `removed`, never automatic acceptance.
+- Unknown/foreign connection IDs: `404`. Invalid transitions: `400`; attempting unblock outside the authorized blocked state: `403`.
 
 #### 12. Compare Users / Calculate Compatibility — `POST /v1/compare`
 - **Auth**: Bearer JWT
@@ -132,52 +128,46 @@ Authorization: Bearer <supabase_jwt_token>
 
 ---
 
-### Conversations & Messages (Platform Architecture Spec: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))
+### Conversations & Messages
+
+Implemented Wave 4 contract: [Messaging MVP](MESSAGING_WAVE4.md). All routes require a Bearer JWT. Active, accepted, unblocked direct-conversation membership is required; inactive/removed/blocked/foreign conversation IDs return privacy-safe `404`.
 
 #### 14. Create / Get Direct Conversation — `POST /v1/conversations`
-- **Auth**: Bearer JWT
-- **Body**: `DirectConversationCreate(target_user_id: UUID)`
-- **Response 201**: `ConversationResponse(id: UUID, conversation_type: str, created_by: UUID, created_at: datetime, updated_at: datetime, other_member_id: UUID)`
-- **Errors**: `403 Forbidden` if active `accepted` connection does not exist.
+- Body: `{target_user_id: UUID}`.
+- Response `201`: `ConversationResponse` with `id`, `conversation_type`, `created_by`, `created_at`, `updated_at`, `other_member_id`, nullable `other_display_name`, nullable `other_avatar_url`.
+- Canonical connection row locking makes simultaneous creation return the same conversation. Membership creation is transactional.
+- Missing accepted connection: `403`; blocked pair: `404`.
 
 #### 15. List My Conversations — `GET /v1/conversations`
-- **Auth**: Bearer JWT
-- **Response 200**: `list[ConversationInboxResponse]`, where each item contains `id`, `other_member_id`, `last_message` (`MessageResponse | null`), `unread_count`, and `updated_at`.
-- **Visibility**: Returns only caller's active direct conversations where `public.is_active_direct_conversation(c.id, user_id)` is true. Conversations that are blocked, removed, or no longer accepted are omitted from active list.
-- **Ordering**: Most recent message activity first; conversations without messages fall back to `conversations.updated_at`.
-- **Unread Tracking**: Computes `unread_count` via member's `last_read_message_id` pointer against newer messages.
+- Response `200`: list of `{id, other_member_id, other_display_name, other_avatar_url, last_message, unread_count, updated_at, last_activity_at}`.
+- `last_message` is `MessageResponse | null`. `last_activity_at` is the actual latest message timestamp, falling back to the empty conversation's `updated_at`. Ordering uses this value descending, then ID descending.
+- `unread_count` counts incoming messages after the caller's private read boundary, ordered by `(created_at,id)`. No pointer means all incoming messages are unread; own messages are excluded.
+- Only active conversations are included. Hidden profiles have null name/avatar. Avatar delivery retains the authenticated private-photo API.
 
-#### 16. Get Conversation Details — `GET /v1/conversations/{conversation_id}`
-- **Auth**: Bearer JWT
-- **Response 200**: `ConversationResponse`
-- **Errors**: `404 PrivacySafeNotFoundException` if conversation does not exist or caller is not an active participant.
+#### 16. Details — `GET /v1/conversations/{conversation_id}`
+- Response `200`: `ConversationResponse` above.
 
-#### 17. List Messages — `GET /v1/conversations/{conversation_id}/messages`
-- **Auth**: Bearer JWT
-- **Response 200**: `list[MessageResponse(id: UUID, conversation_id: UUID, sender_user_id: UUID, body: str, created_at: datetime)]`
-- **Ordering**: Chronological ascending by `created_at`.
-- **Errors**: `404 PrivacySafeNotFoundException` if not member or blocked.
+#### 17. Bounded Message History
+- `GET /v1/conversations/{conversation_id}/messages/page?limit=30&before=<message UUID>` returns `{items: MessageResponse[], next_cursor: UUID | null}`.
+- `limit`: default 30, minimum 1, maximum 100. The initial page contains the latest messages. `before` is exclusive and must belong to this conversation; unknown/foreign cursor: `404`, malformed cursor or invalid limit: `422`.
+- Each page's items are chronological ascending by `(created_at,id)`. `next_cursor` identifies the oldest returned message when older rows exist.
+- Legacy `GET /v1/conversations/{conversation_id}/messages` retains its list response shape but now uses the same bounded parameters/default. It no longer returns the entire thread.
+- `MessageResponse`: `{id, conversation_id, sender_user_id, body, created_at}` only.
 
-#### 18. Send Message — `POST /v1/conversations/{conversation_id}/messages`
-- **Auth**: Bearer JWT
-- **Body**: `MessageCreate(body: str)`
-- **Validation**: UTF-8 plain text, 1 to 2,000 characters. Unicode emoji supported. Media attachments barred in V1.
-- **Enforcement**: Validates `public.is_active_direct_conversation(conversation_id, current_user.id)`. Fails if disconnected or blocked.
-- **Response 201**: `MessageResponse`
-- **Errors**: `400 invalid_message_body` (empty or >2,000 chars); `404 PrivacySafeNotFoundException` if conversation inactive, removed, or blocked.
+#### 18. Send — `POST /v1/conversations/{conversation_id}/messages`
+- Body: `{body: string, client_nonce?: UUID}`; response `201`: `MessageResponse`.
+- Trimmed plain text: 1–2,000 Unicode characters; empty/oversized body: `400 invalid_message_body`. No attachments.
+- The same sender/conversation/nonce and body returns the original message, including after a lost acknowledgement. Reusing the nonce with different text: `409 message_nonce_conflict`. Legacy callers without a nonce have no idempotency guarantee.
+- A transaction locks the canonical connection through insertion. The database trigger also gates direct authenticated INSERTs and serializes them with block/remove transitions.
 
-#### 19. Mark Conversation Read — `PATCH /v1/conversations/{conversation_id}/read`
-- **Auth**: Bearer JWT
-- **Body**: `ReadReceiptUpdate(last_read_message_id: UUID)`
-- **Response 200**: `{"status": "ok", "unread_count": 0}`
-- **Behavior**: Updates caller's `last_read_message_id` and `last_read_at` in `public.conversation_members`. Anti-surveillance invariant: Does NOT broadcast "Seen at HH:MM" to counterpart.
-- **Errors**: `404 PrivacySafeNotFoundException` if not member.
+#### 19. Read Boundary — `PATCH /v1/conversations/{conversation_id}/read`
+- Body: `{last_read_message_id: UUID}`; response `200`: `{status: "ok", unread_count: integer}` (not necessarily zero if newer incoming messages exist).
+- The message must belong to this conversation. The caller-private pointer in `public.conversation_reads` only advances. Missing message: `404`.
+- No read timestamp or counterpart read receipt; this table is excluded from Realtime.
 
-#### 20. Generate Conversation Starters — `POST /v1/conversations/{conversation_id}/starters`
-- **Auth**: Bearer JWT
-- **Response 200**: `ConversationStartersResponse(starters: list[ConversationStarterDTO], shared_topics: list[str])`
-- **Behavior**: Scopes JESTER AI context to caller and recipient's declared public signals (interests, values, prompts, communication rhythm). Produces 3 user-reviewable opening lines. Never auto-sends without explicit user approval.
-- **Errors**: `404 PrivacySafeNotFoundException` if not member or disconnected.
+#### 20. Conversation Starters
+- Chat reuses `GET /v1/people/{target_user_id}/why` and its existing `conversation_starters` for accepted connections. Selection only fills an editable draft; sending requires user action.
+- `POST /v1/conversations/{id}/starters` remains a design proposal, not an implemented endpoint.
 
 ---
 

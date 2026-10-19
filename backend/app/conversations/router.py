@@ -1,215 +1,159 @@
+"""Accepted-connection messaging. All mutations serialize on the connection row."""
 import uuid
-from fastapi import APIRouter, Depends, status
-import psycopg
-
+from fastapi import APIRouter, Depends, Query, status
 from backend.app.auth.dependencies import get_current_user
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.core.database import get_db
-from backend.app.core.errors import ForbiddenException, PrivacySafeNotFoundException
-from backend.app.conversations.models import (
-    ConversationInboxResponse,
-    ConversationResponse,
-    DirectConversationCreate,
-    MessageCreate,
-    MessageResponse,
-)
+from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
+from backend.app.conversations.models import (ConversationInboxResponse, ConversationResponse,
+    DirectConversationCreate, MessageCreate, MessageResponse, MessagePage, ReadUpdate)
 
 router = APIRouter(prefix="/conversations", tags=["conversations"])
 
 
-@router.get("", response_model=list[ConversationInboxResponse])
-async def list_my_conversations(
-    current_user: AuthenticatedUser = Depends(get_current_user),
-    db: psycopg.Connection = Depends(get_db),
-) -> list[ConversationInboxResponse]:
-    """Lists active direct conversations for the caller's Messages inbox.
-
-    The current schema has no per-member read-state representation, so
-    ``unread_count`` is deliberately returned as 0 for every conversation.
-    """
-    with db.cursor() as cur:
-        cur.execute(
-            """
-            SELECT
-                c.id,
-                other_member.user_id AS other_member_id,
-                c.updated_at,
-                latest_message.id AS last_message_id,
-                latest_message.conversation_id AS last_message_conversation_id,
-                latest_message.sender_user_id AS last_message_sender_user_id,
-                latest_message.body AS last_message_body,
-                latest_message.created_at AS last_message_created_at
-            FROM public.conversations c
-            JOIN public.conversation_members current_member
-              ON current_member.conversation_id = c.id
-             AND current_member.user_id = %s
-            JOIN public.conversation_members other_member
-              ON other_member.conversation_id = c.id
-             AND other_member.user_id <> %s
-            LEFT JOIN LATERAL (
-                SELECT id, conversation_id, sender_user_id, body, created_at
-                FROM public.messages
-                WHERE conversation_id = c.id
-                ORDER BY created_at DESC, id DESC
-                LIMIT 1
-            ) latest_message ON TRUE
-            WHERE c.conversation_type = 'direct'
-              AND public.is_active_direct_conversation(c.id, %s)
-            ORDER BY COALESCE(latest_message.created_at, c.updated_at) DESC, c.id DESC;
-            """,
-            (current_user.id, current_user.id, current_user.id),
-        )
-        rows = cur.fetchall()
-
-    result: list[ConversationInboxResponse] = []
-    for row in rows:
-        last_message = None
-        if row["last_message_id"] is not None:
-            last_message = MessageResponse(
-                id=row["last_message_id"],
-                conversation_id=row["last_message_conversation_id"],
-                sender_user_id=row["last_message_sender_user_id"],
-                body=row["last_message_body"],
-                created_at=row["last_message_created_at"],
-            )
-        result.append(
-            ConversationInboxResponse(
-                id=row["id"],
-                other_member_id=row["other_member_id"],
-                last_message=last_message,
-                unread_count=0,
-                updated_at=row["updated_at"],
-            )
-        )
-    return result
+def authorize(db, cid, viewer, lock=False):
+    suffix = ' FOR UPDATE OF connection' if lock else ''
+    row = db.execute("""SELECT connection.id, connection.status, connection.blocked_by,
+        other.user_id AS other_id
+        FROM public.conversations c
+        JOIN public.conversation_members mine ON mine.conversation_id=c.id AND mine.user_id=%s
+        JOIN public.conversation_members other ON other.conversation_id=c.id AND other.user_id<>%s
+        JOIN public.connections connection ON connection.user_a_id=least(mine.user_id,other.user_id)
+          AND connection.user_b_id=greatest(mine.user_id,other.user_id)
+        WHERE c.id=%s AND c.conversation_type='direct'""" + suffix, (viewer,viewer,cid)).fetchone()
+    if not row or row['status'] != 'accepted' or row['blocked_by'] is not None:
+        raise PrivacySafeNotFoundException('Conversation not found')
+    return row['other_id']
 
 
-@router.post("", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
-async def create_or_get_direct_conversation(
-    payload: DirectConversationCreate,
-    current_user: AuthenticatedUser = Depends(get_current_user),
-    db: psycopg.Connection = Depends(get_db),
-) -> ConversationResponse:
-    with db.cursor() as cur:
-        # Check active connection
-        cur.execute("SELECT public.has_active_connection(%s, %s) as is_active;", (current_user.id, payload.target_user_id))
-        res = cur.fetchone()
-        if not res or not res["is_active"]:
-            raise ForbiddenException("Active connection required to create a direct conversation")
+def unread(db, cid, viewer):
+    return db.execute("""SELECT count(*) AS n FROM public.messages m
+        LEFT JOIN public.conversation_reads r ON r.conversation_id=m.conversation_id AND r.user_id=%s
+        LEFT JOIN public.messages seen ON seen.id=r.last_read_message_id
+        WHERE m.conversation_id=%s AND m.sender_user_id<>%s
+          AND (seen.id IS NULL OR (m.created_at,m.id)>(seen.created_at,seen.id))""", (viewer,cid,viewer)).fetchone()['n']
 
-        # Find existing direct conversation between these two
-        cur.execute("""
-            SELECT c.*, cm2.user_id as other_id
-            FROM public.conversations c
-            JOIN public.conversation_members cm1 ON cm1.conversation_id = c.id AND cm1.user_id = %s
-            JOIN public.conversation_members cm2 ON cm2.conversation_id = c.id AND cm2.user_id = %s
-            WHERE c.conversation_type = 'direct';
-        """, (current_user.id, payload.target_user_id))
-        existing = cur.fetchone()
+
+def details(db, cid, viewer):
+    row=db.execute("""SELECT c.*, other.user_id AS other_member_id,
+        p.display_name AS other_display_name, p.avatar_url AS other_avatar_url
+        FROM public.conversations c
+        JOIN public.conversation_members other ON other.conversation_id=c.id AND other.user_id<>%s
+        LEFT JOIN public.profiles p ON p.id=other.user_id AND p.is_discoverable
+        WHERE c.id=%s""", (viewer,cid)).fetchone()
+    return ConversationResponse(**row)
+
+
+@router.get('', response_model=list[ConversationInboxResponse])
+def list_my_conversations(current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    rows=db.execute("""SELECT c.id, other.user_id AS other_member_id, c.updated_at,
+        p.display_name AS other_display_name, p.avatar_url AS other_avatar_url,
+        to_jsonb(latest) AS last_message, coalesce(latest.created_at,c.updated_at) AS last_activity_at,
+        (SELECT count(*) FROM public.messages m WHERE m.conversation_id=c.id AND m.sender_user_id<>%s
+          AND (seen.id IS NULL OR (m.created_at,m.id)>(seen.created_at,seen.id))) AS unread_count
+        FROM public.conversations c
+        JOIN public.conversation_members mine ON mine.conversation_id=c.id AND mine.user_id=%s
+        JOIN public.conversation_members other ON other.conversation_id=c.id AND other.user_id<>%s
+        LEFT JOIN public.profiles p ON p.id=other.user_id AND p.is_discoverable
+        LEFT JOIN public.conversation_reads r ON r.conversation_id=c.id AND r.user_id=%s
+        LEFT JOIN public.messages seen ON seen.id=r.last_read_message_id
+        LEFT JOIN LATERAL (SELECT id,conversation_id,sender_user_id,body,created_at FROM public.messages
+          WHERE conversation_id=c.id ORDER BY created_at DESC,id DESC LIMIT 1) latest ON true
+        WHERE c.conversation_type='direct' AND public.is_active_direct_conversation(c.id,%s)
+        ORDER BY coalesce(latest.created_at,c.updated_at) DESC,c.id DESC""", (current_user.id,)*5).fetchall()
+    return [ConversationInboxResponse(**row) for row in rows]
+
+
+@router.post('', response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
+def create_or_get_direct_conversation(payload: DirectConversationCreate,
+        current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    a,b=sorted([current_user.id,payload.target_user_id])
+    with db.transaction():
+        relation=db.execute('SELECT * FROM public.connections WHERE user_a_id=%s AND user_b_id=%s FOR UPDATE', (a,b)).fetchone()
+        if relation and relation['status']=='blocked':
+            raise PrivacySafeNotFoundException('Conversation not found')
+        if not relation or relation['status']!='accepted':
+            raise ForbiddenException('Active connection required to create a direct conversation')
+        existing=db.execute("""SELECT c.id FROM public.conversations c
+            JOIN public.conversation_members a ON a.conversation_id=c.id AND a.user_id=%s
+            JOIN public.conversation_members b ON b.conversation_id=c.id AND b.user_id=%s
+            WHERE c.conversation_type='direct' ORDER BY c.created_at,c.id LIMIT 1""", (a,b)).fetchone()
         if existing:
-            return ConversationResponse(
-                id=existing["id"],
-                conversation_type=existing["conversation_type"],
-                created_by=existing["created_by"],
-                created_at=existing["created_at"],
-                updated_at=existing["updated_at"],
-                other_member_id=existing["other_id"],
-            )
-
-        # Create conversation
-        conv_id = uuid.uuid4()
-        cur.execute("""
-            INSERT INTO public.conversations (id, conversation_type, created_by)
-            VALUES (%s, 'direct', %s)
-            RETURNING *;
-        """, (conv_id, current_user.id))
-        conv_row = cur.fetchone()
-
-        cur.execute("""
-            INSERT INTO public.conversation_members (conversation_id, user_id)
-            VALUES (%s, %s), (%s, %s);
-        """, (conv_id, current_user.id, conv_id, payload.target_user_id))
-
-        return ConversationResponse(
-            id=conv_row["id"],
-            conversation_type=conv_row["conversation_type"],
-            created_by=conv_row["created_by"],
-            created_at=conv_row["created_at"],
-            updated_at=conv_row["updated_at"],
-            other_member_id=payload.target_user_id,
-        )
+            return details(db,existing['id'],current_user.id)
+        cid=uuid.uuid4()
+        db.execute("INSERT INTO public.conversations(id,conversation_type,created_by) VALUES(%s,'direct',%s)", (cid,current_user.id))
+        db.execute('INSERT INTO public.conversation_members(conversation_id,user_id) VALUES(%s,%s),(%s,%s)', (cid,a,cid,b))
+        return details(db,cid,current_user.id)
 
 
-@router.get("/{conversation_id}", response_model=ConversationResponse)
-async def get_conversation_details(
-    conversation_id: uuid.UUID,
-    current_user: AuthenticatedUser = Depends(get_current_user),
-    db: psycopg.Connection = Depends(get_db),
-) -> ConversationResponse:
-    with db.cursor() as cur:
-        cur.execute("SELECT public.is_active_direct_conversation(%s, %s) as is_active;", (conversation_id, current_user.id))
-        res = cur.fetchone()
-        if not res or not res["is_active"]:
-            raise PrivacySafeNotFoundException("Conversation not found")
-
-        cur.execute("""
-            SELECT c.*, cm.user_id as other_id
-            FROM public.conversations c
-            JOIN public.conversation_members cm ON cm.conversation_id = c.id AND cm.user_id <> %s
-            WHERE c.id = %s;
-        """, (current_user.id, conversation_id))
-        row = cur.fetchone()
-        if not row:
-            raise PrivacySafeNotFoundException("Conversation not found")
-
-        return ConversationResponse(
-            id=row["id"],
-            conversation_type=row["conversation_type"],
-            created_by=row["created_by"],
-            created_at=row["created_at"],
-            updated_at=row["updated_at"],
-            other_member_id=row["other_id"],
-        )
+@router.get('/{conversation_id}', response_model=ConversationResponse)
+def get_conversation_details(conversation_id: uuid.UUID, current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    authorize(db,conversation_id,current_user.id)
+    return details(db,conversation_id,current_user.id)
 
 
-@router.get("/{conversation_id}/messages", response_model=list[MessageResponse])
-async def list_messages(
-    conversation_id: uuid.UUID,
-    current_user: AuthenticatedUser = Depends(get_current_user),
-    db: psycopg.Connection = Depends(get_db),
-) -> list[MessageResponse]:
-    with db.cursor() as cur:
-        # Verify active direct conversation
-        cur.execute("SELECT public.is_active_direct_conversation(%s, %s) as is_active;", (conversation_id, current_user.id))
-        res = cur.fetchone()
-        if not res or not res["is_active"]:
-            raise PrivacySafeNotFoundException("Conversation not found")
-
-        cur.execute("""
-            SELECT * FROM public.messages
-            WHERE conversation_id = %s
-            ORDER BY created_at ASC;
-        """, (conversation_id,))
-        rows = cur.fetchall()
-        return [MessageResponse(**r) for r in rows]
+def message_page(db,cid,viewer,limit,before):
+    authorize(db,cid,viewer)
+    boundary=None
+    if before:
+        boundary=db.execute('SELECT created_at,id FROM public.messages WHERE id=%s AND conversation_id=%s', (before,cid)).fetchone()
+        if not boundary:
+            raise PrivacySafeNotFoundException('Message cursor not found')
+    rows=db.execute("""SELECT id,conversation_id,sender_user_id,body,created_at FROM public.messages
+        WHERE conversation_id=%s AND (%s::timestamptz IS NULL OR (created_at,id)<(%s,%s))
+        ORDER BY created_at DESC,id DESC LIMIT %s""", (cid,boundary['created_at'] if boundary else None,
+        boundary['created_at'] if boundary else None,before,limit+1)).fetchall()
+    more=len(rows)>limit
+    rows=rows[:limit]
+    return MessagePage(items=[MessageResponse(**row) for row in reversed(rows)],next_cursor=rows[-1]['id'] if more else None)
 
 
-@router.post("/{conversation_id}/messages", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
-async def send_message(
-    conversation_id: uuid.UUID,
-    payload: MessageCreate,
-    current_user: AuthenticatedUser = Depends(get_current_user),
-    db: psycopg.Connection = Depends(get_db),
-) -> MessageResponse:
-    with db.cursor() as cur:
-        cur.execute("SELECT public.is_active_direct_conversation(%s, %s) as is_active;", (conversation_id, current_user.id))
-        res = cur.fetchone()
-        if not res or not res["is_active"]:
-            raise PrivacySafeNotFoundException("Conversation not found")
+@router.get('/{conversation_id}/messages/page', response_model=MessagePage)
+def paged_messages(conversation_id: uuid.UUID, limit: int=Query(30,ge=1,le=100), before: uuid.UUID|None=None,
+        current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    return message_page(db,conversation_id,current_user.id,limit,before)
 
-        cur.execute("""
-            INSERT INTO public.messages (conversation_id, sender_user_id, body)
-            VALUES (%s, %s, %s)
-            RETURNING *;
-        """, (conversation_id, current_user.id, payload.body))
-        return MessageResponse(**cur.fetchone())
+
+@router.get('/{conversation_id}/messages', response_model=list[MessageResponse])
+def list_messages(conversation_id: uuid.UUID, limit: int=Query(30,ge=1,le=100), before: uuid.UUID|None=None,
+        current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    # Retain list shape for older consumers, bounded to the latest page.
+    return message_page(db,conversation_id,current_user.id,limit,before).items
+
+
+@router.post('/{conversation_id}/messages', response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
+def send_message(conversation_id: uuid.UUID, payload: MessageCreate,
+        current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    body=payload.body.strip()
+    if not body or len(body)>2000:
+        raise JesterAPIException(400,'invalid_message_body','Message must contain 1 to 2000 characters')
+    with db.transaction():
+        authorize(db,conversation_id,current_user.id,lock=True)
+        if payload.client_nonce:
+            existing=db.execute('SELECT * FROM public.messages WHERE conversation_id=%s AND sender_user_id=%s AND client_nonce=%s',
+                (conversation_id,current_user.id,payload.client_nonce)).fetchone()
+            if existing:
+                if existing['body'] != body:
+                    raise JesterAPIException(409,'message_nonce_conflict','Retry identifier already belongs to another message')
+                return MessageResponse(**existing)
+        row=db.execute("""INSERT INTO public.messages(conversation_id,sender_user_id,body,client_nonce,created_at)
+            VALUES(%s,%s,%s,%s,clock_timestamp()) RETURNING *""", (conversation_id,current_user.id,body,payload.client_nonce)).fetchone()
+        return MessageResponse(**row)
+
+
+@router.patch('/{conversation_id}/read')
+def mark_read(conversation_id: uuid.UUID, payload: ReadUpdate,
+        current_user: AuthenticatedUser=Depends(get_current_user), db=Depends(get_db)):
+    with db.transaction():
+        authorize(db,conversation_id,current_user.id,lock=True)
+        seen=db.execute('SELECT id,created_at FROM public.messages WHERE id=%s AND conversation_id=%s',
+            (payload.last_read_message_id,conversation_id)).fetchone()
+        if not seen:
+            raise PrivacySafeNotFoundException('Message not found')
+        old=db.execute("""SELECT m.id,m.created_at FROM public.conversation_reads r
+            JOIN public.messages m ON m.id=r.last_read_message_id WHERE r.conversation_id=%s AND r.user_id=%s""", (conversation_id,current_user.id)).fetchone()
+        if not old or (seen['created_at'],seen['id'])>(old['created_at'],old['id']):
+            db.execute("""INSERT INTO public.conversation_reads(conversation_id,user_id,last_read_message_id) VALUES(%s,%s,%s)
+                ON CONFLICT(conversation_id,user_id) DO UPDATE SET last_read_message_id=excluded.last_read_message_id""",
+                (conversation_id,current_user.id,seen['id']))
+        return {'status':'ok','unread_count':unread(db,conversation_id,current_user.id)}

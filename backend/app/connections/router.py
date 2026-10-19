@@ -35,11 +35,14 @@ async def list_my_connections(
     with db.cursor() as cur:
         # Blocker sees blocked connection; blocked user does not
         cur.execute("""
-            SELECT * FROM public.connections
-            WHERE (status <> 'blocked' AND (user_a_id = %s OR user_b_id = %s))
-               OR (status = 'blocked' AND blocked_by = %s)
-            ORDER BY updated_at DESC;
-        """, (current_user.id, current_user.id, current_user.id))
+            SELECT c.*, p.display_name AS other_display_name, p.avatar_url AS other_avatar_url
+            FROM public.connections c
+            LEFT JOIN public.profiles p ON p.id=CASE WHEN c.user_a_id=%s THEN c.user_b_id ELSE c.user_a_id END
+                AND p.is_discoverable AND c.status <> 'blocked'
+            WHERE (c.status <> 'blocked' AND (c.user_a_id = %s OR c.user_b_id = %s))
+               OR (c.status = 'blocked' AND c.blocked_by = %s)
+            ORDER BY c.updated_at DESC;
+        """, (current_user.id, current_user.id, current_user.id, current_user.id))
         rows = cur.fetchall()
         return [ConnectionResponse(**r) for r in rows]
 
@@ -54,16 +57,19 @@ async def create_connection_request(
 
     with db.transaction():
         with db.cursor() as cur:
+            cur.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (f"connection:{user_a}:{user_b}",))
             # Check if already blocked
             cur.execute("SELECT public.is_user_blocked(%s, %s) as is_blocked;", (user_a, user_b))
             res = cur.fetchone()
             if res and res["is_blocked"]:
-                raise ForbiddenException("Cannot create connection with this user")
+                raise PrivacySafeNotFoundException("Connection not found")
 
             # Check existing connection
-            cur.execute("SELECT * FROM public.connections WHERE user_a_id = %s AND user_b_id = %s;", (user_a, user_b))
+            cur.execute("SELECT * FROM public.connections WHERE user_a_id = %s AND user_b_id = %s FOR UPDATE;", (user_a, user_b))
             existing = cur.fetchone()
             if existing:
+                if existing["status"] == "blocked":
+                    raise PrivacySafeNotFoundException("Connection not found")
                 if existing["status"] in ["pending", "accepted"]:
                     return ConnectionResponse(**existing)
                 # Reactivate if previously removed/declined
@@ -121,7 +127,7 @@ async def transition_connection(
 ) -> ConnectionResponse:
     with db.transaction():
         with db.cursor() as cur:
-            cur.execute("SELECT * FROM public.connections WHERE id = %s;", (connection_id,))
+            cur.execute("SELECT * FROM public.connections WHERE id = %s FOR UPDATE;", (connection_id,))
             conn = cur.fetchone()
             if not conn:
                 raise PrivacySafeNotFoundException("Connection not found")
@@ -132,6 +138,16 @@ async def transition_connection(
 
             curr_status = conn["status"]
             action = payload.action
+
+            # A blocked participant cannot replace blocked_by via block, or clear
+            # the block via remove. Only the original blocker may unblock.
+            if curr_status == "blocked":
+                if conn["blocked_by"] != current_user.id:
+                    raise PrivacySafeNotFoundException("Connection not found")
+                if action == "block":
+                    return ConnectionResponse(**conn)
+                if action != "unblock":
+                    raise JesterAPIException(400, "invalid_transition", "Unblock explicitly before another transition")
 
             if action == "accept":
                 if curr_status != "pending" or conn["initiated_by"] == current_user.id:

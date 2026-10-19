@@ -74,7 +74,7 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 ### `012_messages.sql`
 - **Purpose**: Individual chat messages.
-- **Table**: `public.messages` (`id uuid`, `conversation_id uuid`, `sender_user_id uuid`, `body text`, `read_at timestamptz`).
+- **Table**: `public.messages` (`id uuid`, `conversation_id uuid`, `sender_user_id uuid`, `body text`, `created_at timestamptz`).
 
 ### `013_notifications.sql`
 - **Purpose**: Push and in-app notifications.
@@ -739,6 +739,8 @@ The JESTER AI Context System operates as an **ephemeral, read-only aggregation a
 
 *(Detailed Product & Platform Specification: [`docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md`](CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md))*
 
+> This section is a design blueprint, not proof that every column exists. Wave 4 uses a separate owner-only `conversation_reads` table instead of the proposed member read fields. Request packaging fields below remain proposals. See [the implemented messaging contract](MESSAGING_WAVE4.md).
+
 To power intentional connection requests, inaugural message seeding, and non-surveillance direct chat without schema redundancy:
 
 ### 1. Enhanced `public.connections` (Social Graph & Request Packaging)
@@ -788,3 +790,14 @@ Migrations 028–029 add the private gallery, durable cleanup queue, primary-ava
 gallery lifecycle flag, and privacy-aware interest reads. See [Social profiles and private gallery](SOCIAL_PROFILE_MEDIA.md)
 for the implemented schema and recovery contract; broader platform blueprints below are not proof of implementation.
 
+
+
+## Implemented Messaging MVP — Migration 031
+
+`031_messaging_mvp.sql` is additive: existing conversations/messages remain intact.
+- `messages.client_nonce UUID NULL`; partial unique index on `(conversation_id,sender_user_id,client_nonce)` for non-null nonces.
+- Cursor index `(conversation_id,created_at DESC,id DESC)`; body check `length(btrim(body)) BETWEEN 1 AND 2000` is `NOT VALID`, preserving legacy rows while enforcing new writes.
+- `conversation_reads(conversation_id,user_id,last_read_message_id)`: composite member FK, owner-only active-conversation SELECT RLS, backend-only writes, no read timestamps or Realtime publication.
+- `guard_message_connection()` BEFORE INSERT trigger: hardened security definer, locks and checks the accepted canonical connection; validates authenticated sender and prevents client timestamp forgery.
+- `connections_insert` RLS permits only pending, unblocked requests. Existing client UPDATE/DELETE prohibition remains.
+- `connections` joins the existing messages/notifications Realtime publication. Hidden blocked rows are not delivered to the blocked participant; authorized HTTP resync handles that absence.

@@ -14,7 +14,7 @@ from backend.app.profiles.photos import drain_cleanup
 settings = db_manager.settings
 if settings.ENV == 'production' or '127.0.0.1' not in settings.SUPABASE_URL:
     raise RuntimeError('Local development only')
-wave = 'wave3' if '--wave3' in sys.argv else 'wave2'
+wave = 'wave4' if '--wave4' in sys.argv else 'wave3' if '--wave3' in sys.argv else 'wave2'
 manifest = Path(f'scratch/{wave}-accounts.json')
 if '--cleanup' in sys.argv:
     for account in json.loads(manifest.read_text(encoding='utf-8')):
@@ -49,14 +49,14 @@ for index in range(4 if wave == 'wave3' else 2):
             city = db.execute("SELECT id FROM public.cities WHERE name_ascii = 'Tbilisi' LIMIT 1").fetchone()['id']
             db.execute("INSERT INTO public.birth_data(user_id,birth_date,birth_time_precision,birth_timezone,birth_city_id) VALUES(%s,'1995-05-15','unknown','Asia/Tbilisi',%s)", (uid,city))
         ac.patch('/v1/profiles/me', json={'first_name': 'ანა' if index == 0 else 'ნიკა', 'last_name': 'ტესტი',
-            'display_name': (['ანა', 'ნიკა', 'მარიამი', 'ნიკა'][index] + ' · QA W3') if wave == 'wave3' else ('ანა · სატესტო პროფილი' if index == 0 else 'ნიკა · სატესტო პროფილი'),
+            'display_name': (['ანა', 'ნიკა', 'მარიამი', 'ნიკა'][index] + f' · QA W{wave[-1]}') if wave in ('wave3','wave4') else ('ანა · სატესტო პროფილი' if index == 0 else 'ნიკა · სატესტო პროფილი'),
             'current_city_id': str(city), 'occupation': 'დიზაინი და ფოტოგრაფია',
             'bio': 'ლოკალური QA პროფილი · დემო ფოტოები. მიყვარს ქალაქში ხეტიალი, ახალი ადგილების აღმოჩენა და გრძელი საუბრები ხელოვნებაზე.'}).raise_for_status()
         ac.post('/v1/profiles/me/complete-onboarding').raise_for_status()
         ac.post('/v1/astrology/profile/recalculate').raise_for_status()
         interests = [i['id'] for i in ac.get('/v1/interests').json()['items']]
         ac.put('/v1/interests/me', json={'interest_ids': interests[index:index+4]}).raise_for_status()
-        if wave == 'wave3':
+        if wave in ('wave3','wave4'):
             for filename in ('hero_portrait.jpg', 'hero_woman_highres.jpg'):
                 ac.post('/v1/profiles/me/photos', content=Path('frontend/src/assets/registration',filename).read_bytes(), headers={'Content-Type':'image/jpeg'}).raise_for_status()
 manifest.write_text(json.dumps(accounts), encoding='utf-8')

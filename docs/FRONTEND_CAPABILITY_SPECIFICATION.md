@@ -557,6 +557,8 @@ The Discovery UI evaluates three relationship types:
 
 ## 10. Connections
 
+> Implementation boundary: Wave 4 provides request/accept/decline/cancel/remove/block/unblock and accepted-only chat. The cooldown, report flow and read-only archive below remain product proposals; current removed conversations are inaccessible. Only the actual blocking actor can unblock, regardless of request initiator. See [Messaging MVP](MESSAGING_WAVE4.md).
+
 ### 10.1 Connection State Machine
 
 ```
@@ -739,31 +741,19 @@ When calling `POST /v1/compare` or `GET /v1/people/{id}/why`, the frontend recei
 
 ---
 
-## 16. Messaging
+## 16. Messaging — Wave 4 Implementation
 
-### 16.1 Capabilities & Rules
-- **Prerequisite**: Active accepted connection (`public.is_active_direct_conversation`).
-- **Create / Retrieve Conversation**: `POST /v1/conversations` with `{"target_user_id": UUID}`.
-- **List Messages**: `GET /v1/conversations/{id}/messages` (ordered chronologically by `created_at ASC`).
-- **Send Message**: `POST /v1/conversations/{id}/messages` with `{"body": str}`.
-- **Message Constraints**: Plain text UTF-8, 1 to 2,000 characters. Unicode emoji supported. Media attachments, voice notes, video calls, disappearing messages, reactions, and message editing are strictly excluded from V1.
-- **Inaugural Bubble**: If Sender included an invitation note or quoted prompt, it appears at the head of the thread as the inaugural message bubble.
-- **Realtime Updates**: Subscribe via Supabase Realtime WebSocket channel: `public:messages:conversation_id=eq.{id}`.
+- Real conversations inbox: authorized participant name/private photograph, last message, actual activity, private unread count, loading/empty/error/retry states.
+- Active accepted connection is mandatory. `POST /v1/conversations` creates or retrieves the canonical pair's direct conversation.
+- History uses `GET /v1/conversations/{id}/messages/page` with 30-message pages and exclusive UUID cursors; responses merge by ID in chronological `(created_at,id)` order.
+- Sends include `{body,client_nonce}`. Plain text 1–2,000 characters, no attachments. Retry retains the nonce and draft after network failure; editing the text creates a new attempt.
+- Session-wide Supabase Realtime subscriptions invalidate authorized HTTP queries. Online, visibility, re-subscription and periodic foreground checks recover missed events. Raw events do not bypass authorization or append duplicates.
+- `PATCH /v1/conversations/{id}/read` advances the caller-private pointer in `conversation_reads`. Unread counts compare `(created_at,id)`, not UUID magnitude alone. There are no peer read timestamps, typing-speed metrics or surveillance badges.
+- Existing accepted-connection Why insights supply editable conversation starters. There is no new AI starter endpoint or automatic send.
+- Mobile composer follows the visual viewport, supports multiline text and keeps touch targets at least 44px. Desktop uses the same responsive chat flow.
+- Both remove and block revoke history/details/send access and omit the inbox row. Stored history remains; reacceptance restores the existing conversation. A read-only archive, invitation-note bubble, cooldown and reporting workflow remain proposals.
 
-### 16.2 Read Tracking & Anti-Surveillance Invariants
-- **Read State Pointer**: Calling `PATCH /v1/conversations/{id}/read` updates caller's private `last_read_message_id` and `last_read_at` on `public.conversation_members`.
-- **Zero Surveillance Timers**: The frontend strictly forbids displaying granular read timestamps ("Seen at 2:15 PM") or typing speed metrics to the counterpart.
-- **Unread Count**: Local inbox badges reflect messages with `id > last_read_message_id`.
-
-### 16.3 Empty State & JESTER Conversation Starters Tray
-- When a new chat has 0 messages, the client displays a warm, low-pressure empty state featuring a 1-tap action: `[ 💡 JESTER Conversation Starters ]`.
-- Tapping opens the interactive tray with 3 AI-suggested icebreakers rooted in mutual declared interests, answered prompts, and communication rhythm. Tapping any starter inserts it into the input draft for the user to review, edit, or delete. AI never auto-sends.
-
-### 16.4 Disconnect vs. Block Messaging Behavior
-- **Disconnected (`status = 'removed'`)**: The conversation remains visible in the inbox in read-only archive mode. The message input box is replaced by an immutable notice banner:
-  > *"This connection has ended. You can read past messages, but new messages cannot be sent."*
-  with an accessible `[ 🚩 Report ]` option.
-- **Blocked (`status = 'blocked'`)**: Both users receive `404 PrivacySafeNotFoundException`. The conversation immediately vanishes from the inbox, and thread URLs resolve to a generic 404 page. Zero existence leak.
+Full implemented API, synchronization behavior and release gates: [Messaging MVP](MESSAGING_WAVE4.md).
 
 ---
 

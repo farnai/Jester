@@ -25,3 +25,5 @@ class ConnectionResponse(BaseModel):
     blocked_by: uuid.UUID | None = None
     created_at: datetime
     updated_at: datetime
+    other_display_name: str | None = None
+    other_avatar_url: str | None = None

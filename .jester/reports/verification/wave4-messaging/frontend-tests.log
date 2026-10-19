@@ -1,0 +1,48 @@
+(node:33540) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: replayed realtime refresh and overlapping pages render each message once
+ok 1 - replayed realtime refresh and overlapping pages render each message once
+  ---
+  duration_ms: 9.0718
+  type: 'test'
+  ...
+# Subtest: equal timestamps have a deterministic UUID order
+ok 2 - equal timestamps have a deterministic UUID order
+  ---
+  duration_ms: 0.1278
+  type: 'test'
+  ...
+# Subtest: lost acknowledgement retry retains its idempotency nonce
+ok 3 - lost acknowledgement retry retains its idempotency nonce
+  ---
+  duration_ms: 1.3128
+  type: 'test'
+  ...
+# Subtest: edited draft and new submission get new nonces
+ok 4 - edited draft and new submission get new nonces
+  ---
+  duration_ms: 0.1192
+  type: 'test'
+  ...
+# Subtest: only authorization/not-found responses hide a conversation
+ok 5 - only authorization/not-found responses hide a conversation
+  ---
+  duration_ms: 0.1099
+  type: 'test'
+  ...
+# Subtest: empty history is a valid initial state
+ok 6 - empty history is a valid initial state
+  ---
+  duration_ms: 0.0662
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19.5185

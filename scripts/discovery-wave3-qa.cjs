@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const accounts = JSON.parse(fs.readFileSync('scratch/wave3-accounts.json', 'utf8'));
-const out = '.jester/reports/verification/wave3-discovery';
+const out = process.env.JESTER_QA_OUTPUT || '.jester/reports/verification/wave3-discovery';
 fs.mkdirSync(out, { recursive: true });
 const base = 'http://127.0.0.1:3001';
 const evidence = { checks: [], measurements: [], media: [], pageErrors: [] };
@@ -187,8 +187,8 @@ async function swipe(page, dx, dy = 0) {
     await page.locator('#people-search').fill('offline-wave3');
     await page.getByRole('button',{name:'ძებნა',exact:true}).click();
     await page.getByText('პროფილები ვერ ჩაიტვირთა.',{exact:true}).waitFor({timeout:20000});
-    await context.setOffline(false);
     await page.getByRole('button',{name:'ხელახლა ცდა',exact:true}).click();
+    await context.setOffline(false);
     await page.getByRole('heading',{name:'ჯერ ვერავინ მოიძებნა'}).waitFor();
     pass('Actual offline API failure renders retry; restored network recovers');
     // Real touch events with native vertical pan, plus reduced-motion preference.

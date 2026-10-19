@@ -140,6 +140,8 @@ export interface ConnectionResponse {
   blocked_by: string | null;
   created_at: string;
   updated_at: string;
+  other_display_name?: string | null;
+  other_avatar_url?: string | null;
 }
 
 export interface ConnectionTransitionPayload {
@@ -208,7 +210,22 @@ export interface ConversationResponse {
   created_at: string;
   updated_at: string;
   other_member_id?: string;
+  other_display_name: string | null;
+  other_avatar_url: string | null;
 }
+
+export interface ConversationInboxResponse {
+  id: string;
+  other_member_id: string;
+  other_display_name: string | null;
+  other_avatar_url: string | null;
+  last_message: MessageResponse | null;
+  unread_count: number;
+  updated_at: string;
+  last_activity_at: string;
+}
+
+export interface MessagePageResponse { items: MessageResponse[]; next_cursor: string | null; }
 
 export interface MessageResponse {
   id: string;

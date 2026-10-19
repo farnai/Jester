@@ -1,0 +1,58 @@
+{
+  "id": "TASK-WAVE4-MESSAGING",
+  "title": "Connections and messaging MVP",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Real accepted-connection messaging with private unread state, bounded history, realtime and safe retry",
+  "scope": [
+    "backend/app/connections",
+    "backend/app/conversations",
+    "frontend/src",
+    "supabase/migrations",
+    "tests",
+    "scripts",
+    "docs",
+    ".jester"
+  ],
+  "constraints": [
+    "Preserve Wave 2 and Wave 3",
+    "No public deployment",
+    "No destructive primary database tests",
+    "Founder visual approval separate"
+  ],
+  "acceptance_criteria": [
+    "Blocked state cannot be cleared or reassigned by unauthorized participant",
+    "Bounded history, private real unread state and idempotent sends",
+    "Real inbox, synchronized connection management and resilient realtime chat",
+    "Two-account local browser flow and four responsive sizes verified",
+    "Georgian report, screenshots and Git delivery"
+  ],
+  "verification": [
+    "python -m pytest tests/backend/test_messaging_wave4.py -q",
+    "python -m scripts.run_isolated_regression",
+    "npm --prefix frontend run build",
+    "node --experimental-strip-types scripts/messaging-model.test.mjs",
+    "node scripts/messaging-wave4-qa.cjs"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-19T09:28:50.916890+00:00",
+  "updated_at": "2026-10-19T15:56:16.885745+00:00",
+  "report": ".jester/reports/implementations/TASK-WAVE4-MESSAGING_report.md",
+  "acceptance_results": {
+    "Blocked state cannot be cleared or reassigned by unauthorized participant": "PASS",
+    "Bounded history, private real unread state and idempotent sends": "PASS",
+    "Real inbox, synchronized connection management and resilient realtime chat": "PASS",
+    "Two-account local browser flow and four responsive sizes verified": "PASS",
+    "Georgian report, screenshots and Git delivery": "PASS"
+  },
+  "review_notes": "Technical verification complete. Founder visual approval remains separate."
+}

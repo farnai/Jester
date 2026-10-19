@@ -1,0 +1,552 @@
+{
+  "checks": [
+    "Real inbox empty state and offline error/retry recover without invented rows",
+    "Two genuine Auth accounts: Discover request → incoming acceptance → live accepted state across surfaces",
+    "Real inbox uses participant private photograph, name, persisted preview/activity and nonzero unread",
+    "Bidirectional human messages, actual Realtime postgres event, no duplicates, reload and read-state persistence",
+    "Existing authorized JESTER Why insight supplies an editable starter, without sending automatically",
+    "Real network failure retains draft; explicit retry persists exactly one message",
+    "Offline recipient resynchronizes missed messages when connectivity returns",
+    "History first page is 30; cursor loads older real messages without duplicates or replacing current history",
+    "Desktop 1440/1280, mobile 390/320 and reduced-height focused composer: no overflow/overlap; send target ≥44px",
+    "Removing connection revokes existing chat and inbox without reloading the recipient",
+    "Decline, outgoing cancellation and reacceptance persist on the canonical pair; conversation is reused",
+    "Block removes chat access for both; blocked actor cannot remove/steal/unblock; authorized unblock leaves disconnected",
+    "Zero uncaught browser application errors"
+  ],
+  "measurements": [
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "composerTop": 793.421875,
+      "composerBottom": 885.203125,
+      "navTop": 900,
+      "sendHeight": 44
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "scrollWidth": 1280,
+      "composerTop": 691.21875,
+      "composerBottom": 783,
+      "navTop": 800,
+      "sendHeight": 44
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "composerTop": 682.21875,
+      "composerBottom": 766,
+      "navTop": 783,
+      "sendHeight": 44
+    },
+    {
+      "width": 320,
+      "height": 700,
+      "scrollWidth": 320,
+      "composerTop": 542.21875,
+      "composerBottom": 626,
+      "navTop": 647,
+      "sendHeight": 44
+    },
+    {
+      "width": 320,
+      "height": 440,
+      "scrollWidth": 320,
+      "composerTop": 286.21875,
+      "composerBottom": 370,
+      "navTop": 387,
+      "sendHeight": 44
+    }
+  ],
+  "realtimeEvents": [
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "notifications",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "notifications",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "B",
+      "table": "messages",
+      "type": "INSERT"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "B",
+      "table": "connections",
+      "type": "UPDATE"
+    },
+    {
+      "user": "A",
+      "table": "connections",
+      "type": "UPDATE"
+    }
+  ],
+  "pageErrors": []
+}

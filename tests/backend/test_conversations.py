@@ -70,7 +70,7 @@ async def test_list_my_conversations_returns_active_inbox_with_latest_activity(d
     assert [item["id"] for item in conversations] == [str(newest_conversation), str(empty_conversation)]
     assert conversations[0]["other_member_id"] == other_one
     assert conversations[0]["last_message"]["body"] == "Newest conversation message"
-    assert conversations[0]["unread_count"] == 0
+    assert conversations[0]["unread_count"] == 1
     assert conversations[1]["other_member_id"] == other_two
     assert conversations[1]["last_message"] is None
     assert conversations[1]["unread_count"] == 0

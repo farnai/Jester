@@ -1,365 +1,41 @@
-import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { API } from "../../core/api/endpoints";
-import { useAuth } from "../../core/auth/useAuth";
-import { ConnectionResponse } from "../../core/api/types";
-import { LoadingState, ErrorState, EmptyState } from "../../shared/StatusState";
+import { Link, useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { API } from '../../core/api/endpoints';
+import { useAuth } from '../../core/auth/useAuth';
+import { refreshSocial } from '../../core/realtime/SocialSync';
+import { ProfileImage } from '../../shared/ui/ProfileImage';
+import { ConnectionActions } from '../people/ConnectionActions';
+import '../chat/messaging.css';
 
-export const ConnectionsPage: React.FC = () => {
+export function ConnectionsPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const tabParam = searchParams.get("tab");
-  const initialTab = (tabParam === "incoming" || tabParam === "outgoing" || tabParam === "active") ? tabParam : "active";
-  const [activeTab, setActiveTab] = useState<"active" | "incoming" | "outgoing">(initialTab);
-
-  const { data: connections, isLoading, error, refetch } = useQuery({
-    queryKey: ["connections"],
-    queryFn: API.connections.list,
-  });
-
-  const transitionMutation = useMutation({
-    mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" | "block" | "remove" }) =>
-      API.connections.transition(id, action),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["connections"] });
-      queryClient.invalidateQueries({ queryKey: ["compatibility-us"] });
-      queryClient.invalidateQueries({ queryKey: ["why-experience"] });
-    },
-  });
-
-  const handleStartChat = async (targetUserId: string) => {
-    try {
-      const conv = await API.conversations.createOrGetDirect(targetUserId);
-      navigate(`/chat/${conv.id}`);
-    } catch (err: any) {
-      alert(err.message || "Could not open conversation.");
-    }
+  const cache = useQueryClient();
+  const [params, setParams] = useSearchParams();
+  const tab = params.get('tab') || 'active';
+  const connections = useQuery({ queryKey: ['connections'], queryFn: API.connections.list, retry: 1, networkMode: 'always' });
+  const mutation = useMutation({ mutationFn: ({ id, action }: { id: string; action: 'block' | 'unblock' | 'remove' }) => API.connections.transition(id,action), onSuccess: () => refreshSocial(cache) });
+  const all = connections.data || [];
+  const groups = {
+    active: all.filter(c => c.status === 'accepted'), incoming: all.filter(c => c.status === 'pending' && c.initiated_by !== user?.id),
+    outgoing: all.filter(c => c.status === 'pending' && c.initiated_by === user?.id), blocked: all.filter(c => c.status === 'blocked' && c.blocked_by === user?.id),
   };
-
-  if (isLoading) return <LoadingState message="Loading your connections..." />;
-  if (error) return <ErrorState error={error as Error} onRetry={refetch} />;
-
-  const allConns = connections || [];
-
-  const accepted = allConns.filter((c) => c.status === "accepted");
-  const incoming = allConns.filter((c) => c.status === "pending" && c.initiated_by !== user?.id);
-  const outgoing = allConns.filter((c) => c.status === "pending" && c.initiated_by === user?.id);
-
-  const getTargetId = (conn: ConnectionResponse) =>
-    conn.user_a_id === user?.id ? conn.user_b_id : conn.user_a_id;
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <h2 style={{ margin: 0 }}>Social Connections</h2>
-        <Link
-          to="/people"
-          style={{
-            padding: "0.4rem 0.8rem",
-            background: "#1890ff",
-            color: "#fff",
-            textDecoration: "none",
-            borderRadius: "4px",
-            fontSize: "0.85rem",
-            fontWeight: "bold",
-          }}
-        >
-          🔍 Discover Person
-        </Link>
-      </div>
-
-      {/* Tabs */}
-      <div style={{ display: "flex", borderBottom: "1px solid #d9d9d9", marginBottom: "1rem" }}>
-        <button
-          onClick={() => { setActiveTab("active"); setSearchParams({ tab: "active" }); }}
-          style={{
-            padding: "0.6rem 1.2rem",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "active" ? "2px solid #1890ff" : "none",
-            color: activeTab === "active" ? "#1890ff" : "#555",
-            fontWeight: activeTab === "active" ? "bold" : "normal",
-            cursor: "pointer",
-          }}
-        >
-          Active Connections ({accepted.length})
-        </button>
-        <button
-          onClick={() => { setActiveTab("incoming"); setSearchParams({ tab: "incoming" }); }}
-          style={{
-            padding: "0.6rem 1.2rem",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "incoming" ? "2px solid #1890ff" : "none",
-            color: activeTab === "incoming" ? "#1890ff" : "#555",
-            fontWeight: activeTab === "incoming" ? "bold" : "normal",
-            cursor: "pointer",
-          }}
-        >
-          Incoming Requests ({incoming.length})
-        </button>
-        <button
-          onClick={() => { setActiveTab("outgoing"); setSearchParams({ tab: "outgoing" }); }}
-          style={{
-            padding: "0.6rem 1.2rem",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "outgoing" ? "2px solid #1890ff" : "none",
-            color: activeTab === "outgoing" ? "#1890ff" : "#555",
-            fontWeight: activeTab === "outgoing" ? "bold" : "normal",
-            cursor: "pointer",
-          }}
-        >
-          Sent Requests ({outgoing.length})
-        </button>
-      </div>
-
-      {/* Tab Contents */}
-      {activeTab === "active" && (
-        <div>
-          {accepted.length === 0 ? (
-            <EmptyState
-              title="No Active Connections Yet"
-              description="Connect with discoverable users to unlock full Synastry comparisons and 1-on-1 chat."
-              actionLabel="Discover People"
-              onAction={() => navigate("/people")}
-            />
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {accepted.map((conn) => {
-                const targetId = getTargetId(conn);
-                return (
-                  <div
-                    key={conn.id}
-                    style={{
-                      padding: "1rem",
-                      border: "1px solid #e8e8e8",
-                      borderRadius: "6px",
-                      backgroundColor: "#fff",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <Link to={`/people/${targetId}`} style={{ fontWeight: "bold", textDecoration: "none", color: "#1890ff" }}>
-                        Person (ID: {targetId.slice(0, 8)}...)
-                      </Link>
-                      <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                        Connected since {new Date(conn.updated_at).toLocaleDateString()}
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#64748b", marginTop: "0.35rem" }}>
-                        <span>Status: <strong style={{ color: "#059669" }}>{conn.status}</strong></span>
-                        <span>Direction: <strong>{conn.initiated_by === user?.id ? "Outgoing (Initiated by You)" : "Incoming"}</strong></span>
-                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <Link
-                        to={`/compare/${targetId}`}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          background: "#722ed1",
-                          color: "#fff",
-                          textDecoration: "none",
-                          borderRadius: "4px",
-                          fontSize: "0.85rem",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        🔮 Compare
-                      </Link>
-                      <button
-                        onClick={() => handleStartChat(targetId)}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          background: "#1890ff",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "0.85rem",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        💬 Chat
-                      </button>
-                      <button
-                        onClick={() => transitionMutation.mutate({ id: conn.id, action: "remove" })}
-                        style={{
-                          padding: "0.4rem 0.6rem",
-                          background: "#fff",
-                          border: "1px solid #d9d9d9",
-                          borderRadius: "4px",
-                          color: "#666",
-                          cursor: "pointer",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+  const selected = tab in groups ? tab as keyof typeof groups : 'active';
+  return <div className="messaging-page">
+    <header className="messaging-heading"><h1>კავშირები</h1><Link to="/discover">აღმოჩენა →</Link></header>
+    <nav className="connection-tabs" aria-label="კავშირების ჯგუფები">{([['active','მიღებული'],['incoming','შემოსული'],['outgoing','გაგზავნილი'],['blocked','დაბლოკილი']] as const).map(([key,label]) => <button key={key} aria-pressed={selected === key} onClick={() => setParams({tab:key})}>{label} ({groups[key].length})</button>)}</nav>
+    {mutation.error && <p role="alert">{mutation.error.message}</p>}
+    {connections.isPending ? <p role="status">კავშირები იტვირთება…</p> : connections.isError ? <div role="alert"><p>კავშირები ვერ ჩაიტვირთა.</p><button onClick={() => connections.refetch()}>ხელახლა ცდა</button></div> : !groups[selected].length ? <div className="messaging-empty"><p>ამ ჯგუფში კავშირები ჯერ არ არის.</p><Link to="/discover">აღმოაჩინე ადამიანები</Link></div> : groups[selected].map(c => {
+      const target = c.user_a_id === user?.id ? c.user_b_id : c.user_a_id;
+      const name = c.other_display_name || 'მომხმარებელი';
+      return <article className="connection-row" key={c.id} data-connection-id={c.id}>
+        <div className="connection-identity"><span className="messaging-avatar">{c.other_avatar_url ? <ProfileImage src={c.other_avatar_url} alt="" mediaSize="card" /> : <span aria-hidden="true">◎</span>}</span><div>{selected === 'blocked' ? <strong>დაბლოკილი კავშირი</strong> : <Link to={`/people/${target}`}>{name}</Link>}<p>{selected === 'incoming' ? 'გთავაზობს დაკავშირებას' : selected === 'outgoing' ? 'ელოდება პასუხს' : selected === 'active' ? 'შეგიძლიათ საუბრის დაწყება' : 'ბლოკის მოხსნა კავშირს არ აღადგენს'}</p></div></div>
+        <div className="connection-row-actions">{selected !== 'blocked' && <ConnectionActions target={target} name={name} />}
+          {selected === 'blocked' ? <button disabled={mutation.isPending} onClick={() => mutation.mutate({id:c.id,action:'unblock'})}>ბლოკის მოხსნა</button> : <>
+            {(selected === 'active' || selected === 'outgoing') && <button disabled={mutation.isPending} onClick={() => { if (window.confirm('გაუქმდეს ეს კავშირი? მიმოწერა შეწყდება.')) mutation.mutate({id:c.id,action:'remove'}); }}>{selected === 'outgoing' ? 'მოთხოვნის გაუქმება' : 'კავშირის გაუქმება'}</button>}
+            <button disabled={mutation.isPending} onClick={() => { if (window.confirm('დაიბლოკოს მომხმარებელი? მიმოწერა მიუწვდომელი გახდება.')) mutation.mutate({id:c.id,action:'block'}); }}>დაბლოკვა</button>
+          </>}
         </div>
-      )}
-
-      {activeTab === "incoming" && (
-        <div>
-          {incoming.length === 0 ? (
-            <EmptyState title="No Incoming Requests" description="You have responded to all incoming connection requests." />
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {incoming.map((conn) => {
-                const targetId = getTargetId(conn);
-                return (
-                  <div
-                    key={conn.id}
-                    style={{
-                      padding: "1rem",
-                      border: "1px solid #ffd591",
-                      borderRadius: "6px",
-                      backgroundColor: "#fffbe6",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <Link to={`/people/${targetId}`} style={{ fontWeight: "bold", textDecoration: "none", color: "#d46b08" }}>
-                        New Request from Person ({targetId.slice(0, 8)}...)
-                      </Link>
-                      <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                        Received {new Date(conn.created_at).toLocaleDateString()}
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#b45309", marginTop: "0.35rem" }}>
-                        <span>Status: <strong>{conn.status}</strong></span>
-                        <span>Direction: <strong>Incoming</strong></span>
-                        <span>Initiated by: <code>{conn.initiated_by.slice(0, 8)}...</code></span>
-                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <button
-                        onClick={() => transitionMutation.mutate({ id: conn.id, action: "accept" })}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          background: "#52c41a",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => transitionMutation.mutate({ id: conn.id, action: "decline" })}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          background: "#f5222d",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Decline
-                      </button>
-                      <button
-                        onClick={() => transitionMutation.mutate({ id: conn.id, action: "block" })}
-                        style={{
-                          padding: "0.4rem 0.6rem",
-                          background: "#333",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "0.75rem",
-                        }}
-                      >
-                        Block
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === "outgoing" && (
-        <div>
-          {outgoing.length === 0 ? (
-            <EmptyState title="No Sent Requests" description="You have no pending outgoing connection requests." />
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {outgoing.map((conn) => {
-                const targetId = getTargetId(conn);
-                return (
-                  <div
-                    key={conn.id}
-                    style={{
-                      padding: "1rem",
-                      border: "1px solid #e8e8e8",
-                      borderRadius: "6px",
-                      backgroundColor: "#fff",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <Link to={`/people/${targetId}`} style={{ fontWeight: "bold", textDecoration: "none", color: "#1890ff" }}>
-                        Person ({targetId.slice(0, 8)}...)
-                      </Link>
-                      <div style={{ color: "#888", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                        Sent on {new Date(conn.created_at).toLocaleDateString()}
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", fontSize: "0.725rem", color: "#64748b", marginTop: "0.35rem" }}>
-                        <span>Status: <strong>{conn.status}</strong></span>
-                        <span>Direction: <strong>Outgoing (You)</strong></span>
-                        <span>Conn ID: <code>{conn.id.slice(0, 8)}...</code></span>
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <span style={{ fontSize: "0.85rem", color: "#fa8c16", padding: "0.3rem 0.6rem" }}>
-                        ⏳ Pending Approval
-                      </span>
-                      <button
-                        onClick={() => transitionMutation.mutate({ id: conn.id, action: "remove" })}
-                        style={{
-                          padding: "0.4rem 0.6rem",
-                          background: "#fff",
-                          border: "1px solid #d9d9d9",
-                          borderRadius: "4px",
-                          color: "#666",
-                          cursor: "pointer",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        Cancel Request
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+      </article>;
+    })}
+  </div>;
+}

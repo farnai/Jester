@@ -2,11 +2,16 @@ import { useRef, useState, type PointerEvent, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import type { DiscoveryDeckPerson } from '../../core/api/types';
 import { ProfileImage } from '../../shared/ui/ProfileImage';
+import { useAuth } from '../../core/auth/useAuth';
 import { ConnectionActions } from '../people/ConnectionActions';
 
-export function DiscoverSwipeCard({ person, nextPerson, onNext, profileLink }: {
-  person: DiscoveryDeckPerson; nextPerson?: DiscoveryDeckPerson; onNext: () => void; profileLink: string;
+export function DiscoverSwipeCard({ person, nextPerson, onNext, profileLink, rightHint }: {
+  person: DiscoveryDeckPerson; nextPerson?: DiscoveryDeckPerson; onNext: () => void; profileLink: string; rightHint: string;
 }) {
+  const { user } = useAuth();
+  const hintKey = `jester:swipe-hint:${user?.id}`;
+  const [hint, setHint] = useState(() => { try { return !localStorage.getItem(hintKey); } catch { return true; } });
+  const dismissHint = () => { setHint(false); try { localStorage.setItem(hintKey,'seen'); } catch { /* Storage is optional. */ } };
   const [photoState, setPhotoState] = useState({ id: person.id, index: 0 });
   const photoIndex = photoState.id === person.id ? Math.min(photoState.index, Math.max(0, person.photos.length - 1)) : 0;
   const [confirmSignal, setConfirmSignal] = useState(0);
@@ -18,6 +23,7 @@ export function DiscoverSwipeCard({ person, nextPerson, onNext, profileLink }: {
     if (!origin || origin.cancelled) return;
     const dx = event.clientX - origin.x, dy = event.clientY - origin.y;
     if (Math.abs(dx) >= 65 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      dismissHint();
       if (dx < 0) onNext(); else setConfirmSignal(value => value + 1);
     } else if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
       const bounds = event.currentTarget.getBoundingClientRect();
@@ -40,9 +46,10 @@ export function DiscoverSwipeCard({ person, nextPerson, onNext, profileLink }: {
         {(index ? item.photos[0] : item.photos[photoIndex]) ? <ProfileImage mediaSize="card" draggable={false} src={(index ? item.photos[0] : item.photos[photoIndex]).url} alt={index ? '' : `${item.display_name} — ფოტო ${photoIndex + 1}`} /> : <div className="discover-no-photo"><span>◎</span><p>ფოტო ჯერ არ არის</p></div>}
       </div>)}
       {!!person.photos.length && <div className="discover-photo-progress" aria-label={`ფოტო ${photoIndex + 1} / ${person.photos.length}`}>{person.photos.map((p,i) => <span key={p.id} className={i === photoIndex ? 'active' : ''} />)}</div>}
-      {drag !== 0 && <span className="discover-drag-label">{drag < 0 ? 'შემდეგი' : 'დაკავშირება?'}</span>}
+      {drag !== 0 && <span className="discover-drag-label">{drag < 0 ? 'შემდეგი' : rightHint}</span>}
       <div className="discover-photo-identity"><h2>{person.display_name}</h2>{person.city && <p>{person.same_city ? 'შენს ქალაქში · ' : ''}{person.city}</p>}</div>
     </div>
+    {hint && <div className="discover-swipe-hint"><span>← გაასრიალე შემდეგი ადამიანისთვის</span><button aria-label="მინიშნების დახურვა" onClick={dismissHint}>×</button></div>}
     {person.photos.length > 1 && <div className="discover-photo-buttons"><button aria-label="წინა ფოტო" onClick={() => switchPhoto(-1)}>‹</button><span>{photoIndex + 1} / {person.photos.length}</span><button aria-label="შემდეგი ფოტო" onClick={() => switchPhoto(1)}>›</button></div>}
     <div className="discover-card-copy"><div className="discover-interest-tags">{interests.map(i => <span className={person.common_interest_ids.includes(i.id) ? 'shared' : ''} key={i.id}>{person.common_interest_ids.includes(i.id) ? '↔ ' : ''}{i.name}</span>)}</div>
       {!!person.common_interest_ids.length && <p className="discover-common">{person.common_interest_ids.length} საერთო ინტერესი</p>}

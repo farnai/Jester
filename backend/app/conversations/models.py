@@ -9,6 +9,7 @@ class DirectConversationCreate(BaseModel):
 
 class MessageCreate(BaseModel):
     body: str
+    client_nonce: uuid.UUID | None = None
 
 
 class MessageResponse(BaseModel):
@@ -30,6 +31,8 @@ class ConversationResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     other_member_id: uuid.UUID | None = None
+    other_display_name: str | None = None
+    other_avatar_url: str | None = None
 
 
 class ConversationInboxResponse(BaseModel):
@@ -40,7 +43,17 @@ class ConversationInboxResponse(BaseModel):
     id: uuid.UUID
     other_member_id: uuid.UUID
     last_message: MessageResponse | None = None
-    # Read receipts are not represented in the current schema. This remains 0
-    # until a dedicated read-state feature is introduced.
-    unread_count: int = 0
+    unread_count: int
     updated_at: datetime
+    other_display_name: str | None = None
+    other_avatar_url: str | None = None
+    last_activity_at: datetime
+
+
+class MessagePage(BaseModel):
+    items: list[MessageResponse]
+    next_cursor: uuid.UUID | None
+
+
+class ReadUpdate(BaseModel):
+    last_read_message_id: uuid.UUID
