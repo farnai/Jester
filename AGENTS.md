@@ -255,3 +255,7 @@ When instructions/evidence conflict: inspect current source and schema, read rel
 JESTER is a real product, not a collection of demos. Protect product clarity, user privacy, deterministic astrology, correct relationship semantics, stable contracts, small reversible changes, verified behavior, facts/interpretation/presentation separation, and the rule against invented product decisions.
 
 > Inspect the real system. Preserve the contract. Make the smallest correct change. Verify it. Ask before inventing.
+
+## JESTER Visual Design Tasks
+
+For tasks involving UI redesign, visual design, art direction, graphic assets, design exploration, pen.dev, or visual evaluation, invoke the project skill `.agents/skills/jester-visual-studio/SKILL.md` and follow `design/visual-studio/WORKFLOW.md`. Start with `design/visual-studio/CONTEXT_INDEX.md` and read actual source documents (especially `design/visual-studio/PROJECT_BRIEF.md` and canonical design docs) before any design decisions. For early visual experiments, work strictly within `design/visual-studio/` and the `.pen` canvas; do not modify application source code without explicit Founder approval. Keep brand tokens, privacy invariants, 18+ restrictions, and Georgian typography rules strictly from verified repository documents.
