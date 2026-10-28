@@ -3,83 +3,25 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { API } from '../../core/api/endpoints';
 import { useAuth } from '../../core/auth/useAuth';
-import type { ConnectionResponse, DiscoveryPerson } from '../../core/api/types';
 import { HomeAvatar, HomeIcon, HomeSkeleton, HomeState } from './HomeElements';
-import { calendarKey, connectionFor, georgianDate, guidanceItems, personObservation, visibleHomePeople } from './homeModel';
-import { HomeEditorialHero, HomeQuickActions, HomeConversationInvitation, HomeInsightArt } from './HomeEditorial';
+import {
+  calendarKey,
+  connectionFor,
+  georgianDate,
+  guidanceItems,
+  personObservation,
+  visibleHomePeople,
+} from './homeModel';
+import {
+  HomeEditorialHero,
+  HomeQuickActions,
+  HomeConversationInvitation,
+  HomeInsightArt,
+  HomeStage,
+} from './HomeEditorial';
+import { HomePersonCarousel } from './HomePersonCarousel';
 import './home.css';
 import './homeEditorial.css';
-
-function PersonPreview({
-  person,
-  connection,
-  viewer,
-  featured = false,
-}: {
-  person: DiscoveryPerson;
-  connection?: ConnectionResponse;
-  viewer: string;
-  featured?: boolean;
-}) {
-  const observation = personObservation(person);
-  const accepted = connection?.status === 'accepted';
-  const status = accepted
-    ? 'უკვე დაკავშირებული ხართ'
-    : connection?.status === 'pending'
-    ? connection.initiated_by === viewer
-      ? 'მოთხოვნა გაგზავნილია'
-      : 'კავშირის მოთხოვნა'
-    : null;
-
-  return (
-    <article className={`home-person${featured ? ' home-person-featured' : ''}`}>
-      <div className="home-person-identity">
-        <HomeAvatar name={person.display_name} src={person.avatar_url} large={featured} />
-        <div>
-          <h3>
-            <Link to={`/people/${person.id}`}>{person.display_name}</Link>
-          </h3>
-          <p className="home-person-meta">
-            {[person.occupation, person.city].filter(Boolean).join(' · ') || 'გაიცანი უფრო ახლოს'}
-          </p>
-          {status && <span className="home-connection-tag">{status}</span>}
-        </div>
-      </div>
-
-      <div className="home-person-copy">
-        {observation ? (
-          <>
-            <p className="home-eyebrow">JESTER ამჩნევს</p>
-            <p className="home-person-quote">{observation}</p>
-          </>
-        ) : person.bio ? (
-          <>
-            <p className="home-eyebrow">თავის შესახებ</p>
-            <p className="home-person-quote">{person.bio}</p>
-          </>
-        ) : (
-          <p className="home-muted">აქ ჯერ ცოტა რამ წერია. გაცნობა პროფილიდან შეგიძლია დაიწყო.</p>
-        )}
-      </div>
-
-      <div className="home-person-actions">
-        <Link to={`/people/${person.id}`} className="home-text-link">
-          გაიცანი <HomeIcon />
-        </Link>
-        {accepted && (
-          <Link to={`/people/${person.id}/why`} className="home-text-link">
-            ჩვენი კავშირი <HomeIcon kind="people" />
-          </Link>
-        )}
-        {connection?.status === 'pending' && connection.initiated_by !== viewer && (
-          <Link to="/connections?tab=incoming" className="home-text-link">
-            ნახე მოთხოვნა
-          </Link>
-        )}
-      </div>
-    </article>
-  );
-}
 
 export function HomePage() {
   const { user } = useAuth();
@@ -87,7 +29,6 @@ export function HomePage() {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
   const [expandedInsight, setExpandedInsight] = useState(false);
   const [filter, setFilter] = useState<'insights' | 'all'>('insights');
-  const [page, setPage] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60_000);
@@ -104,15 +45,65 @@ export function HomePage() {
   const day = calendarKey(now, profile.data?.timezone);
   const daily = useQuery({
     queryKey: ['daily-energy', user?.id, day],
-    queryFn: () => API.interpretations.getDailyEnergy('auto', 'ka'),
+    queryFn: () =>
+      API.interpretations?.getDailyEnergy
+        ? API.interpretations.getDailyEnergy('auto', 'ka')
+        : Promise.resolve({} as any),
     enabled: !!user,
     staleTime: 60_000,
     retry: 1,
   });
 
+  // Safe Astrology Query (Sun, Moon, Ascendant, Mercury, Venus, Mars, Element, Modality)
+  const safeAstro = useQuery({
+    queryKey: ['safe-astro', user?.id],
+    queryFn: () =>
+      API.astrology?.getMySafeAstro
+        ? API.astrology.getMySafeAstro()
+        : Promise.resolve(null as any),
+    enabled: !!user,
+    staleTime: 300_000,
+    retry: 1,
+  });
+
+  // Resolved Natal Facets for 4-Facet ME Lens and Core Verdict
+  const natalFacets = useQuery({
+    queryKey: ['natal-facets', user?.id, safeAstro.data?.sun_sign],
+    queryFn: () =>
+      API.interpretations?.resolveNatal
+        ? API.interpretations.resolveNatal({
+            sun_sign: safeAstro.data?.sun_sign || '',
+            moon_sign: safeAstro.data?.moon_sign,
+            ascendant_sign: safeAstro.data?.ascendant_sign,
+            mercury_sign: safeAstro.data?.mercury_sign,
+            venus_sign: safeAstro.data?.venus_sign,
+            mars_sign: safeAstro.data?.mars_sign,
+            element_primary: safeAstro.data?.element_primary,
+            modality_primary: safeAstro.data?.modality_primary,
+            locale: 'ka',
+            tone: 'snarky',
+          })
+        : Promise.resolve([] as any),
+    enabled: !!user && !!safeAstro.data?.sun_sign,
+    staleTime: 600_000,
+    retry: 1,
+  });
+
   const discovery = useQuery({
     queryKey: ['discovery-people', user?.id],
-    queryFn: () => API.interpretations.getDiscoveryPeople(),
+    queryFn: async () => {
+      try {
+        if (API.discovery?.people) {
+          const res = await API.discovery.people({});
+          return res.items || [];
+        }
+      } catch {
+        // fallback
+      }
+      return API.interpretations?.getDiscoveryPeople
+        ? API.interpretations.getDiscoveryPeople()
+        : ([] as any);
+    },
     enabled: !!user,
     staleTime: 30_000,
     retry: 1,
@@ -129,18 +120,15 @@ export function HomePage() {
   const viewer = user?.id || '';
   const connectionList = connections.isError ? [] : connections.data || [];
   const people = discovery.isError ? [] : visibleHomePeople(discovery.data || [], connectionList, viewer);
-  const observedPeople = people.filter(person => personObservation(person));
+  const observedPeople = people.filter((person) => personObservation(person));
   const selectedPeople = filter === 'insights' ? observedPeople : people;
-  const pageCount = Math.max(1, Math.ceil(selectedPeople.length / 4));
-  const currentPage = Math.min(page, pageCount - 1);
-  const visiblePeople = selectedPeople.slice(currentPage * 4, currentPage * 4 + 4);
 
-  const accepted = connectionList.filter(c => c.status === 'accepted');
-  const incoming = connectionList.filter(c => c.status === 'pending' && c.initiated_by !== viewer);
-  const outgoing = connectionList.filter(c => c.status === 'pending' && c.initiated_by === viewer);
+  const accepted = connectionList.filter((c) => c.status === 'accepted');
+  const incoming = connectionList.filter((c) => c.status === 'pending' && c.initiated_by !== viewer);
+  const outgoing = connectionList.filter((c) => c.status === 'pending' && c.initiated_by === viewer);
 
   // Only profiles already authorized by discovery; no speculative profile lookups.
-  const familiar = people.find(person => connectionFor(accepted, viewer, person.id));
+  const familiar = people.find((person) => connectionFor(accepted, viewer, person.id));
   const relationship = useQuery({
     queryKey: ['home-relationship', viewer, familiar?.id],
     queryFn: () => API.compatibility.why(familiar!.id),
@@ -151,7 +139,7 @@ export function HomePage() {
 
   const rawName = profile.data?.display_name?.trim();
   const name = !rawName || rawName === 'aaa A.' ? 'მეგობარო' : rawName;
-  const observation = daily.data?.interpretation?.text?.trim();
+  const observation = daily.data?.interpretation?.text?.trim() || '';
   const realDay = daily.data?.detection_mode === 'real_transit' || daily.data?.detection_mode === 'neutral_baseline';
   const doItems = guidanceItems(daily.data?.do);
   const dontItems = guidanceItems(daily.data?.dont);
@@ -174,7 +162,13 @@ export function HomePage() {
 
   return (
     <div className="home-experience" lang="ka">
-      <HomeEditorialHero name={name} avatarUrl={profile.data?.avatar_url} connectionCount={connections.isSuccess ? accepted.length : undefined} incomingCount={connections.isSuccess ? incoming.length : undefined} />
+      {/* 00 Editorial Hero Greeting */}
+      <HomeEditorialHero
+        name={name}
+        avatarUrl={profile.data?.avatar_url}
+        connectionCount={connections.isSuccess ? accepted.length : undefined}
+        incomingCount={connections.isSuccess ? incoming.length : undefined}
+      />
       <HomeQuickActions />
 
       {profile.isError && (
@@ -183,9 +177,9 @@ export function HomePage() {
         </HomeState>
       )}
 
-      {/* Core Asymmetrical Split: 01 Hero Insight (ME) vs 02 Relationship Moment (US) */}
+      {/* Core Asymmetrical Split: 01 Hero Spotlight Stage (ME) vs 02 Relationship Circle (US) */}
       <div className="home-opening">
-        {/* 01 Editorial Primary Hero */}
+        {/* 01 Editorial Primary Hero Spotlight Stage (ME) */}
         <section
           id="home-daily"
           className="home-insight"
@@ -207,95 +201,20 @@ export function HomePage() {
           ) : observation ? (
             <>
               <HomeInsightArt />
-              <p className="home-eyebrow home-insight-kicker">
-                {realDay ? 'დღის დაკვირვება' : 'შენი პროფილის დაკვირვება'}
-              </p>
-              <h2 id="home-insight-title">{daily.data?.label || 'რას ამჩნევს JESTER'}</h2>
-              <blockquote
-                id="home-insight-text"
-                className={expandedInsight || observation.length <= 180 ? 'is-expanded' : ''}
-              >
-                {observation}
-              </blockquote>
-              {observation.length > 180 && (
-                <button
-                  type="button"
-                  className="home-read-more"
-                  aria-expanded={expandedInsight}
-                  aria-controls="home-insight-text"
-                  onClick={() => setExpandedInsight(!expandedInsight)}
-                >
-                  {expandedInsight ? 'შეამცირე ტექსტი' : 'წაიკითხე სრულად'} <HomeIcon />
-                </button>
-              )}
-
-              <details className="home-insight-more">
-                <summary>მინიშნებები და დეტალები <HomeIcon kind="compass" /></summary>
-              {(doItems.length > 0 || dontItems.length > 0) && (
-                <details className="home-guidance-disclosure">
-                  <summary>
-                    დღის პატარა მინიშნებები <span aria-hidden="true">+</span>
-                  </summary>
-                  <div className="home-guidance">
-                    {doItems.length > 0 && (
-                      <div>
-                        <h3>
-                          <span aria-hidden="true">↗</span> სცადე
-                        </h3>
-                        <ul>
-                          {doItems.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {dontItems.length > 0 && (
-                      <div>
-                        <h3>
-                          <span aria-hidden="true">↘</span> ნუ იჩქარებ
-                        </h3>
-                        <ul>
-                          {dontItems.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </details>
-              )}
-
-              <div className="home-insight-actions">
-                <button
-                  type="button"
-                  className="home-text-button"
-                  onClick={() => void copyInsight()}
-                >
-                  <HomeIcon kind={copyState === 'copied' ? 'check' : 'copy'} />
-                  {copyState === 'copied' ? 'დაკოპირებულია' : 'დააკოპირე აზრი'}
-                </button>
-                <Link to="/me" className="home-text-link">
-                  მეტი ჩემზე <HomeIcon />
-                </Link>
-              </div>
-
-              <span className="home-copy-status" role="status">
-                {copyState === 'copied'
-                  ? 'ტექსტი დაკოპირებულია — შეგიძლია გაუზიარო მეგობარს.'
-                  : copyState === 'failed'
-                  ? 'კოპირება ვერ მოხერხდა. მონიშნე ტექსტი და დააკოპირე.'
-                  : ''}
-              </span>
-
-              <details className="home-insight-context">
-                <summary>რას ეფუძნება ეს დაკვირვება?</summary>
-                <p>
-                  {realDay
-                    ? 'შენს პროფილსა და მითითებული დღის გამოთვლილ სიგნალებს.'
-                    : 'შენს პროფილზე დაფუძნებული ზოგადი დაკვირვებაა; დღის პერსონალური გამოთვლა ამ პასუხში არ არის.'}
-                </p>
-              </details>
-              </details>
+              <HomeStage
+                observation={observation}
+                realDay={realDay}
+                sourceDate={sourceDate}
+                dailyLabel={daily.data?.label || 'რას ამჩნევს JESTER'}
+                doItems={doItems}
+                dontItems={dontItems}
+                copyState={copyState}
+                onCopy={() => void copyInsight()}
+                expandedInsight={expandedInsight}
+                onToggleExpand={() => setExpandedInsight(!expandedInsight)}
+                safeAstro={safeAstro.data}
+                natalFacets={natalFacets.data}
+              />
             </>
           ) : (
             <HomeState title="შენი დაკვირვება ჯერ არ არის ხელმისაწვდომი">
@@ -306,7 +225,7 @@ export function HomePage() {
           )}
         </section>
 
-        {/* 02 Contextual Social Moment */}
+        {/* 02 Contextual Social Circle (US) */}
         <aside className="home-circle" aria-labelledby="home-circle-title">
           <div className="home-section-label">
             <span className="home-chapter">US</span>
@@ -315,7 +234,9 @@ export function HomePage() {
 
           <div className="home-circle-heading">
             <h2 id="home-circle-title">შენი ახლო კავშირები</h2>
-            <Link to="/connections" className="home-text-link">ყველა <HomeIcon /></Link>
+            <Link to="/connections" className="home-text-link">
+              ყველა <HomeIcon />
+            </Link>
           </div>
 
           {connections.isLoading ? (
@@ -333,23 +254,36 @@ export function HomePage() {
 
               {accepted.length > 0 && (
                 <ul className="home-active-people">
-                  {accepted.slice(0, 3).map(connection => {
-                    const otherId = connection.user_a_id === viewer ? connection.user_b_id : connection.user_a_id;
-                    const person = people.find(p => p.id === otherId);
-                    const displayName = connection.other_display_name || person?.display_name || 'შენი კავშირი';
-                    return <li key={connection.id}>
-                      <Link to={`/people/${otherId}`}>
-                        <HomeAvatar name={displayName} src={connection.other_avatar_url || person?.avatar_url} />
-                        <span><strong>{displayName}</strong><small>უკვე დაკავშირებული ხართ</small>{person?.occupation && <span className="home-active-detail">{person.occupation}</span>}</span>
-                        <HomeIcon />
-                      </Link>
-                    </li>;
+                  {accepted.slice(0, 3).map((connection) => {
+                    const otherId =
+                      connection.user_a_id === viewer ? connection.user_b_id : connection.user_a_id;
+                    const person = people.find((p) => p.id === otherId);
+                    const displayName =
+                      connection.other_display_name || person?.display_name || 'შენი კავშირი';
+                    return (
+                      <li key={connection.id}>
+                        <Link to={`/people/${otherId}`}>
+                          <HomeAvatar
+                            name={displayName}
+                            src={connection.other_avatar_url || person?.avatar_url}
+                          />
+                          <span>
+                            <strong>{displayName}</strong>
+                            <small>უკვე დაკავშირებული ხართ</small>
+                            {person?.occupation && (
+                              <span className="home-active-detail">{person.occupation}</span>
+                            )}
+                          </span>
+                          <HomeIcon />
+                        </Link>
+                      </li>
+                    );
                   })}
                 </ul>
               )}
 
               {familiar ? (
-                <details className="home-relationship-details">
+                <details className="home-relationship-details" open>
                   <summary>შენ &amp; {familiar.display_name} · თქვენი დინამიკა</summary>
                   <div className="home-pair" aria-label={`${name} და ${familiar.display_name}`}>
                     <HomeAvatar name={name} src={profile.data?.avatar_url} large />
@@ -358,7 +292,9 @@ export function HomePage() {
                     </span>
                     <HomeAvatar name={familiar.display_name} src={familiar.avatar_url} large />
                   </div>
-                  <h3 className="home-pair-name">შენ &amp; {familiar.display_name}</h3>
+                  <h3 className="home-pair-name">
+                    შენ &amp; {familiar.display_name}
+                  </h3>
                   <p className="home-pair-caption">შენი წრიდან</p>
 
                   {relationship.isLoading ? (
@@ -423,134 +359,74 @@ export function HomePage() {
         </aside>
       </div>
 
+      {/* 03 Social Discovery Floor (MORE PEOPLE) */}
       <div className="home-lower-grid">
-      {/* Real, authorized people: portraits still use the private-media component. */}
-      <section id="home-people" className="home-discovery" aria-labelledby="home-people-title">
-        <div className="home-discovery-heading">
-          <div>
-            <h2 id="home-people-title">გაიცანი ადამიანები</h2>
+        <section id="home-people" className="home-discovery" aria-labelledby="home-people-title">
+          <div className="home-discovery-heading">
+            <div>
+              <h2 id="home-people-title">გაიცანი ადამიანები</h2>
+            </div>
+            <Link to="/discover" className="home-outline-link">
+              ყველა ადამიანი <HomeIcon />
+            </Link>
           </div>
-          <Link to="/discover" className="home-outline-link">
-            ყველა ადამიანი <HomeIcon />
-          </Link>
-        </div>
 
-        <div className="home-discovery-tools">
-          <div className="home-filter" role="group" aria-label="ადამიანების ჩვენება">
-            <button
-              type="button"
-              aria-pressed={filter === 'insights'}
-              onClick={() => {
-                setFilter('insights');
-                setPage(0);
-              }}
-            >
-              დაკვირვებით{discovery.isSuccess && ` · ${observedPeople.length}`}
-            </button>
-            <button
-              type="button"
-              aria-pressed={filter === 'all'}
-              onClick={() => {
-                setFilter('all');
-                setPage(0);
-              }}
-            >
-              ყველა{discovery.isSuccess && ` · ${people.length}`}
-            </button>
-          </div>
-          <p>სახელის მიხედვით · რეიტინგის გარეშე</p>
-        </div>
-
-        {discovery.isLoading ? (
-          <div className="home-people-layout">
-            <HomeSkeleton />
-            <HomeSkeleton />
-          </div>
-        ) : discovery.isError ? (
-          <HomeState
-            title="ადამიანების სია ვერ ჩაიტვირთა"
-            retry={() => void discovery.refetch()}
-          >
-            შენი კავშირები და პირადი სივრცე ცალკე რჩება ხელმისაწვდომი.
-          </HomeState>
-        ) : visiblePeople.length === 0 ? (
-          <HomeState
-            title={filter === 'insights' ? 'დაკვირვებები ჯერ არ ჩანს' : 'ამ ეტაპზე ახალი პროფილები არ ჩანს'}
-          >
-            {filter === 'insights' && people.length > 0 ? (
-              <button
-                type="button"
-                className="home-text-button"
-                onClick={() => {
-                  setFilter('all');
-                  setPage(0);
-                }}
-              >
-                ნახე ყველა {people.length} პროფილი <HomeIcon />
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="home-text-button"
-                onClick={() => void discovery.refetch()}
-              >
-                განაახლე სია <HomeIcon />
-              </button>
-            )}
-          </HomeState>
-        ) : (
-          <>
+          {discovery.isLoading ? (
             <div className="home-people-layout">
-              <PersonPreview
-                key={visiblePeople[0].id}
-                person={visiblePeople[0]}
-                connection={connectionFor(connectionList, viewer, visiblePeople[0].id)}
-                viewer={viewer}
-                featured
-              />
-              <div className="home-people-list">
-                {visiblePeople.slice(1).map(person => (
-                  <PersonPreview
-                    key={person.id}
-                    person={person}
-                    connection={connectionFor(connectionList, viewer, person.id)}
-                    viewer={viewer}
-                  />
-                ))}
-              </div>
+              <HomeSkeleton />
+              <HomeSkeleton />
             </div>
+          ) : discovery.isError ? (
+            <HomeState
+              title="ადამიანების სია ვერ ჩაიტვირთა"
+              retry={() => void discovery.refetch()}
+            >
+              შენი კავშირები და პირადი სივრცე ცალკე რჩება ხელმისაწვდომი.
+            </HomeState>
+          ) : selectedPeople.length === 0 ? (
+            <HomeState
+              title={
+                filter === 'insights'
+                  ? 'დაკვირვებები ჯერ არ ჩანს'
+                  : 'ამ ეტაპზე ახალი პროფილები არ ჩანს'
+              }
+            >
+              {filter === 'insights' && people.length > 0 ? (
+                <button
+                  type="button"
+                  className="home-text-button"
+                  onClick={() => setFilter('all')}
+                >
+                  ნახე ყველა {people.length} პროფილი <HomeIcon />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="home-text-button"
+                  onClick={() => void discovery.refetch()}
+                >
+                  განაახლე სია <HomeIcon />
+                </button>
+              )}
+            </HomeState>
+          ) : (
+            <HomePersonCarousel
+              people={selectedPeople}
+              connections={connectionList}
+              viewer={viewer}
+              filter={filter}
+              onFilterChange={setFilter}
+              observedCount={observedPeople.length}
+              totalCount={people.length}
+              onRefresh={() => void discovery.refetch()}
+            />
+          )}
+        </section>
 
-            <div className="home-pagination">
-              <span role="status">
-                {currentPage * 4 + 1}–{Math.min((currentPage + 1) * 4, selectedPeople.length)} /{' '}
-                {selectedPeople.length} პროფილი
-              </span>
-              <div>
-                <button
-                  type="button"
-                  disabled={currentPage === 0}
-                  onClick={() => setPage(currentPage - 1)}
-                  aria-label="წინა პროფილები"
-                >
-                  ←
-                </button>
-                <button
-                  type="button"
-                  disabled={currentPage + 1 >= pageCount}
-                  onClick={() => setPage(currentPage + 1)}
-                  aria-label="შემდეგი პროფილები"
-                >
-                  →
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      </section>
-      <HomeConversationInvitation hasConnections={accepted.length > 0} />
+        <HomeConversationInvitation hasConnections={accepted.length > 0} />
       </div>
 
-      {/* Closing Editorial Action */}
+      {/* 04 Closing Editorial Action */}
       <footer className="home-closing">
         <div>
           <span className="home-eyebrow">გაცნობა ორივე მხრიდან იწყება</span>
@@ -570,10 +446,13 @@ export function HomePage() {
         </Link>
       </footer>
 
-      {/* Adult-Only Policy Notice */}
+      {/* 05 Adult-Only Policy Notice */}
       <div className="home-policy-notice">
         <span className="home-policy-badge">18+</span>
-        <span>JESTER განკუთვნილია სრულწლოვანი მომხმარებლებისთვის · People Discovery &amp; Relationship Intelligence</span>
+        <span>
+          JESTER განკუთვნილია სრულწლოვანი მომხმარებლებისთვის · People Discovery &amp; Relationship
+          Intelligence
+        </span>
       </div>
     </div>
   );

@@ -66,6 +66,11 @@ const editorial = loadSource('../frontend/src/modules/home/HomeEditorial.tsx', {
   'react-router-dom': { Link: ({ to, children, ...props }) => React.createElement('a', { ...props, href: to }, children) },
 });
 const model = loadSource('../frontend/src/modules/home/homeModel.ts');
+const carousel = loadSource('../frontend/src/modules/home/HomePersonCarousel.tsx', {
+  './HomeElements': elements,
+  './homeModel': model,
+  'react-router-dom': { Link: ({ to, children, ...props }) => React.createElement('a', { ...props, href: to }, children) },
+});
 const success = data => ({ data, isSuccess: true, refetch() {} });
 function renderHome(states) {
   const { HomePage } = loadSource('../frontend/src/modules/home/HomePage.tsx', {
@@ -73,7 +78,7 @@ function renderHome(states) {
     '../../core/auth/useAuth': { useAuth: () => ({ user: { id: 'viewer' } }) },
     '../../core/api/endpoints': { API: { profiles: {}, connections: {} } },
     'react-router-dom': { Link: ({ to, children, ...props }) => React.createElement('a', { ...props, href: to }, children) },
-    './HomeElements': elements, './homeModel': model, './HomeEditorial': editorial,
+    './HomeElements': elements, './homeModel': model, './HomeEditorial': editorial, './HomePersonCarousel': carousel,
   });
   return renderToStaticMarkup(React.createElement(HomePage));
 }

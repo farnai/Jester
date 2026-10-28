@@ -201,11 +201,11 @@
   top: -4px;
   right: -4px;
   background: var(--home-brand-orange);
-  color: #FFFFFF;
+  color: var(--home-text-primary);
   border: 2px solid #FFFFFF;
   border-radius: 9999px;
   padding: 0 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
   line-height: 18px;
   box-shadow: 0 2px 6px rgba(255, 122, 47, 0.35);
@@ -284,8 +284,8 @@
 .home-menu-badge {
   margin-left: auto;
   background: var(--home-brand-orange);
-  color: #FFFFFF;
-  font-size: 11px;
+  color: var(--home-text-primary);
+  font-size: 12px;
   font-weight: 700;
   padding: 1px 7px;
   border-radius: 9999px;
@@ -300,7 +300,7 @@
 }
 
 .home-account-dev-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -336,7 +336,7 @@
 }
 
 .home-menu-error {
-  font-size: 11px;
+  font-size: 12px;
   color: #DC2626;
   padding: 4px 12px;
 }
@@ -499,7 +499,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -512,14 +512,14 @@
   color: #FFFFFF;
   border-radius: var(--home-radius-pill);
   padding: 2px 8px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: normal;
 }
 
 .home-edition {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 550;
   color: var(--home-text-muted);
   text-transform: none;
@@ -530,7 +530,7 @@
 
 .home-insight .home-insight-kicker {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -728,7 +728,7 @@
 
 .home-insight-context {
   margin-top: 12px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--home-text-muted);
 }
 
@@ -852,7 +852,7 @@
 
 .home-pair-caption {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--home-text-muted);
   margin-bottom: 14px;
@@ -899,7 +899,7 @@
 }
 
 .home-score small {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--home-text-muted);
 }
 
@@ -912,7 +912,7 @@
   padding: 12px 20px;
   min-height: 44px;
   background: var(--home-brand-orange);
-  color: #FFFFFF;
+  color: var(--home-text-primary);
   font-size: 14px;
   font-weight: 700;
   border-radius: var(--home-radius-pill);
@@ -984,7 +984,7 @@
 .home-outgoing {
   display: block;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--home-text-muted);
   margin-top: 8px;
 }
@@ -1166,7 +1166,7 @@
 
 .home-connection-tag {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
   padding: 2px 9px;
   border-radius: var(--home-radius-pill);
@@ -1191,7 +1191,7 @@
 }
 
 .home-eyebrow {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1334,7 +1334,7 @@
   border: 1px solid rgba(34, 38, 48, 0.1);
   border-radius: var(--home-radius-pill);
   font-weight: 750;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--home-text-secondary);
 }
 
@@ -1444,7 +1444,7 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--home-text-secondary);
     min-height: 48px;
