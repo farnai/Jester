@@ -2,7 +2,13 @@
 
 Home is the authenticated front door to self-understanding, people discovery, and existing relationships. It reflects the product thesis: **ME → YOU → US → MORE PEOPLE**.
 
-## Information Hierarchy & Visual Composition
+## Approved Mobile Interaction Policy
+
+Home may display a horizontal, touch-friendly profile carousel. Discover uses the full candidate Swipe Deck; Home need not implement all Discover interactions. Avoid vertical stacking of multiple candidate cards on mobile. The Home page and full individual profiles may remain vertically scrollable.
+
+This is `INTERACTION_POLICY_APPROVED`, not a claim that the carousel is implemented. The local baseline below still uses a two-column mobile candidate grid (`homeEditorial.css`); alignment is deferred to a separate application task.
+
+## Information Hierarchy & Visual Composition — Local Baseline
 
 1. **Editorial Hero and Quick Actions:**
    - Georgian headline, authenticated greeting and Discover CTA alongside organic portrait composition. Existing accepted-connection and incoming-request counts appear only after a successful connections response; loading/error is never presented as zero.
@@ -24,7 +30,7 @@ Home is the authenticated front door to self-understanding, people discovery, an
    - If user has no connections: Provides an honest, thoughtful first-connection path without fabricated mock data.
 
 4. **Discovery Preview (Up to Four Distinct Real People):**
-   - Four portrait cards per client page from `GET /v1/interpretations/discovery-people`, with preserved server ordering, observation/all filters and pagination. Two columns on smaller screens.
+   - Four portrait cards per client page from `GET /v1/interpretations/discovery-people`, with preserved server ordering, observation/all filters and pagination. The existing baseline uses two columns on smaller screens; this is an implementation gap against the approved mobile browsing direction, not the future layout requirement.
    - Shows real names, avatars/photos, cities, occupations, and genuine observations (if `presence_sign_source` is `sun` or `ascendant`) or authentic user bio.
    - Dedicated "ყველა ადამიანი" CTA leading to the full `/discover` experience.
    - Never repeats the same candidate or duplicate generic paragraphs.
@@ -61,4 +67,4 @@ Home is the authenticated front door to self-understanding, people discovery, an
 
 ## Design Status & Future Visual Synthesis
 
-The current codebase implements the verified editorial reference baseline (`frontend/src/modules/home/HomePage.tsx`). High-fidelity visual explorations conducted in Visual Studio (`design/visual-studio/canvas/JESTER - Visual Exploration 02.pen`) have established the approved synthesis direction for future UI iterations under [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage): foundational architecture `KZzuf` (Warm Paper Salon / Personal Court) with opening hero stage `phkQC` (Theatrical Spotlight Stage with Truth-Flip and 4-Facet ME Lens). Implementation in application code is deferred to a dedicated feature task with explicit Founder approval.
+The current codebase implements the editorial reference baseline (`IMPLEMENTED_LOCAL`; `VISUAL_REVIEW_PENDING`) (`frontend/src/modules/home/HomePage.tsx`). High-fidelity visual explorations conducted in Visual Studio ([Visual Exploration 02 canvas](<../design/visual-studio/canvas/JESTER — Visual Exploration 02.pen>)) have established the approved synthesis direction for future UI iterations under [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture--phkqc-stage): foundational architecture `KZzuf` (Warm Paper Salon / Personal Court) with opening hero stage `phkQC` (Theatrical Spotlight Stage with Truth-Flip and 4-Facet ME Lens). The synthesis is `DESIGN_DIRECTION_SELECTED`; final visual approval of an implementation remains pending. No `FOUNDER_VISUAL_APPROVED` status is established for the current baseline or future synthesis. Implementation changes are deferred to a dedicated feature task with explicit Founder approval.

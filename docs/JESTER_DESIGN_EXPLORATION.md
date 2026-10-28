@@ -1,7 +1,7 @@
 # JESTER — Design Exploration & UI/UX Proposals
 
 **Document Type:** UI/UX Design Exploration & Component Proposals  
-**Authority Level:** Level 6 (Proposals & Explorations)  
+**Governance:** Proposals and scoped approved directions under [AGENTS.md](../AGENTS.md#source-of-truth)\
 **Audience:** Product Designers, UI/UX Designers, Frontend Engineers  
 **Target Environment:** Mobile-First (Web, iOS, Android)  
 **Status:** WORKING EXPLORATION (Subject to review and formal design approval)  
@@ -24,7 +24,7 @@ Every section is strictly tagged with its current status:
 
 ### 1.1 Approved Direction: "Warm Modern Editorial Social Discovery" `[APPROVED]`
 - **Concept:** A confident, human-centered, photography-rich editorial aesthetic tailored for adult social discovery. It pairs warm organic canvases with vibrant Carrot Orange accents, sophisticated sage/peach tones, and bold Georgian typography.
-- **Feeling:** Human, observant, lively, warm, and subtly playful. It rejects generic SaaS dashboard cards, corporate financial sterility, neon AI mysticism, and swipe-dating commodification.
+- **Feeling:** Human, observant, lively, warm, and subtly playful. It rejects generic SaaS dashboard cards, dense corporate layouts, neon mystical imagery, and appearance-only matching without context.
 - **Core Principles:**
   - **Typographic Authority:** Noto Sans Georgian with strong weights (700/800) and generous line heights (1.55+).
   - **Human Photography First:** Authentic adult portraiture and social moments, not stock models or fake avatars.
@@ -37,7 +37,7 @@ Every section is strictly tagged with its current status:
 - ❌ **Circus Clowns & Carnivals:** Floppy three-pronged hats, bells, carnival diamonds.
 - ❌ **Cartoon Mascots:** Bouncing mascots (no Clippy, no Duolingo owl).
 - ❌ **Cosmic Occult Temple:** Mystical crystal balls, purple-violet velvet gradients, zodiac wheels, planetary degree symbols in primary UI.
-- ❌ **Superficial Meat-Market Clichés:** Contextless binary hot-or-not cards, gamified discard culture, and naked percentage numbers without psychological meaning. (Touch-native candidate browsing via a bounded deck is approved under [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) with intentional bilateral confirmation; disposable matching mechanics remain strictly rejected).
+- **Provide Context and Deliberate Consent:** Pair photography with identity, interests and self-expression. Explain any authorized score as an astrological model output. Photo-forward swipeable discovery is `INTERACTION_POLICY_APPROVED`; Wave 3 is `IMPLEMENTED_LOCAL` and `VISUAL_REVIEW_PENDING`. This is not `FOUNDER_VISUAL_APPROVED`.
 
 ---
 
@@ -91,6 +91,8 @@ export const jesterTokens = {
 
 ### 3.3 Proposed Type Scale `[PROPOSAL]`
 
+This proposal is not implementation-ready: rows using 1.50 conflict with the approved 1.55 minimum above. Resolve the scale during visual review; do not treat those values as approved tokens.
+
 | Token | Size | Line Height | Weight | Proposed Usage |
 | :--- | :--- | :--- | :--- | :--- |
 | `Display 3xl` | 32px | 48px (1.50) | Heavy (800) | Onboarding welcome, editorial punchlines |
@@ -105,21 +107,22 @@ export const jesterTokens = {
 
 ## 4. Layout & Navigation Concepts
 
-### 4.1 Touch-Native Discovery Deck & Curated Browsing `[APPROVED]`
-*(Governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) and [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy))*
+### 4.1 Touch-Native Discovery Deck & Curated Browsing `[INTERACTION_POLICY_APPROVED]`
+*(Governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy) and [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing--geometric-hierarchy))*
 
 - **Mobile Touch-Native Candidate Deck (`DiscoverSwipeCard.tsx`):**
   - **Swipe Left (or ArrowLeft / Next button):** Advances locally to the next candidate (skip/pass) without writing negative rejection telemetry to the database.
   - **Swipe Right (or ArrowRight / Connect button):** Opens a focused confirmation modal/drawer to send a connection invitation.
   - **Intentional Bilateral Consent:** A right-swipe never triggers an immediate single-flick match; connection requires explicit button confirmation. Escape or "Not Now" cancels without dispatching network requests.
 - **Decoupled Gesture Hierarchy:**
-  - *Candidate navigation:* Horizontal swipe ($>65\text{px}$) or keyboard arrows navigate candidate cards.
-  - *Photo navigation:* Horizontal tapping or scrubbing within candidate cards cycles through photos (`photos[]`) without moving the candidate card.
-  - *Detail exploration:* Vertical scrolling sweeps down into deep candidate profile details (prompts, lifestyle cadence, shared interests, and WHY relational chemistry).
+  - *Candidate navigation:* Horizontal swipe ($\ge65\text{px}$) or keyboard arrows navigate candidate cards.
+  - *Photo navigation:* Photo taps and dedicated gallery buttons cycle through photos (`photos[]`) without changing the candidate. Dragging navigates candidates; photo scrubbing is not claimed as implemented.
+  - *Detail exploration:* Full individual profiles may scroll vertically. Show only implemented fields and authorized previews; prompt/lifestyle systems remain target specifications and full WHY requires an accepted connection.
+- **Home Mobile Preview:** A horizontal, touch-friendly profile carousel is permitted. Home need not implement all Discover deck interactions. Avoid vertical stacking of multiple mobile candidate cards.
 - **Desktop Layout:** Presents a centered photo card with rich social context, filters, and an alternate browsable list view to conserve bandwidth.
 - **Photo Geometry & Framing Hierarchy:**
-  - Large candidate and lifestyle photos must use natural proportions with restrained modern rounded corners (`rounded-2xl` to `rounded-3xl` / 20–24px). Exaggerated arch masks are prohibited on full-bleed mobile candidate cards.
-  - Distinctive arch framing and circular cameo apertures are reserved for small avatars, profile thumbnails, and shared-interest seals.
+  - Large candidate and lifestyle photos should normally use natural proportions and restrained corner radii. Avoid exaggerated arches, especially on mobile; this is not an absolute shape prohibition or a fixed-radius token mandate.
+  - Small portraits, avatars and thumbnails may use distinctive arch framing or cameo apertures.
 
 ### 4.2 Ergonomic Thumb-Zone Architecture `[PROPOSAL]`
 
@@ -170,7 +173,7 @@ export const jesterTokens = {
 - Avoid heavy, muddy black shadows.
 - Multi-layered soft ambient light:  
   `box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px -4px rgba(15, 23, 42, 0.08);`
-- Active card hover/press: Subtle indigo border light shift (`#c7d2fe`) rather than simply increasing drop shadow.
+- Active card hover/press: Use the approved semantic border/focus tokens; the earlier indigo proposal is superseded by the current brand palette.
 
 ### 5.3 Radii Rhythm `[PROPOSAL]`
 - `xs (4px)` / `sm (8px)`: Inline badges, status dots.
@@ -189,9 +192,8 @@ The following decisions remain **open** and require formal design exploration, w
    - *Option A:* Prominent numeric badge (e.g., `84 / 100`) on the card header.  
    - *Option B:* Ambient color pill or spark icon without numbers; full score revealed only upon opening WHY.  
    - *Option C:* Qualitative resonance tier label (e.g., *"მაღალი ქიმია"* / *"მძლავრი სინერგია"*) instead of raw numbers.
-2. **Card Density in Feed:**  
-   - *Option A:* Single full-height viewport card per person (TikTok / Hinge vertical scroll pattern).  
-   - *Option B:* Continuous editorial stream where cards can be scanned in partial view.
+2. **Mobile Candidate Browsing — Interaction Policy Resolved:**\
+   Discover uses the full Swipe Deck; Home may use a horizontal carousel. Avoid vertical stacks of multiple candidate cards. Card sizing, spacing and visual quality still require review; full individual profiles may scroll vertically.
 3. **WHY Breakdown Visualization:**  
    - *Option A:* 4 Category progress bars / meters (Communication, Emotional, Intellectual, Chemistry).  
    - *Option B:* Editorial text callouts with highlighted spark chips and zero progress bars.  
@@ -202,14 +204,16 @@ The following decisions remain **open** and require formal design exploration, w
 5. **Photo Framing & Aspect Ratio:**  
    - *Option A:* Standard 4:5 vertical portrait framing.  
    - *Option B:* 1:1 square editorial framing with generous surrounding text modules.  
-   *(Resolved by [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy): Large photographs use natural 4:5 or 3:4 portrait proportions with restrained modern rounded corners `rounded-2xl` to `rounded-3xl`; small avatars and cameo badges may use arch apertures).*
+   *(Resolved by [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing--geometric-hierarchy): Large photographs normally use natural proportions and restrained radii; 4:5 and 3:4 are examples. Small portraits may use arches; avoid exaggerated mobile arches).*
 
 ---
 
 ## 7. Visual Studio Exploration Synthesis & Directions `[APPROVED DIRECTION]`
-*(Governed by [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage))*
+*(Governed by [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture--phkqc-stage))*
 
-Following the comprehensive multi-agent exploration in Visual Studio (`design/visual-studio/canvas/JESTER - Visual Exploration 02.pen`), the Founder has approved the synthesis direction for future UI iterations:
+`DESIGN_DIRECTION_SELECTED` does not mean final implementation approval. The current Home baseline and future synthesis remain `VISUAL_REVIEW_PENDING`; `FOUNDER_VISUAL_APPROVED` requires explicit review of the rendered implementation.
+
+Following the multi-agent exploration in Visual Studio ([Visual Exploration 02 canvas](<../design/visual-studio/canvas/JESTER — Visual Exploration 02.pen>)), the Founder has approved the synthesis direction for future UI iterations:
 
 1. **Foundational Visual Architecture: `KZzuf` (Warm Paper Salon / Personal Court):**  
    - Grounded in warm editorial paper tones (`#FAF7F2`), subtle warm hairline borders (`#E6E0D7`), and restrained Carrot Orange (`#FF7A2F`) accents.
@@ -217,5 +221,5 @@ Following the comprehensive multi-agent exploration in Visual Studio (`design/vi
 2. **Opening Hero Stage: `phkQC` (Theatrical Spotlight Stage with Truth-Flip & 4-Facet ME Lens):**  
    - Combines a theatrical personal spotlight with an interactive "Truth-Flip" daily hook card and structured 4-facet ME lenses (Identity, Voice, Spark, Rhythm).
 3. **Screen Boundary Invariant:**  
-   - **Authenticated Home (`/`):** Remains a curated editorial overview with zero binary discard mechanics.
-   - **Social Discovery (`/discover`):** Employs the bounded mobile swipe deck with decoupled photo scrubbing and explicit right-swipe confirmation modal.
+   - **Authenticated Home (`/`):** Remains a curated editorial overview and may use a horizontal mobile profile carousel without all Discover interactions. Avoid vertical stacks of multiple mobile candidate cards.
+   - **Social Discovery (`/discover`):** Employs the bounded mobile swipe deck with separate photo taps/buttons and explicit right-swipe confirmation modal.

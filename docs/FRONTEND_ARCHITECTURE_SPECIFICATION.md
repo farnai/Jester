@@ -2,12 +2,14 @@
 
 **Document Version:** `1.1.0`  
 **System Roles:** Lead Product Architect, Senior Frontend Systems Architect, React Native / Expo Architect, Design Systems Architect  
-**Backend Reference Version:** `synastry-v1.0.0` (Production Ready, 188/188 passing tests)  
+**Backend Reference Version:** `synastry-v1.0.0` (version reference; no current release-readiness claim)\
 **Parent Blueprint:** [`docs/FRONTEND_CAPABILITY_SPECIFICATION.md`](FRONTEND_CAPABILITY_SPECIFICATION.md)  
 **Parent Product Spec:** [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md)  
 **Status:** Authoritative Frontend Architectural Blueprint (Cross-Platform / Universal Target Architecture)  
 
 ---
+
+> **Scope note (2026-10-28):** This is a cross-platform target blueprint, not a current implementation inventory. [Architecture v1.2](architecture/JESTER_PRODUCT_FRONTEND_ARCHITECTURE_V1_2.md) and the Wave 2–4 capability documents describe subsequent local work. Remaining target/runtime mismatches require subsystem review.
 
 ## 1. Architectural Principles
 
@@ -160,7 +162,7 @@ JESTER V1
 ## 5. Design System Architecture
 
 ### 5.1 Design System Philosophy `[FROZEN]`
-JESTER is an engine of **insight, wit, and provocative psychological clarity**. It rejects generic, colorful horoscope aesthetics, pastel spiritual clichés, and gamified dating swipe cards. The design language expresses:
+JESTER is an engine of **insight, wit, and provocative psychological clarity**. It favors human context and clear consent. Photo-forward swipeable discovery is `INTERACTION_POLICY_APPROVED`; this does not approve the existing Wave 3 visuals. Home may use a horizontal mobile carousel without all Discover interactions; avoid vertical stacks of multiple candidate cards. Full individual profiles may scroll vertically. The design language expresses:
 - **Depth & Contrast**: High-contrast, sleek surfaces with purposeful elevation.
 - **Editorial Precision**: Monospace accents for astrological coordinates/aspect metrics paired with refined sans-serif for sharp JESTER prose.
 - **Tactile Weight**: Distinct tactile feedback for state changes, connection locks, and score reveals.

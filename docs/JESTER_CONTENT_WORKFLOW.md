@@ -2,12 +2,14 @@
 
 ## Operational Guide: From AI Launch Drafts to Copywriter Excellence
 
+> **Scope:** Intended editorial workflow. The current resolver and repository-backed/in-memory library do not establish automated external LLM authoring, persistent CMS publishing, rollback or production A/B experimentation. These lifecycle capabilities require separate implementation evidence.
+
 ---
 
 ## 🃏 1. Editorial Vision & Mission
 
 In JESTER, copy is **the voice of the product**.
-Astrology calculates deterministic relational physics; JESTER's voice explains what that means in sharp, observant, human prose.
+The engine calculates deterministic astronomical signals; JESTER's voice renders astrological interpretations in human prose. These interpretations are not scientifically validated psychological conclusions.
 > *"They show the match. JESTER explains the connection."*
 
 The platform employs a phased content lifecycle designed to scale from launch to hundreds of thousands of active users without ever touching core astrology calculations:

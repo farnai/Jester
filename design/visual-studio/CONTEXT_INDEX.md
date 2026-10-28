@@ -3,7 +3,7 @@
 Auto-generated: paths, sizes, content fingerprints and up to eight headings only. This is NOT a source summary.
 Read each relevant original file before drawing conclusions or changing design. Refresh if source changes.
 
-Found 81 candidate files in this repo.
+Found 82 candidate files in this repo.
 
 | File | Bytes | SHA-256 prefix |
 |---|---:|---|
@@ -88,7 +88,7 @@ Found 81 candidate files in this repo.
   - ## Scope Control
   - ## Security & Privacy Invariants
   - ### Birth data
-| `docs/AI.md` | 30221 | `3152449f534f` |
+| `docs/AI.md` | 30293 | `6c42931a9c1f` |
   - # Jester — Interpretation Contract & AI Voice Architecture
   - ## 🤖 Overview & Strategic Role
   - ## 🏛️ The Astrology → JESTER Content Pipeline
@@ -97,7 +97,7 @@ Found 81 candidate files in this repo.
   - ### Desired Personality Traits:
   - ### ⚠️ Essential Voice Distinctions & Safety Boundaries:
   - ## 🔮 The "Today's Energy / Day Vibe" Experience
-| `docs/AI_BRIDGE_ARCHITECTURE.md` | 59780 | `9a4ba0b8ee62` |
+| `docs/AI_BRIDGE_ARCHITECTURE.md` | 58759 | `3f15bc777c09` |
   - # JESTER AI Bridge — Migration & Standalone Repository Notice
   - ## 1. Summary of Migration
   - ## 2. Historical Reference
@@ -106,7 +106,7 @@ Found 81 candidate files in this repo.
   - ### Core Architectural Invariant
   - ## 2. The 4-Tier Abstraction Model
   - ### Definitions
-| `docs/API.md` | 54553 | `8c2fe03c78f8` |
+| `docs/API.md` | 54403 | `cb2114f20fa6` |
   - # Jester — API Specification
   - ## 📡 Base URLs & Versioning
   - ## 🔐 Authentication & Global Security Headers
@@ -115,7 +115,7 @@ Found 81 candidate files in this repo.
   - #### 1. Liveness Check —  GET /healthz 
   - #### 2. Service Health & DB Connectivity —  GET /v1/health 
   - ### Profiles
-| `docs/ARCHITECTURE.md` | 31365 | `b95a86a779ce` |
+| `docs/ARCHITECTURE.md` | 31628 | `39621c9b08a9` |
   - # Jester — Architecture & Request Lifecycle
   - ## 🏛️ System Architecture Overview
   - ## 📂 Repository Structure & Component Map
@@ -124,7 +124,7 @@ Found 81 candidate files in this repo.
   - ### 2. Atomic Birth Data Onboarding Flow ( POST /v1/astrology/birth-data )
   - ### 3. Natal Chart Recalculation Flow ( /v1/astrology/profile/recalculate )
   - ### 4. Interest Onboarding & Graph Recommendation Flow ( /v1/interests/* )
-| `docs/architecture/JESTER_PRODUCT_FRONTEND_ARCHITECTURE_V1_2.md` | 15464 | `f6765f245b9a` |
+| `docs/architecture/JESTER_PRODUCT_FRONTEND_ARCHITECTURE_V1_2.md` | 17405 | `a0a0835d41cb` |
   - # JESTER — Product & Frontend Architecture v1.2
   - ## 0. What Changed from v1.1
   - ## 1. Product Thesis
@@ -142,7 +142,7 @@ Found 81 candidate files in this repo.
   - ### 2. Natal Chart & Planetary Placements
   - ### 3. Houses & Ascendant
   - ### 4. Zodiac Signs
-| `docs/archive/audits/JESTER_CONTENT_ARCHITECTURE_AUDIT.md` | 15845 | `c187a2556547` |
+| `docs/archive/audits/JESTER_CONTENT_ARCHITECTURE_AUDIT.md` | 15569 | `460994c8ee18` |
   - # JESTER V1 — Content Architecture V2 Forensic Audit
   - ## Comprehensive Product & Backend Architecture Audit Report
   - ## 🎯 Executive Summary
@@ -178,7 +178,7 @@ Found 81 candidate files in this repo.
   - #### B. User Profile:  GET /v1/profiles/me  &  PATCH /v1/profiles/me 
   - #### C. Personal Astrology:  GET /v1/astrology/profile/safe-astro 
   - #### D. Birth Data Onboarding / Update
-| `docs/archive/audits/JESTER_GEORGIAN_CONTENT_FORENSIC_AUDIT.md` | 107658 | `12932899c9f8` |
+| `docs/archive/audits/JESTER_GEORGIAN_CONTENT_FORENSIC_AUDIT.md` | 107227 | `10646e5f78d4` |
   - # JESTER V1 — Final Georgian Content Corpus Forensic Audit & Voice Validation
   - ## 1. Executive Verdict
   - ## 2. Corpus Metrics: Active Georgian vs. Future English
@@ -214,7 +214,7 @@ Found 81 candidate files in this repo.
   - ### 1.3 Who JESTER Is For
   - ### 1.4 What Makes JESTER Different
   - ### 1.5 The Core User Experience: The Relational Loop
-| `docs/archive/historical/FRONTEND_FOUNDATION_PHASE_4_1.md` | 15699 | `f5efc42c414e` |
+| `docs/archive/historical/FRONTEND_FOUNDATION_PHASE_4_1.md` | 15453 | `8522e8f1904a` |
   - # JESTER — FRONTEND FOUNDATION REPORT (PHASE 4.1)
   - ## 1. Executive Summary
   - ### Absolute Invariants Observed:
@@ -232,7 +232,7 @@ Found 81 candidate files in this repo.
   - ### Empirical Statistical Summary
   - ### Percentile Distribution
   - ### Score Bucket Frequencies
-| `docs/archive/historical/PRODUCT_SPECIFICATION.md` | 69486 | `0bf0fd07ba78` |
+| `docs/archive/historical/PRODUCT_SPECIFICATION.md` | 68065 | `92eeada58e9b` |
   - # JESTER V1 — Product Capability Specification
   - # 1. Product Definition & Strategic Positioning
   - ### 1.1 Core Experience Model: ME → YOU → US → MORE PEOPLE
@@ -241,11 +241,11 @@ Found 81 candidate files in this repo.
   - ### 1.4 Product Capability vs. Product Experience
   - # 2. Identity & Profile
   - ## 2.1 Account Identity
-| `docs/archive/README.md` | 1567 | `e0b68e10884c` |
+| `docs/archive/README.md` | 1535 | `b069bdc42d4e` |
   - # JESTER — Historical Documentation Archive
   - ## Purpose & Semantic Boundary
   - ## Authority & Conflict Rule
-| `docs/ASTROLOGY_ENGINE.md` | 6814 | `d89a58b66fe0` |
+| `docs/ASTROLOGY_ENGINE.md` | 7144 | `0155909401e8` |
   - # Jester — Astrology Engine Documentation
   - ## 🔮 Overview & Strategic Role
   - ### Strategic Role:
@@ -254,7 +254,7 @@ Found 81 candidate files in this repo.
   - ### 2. Planetary Bodies Calculation ( compute_natal_placements )
   - ### 3. Houses & Ascendant Calculation
   - ### 4. Zodiac Sign & Element / Modality Mapping
-| `docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md` | 50400 | `f5263e41ab88` |
+| `docs/ASTROLOGY_INTEGRATION_SYSTEM_V1_SPEC.md` | 49678 | `ef0e2128cfaf` |
   - # JESTER — ASTROLOGY INTEGRATION SYSTEM V1
   - ## Product, UX, Data Architecture & Relationship Intelligence Specification
   - ## 1. Executive Summary & Core Product Axioms
@@ -281,7 +281,7 @@ Found 81 candidate files in this repo.
   - ### Master Decoupling Table:
   - ## 3. Dimensional Analysis & The 9-Question Litmus Test
   - ### Evaluation Results:
-| `docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md` | 38108 | `11bc16108db6` |
+| `docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md` | 37587 | `c830f76dd33e` |
   - # JESTER — Connection & Messaging System V1 Specification
   - ## 1. Executive Summary
   - ### Core Product Philosophy:
@@ -290,16 +290,16 @@ Found 81 candidate files in this repo.
   - ## 3. Canonical Connection State Machine
   - ### 3.1 State Definitions & Viewpoint Matrix
   - ### 3.2 Detailed Transition Rules
-| `docs/DATABASE.md` | 53048 | `6fc2aa7f8092` |
+| `docs/DATABASE.md` | 52764 | `6b45f07fd2eb` |
   - # Jester — Database Documentation & Migrations Guide
   - ## 🗄️ Database Architecture Overview
   - ## 🔒 Data Classification
-  - ## 📜 Complete Migration Inventory (001 – 021)
+  - ## 📜 Baseline Migration Inventory (001 – 021)
   - ###  001_extensions.sql 
   - ###  002_enums.sql 
   - ###  003_profiles.sql 
   - ###  004_birth_data.sql 
-| `docs/design/GEMINI_IMPLEMENTATION_PROMPT.md` | 6749 | `cfcfeddfe70f` |
+| `docs/design/GEMINI_IMPLEMENTATION_PROMPT.md` | 7068 | `7a6fb293d216` |
   - # GEMINI / ANTIGRAVITY — JESTER DESIGN SYSTEM V1 IMPLEMENTATION
   - ## Role
   - ## Target and source
@@ -310,7 +310,7 @@ Found 81 candidate files in this repo.
   - ## Verification and review
 | `docs/design/jester.reference-tokens.css` | 3287 | `84fb21332590` |
 | `docs/design/jester.tokens.json` | 3984 | `e009a8ee46cc` |
-| `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md` | 18321 | `b9372efe5836` |
+| `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md` | 19023 | `97db938468c7` |
   - # JESTER — Color & Design System v1
   - ## 1. ბრენდი და პრინციპი
   - ## 2. ძირითადი პალიტრა
@@ -319,12 +319,12 @@ Found 81 candidate files in this repo.
   - ## 5. კომპონენტების წესები
   - ## 6. ეკრანების დანიშნულება და ვიზუალური იერარქია
   - ## 7. დიზაინის ტოკენების შრეები
-| `docs/design/README.md` | 2005 | `186dae6fc5ff` |
+| `docs/design/README.md` | 2118 | `ceda9f89987b` |
   - # JESTER Brand Identity & Design System Assets
   - ## 1. Brand Identity Assets
   - ## 2. Design System Documentation & Tokens (v1)
   - ## 3. Active Implementation in Repository
-| `docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md` | 46433 | `1d45fe2ec850` |
+| `docs/DISCOVERY_PREFERENCES_SYSTEM_V1_SPEC.md` | 46277 | `333e58b5492b` |
   - # JESTER — DISCOVERY PREFERENCES SYSTEM V1
   - ## Product, UX, Data Architecture & Relationship Intelligence Specification
   - ## 1. Executive Summary & Core Product Axiom
@@ -333,13 +333,22 @@ Found 81 candidate files in this repo.
   - ## 2. Conceptual Distinctions: Four Relational Layers
   - ## 3. Hard vs. Soft Filter Architecture
   - ### 3.1 Hard Filters (Strict Eligibility Gate — Layer 1)
-| `docs/DISCOVERY_WAVE3.md` | 5079 | `3dc942df8f9b` |
+| `docs/DISCOVERY_WAVE3.md` | 5706 | `4546ac52f205` |
   - # Wave 3: bounded discovery and social profiles
   - ## API
   - ## Privacy and performance
   - ## UI
   - ## Release boundary
-| `docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md` | 42567 | `5d59c5cad860` |
+| `docs/FOUNDER_DECISION_RECORDS.md` | 10598 | `123f53c6ec26` |
+  - # JESTER — Founder Decision Records (FDR)
+  - ## Overview
+  - ## FDR-2026-01: Photo-First Human Discovery & Touch-Native Swipe Interaction Policy
+  - ### 1. Context & Motivation
+  - ### 2. Decision & Core Principles
+  - ## FDR-2026-02: Photo Framing & Geometric Hierarchy
+  - ### 1. Context & Motivation
+  - ### 2. Decision & Framing Rules
+| `docs/FRONTEND_ARCHITECTURE_SPECIFICATION.md` | 42486 | `1175b24016ae` |
   - # JESTER — FRONTEND ARCHITECTURE SPECIFICATION
   - ## 1. Architectural Principles
   - ## 2. Platform Strategy
@@ -348,7 +357,7 @@ Found 81 candidate files in this repo.
   - ## 3. Application Shell
   - ### 3.1 Unauthenticated Shell  [FROZEN] 
   - ### 3.2 Authenticated Shell  [FROZEN] 
-| `docs/FRONTEND_CAPABILITY_SPECIFICATION.md` | 70473 | `764ea497334c` |
+| `docs/FRONTEND_CAPABILITY_SPECIFICATION.md` | 70269 | `2bf2f809d00f` |
   - # JESTER V1 — FRONTEND CAPABILITY SPECIFICATION
   - ## 1. Purpose
   - ## 2. Source of Truth
@@ -357,11 +366,13 @@ Found 81 candidate files in this repo.
   - ### 3.2 Current Technical Frontend vs. Consumer UX
   - ### 3.3 The 8-Stage Operational Product Loop
   - ## 4. Capability Classification
-| `docs/HOME_EXPERIENCE.md` | 5334 | `33364fefaece` |
+| `docs/HOME_EXPERIENCE.md` | 7045 | `7ac6baad9bdc` |
   - # Home Experience Specification (v1.3)
-  - ## Information Hierarchy & Visual Composition
+  - ## Approved Mobile Interaction Policy
+  - ## Information Hierarchy & Visual Composition — Local Baseline
   - ## Data and Authorization
   - ## Verification Requirements
+  - ## Design Status & Future Visual Synthesis
 | `docs/INTENT_SYSTEM_V1_SPEC.md` | 38281 | `240ec5ff935d` |
   - # JESTER — Intent System V1
   - ## Product, UX, Data Architecture & Relationship Intelligence Specification
@@ -380,7 +391,7 @@ Found 81 candidate files in this repo.
   - ### 2.2 Taxonomy Scale & Exposure Rules
   - ## 3. Canonical Interests, Slugs & Aliases
   - ### 3.1 Conceptual Entities
-| `docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md` | 37235 | `e09bf61c6fe1` |
+| `docs/JESTER_AI_CONTEXT_SYSTEM_V1_SPEC.md` | 36703 | `20f042394fd4` |
   - # JESTER — JESTER AI Context System V1 Specification
   - ## 1. Executive Summary
   - ### Core Architectural Axiom:
@@ -389,7 +400,7 @@ Found 81 candidate files in this repo.
   - ## 3. Canonical AI Context Contract:  JesterAiContextV1 
   - ## 4. Declared vs. Observed vs. Inferred Model
   - ### Prompt Guardrail Instruction:
-| `docs/JESTER_CONTENT_ARCHITECTURE.md` | 17171 | `3df5a7f90d38` |
+| `docs/JESTER_CONTENT_ARCHITECTURE.md` | 17244 | `d4d027337873` |
   - # JESTER V1 — Content Architecture V2 Specification
   - ## Scalable Interpretation, Copy Library, Voice Variants & Copywriter Content System
   - ## 🃏 1. Executive Summary & Architectural Paradigm
@@ -407,7 +418,7 @@ Found 81 candidate files in this repo.
   - ### 4.1 Domain A: Self / Me (43 Contracts — 2,059 Total Assets)
   - ### 4.2 Domain B: Relationship / Synastry (46 Contracts — 2,458 Total Assets)
   - ### 4.3 Domain C: Friendship / Platonic (12 Contracts — 602 Total Assets)
-| `docs/JESTER_CONTENT_WORKFLOW.md` | 7378 | `b5af4edca1f5` |
+| `docs/JESTER_CONTENT_WORKFLOW.md` | 7754 | `2ce1b6d8a370` |
   - # JESTER V1 — Content & Copywriter Editorial Workflow
   - ## Operational Guide: From AI Launch Drafts to Copywriter Excellence
   - ## 🃏 1. Editorial Vision & Mission
@@ -416,7 +427,7 @@ Found 81 candidate files in this repo.
   - ### Phase 2 — Copywriter Review & Refinement
   - ### Phase 3 — Production Approval & Promotion
   - ### Phase 4 — Experimentation & Seasonal Iteration
-| `docs/JESTER_DESIGN_EXPLORATION.md` | 11138 | `bc7cb8ed266b` |
+| `docs/JESTER_DESIGN_EXPLORATION.md` | 15520 | `1b52b5efd83f` |
   - # JESTER — Design Exploration & UI/UX Proposals
   - ## ⚠️ How to Read This Document
   - ## 1. Aesthetic Mood & Character
@@ -425,7 +436,7 @@ Found 81 candidate files in this repo.
   - ## 2. Approved Brand & Color Tokens
   - ### 2.1 Approved Brand System  [APPROVED] 
   - ### 2.2 Historical Explorations  [ARCHIVED] 
-| `docs/JESTER_INTERPRETATION_CONTRACT.md` | 17695 | `46081e7fb612` |
+| `docs/JESTER_INTERPRETATION_CONTRACT.md` | 17357 | `f56922590eee` |
   - # JESTER V1 — Interpretation Contract & JESTER Voice Content Layer Specification
   - ## 🃏 1. Strategic & Architectural Overview
   - ### Critical Architectural Invariants
@@ -434,7 +445,7 @@ Found 81 candidate files in this repo.
   - ## 🗃️ 3. Interpretation ID Taxonomy & Inventory
   - ### Relational Dynamics Inventory (Synastry V1)
   - ### Macro Compatibility Score Interpretations
-| `docs/JESTER_PRODUCT_FOUNDATION.md` | 19317 | `8ceeb338783c` |
+| `docs/JESTER_PRODUCT_FOUNDATION.md` | 22741 | `7ad9f83ef58e` |
   - # JESTER — Product Foundation
   - ## 1. What JESTER Is
   - ## 2. What JESTER Is NOT
@@ -452,7 +463,7 @@ Found 81 candidate files in this repo.
   - ### 3.1 Sun Sign Identity (12 Contracts)
   - ### 3.2 Moon Sign Emotional Processing (12 Contracts)
   - ### 3.3 Ascendant Social Persona (12 Contracts)
-| `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md` | 23022 | `6ff0fef8b873` |
+| `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md` | 24170 | `bb7b78271490` |
   - # JESTER — Strategic Marketing Foundation & Product Experience Blueprint
   - ## 1. Executive Summary
   - ## 2. What JESTER Is
@@ -479,7 +490,7 @@ Found 81 candidate files in this repo.
   - ## 3. Current Location vs. Hometown UX
   - ### 3.1 Why Both Are Essential
   - ### 3.2 Visual Hierarchy & Profile Placement
-| `docs/ME_CONTENT_GENERATION_SPEC.md` | 23832 | `55a03918d252` |
+| `docs/ME_CONTENT_GENERATION_SPEC.md` | 23495 | `70578764f7b0` |
   - # JESTER — PHASE 3.2
   - ## ME CONTENT FACTORY — FINAL PRE-GENERATION AUDIT
   - ### COMPLETE CONTENT GENERATION SPECIFICATION
@@ -488,7 +499,7 @@ Found 81 candidate files in this repo.
   - ## 2. FINAL SIGNAL LIST (BASE & DERIVED)
   - ## 3. FINAL SYNTHESIS LIST (APPROVED COMBINATIONS)
   - ### A. The 16 Luminary Elemental Dynamics ( self.synthesis.element_dynamic.* )
-| `docs/ME_CONTENT_MATRIX.md` | 36237 | `868e9d0c41c2` |
+| `docs/ME_CONTENT_MATRIX.md` | 35802 | `47b07f79cd10` |
   - # JESTER — PHASE 3.1
   - ## "ME" / "ვინ ვარ მე?"
   - ### COMPLETE CONTENT MATRIX & COVERAGE SPECIFICATION
@@ -521,7 +532,7 @@ Found 81 candidate files in this repo.
   - ## 2. Product Role of Prompts
   - ## 3. Architecture Decision: Short About/Headline + Prompts
   - ### Evaluated Options:
-| `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md` | 37833 | `fc8bf5f42408` |
+| `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md` | 38373 | `d99e7cbac6dd` |
   - # JESTER — Product Architecture Discovery & Frontend Inventory
   - ## A. Executive Summary
   - ### Core Platform Status
@@ -530,7 +541,7 @@ Found 81 candidate files in this repo.
   - ## C. Technical Architecture & Frontend Structure
   - ### Folder & Module Organization
   - ### State Management & Data Fetching
-| `docs/SECURITY.md` | 33018 | `59469754f9ed` |
+| `docs/SECURITY.md` | 33110 | `765a05d1493f` |
   - # JESTER — Security & Privacy Architecture Policy
   - ## 📋 Supported Versions
   - ## 🔑 Authentication & Token Validation ( backend/app/auth/ )
@@ -556,7 +567,7 @@ Found 81 candidate files in this repo.
   - ## Failure recovery
   - ## Interests and compatibility
   - ## Verification and limits
-| `docs/SYNASTRY_V1_SPEC.md` | 20312 | `d638ee098b54` |
+| `docs/SYNASTRY_V1_SPEC.md` | 19839 | `fc62e82cb3d1` |
   - # JESTER SYNASTRY V1 — Mathematical & Engine Specification
   - ## 1. Purpose
   - ## 2. Scope
@@ -565,16 +576,16 @@ Found 81 candidate files in this repo.
   - ## 3. Existing-System Audit & Implementation Status
   - ## 4. Input Contract
   - ### Birth Time Precision Handling Rules:
-| `docs/TESTING.md` | 5659 | `0e0b80ab5756` |
+| `docs/TESTING.md` | 5815 | `cd6815f0a083` |
   - # Jester — Testing Suite Documentation
   - ## 🧪 Test Suite Summary
-  - ## 📁 Complete Test Inventory & Category Breakdown (89 Tests)
+  - ## 📁 Historical Test Inventory & Category Breakdown
   - ## 🔍 Detailed Subsystem Verification
   - ### 1. Synastry V1 Compatibility Engine ( tests/compatibility/ )
   - ### 2. Interpretation Contract & JESTER Voice Content Layer ( tests/interpretation/ )
   - ### 3. Planetary Aspects & Orbs ( tests/astrology/test_aspects.py )
   - ### 4. Database Security & RLS ( tests/database/test_database_security.py )
-| `docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md` | 39570 | `d3d231d52140` |
+| `docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md` | 38918 | `57112583128b` |
   - # JESTER — TRUST & VERIFICATION SYSTEM V1
   - ## Product, UX, Data Architecture & Safety Specification
   - ## 1. Executive Summary & Core Product Axioms

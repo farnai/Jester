@@ -2,17 +2,17 @@
 
 ## 🧪 Test Suite Summary
 
-The Jester test suite contains **89 automated test cases**, executing via `pytest` and `pytest-asyncio`.
+The Jester backend test suite runs via `pytest` and `pytest-asyncio`. Use current test discovery and run output for counts and results.
 
 ```bash
 python -m pytest
 ```
 
-All 89 tests pass deterministically in development and CI environments.
+The inventory below is a historical baseline, not a current passing-test or CI claim. It does not cover all later media, discovery, messaging and frontend checks; see the corresponding Wave 2–4 documents.
 
 ---
 
-## 📁 Complete Test Inventory & Category Breakdown (89 Tests)
+## 📁 Historical Test Inventory & Category Breakdown
 
 ```text
 tests/
@@ -86,4 +86,3 @@ While core security, natal astrology, Synastry V1, and the Interpretation Conten
    - The interpretation content layer, prompt builder, and Deep Analysis models are fully tested offline; live OpenAI API network calls remain a planned integration.
 3. **Extended Celestial Bodies**:
    - Chiron, Lilith, and Lunar Nodes do not have calculation tests because they are not yet supported in `calculator.py`.
-

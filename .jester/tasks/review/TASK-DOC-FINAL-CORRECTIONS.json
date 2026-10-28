@@ -1,0 +1,45 @@
+{
+  "id": "TASK-DOC-FINAL-CORRECTIONS",
+  "title": "Canonical documentation final corrections",
+  "type": "chore",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Apply Founder corrections and report bounded documentation audit findings.",
+  "scope": [
+    "docs/**/*.md",
+    "design/visual-studio/*.md",
+    ".jester/tasks/",
+    ".jester/reports/",
+    "scripts/check_documentation.py"
+  ],
+  "constraints": [
+    "Application code unchanged",
+    "Preserve history and pre-existing edits",
+    "Local follow-up commit only; no merge or push"
+  ],
+  "acceptance_criteria": [
+    "Clarify Home carousel vs Discover deck and separate approval statuses",
+    "Neutral product language and proportionate portrait rules",
+    "Align decision records with AGENTS.md authority by question",
+    "Inventory remaining documentation issues without claiming exhaustive modernization",
+    "Run documentation links, Markdown and whitespace validation; create scoped commit"
+  ],
+  "verification": [
+    "python -X utf8 scripts/check_documentation.py",
+    "python -X utf8 scripts/check_documentation.py .jester/reports/audits/TASK-DOC-FINAL-CORRECTIONS.md",
+    "git diff --check",
+    "git diff --cached --check",
+    "git diff --exit-code -- frontend backend supabase tests"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-28",
+  "updated_at": "2026-10-28"
+}

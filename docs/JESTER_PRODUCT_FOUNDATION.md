@@ -1,7 +1,7 @@
 # JESTER — Product Foundation
 
 **Document Type:** Canonical Product Foundation & Source of Truth  
-**Authority Level:** Level 2 (Directly under `AGENTS.md`)  
+**Governance:** Canonical product intent under [AGENTS.md — Source of Truth](../AGENTS.md#source-of-truth)\
 **Audience:** Product Designers, Engineers, Product Owners, Copywriters  
 **Primary Locale:** Georgian (`ka`) First; English (`en`) Secondary  
 **Status:** LOCKED PRODUCT DECISION  
@@ -41,7 +41,7 @@ To maintain absolute brand clarity and prevent falling into generic tropes, JEST
 │   ❌ NOT a Traditional Astrology App (No horoscopes, no crystal balls)  │
 │   ❌ NOT a Dating-Only App (Platonic, creative, activity & romantic)    │
 │   ❌ NOT an Open AI Chatbot (No conversational LLM hallucinations)      │
-│   ❌ NOT a Reflexive Superficial Discard Game (Consent & Multi-Intent)   │
+│   ❌ NOT an Appearance-Only Matching Experience (Consent & Multi-Intent)   │
 │   ❌ NOT a Diagnostic Assessment (No MBTI labels, no moral scores)      │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -52,8 +52,8 @@ To maintain absolute brand clarity and prevent falling into generic tropes, JEST
    Romantic connection is only one of six valid relational intents. Friendships, creative collaborations, activity partnerships, and intellectual exchanges are treated with equal first-class platform dignity.
 3. **NOT an Open AI Chatbot:**  
    JESTER does not feature open-ended conversational chatbots. The AI layer acts strictly as a deterministic voice resolver and stylistic translator governed by strict semantic contracts and context safety gates.
-4. **NOT a Reflexive Superficial Discard Game:**  
-   While JESTER embraces touch-native candidate exploration (including mobile swipe gestures governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy)), it strictly rejects the disposable "meat-market" paradigm of dating apps. In JESTER: (a) connection requests require intentional bilateral confirmation, never accidental single-flick matching; (b) visual attraction is paired with substantive psychological, lifestyle, and deterministic compatibility intelligence; (c) candidates are not discarded into oblivion by a reflex gesture; and (d) all relationship intents (friendship, creative projects, deep dialogue, dating) are treated with equal first-class dignity.
+4. **NOT an Appearance-Only Matching Experience:**\
+   JESTER combines photography with self-expression, interests and optional astrological interpretation across relationship intents. Swipeable discovery is approved as an interaction principle ([decision provenance](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy)). Sending an invitation requires explicit confirmation; the recipient separately accepts or declines. Moving to the next candidate is local navigation, not a permanent rejection.
 5. **NOT a Diagnostic Assessment:**  
    JESTER never assigns psychological pathology, clinical personality types (MBTI, Enneagram), or numeric virtue grades. Human attributes are treated as descriptive preferences, not diagnostic verdicts.
 
@@ -75,7 +75,7 @@ JESTER operates on three foundational axioms:
 ```
 
 - **"They show the match. JESTER explains the connection."**  
-  Generic platforms inform users that a match occurred, leaving them with conversational paralysis. JESTER reveals *why* two people connect, what they will talk about, and where dynamic friction will arise.
+  Generic platforms inform users that a match occurred, leaving them with conversational paralysis. JESTER offers astrological interpretations and conversation topics to explore; it does not establish why people connect or predict their future interactions.
 - **"Score creates curiosity. Interpretation creates value."**  
   A numeric score catches attention, but substantive, witty human interpretation is what delivers lasting insight.
 - **"The insight becomes the invitation."**  
@@ -101,18 +101,18 @@ $$\mathbf{ME} \longrightarrow \mathbf{YOU} \longrightarrow \mathbf{US} \longrigh
    JESTER reveals interpersonal dynamics, communication synergy, intellectual sparks, and conversation starters between two specific people.
 4. **MORE PEOPLE (Discovery):**  
    *"Who else is out there that I resonate with?"*  
-   Armed with self-knowledge and relational context, the user explores an intentional discovery feed designed to inspire genuine curiosity rather than mindless consumption.
+   Armed with self-knowledge and relational context, the user explores an intentional discovery feed designed to support curiosity and informed choices.
 
 ---
 
 ## 5. Product Principles
 
 1. **Facts Before Interpretations; Interpretations Before Presentation:**  
-   Astrological math and declared user truth are objective facts. Interpretation translates those facts into meaning. Presentation renders that meaning clearly. Never compromise the underlying deterministic math for visual convenience.
+   Astronomical calculations are reproducible computational outputs; user declarations are self-reported information. Astrological interpretation assigns meaning within the product model, not scientifically validated psychological conclusions. Presentation renders that meaning clearly. Never compromise the underlying deterministic math for visual convenience.
 2. **Deterministic Intelligence:**  
    Two users with identical placements must always yield the exact same underlying astrological geometry and synastry sub-scores. No random numbers, no arbitrary drift.
 3. **Intentionality Over Addiction:**  
-   Every interaction should encourage thoughtful engagement and real-world connection, rejecting addictive dark patterns, infinite slot-machine swiping, and manufactured anxiety.
+   Every interaction should encourage thoughtful engagement and real-world connection, with clear controls, deliberate consent and no pressure to continue browsing.
 4. **Absolute Boundary Respect:**  
    A user’s private data belongs solely to that user. The platform never exposes private birth data, real-time locations, or private messages.
 
@@ -159,42 +159,42 @@ JESTER uses AI strictly as a **stylistic translator and voice engine**, never as
 
 ## 8. Discovery Principles
 
-Discovery connects people through organic visual attraction, authentic self-expression, and deep relational intelligence—uniting the natural power of visual first impressions with substantive psychological and astrological depth (governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy)).
+Discovery combines photography, self-expression, shared interests and optional astrological interpretation. Photography is a major, legitimate signal; users and intents may prioritize different information. See [decision provenance](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy).
 
 - **Photo-First Human Discovery & Organic Attraction:**  
-  Physical presence, personal aesthetic, and photographic first impressions are natural and legitimate components of human attraction and social curiosity. JESTER does not artificially suppress or moralize against visual presentation. High-quality photography serves as an authentic, inviting visual gateway into discovering someone's presence, personality, and vibe.
-- **The Four-Stage Discovery Funnel:**  
-  Discovery journeys progressively through four stages:
+  Photography supports first impressions and social curiosity without determining personality or requiring visual attraction as every user's entry point.
+- **An Illustrative Discovery Journey:**\
+  One possible path, not a mandatory sequence for every user or relationship intent:
   $$\mathbf{Visual\ Attraction} \longrightarrow \mathbf{Personal\ Curiosity} \longrightarrow \mathbf{Deeper\ Understanding} \longrightarrow \mathbf{Meaningful\ Connection}$$
   1. **Visual Attraction:** Candid, authentic photography captures immediate interest, personal style, and human presence.
   2. **Personal Curiosity:** Expressive bio statements, values, lifestyle cadence, and self-expression prompts inspire relational intrigue.
-  3. **Deeper Understanding:** Deterministic Synastry signals, communication dynamics, friction points, and relational chemistry reveal how two people actually connect.
+  3. **Deeper Understanding:** Declared context and optional Synastry interpretations offer topics for reflection; they do not establish how two people will actually relate.
   4. **Meaningful Connection:** An intentional connection invitation initiated with explicit confirmation, transforming mutual curiosity into real conversation.
 - **Touch-Native Exploration & Gesture Separation:**  
-  On mobile devices, candidates can be browsed via an intuitive card deck (`DiscoverSwipeCard.tsx`) or curated feed. Crucially, **person navigation is decoupled from photo browsing**:
-  - *Photo navigation:* Horizontal tapping or scrubbing within a candidate's profile steps through their photo gallery (`photos[]`) without advancing candidate cards.
-  - *Candidate navigation:* Swiping left (or ArrowLeft / Next) advances locally to the next candidate (skip/pass); swiping right (or ArrowRight / Connect) initiates a connection invitation.
+  Discover uses the full candidate Swipe Deck. Home may display a horizontal, touch-friendly profile carousel on mobile and does not need all Discover interactions. Avoid vertically stacking multiple candidate cards on mobile; full individual profiles may remain vertically scrollable. **Person navigation is decoupled from photo browsing**:
+  - *Photo navigation:* Photo taps and dedicated gallery buttons change photos without advancing candidates; candidate dragging is a separate action.
+  - *Candidate navigation:* Swiping left (or ArrowLeft / Next) advances locally to the next candidate (skip/pass); swiping right (or ArrowRight / Connect) opens connection confirmation.
   - *Connection Confirmation:* A right-swipe never triggers an immediate, unprompted match; it opens an intentional confirmation modal (or connection note dialog), ensuring deliberate consent and zero accidental connections.
 - **Separation of Appearance from Algorithmic Scores:**  
-  JESTER never assigns numeric scores to physical attractiveness, nor does it deduce astrological or psychological compatibility from photographs. Photography is for human perception; deterministic calculations are for relational chemistry.
-- **Hierarchy of Perception:** **Presence first, voice second, chemistry third, scores fourth.**  
-  Visual warmth invites curiosity; self-expression creates context; deterministic synastry reveals dynamic interaction; and normalized scores validate interpersonal synergy.
-- **6/3/1 Diversity Ratio:**  
-  To prevent algorithmic echo chambers, discovery candidate feeds balance three streams:
+  JESTER never assigns numeric scores to physical attractiveness, nor does it deduce astrological or psychological compatibility from photographs. Photography informs human perception; deterministic Synastry scores summarize astrological rules, not scientific evidence of psychological compatibility.
+- **Visual Hierarchy, Not a Required Personal Sequence:** Photography and identity are prominent; self-expression and interpretation add context.\
+  Users may enter through interests, biography or conversation. Scores express the astrological model and do not validate interpersonal synergy.
+- **6/3/1 Diversity Ratio (Target Policy, Not Wave 3 Runtime):**\
+  The target Discovery Preferences specification defines three streams; current Wave 3 uses UUID ordering:
   - **60% Intent Alignment:** Candidates sharing primary or secondary relationship intents.
   - **30% Complementary Synergy:** Candidates offering dynamic balance in communication, lifestyle, or synastry.
   - **10% Serendipity:** Unexpected, intriguing candidates outside strict similarity filters.
 - **Soft Geographic Relevance:**  
-  Location provides a soft relevance boost (same-city candidates appear earlier), but never acts as a rigid GPS geofence. Continuous background GPS tracking is strictly prohibited.
-- **Discovery Gate:**  
+  The target ranking policy gives location a soft relevance boost. Current Wave 3 supports an exact current-city filter and a same-city indicator, not a geographic ranking boost. Continuous background GPS tracking is strictly prohibited.
+- **Discovery Gate (Target Eligibility; Photo/Onboarding Gates Not Enforced by Wave 3):**\
   To appear as a candidate in Discovery, a user must have:
   1. Completed onboarding.
   2. At least 1 clear profile photo.
   3. `is_discoverable = true`.
-- **Photo Verification:**  
+- **Photo Verification (Target; Not Implemented):**\
   Unverified users appear normally. Verified users receive a subtle verification mark (`✓ Photo Verified`). Verification proves liveness at the moment of capture; it is not a moral "Trust Score".
-- **Bilateral Intent Partitioning:**  
-  Candidates with mutually exclusive intents (e.g. user seeking exclusive dating vs user seeking strictly professional/creative collaboration) are automatically partitioned to prevent mismatched expectations.
+- **Bilateral Intent Partitioning (Target; Not Wave 3 Runtime):**\
+  The target policy partitions candidates with mutually exclusive intents (e.g. exclusive dating vs strictly professional/creative collaboration) to prevent mismatched expectations.
 
 ---
 
@@ -222,7 +222,7 @@ Onboarding must feel calm, respectful, human, and progressive—never like an as
 
 - **Sequential 8-Step Blueprint:**
   1. **Basic Identity:** Real First Name + Last Name. Derives public `display_name` as `"First L."` (e.g., `"დავით გ."`). Last name is never shown publicly.
-  2. **Birth Date:** Day, Month, Year. Enforces strict **18+ platform boundary**.
+  2. **Birth Date:** Day, Month, Year. The approved **18+ platform boundary** requires server enforcement before public launch; this blueprint is not evidence that enforcement exists.
   3. **Birth Time:** 24-hour time selector with prominent **"ზუსტი დრო არ ვიცი" (Unknown Time)** toggle.
   4. **Birth Place:** Global city autocomplete search (canonical `cities` table) resolving coordinates and IANA timezone for natal calculations.
   5. **Where You Live:** Current residential city (social discovery base; decoupled from birth place).

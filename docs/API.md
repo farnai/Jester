@@ -1,5 +1,7 @@
 # Jester — API Specification
 
+> **Scope note (2026-10-28):** This document includes target contracts as well as implemented endpoints. Trust/verification, behavioral telemetry and AI Context/Copilot sections are proposals, not wired routes in `backend/app/api/router.py`. Other endpoint details still require contract-by-contract reconciliation; do not infer implementation from this directory alone.
+
 ## 📡 Base URLs & Versioning
 
 - **API Base Prefix**: `/v1`
@@ -257,6 +259,7 @@ Implemented Wave 4 contract: [Messaging MVP](MESSAGING_WAVE4.md). All routes req
 
 #### 30. Pre-Connection Relationship Preview — `POST /v1/interpretations/compare-preview`
 - **Auth**: Optional / Bearer JWT. When authenticated, viewer identity is strictly derived from `JWT.sub`.
+- **Preview boundary**: The current unauthenticated path accepts `source_user_id` or falls back to a demo identity in `interpretation/router.py`. This is existing preview behavior, not an approved production authorization model. Production reachability and data exposure require a separate security review; this documentation task does not change that path.
 - **Body**: `ComparePreviewRequest(target_user_id: UUID, source_user_id?: UUID, locale: str = "ka", tone?: str)`
 - **Response 200**:
   - `source_user_id`: Caller UUID (derived from JWT)
@@ -876,4 +879,3 @@ Implemented Wave 4 contract: [Messaging MVP](MESSAGING_WAVE4.md). All routes req
 
 The implemented gallery, authenticated image delivery, photo DTOs, error responses,
 and authorized person-interest endpoint are documented in [Social profiles and private gallery](SOCIAL_PROFILE_MEDIA.md).
-

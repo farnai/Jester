@@ -2,6 +2,8 @@
 
 ## Scalable Interpretation, Copy Library, Voice Variants & Copywriter Content System
 
+> **Capability boundary:** Contracts, repository corpus, deterministic resolution and in-memory editorial operations exist. Automated external LLM generation, persistent CMS storage, production publishing and rollback are not established by those components. Lifecycle descriptions below need separate implementation evidence.
+
 ---
 
 ## 🃏 1. Executive Summary & Architectural Paradigm

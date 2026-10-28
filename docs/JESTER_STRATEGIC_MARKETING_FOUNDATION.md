@@ -41,18 +41,18 @@ To protect product focus and market positioning, JESTER is explicitly **NOT**:
 
 - ❌ **Not an Astrology / Horoscope App**: We do not sell horoscope readings, daily fortune-telling, or esoteric belief systems.
 - ❌ **Not an AI Astrology Chatbot**: We do not feature an open-ended conversational bot hallucinating astrological opinions.
-- ❌ **Not a Superficial Dating-Only App**: We do not reduce human connection solely to romance, nor do we reduce discovery to mindless reflex swiping without relationship context. While visual attraction is an authentic first step (governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy)), JESTER provides the deeper psychological, communication, and synastry intelligence that dating apps lack, across multiple relationship intents (friendship, creative projects, deep talks, dating).
+- **Not a Dating-Only App:** Photography is a major, legitimate discovery signal alongside interests, self-expression and conversation. Different users and intents may prioritize different information; visual attraction is not a mandatory first step. Photo-forward swipeable discovery is an approved interaction principle, not approval of the current visual implementation ([decision provenance](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy)).
 - ❌ **Not a Generic Compatibility Calculator**: We do not output flat, uncontextualized percentages (e.g., *"You are 82% compatible"* without meaning).
-- ❌ **Not a Generic AI Wrapper**: The core intelligence is computed by deterministic astronomical math; the LLM merely translates validated signals into voice.
+- ❌ **Not a Generic AI Wrapper**: The core intelligence is computed by deterministic astronomical math; the implemented resolver uses repository-backed interpretation content. External LLM generation remains a separate capability and is not implied by this positioning.
 
 ---
 
 ## 4. Market Problem
 
-The modern digital landscape suffers from two distinct connection failures:
+Two product opportunities guide this positioning; these are design hypotheses, not a verified survey of competing products:
 
-1. **The Superficial Matching Dilemma**: Conventional swipe-dating platforms rely exclusively on surface-level photography and fragmented bios without providing interpersonal context. Users experience visual attraction, but are left guessing *why* they might click or *how* they will interact. Conversely, niche platforms often moralize against physical attraction, ignoring how humans naturally connect. Users need a platform that respects visual attraction as an organic gateway while providing deep, deterministic relationship intelligence.
-2. **The Esoteric Astrology Silo**: Existing astrology apps (e.g., Co-Star, The Pattern, Sanctuary) are either overly fatalistic, laden with dense, inaccessible jargon (houses, trines, cusps, retrograde transits), or self-obsessed (*"Look at my chart"*). They fail to offer a playful, grounded language for real-world social interaction.
+1. **Limited Context in Brief Profile Interactions:** Photography and short biographies can prompt interest while leaving users seeking more context for conversation. JESTER pairs these signals with shared interests, self-expression and optional astrological interpretation across relationship intents.
+2. **Accessible Interpretive Language:** Technical astrological terminology can require explanation. JESTER uses approachable language for reflection and social conversation. Deterministic astronomical calculations do not scientifically validate psychological conclusions or predict relationship outcomes.
 
 Users lack a tool that is **conversational, intellectually sharp, culturally modern, and focused on relationships of all types**.
 
@@ -117,7 +117,7 @@ We reposition astrology from a *belief system* into an *interpersonal diagnostic
 | Dimension | Traditional Astrology Apps | Dating & Social Apps | JESTER |
 | :--- | :--- | :--- | :--- |
 | **Primary Focus** | Self / Identity (*"Who am I?"*) | Visual Matching (*"Do I like them?"*) | Integrated Discovery (*"Attraction + Why do we click?"*) |
-| **Tone** | Esoteric, cryptic, dramatic, fatalistic | Superficial, gamified | Sharp, witty, playful, observant, intelligent |
+| **Tone** | Esoteric, cryptic, dramatic, fatalistic | Visual, brief, interaction-led | Sharp, witty, playful, observant, intelligent |
 | **Language** | Heavy astro-jargon (planets, houses, degrees) | Basic bios and prompts | Human, conversational JESTER voice |
 | **Relationship Scope** | Solitary or romantic only | Romantic only | Comprehensive (Friendship, Collaboration, Romance, Living) |
 | **Privacy Model** | Often exposes or collects raw birth data | Public geolocation / profile data | Strict Privacy by Design (Safe Profile vs. Private Placements) |
@@ -307,7 +307,7 @@ In JESTER:
 
 ## 23. Monetization Strategy & Architecture (Free, Plus, Credits)
 
-Monetization must never break user trust or gate the core viral loop (governed by [FDR-2026-04](FOUNDER_DECISION_RECORDS.md#fdr-2026-04-commercial-architecture-feature-classification-boundaries)):
+Monetization must never break user trust or gate the core viral loop (governed by [FDR-2026-04](FOUNDER_DECISION_RECORDS.md#fdr-2026-04-commercial-architecture--feature-classification-boundaries)):
 - **Core Social Foundation (Free)**: Personal profile, Day Vibe, connecting with friends, basic Synastry comparison score and signals, photo browsing (Wave 2/3 multi-photo gallery), interest tags, and unmetered human-to-human messaging.
 - **Jester Plus (Monthly Subscription - Planned)**:
   - Recurring premium relationship intelligence, deep-dive synastry dynamics, conflict navigation guides.

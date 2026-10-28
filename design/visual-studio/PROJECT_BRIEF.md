@@ -1,9 +1,9 @@
 # JESTER Project Brief — Verified Repository Context
 
-> **Document Status:** VERIFIED REPOSITORY CONTEXT  
+> **Document Status:** WORKING CONTEXT; selected claims refreshed 2026-10-28; consult source before implementation\
 > **Source of Truth:** Canonical docs, design tokens, and frontend code checked into `farnai/Jester`  
 > **Target Audience:** Jester Visual Studio agents (`jester-art-director`, `jester-ui-designer`, `jester-graphic-designer`, `jester-visual-critic`)  
-> **Authority Level:** Authoritative Visual Design Reference  
+> **Governance:** Derived visual-design reference under `AGENTS.md`; canonical documents retain ownership\
 
 ---
 
@@ -20,22 +20,22 @@ JESTER is a **People Discovery and Relationship Intelligence platform**. It is e
 - **Astrology’s Role:** Deterministic, mathematical computational intelligence layer running Swiss Ephemeris (`pyswisseph`) C-bindings and frozen `synastry-v1.0.0` algorithm. Astrology is **not** the consumer brand. Technical symbols ($\degree$, house cusps, natal wheel drawings) are filtered out of primary user surfaces.
 - **AI’s Role:** Stylistic translator and voice engine governed by strict semantic contracts. JESTER has **no open conversational chatbot**; users chat only with authenticated humans.
 
-*Source references:* `docs/JESTER_PRODUCT_FOUNDATION.md#L11-L30`, `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md#L11-L26`, `AGENTS.md#L5-L15`.
+*Source references:* `docs/JESTER_PRODUCT_FOUNDATION.md`, `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md`, `AGENTS.md`.
 
 ---
 
 ## 2. Core Brand Differentiation
 
-Unlike traditional astrology apps that focus on solitary self-obsession, esoteric jargon, and fatalism, and unlike dating apps that reduce humans to superficial photo-swiping, JESTER explains **why people click, clash, challenge, or complement each other**.
+JESTER combines photography, declared interests and self-expression with optional astrological interpretations. Photography is a legitimate signal without being every user's mandatory starting point. Deterministic astronomical calculations do not establish scientifically validated psychological conclusions.
 
 | Dimension | Traditional Astrology Apps | Dating & Social Apps | JESTER |
 | :--- | :--- | :--- | :--- |
 | **Primary Focus** | Self / Identity (*"Who am I?"*) | Visual Matching (*"Do I like them?"*) | Relationship Intelligence (*"Why do we click?"*) |
-| **Tone** | Esoteric, cryptic, dramatic, fatalistic | Superficial, gamified | Sharp, witty, playful, observant, intelligent |
-| **Relational Scope** | Individual natal charts | Romantic / sexual only | All relational intents (friends, collab, activity, dating) |
+| **Tone** | Esoteric, cryptic, dramatic, fatalistic | Visual, brief, interaction-led | Sharp, witty, playful, observant, intelligent |
+| **Relational Scope** | Individual natal charts | Varies by product | All relational intents (friends, collab, activity, dating) |
 | **Interaction** | Solitary reading | Rapid card swiping | Intentional editorial discovery & dialogue |
 
-*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md#L116-L125`, `docs/JESTER_PRODUCT_FOUNDATION.md#L33-L59`.
+*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md`, `docs/JESTER_PRODUCT_FOUNDATION.md`.
 
 ---
 
@@ -47,7 +47,7 @@ Unlike traditional astrology apps that focus on solitary self-obsession, esoteri
 - **Tone & Voice ("Witty Truth, Not Generic Motivation"):** Sharp, playful, observant, warm, and occasionally sarcastic toward human contradictions — never cruel, never humiliating, never attacking dignity or identity, and immediately dialing down sarcasm during errors or emotionally sensitive states.
 - **Intent Primacy:** Declared relationship intent governs copy tone. Non-romantic intents (`new_friends`, `creative_collab`, `deep_talks`) strictly prohibit romantic or sexual framing of synastry signals.
 
-*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md#L24-L26`, `docs/JESTER_PRODUCT_FOUNDATION.md#L77-L85`, `docs/COMMUNICATION_SYSTEM_V1_SPEC.md#L228-L232`.
+*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md`, `docs/JESTER_PRODUCT_FOUNDATION.md`, `docs/COMMUNICATION_SYSTEM_V1_SPEC.md`.
 
 ---
 
@@ -61,14 +61,14 @@ Unlike traditional astrology apps that focus on solitary self-obsession, esoteri
   3. *Friendship Validation:* Playful insight into why best friends laugh for hours but argue over small decisions.
   4. *Social Group Dynamic:* Perceptive content to post in the group chat and laugh over together.
 
-*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md#L61-L92`, `docs/JESTER_PRODUCT_FOUNDATION.md#L259-L261`.
+*Source references:* `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md`, `docs/JESTER_PRODUCT_FOUNDATION.md`.
 
 ---
 
 ## 5. Exact Approved Colors & Design Tokens
 
 Approved aesthetic: **"Warm Modern Editorial Social Discovery"**  
-Authoritative source: `frontend/src/ui/tokens/colors.ts`, `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md`, `docs/JESTER_DESIGN_EXPLORATION.md#L44-L75`.
+Authoritative source: `frontend/src/ui/tokens/colors.ts`, `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md`, `docs/JESTER_DESIGN_EXPLORATION.md`.
 
 ### Primary Action & Brand Accent (Carrot Orange)
 - `palette.brand.orange500`: `#FF7A2F` — Core Primary Brand Accent / CTA
@@ -109,7 +109,7 @@ Primary button labels on `#FF7A2F` MUST use `#222630` (charcoal), achieving 5.82
 
 ## 6. Typography & Georgian Font Requirements
 
-Authoritative source: `frontend/src/ui/tokens/typography.ts`, `docs/JESTER_DESIGN_EXPLORATION.md#L81-L104`, `docs/JESTER_PRODUCT_FOUNDATION.md#L264-L271`.
+Authoritative source: `frontend/src/ui/tokens/typography.ts`, `docs/JESTER_DESIGN_EXPLORATION.md`, `docs/JESTER_PRODUCT_FOUNDATION.md`.
 
 - **Primary Locale:** Georgian (`ka`) First; English (`en`) Secondary.
 - **Font Stack:** FiraGO, Noto Sans Georgian, Sylfaen, system-ui sans-serif.
@@ -130,7 +130,7 @@ Authoritative source: `frontend/src/ui/tokens/typography.ts`, `docs/JESTER_DESIG
 
 ## 7. Current Application UI Architecture
 
-Authoritative source: `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md#L62-L100`, `frontend/src/navigation/AppRoutes.tsx`.
+Authoritative source: `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md`, `frontend/src/navigation/AppRoutes.tsx`.
 
 - **Framework:** React 19, TypeScript, Vite, TanStack React Query v5.
 - **State & Auth:** Supabase Auth with central `AuthProvider`, JWT verification, and Supabase Realtime WebSocket channels (`public:messages`, `public:notifications`).
@@ -165,36 +165,17 @@ Authoritative source: `frontend/src/modules/home/HomeElements.tsx`, `frontend/sr
 
 Authoritative source: `docs/HOME_EXPERIENCE.md`, `frontend/src/modules/home/HomePage.tsx`, `frontend/src/modules/home/homeModel.ts`.
 
-### Content Sections
-1. **Greeting & Eyebrow Pill:** `შენი სივრცე · [ქართული თარიღი]` + `გამარჯობა, [სახელი]` + `შენით იწყება. ადამიანებით გრძელდება.`
-2. **01 ME Hero Insight:**
-   - Label: `ME · პირადი სივრცე · [თარიღი ან პირადი ხედვა]`
-   - Kicker: `დღის დაკვირვება` (if `real_transit`) or `შენი პროფილის დაკვირვება`
-   - Title: `daily.data?.label || 'რას ამჩნევს JESTER'`
-   - Quote: Full text observation (expandable if >180 chars)
-   - Guidance Disclosure: `დღის პატარა მინიშნებები` (`სცადე ↗` / `ნუ იჩქარებ ↘`)
-   - Actions: One-tap copy (`კოპირება`), "რატომ ამბობს ამას JESTER?" explanation disclosure, direct link to `/me`.
-3. **02 US Relationship Moment (Contextual):**
-   - If accepted connections exist: Highlights one connected person with relational synastry quote and direct CTA to `/people/:id/why`.
-   - If incoming requests exist: Action banner prompting review of incoming connections.
-   - If no connections: Warm prompt encouraging discovery.
-4. **03 Discovery Preview (MORE PEOPLE):**
-   - 2–3 distinct deduplicated profiles with name, photo, city, occupation, and authentic observation/bio quote.
-   - Secondary filter toggle: `დაკვირვებით` (observed insights) vs `ყველა` (all people).
-   - "ყველა ადამიანი" CTA leading to `/discover`.
-5. **04 Profile Prompt:** Invitation to complete/refine own profile.
+### Content and States
 
-### Data States Handled
-- `loading`: Pulsing skeletons on hero and discovery cards.
-- `error`: Inline retry cards preserving other functional sections.
-- `empty_connections`: Thoughtful first-connection path without mock data.
-- `copied`: Visual feedback when copying insight text.
+Use [Home Experience](../../docs/HOME_EXPERIENCE.md) for the maintained screen contract and `HomePage.tsx` / `homeModel.ts` for current behavior. The local baseline has an editorial hero, personal insight, authorized connections, up to four people per client page, and a closing invitation. Loading, error/retry, empty and copy-feedback states belong to the same contract.
+
+The existing two-column mobile people grid is `IMPLEMENTED_LOCAL`; the approved direction permits a horizontal touch-friendly carousel and avoids vertical stacks of multiple candidate cards. Home need not duplicate Discover's full deck. This brief does not certify the current visuals or implement the selected synthesis.
 
 ---
 
 ## 10. Brand Restrictions & Prohibited Visual Tropes
 
-Authoritative source: `docs/JESTER_DESIGN_EXPLORATION.md#L34-L41`, `docs/JESTER_PRODUCT_FOUNDATION.md#L33-L59`.
+Authoritative source: `docs/JESTER_DESIGN_EXPLORATION.md`, `docs/JESTER_PRODUCT_FOUNDATION.md`.
 
 Strictly prohibited visual directions:
 - ❌ **No Generic SaaS Dashboard Boxes:** Monotonous grids of equal white rounded boxes, tiny 10px text, repetitive numbered cards (`01`, `02`, `03`).
@@ -202,7 +183,7 @@ Strictly prohibited visual directions:
 - ❌ **No Circus Clowns or Carnivals:** Jester hats with bells, carnival diamonds, harlequin costumes.
 - ❌ **No Medieval Fantasy Heraldry:** Parchment textures, wax seals, shields, swords.
 - ❌ **No Cartoon Mascots:** Bouncing cartoon characters (no Duolingo-style owls or Clippy equivalents).
-- ❌ **No Reflexive Disposable Matching Mechanics on Home:** Contextless binary hot-or-not cards, gamified discard culture, and naked percentage numbers without psychological meaning. (Note: Swipeable candidate deck is approved specifically for Mobile Discovery under [FDR-2026-01](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) with intentional bilateral confirmation; Home remains a curated editorial overview).
+- **Context and Consent:** Home may use a horizontal, touch-friendly mobile profile carousel; Discover uses the full candidate Swipe Deck. Home need not reproduce all Discover interactions. Avoid vertical stacks of multiple mobile candidate cards; full individual profiles may remain vertically scrollable. See [Home policy](../../docs/HOME_EXPERIENCE.md#approved-mobile-interaction-policy).
 
 ---
 
@@ -225,16 +206,16 @@ Areas where the AI Art Director, UI Designer, and Graphic Designer have complete
 
 | Domain | Canonical Repository Document | Status / Authority |
 | :--- | :--- | :--- |
-| **Founder Decision Records** | `docs/FOUNDER_DECISION_RECORDS.md` | Binding (Level 1.5) |
-| **Product Foundation** | `docs/JESTER_PRODUCT_FOUNDATION.md` | Authoritative (Level 2) |
-| **Marketing Foundation** | `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md` | Authoritative (Level 3) |
+| **Founder Decision Records** | `docs/FOUNDER_DECISION_RECORDS.md` | Decision provenance under AGENTS.md; not an additional authority tier |
+| **Product Foundation** | `docs/JESTER_PRODUCT_FOUNDATION.md` | Canonical stable product intent |
+| **Marketing Foundation** | `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md` | Product positioning; subordinate to approved product contracts |
 | **Design Exploration** | `docs/JESTER_DESIGN_EXPLORATION.md` | Explorations & Approved Tokens |
 | **Color Design System** | `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md` | Authoritative Color Tokens |
 | **Active Color Code** | `frontend/src/ui/tokens/colors.ts` | Source Implementation |
 | **Active Typography Code** | `frontend/src/ui/tokens/typography.ts` | Source Implementation |
 | **Home Experience Spec** | `docs/HOME_EXPERIENCE.md` | Authoritative Screen Spec |
 | **Frontend Architecture** | `docs/architecture/JESTER_PRODUCT_FRONTEND_ARCHITECTURE_V1_2.md` | Authoritative Architecture |
-| **Frontend Inventory** | `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md` | Authoritative Technical Audit |
+| **Frontend Inventory** | `docs/reports/JESTER_FRONTEND_PRODUCT_INVENTORY.md` | Historical inventory; consult current source and Wave 2–4 docs |
 | **AI & Voice Architecture** | `docs/AI.md` | Authoritative Voice Spec |
 | **Connections & Messaging** | `docs/CONNECTION_MESSAGING_SYSTEM_V1_SPEC.md` | Authoritative Domain Spec |
 | **Security & Privacy** | `SECURITY.md`, `docs/SECURITY.md` | Authoritative Security Policy |
@@ -247,11 +228,11 @@ Areas where the AI Art Director, UI Designer, and Graphic Designer have complete
    *Finding:* Historical prototypes (`docs/archive/historical/`) and early tokens used Indigo/Violet (`#6366f1`).  
    *Resolution:* Fully superseded by Founder-approved Warm Carrot Orange (`#FF7A2F`) and Warm Canvas (`#FAF7F2`) documented in `docs/design/JESTER_COLOR_DESIGN_SYSTEM_V1.md` and implemented in `frontend/src/ui/tokens/colors.ts`.
 2. **Typography Token Drift (`typography.ts` vs `index.css` & Design Docs):**  
-   *Finding:* `frontend/src/ui/tokens/typography.ts` lists system fonts without `Noto Sans Georgian` and sets `tight: 1.2`, while `frontend/src/index.css` self-hosts `NotoSansGeorgian-*.woff2` (weights 300–900) and `docs/JESTER_PRODUCT_FOUNDATION.md#L269` mandates `line-height >= 1.55` and minimum `12px` text (`homeEditorial.css` currently violates this with `9px–11px` labels and `1.24` line-height).  
+   *Finding:* `frontend/src/ui/tokens/typography.ts` lists system fonts without `Noto Sans Georgian` and sets `tight: 1.2`, while `frontend/src/index.css` self-hosts `NotoSansGeorgian-*.woff2` (weights 300–900) and `docs/JESTER_DESIGN_EXPLORATION.md` specifies Georgian line-height and type-scale guidance (`homeEditorial.css` currently violates this with `9px–11px` labels and `1.24` line-height).\
    *Resolution:* Visual designs MUST use `Noto Sans Georgian`, `line-height >= 1.55` for Georgian body/UI copy, bold weight contrast (`700`/`800`) instead of `uppercase`, and a strict `12px` floor.
 3. **Anti-Swipe Mandate vs Wave 3 Discovery Deck:**  
-   *Finding:* `docs/JESTER_PRODUCT_FOUNDATION.md#L55` historically forbade swipe dating mechanics, creating a documented tension with Wave 3 (`docs/DISCOVERY_WAVE3.md`, `frontend/src/modules/discover/DiscoverSwipeCard.tsx`).  
-   *Resolution:* Formally reconciled by Founder Decision [FDR-2026-01](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy). Touch-native mobile candidate deck is approved for Social Discovery with bilateral consent confirmation and gesture decoupling (photo scrubbing vs candidate navigation). Authenticated Home remains human-first, curated, and editorial (vertical/scrollable story cards, photo-first highlights) with zero binary discard swiping on Home. Photo geometry follows [FDR-2026-02](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy): natural proportions with restrained rounded corners (`rounded-2xl`/`rounded-3xl`) for large photography; arches/cameos for small avatars and seals. Future iterations synthesize `KZzuf` (Warm Paper Salon) and `phkQC` (Theatrical Spotlight Stage with Truth-Flip) per [FDR-2026-03](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage).
+   *Finding:* `docs/JESTER_PRODUCT_FOUNDATION.md` historically forbade swipe dating mechanics, creating a documented tension with Wave 3 (`docs/DISCOVERY_WAVE3.md`, `frontend/src/modules/discover/DiscoverSwipeCard.tsx`).\
+   *Resolution:* Formally reconciled by Founder Decision [FDR-2026-01](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy). Touch-native mobile candidate deck is approved for Social Discovery with sender confirmation, separate recipient acceptance and gesture separation (photo taps/buttons vs candidate dragging). Home remains curated and editorial, with a horizontal, touch-friendly mobile profile carousel permitted. It need not duplicate Discover interactions. Avoid vertical stacks of multiple mobile candidate cards; full individual profiles may scroll vertically. The current Home mobile grid is a known implementation gap. Photo geometry follows [FDR-2026-02](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing--geometric-hierarchy): large photographs normally use natural proportions and restrained radii; small portraits may use arches. Avoid exaggerated arches, especially on mobile, without imposing an absolute shape ban. Discovery is `INTERACTION_POLICY_APPROVED` and `IMPLEMENTED_LOCAL`, with `VISUAL_REVIEW_PENDING`. Home synthesis is `DESIGN_DIRECTION_SELECTED`, not `FOUNDER_VISUAL_APPROVED`. Future iterations synthesize `KZzuf` (Warm Paper Salon) and `phkQC` (Theatrical Spotlight Stage with Truth-Flip) per [FDR-2026-03](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture--phkqc-stage).
 4. **Verified Backend Capabilities (`EXISTING` / `DERIVABLE`) vs Unimplemented Specs (`PROPOSED`):**  
    - **`EXISTING`:** `GET /v1/interpretations/daily-energy` computes real Swiss Ephemeris planetary transits (`detection_mode: "real_transit" | "neutral_baseline" | "fallback_sun_sign"`) and returns **exact 3 `do` and 3 `dont` Georgian micro-tags** (`backend/app/interpretation/data/daily_energy_tags.json`).  
    - **`DERIVABLE` on Home:** `POST /v1/interpretations/resolve-natal` resolves **10 personal `ME` dimensions** (`identity`, `emotional`, `persona`, `cognition`, `relation`, `action`, `element`, `modality`, `synthesis`, `verdict`) when `mercury_sign`, `venus_sign`, and `mars_sign` from `GET /v1/astrology/profile/safe-astro` are passed. `GET /v1/discovery/people` returns up to **6 authorized gallery photos** (`photos[]`), `interests[]`, and **`common_interest_ids[]`** (verified shared interests).  

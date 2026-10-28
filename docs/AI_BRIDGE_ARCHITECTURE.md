@@ -11,20 +11,20 @@
 ## 1. Summary of Migration
 
 1. **Single Source of Truth:**
-   All future development, architectural decisions, configuration, adapters (Gemini, OpenAI, Antigravity CLI, Ollama), runtime selection, and testing for the Bridge live exclusively in arnai/JesterBridge.
+   All future development, architectural decisions, configuration, adapters (Gemini, OpenAI, Antigravity CLI, Ollama), runtime selection, and testing for the Bridge live exclusively in `farnai/JesterBridge`.
 
 2. **Main JESTER Repository Boundary:**
    The main JESTER repository focuses exclusively on the core relationship discovery application (astrology engine, deterministic synastry, Supabase persistence/RLS, FastAPI backend, and React/Vite web application).
 
 3. **Getting Started with the Bridge:**
    To install, configure, start, or test JesterBridge:
-   `ash
+   ```bash
    git clone https://github.com/farnai/JesterBridge.git
    cd JesterBridge
    pip install -r requirements.txt
    pytest
    python scripts/run_founder_ui.py
-   `
+   ```
 
 ---
 

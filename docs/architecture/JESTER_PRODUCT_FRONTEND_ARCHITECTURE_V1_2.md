@@ -9,7 +9,7 @@
 ## 0. What Changed from v1.1
 
 1. **Environment:** Only a local development instance is running. There is no deployed product or real production user base. Existing data are development/test fixtures; do not describe them as real customers. There may still be local accounts with unknown DOB; do not assume specific ages without checking.
-2. **Git:** Normal local `git` changes, commits, pulls and pushes to the correctly configured JESTER repository are permitted. Preserve secrets, avoid force-pushing or rewriting history, and never commit `.env`, generated test fixtures, credentials or large unlicensed image assets.
+2. **Git:** Local changes follow repository governance. Commits and remote pushes require explicit user authorization; this document does not provide standing push permission. Preserve secrets, avoid force-pushing or rewriting history, and never commit `.env`, generated test fixtures, credentials or large unlicensed image assets.
 3. **18+:** First **public** MVP will be for 18+ users (approved policy). **Server-side eligibility enforcement is a public launch gate**, not a reason to suspend local UI/UX work now. The earlier standalone 'implement 18+ eligibility' task was **not executed**; mark this feature `PLANNED / NOT YET IMPLEMENTED` pending code and server verification. A small 18+ notice may be introduced, but must not be misreported as security enforcement.
 4. **Immediate Work:** Move from repeated audits and generic Dashboard redesigns to real coherent, modern React visual design. Update canonical docs; establish a concrete design system; implement and visually verify **Wave 1: Application Shell + Home**. Prepare the component patterns / contracts needed for Discover, Person and ME. Do not try to implement every subsystem in one unbounded run.
 5. **No Production Migrations / Deploy:** Local database migrations may be made with informed, scoped changes and tests; no destructive reset unless explicitly needed for dev fixtures, with backup/confirmation and clear reporting. Git push is **not** the same as public production launch.
@@ -40,9 +40,9 @@ Contextual pages: `/people/:id`, `/compare/:id`, `/people/:id/why`, `/chat/:conv
 
 ## 3. UX Priority Model
 
-**Home is a curated entry point, not a component catalogue.** Clear hierarchy: one narrative hero / one main CTA, one contextual relationship or inbox module, one visually rich discovery preview. Avoid repeating the same person or the same generic paragraph in multiple sections. Use only real returned data and real evidence; handle zero-connection / sparse / empty states deliberately. Displaying a score without explaining it is not a satisfying interaction.
+**Home is a curated entry point, not a component catalogue.** Clear hierarchy: one narrative hero / one main CTA, one contextual relationship or inbox module, one visually rich discovery preview. Avoid repeating the same person or the same generic paragraph in multiple sections. Use only real returned data and real evidence; handle zero-connection / sparse / empty states deliberately. Displaying a score without explaining it is not a satisfying interaction. On mobile, Home may use a horizontal, touch-friendly profile carousel without all Discover deck interactions. Avoid vertical stacks of multiple candidate cards; full individual profiles may scroll vertically.
 
-**Discover is photo-/interest-first.** Profile imagery, identity, city and common interests are primary. Astrology is a soft optional second layer; no full synchronous synastry calculation for all discoverable users. The feed needs server pagination and safe filtering as a separate engineering task before scale.
+**Discover is photo-/interest-first.** Profile imagery, identity, city and common interests are primary. Astrology is a soft optional second layer; no full synchronous synastry calculation for all discoverable users. Wave 3 implements bounded server pagination, city and shared-interest filtering; personalized ranking remains a target specification.
 
 **Person profile** = photo gallery, public identity, bio, city, interests, human conversation context, then safe astrology and compare preview. Connection request is easy to find; accepted state enables chat / deeper Why; blocking must remain safe.
 
@@ -79,10 +79,11 @@ Check contrast especially orange CTA with small white text. Noto Sans Georgian/N
 
 ## 5. Existing Functionality vs. Planned Work Separation
 
-According to the October read-only inventory (requires source inspection prior to modifications):
+The October inventory is a historical baseline; the following reflects source inspection for this documentation correction, not a fresh runtime or release certification:
 - **Implemented / Reusable:** Auth/onboarding (locally verified earlier), basic profile and self insights, Sun/Moon safe DTO, deterministic compatibility + corpus, connections, real-time chat, interests schema and own-interest endpoints, existing design tokens, TanStack Query, routes, smoke/visual/debug surfaces.
-- **Partial:** Home information hierarchy, Discover feed/filters/pagination, actual Messages inbox integration, user-friendly profile edit, reusable social visuals.
-- **Missing / Planned:** Multi-photo gallery (currently single avatar), gallery reorder/delete flows, common-interest output for other person, reports/moderation, monetization accounts/ledger/entitlements/quotas, public-MVP 18+ server-enforced eligibility as newly approved requirement.
+- **Implemented locally in Waves 2–4:** Up to six gallery photos with upload/reorder/delete, shared interests, bounded discovery with UUID pagination and filters, and a Messages inbox using `GET /v1/conversations`. See [media](../SOCIAL_PROFILE_MEDIA.md), [discovery](../DISCOVERY_WAVE3.md) and [messaging](../MESSAGING_WAVE4.md) for limitations.
+- **Visual review pending:** Existing Home and Discover implementation; selected Home synthesis is not final implementation approval.
+- **Missing / Planned:** Personalized discovery ranking, reports/moderation, monetization accounts/ledger/entitlements/quotas, public-MVP 18+ server-enforced eligibility as newly approved requirement.
 - **Unknown / Verify:** Exact coverage and privacy safety of `evidence_trace`, Synastry dimension count (inventory says 5; older spec differs), ability to update and display interests on Person, current `welcome` routing, debug-route production guards, actual registry of original logo/image assets.
 
 A status saying `IMPLEMENTED` is not a substitute for browser/DB verification. Do not relabel planned work as complete.
@@ -91,7 +92,7 @@ A status saying `IMPLEMENTED` is not a substitute for browser/DB verification. D
 
 ## 6. Media, Interests, Explainability — Target Contracts
 
-**Photos:** Up to 6 per user is a **proposed working design default**, subject to load/storage assessment; one primary; order/edit/delete; image transforms, EXIF/GPS removal, file size validation, storage authorization, abuse reports and moderation. The old single `avatar_url` must remain compatible during transition. Avoid asserting one public Storage bucket can revoke access immediately after sharing.
+**Photos:** Up to 6 per user, primary/order/edit/delete, image normalization, EXIF/GPS removal, size validation and authenticated private media access are implemented locally in [Wave 2](../SOCIAL_PROFILE_MEDIA.md). Abuse reports and moderation remain planned. The old single `avatar_url` must remain compatible during transition. Avoid asserting one public Storage bucket can revoke access immediately after sharing.
 
 **Interests:** Existing tables and endpoints can be reused. Show own selected tags and shared interest intersections where accurately calculable; if absent, omit counts, do not fabricate. User should edit tags after onboarding.
 
@@ -103,7 +104,7 @@ A status saying `IMPLEMENTED` is not a substitute for browser/DB verification. D
 
 First DB-filter candidate rows (exclude self, blocked, not discoverable, underage once policy shipped), indexed stable server pagination, lightweight enrichment (photo, bio, interest tags, shared counts) for just current page. Compute compatibility **on profile open / explicit preview**, or valid cache. Do not run full synastry on all candidates each request. Filtering by city + interests first; detailed affinity scoring deferred.
 
-**Implemented Wave 3:** [Bounded discovery and social profiles](../DISCOVERY_WAVE3.md) documents the owner-authorized swipe deck: left = local Next; right = explicit connection confirmation, with keyboard/buttons and a browsable list. It adds no Likes, Matches or permanent rejection. Canonical connection transitions remain authoritative. Card media is bounded to current/next; Person Profile places connection controls before progressive astrology disclosure. Visual and interaction status is **`FOUNDER_APPROVED`** under [FDR-2026-01](../FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) (Photo-First Human Discovery).
+**Implemented Wave 3:** [Bounded discovery and social profiles](../DISCOVERY_WAVE3.md) documents the owner-authorized swipe deck: left = local Next; right = explicit connection confirmation, with keyboard/buttons and a browsable list. It adds no Likes, Matches or permanent rejection. Canonical connection transitions remain authoritative. Card media is bounded to current/next; Person Profile places connection controls before progressive astrology disclosure. Interaction status is **`INTERACTION_POLICY_APPROVED`** under [FDR-2026-01](../FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy) (Photo-First Human Discovery). Runtime status is **`IMPLEMENTED_LOCAL`**; visual status is **`VISUAL_REVIEW_PENDING`**. No evidence here establishes `FOUNDER_VISUAL_APPROVED` for the existing Wave 3 implementation.
 
 ---
 
@@ -140,18 +141,21 @@ This is a binding **public product policy**, not a claim that controls currently
 
 ## 11. Git & Local Environment Rules
 
-The Founder authorizes Git work. Inspect status/diff; create scoped commits and push to the confirmed JESTER remote if configured and safe. No `reset --hard`, no force-push, no leaked secrets, no destructive DB reset. Current local Supabase users are dev fixtures, but don't delete them casually; test state migrations in local only. Never claim deployed/public-ready merely because pushed to GitHub.
+Inspect status/diff and preserve existing work. Create scoped commits only when the user requests them; push only with explicit, direct user authorization under `.agents/rules/autonomous_workflow.md`. A historical workflow description is not current push permission. No `reset --hard`, no force-push, no leaked secrets, no destructive DB reset. Current local Supabase users are dev fixtures, but don't delete them casually; test state migrations in local only. Never claim deployed/public-ready merely because pushed to GitHub.
 
 ---
 
 ## 12. Approval & Completion Criteria
 
-Statuses:
-- `DESIGN_DIRECTION_SELECTED`
-- `IMPLEMENTED_LOCAL`
-- `FUNCTIONALLY_VERIFIED`
-- `VISUALLY_REVIEWED`
-- `FOUNDER_APPROVED`
-- `PUBLIC_READY`
+Statuses record independent evidence, not an automatic approval ladder:
+
+- `INTERACTION_POLICY_APPROVED`: Founder approved the behavior/principle, not its current visuals.
+- `DESIGN_DIRECTION_SELECTED`: Founder selected a concept or synthesis; final implementation approval remains separate.
+- `IMPLEMENTED_LOCAL`: Corresponding application code exists locally; this alone proves neither runtime correctness nor visual quality.
+- `FUNCTIONALLY_VERIFIED`: Named checks passed for the stated revision and scope.
+- `VISUAL_REVIEW_PENDING`: Rendered implementation still requires visual review and Founder sign-off.
+- `VISUALLY_REVIEWED`: A specific render was evaluated; record reviewer, revision and findings.
+- `FOUNDER_VISUAL_APPROVED`: Explicit Founder approval of a specific rendered implementation, with evidence. Do not infer this from policy approval or concept selection.
+- `PUBLIC_READY`: All applicable launch gates verified; local implementation and visual approval alone are insufficient.
 
 Wave 1 ends at **IMPLEMENTED_LOCAL + FUNCTIONALLY_VERIFIED** with screenshots for Founder review; do not self-issue Founder approval. 18+ public rule remains **PLANNED / PUBLIC LAUNCH BLOCKER** until full implementation/verification. No payment, photo-gallery or ranking functionality to be declared done because visually mocked.

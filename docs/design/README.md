@@ -18,8 +18,8 @@ This directory contains the Founder-selected **JESTER Color & Design System v1**
 - **`JESTER_Color_Design_System_v1.docx`**: Word documentation format of the approved design system.
 - **`jester.tokens.json`**: Design token definitions and semantic aliases (Carrot Orange `#FF7A2F`, Warm paper surfaces `#FAF7F2`, `#FFFFFF`, `#F3EEE6`, Supportive Sage `#788A69`, Peach insight `#FBEEE7`).
 - **`jester.reference-tokens.css`**: CSS variables reference handoff.
-- **`GEMINI_IMPLEMENTATION_PROMPT.md`**: Implementation brief executed in code.
-- **`JESTER_SELECTED_UI_MOCKUP_REFERENCE.png`**: Approved mobile UI reference mockup (Home, Discover, Why this person, Profile, Compare, Conversation Starters).
+- **`GEMINI_IMPLEMENTATION_PROMPT.md`**: Implementation brief; verify each capability against current source.
+- **`JESTER_SELECTED_UI_MOCKUP_REFERENCE.png`**: Founder-selected visual reference (Home, Discover, Why this person, Profile, Compare, Conversation Starters); selection does not establish final approval of rendered application implementations.
 
 ## 3. Active Implementation in Repository
 - `frontend/src/ui/tokens/colors.ts`: Active TypeScript token matrix.

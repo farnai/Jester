@@ -32,7 +32,7 @@ Crucial accessibility correction: White normal-size text on `#FF7A2F` is approxi
 Show coherent changes on a small set of representative real screens: Home, Discover, Person/Why, Compare, Registration (mobile + desktop wherever available). Avoid a massive blind global redesign. Keep scoped styling and reusability. If the whole product cannot be migrated safely in one task, deliver the shared token system and a well-tested first screen batch with a transparent migration plan for remaining screens; do NOT mark total migration as complete.
 
 ## Non-negotiable product boundaries
-- Jester = People Discovery & Relationship Intelligence. NOT a dating clone, horoscope frontend, swipe app or generic AI dashboard.
+- Jester = People Discovery & Relationship Intelligence. The product spans relationship intents and uses astrology as an interpretation layer. Photo-forward swipeable discovery is approved as an interaction principle; current Wave 3 visuals still need review. Home may use a horizontal mobile profile carousel without all Discover deck interactions. Avoid vertical stacks of multiple mobile candidate cards; individual profiles may scroll vertically.
 - ME → YOU → US → MORE PEOPLE; explanation and human insight are more important than naked compatibility scores.
 - Preserve existing auth/email verification/Supabase integration, onboarding, API calls, privacy gating, connection states, navigation, and data persistence.
 - No backend or database modifications. No new social login integrations. No placeholder scores or fake functionality.

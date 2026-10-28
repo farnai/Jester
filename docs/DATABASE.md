@@ -2,9 +2,11 @@
 
 ## 🗄️ Database Architecture Overview
 
-Jester uses **PostgreSQL 15+** managed via **Supabase**. The database structure includes 11 application tables, multiple security-definer helper functions, triggers for automated timestamping and data versioning, and strict Row-Level Security (RLS) policies.
+Jester uses **PostgreSQL 15+** managed via **Supabase**. The database structure includes application tables, multiple security-definer helper functions, triggers for automated timestamping and data versioning, and strict Row-Level Security (RLS) policies.
 
 ---
+
+> **Scope note (2026-10-28):** The baseline inventory below predates later migrations. The classification table also includes proposed domain entities; it is not proof that those tables or grants exist. Inspect [ordered migrations](../supabase/migrations) for persistence/security authority. Later implemented media, discovery and messaging contracts are documented in [Wave 2](SOCIAL_PROFILE_MEDIA.md), [Wave 3](DISCOVERY_WAVE3.md) and [Wave 4](MESSAGING_WAVE4.md). Full schema-table reconciliation remains outstanding.
 
 ## 🔒 Data Classification
 
@@ -19,7 +21,7 @@ To maintain privacy and prevent data leakage, data is partitioned into 4 access 
 
 ---
 
-## 📜 Complete Migration Inventory (001 – 021)
+## 📜 Baseline Migration Inventory (001 – 021)
 
 ### `001_extensions.sql`
 - **Purpose**: Enables required PostgreSQL extensions.

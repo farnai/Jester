@@ -5,9 +5,11 @@
 **Engine Version Dependency:** `synastry-v1.0.0`  
 **Parent Product Spec:** [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](archive/historical/PRODUCT_SPECIFICATION.md) (Historical Parent; active foundation codified in [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md))  
 **Mathematical Engine Spec:** [`docs/SYNASTRY_V1_SPEC.md`](SYNASTRY_V1_SPEC.md)  
-**Status:** Complete / Authoritative Frontend Functional Blueprint  
+**Status:** Target frontend blueprint; implementation claims require reconciliation with current source\
 
 ---
+
+> **Scope note (2026-10-28):** This document mixes target contracts and an older implementation snapshot. For local capability boundaries use [Home](HOME_EXPERIENCE.md), [media](SOCIAL_PROFILE_MEDIA.md), [discovery](DISCOVERY_WAVE3.md), [messaging](MESSAGING_WAVE4.md) and source. A full contract-by-contract refresh remains outstanding.
 
 ## 1. Purpose
 
@@ -25,9 +27,9 @@ The requirements in this document are derived directly from the authoritative co
 
 1. **Product Vision & Architecture**: [`docs/JESTER_PRODUCT_FOUNDATION.md`](JESTER_PRODUCT_FOUNDATION.md) (historical reference: [`docs/archive/historical/PRODUCT_SPECIFICATION.md`](archive/historical/PRODUCT_SPECIFICATION.md)) and [`docs/ARCHITECTURE.md`](ARCHITECTURE.md)
 2. **Deterministic Synastry Engine**: [`docs/SYNASTRY_V1_SPEC.md`](SYNASTRY_V1_SPEC.md) and [`backend/app/compatibility/synastry.py`](../backend/app/compatibility/synastry.py)
-3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](../supabase/migrations) (Migrations 001 through 021)
+3. **Database Migrations & Security Invariants**: [`supabase/migrations/`](../supabase/migrations) (use the current ordered migration directory; historical counts are not a schema contract)
 4. **FastAPI API Contracts & Pydantic Models**: [`backend/app/`](../backend/app)
-5. **Verified System Behaviors**: 74 passing automated unit, API, and database security tests in [`tests/`](../tests)
+5. **Verified System Behaviors**: Automated unit, API, and database security tests in [`tests/`](../tests)
 
 ---
 
@@ -168,10 +170,10 @@ Every feature is categorized into one of four capability buckets:
 ### C. Future / Out of Scope (Explicitly Deferred)
 - Extended astrological bodies (Chiron, Black Moon Lilith, Lunar Nodes, Asteroids).
 - Minor aspects (Quincunx, Semi-Sextile, Quintile) and House Overlays (deferred to Synastry V1.1 / V2.0).
-- OpenAI / LLM text generation and AI interpretation pipelines (`interpretation/` stubs).
+- OpenAI / LLM text generation and AI interpretation pipelines (external LLM execution is not implemented; deterministic contracts, resolver and repository corpus exist).
 - Native OS push notification delivery (APNs / FCM).
-- Group messaging threads and message pagination.
-- Dynamic transit-based daily energy engine (currently returns static daily summary string).
+- Group messaging threads. Direct-message history pagination is implemented locally in [Wave 4](MESSAGING_WAVE4.md).
+- Scheduled Daily Energy persistence/delivery. Request-time transit calculation and interpretation are implemented; this does not establish a production scheduler.
 
 ### D. Unknown / Requires Product Decision
 - **Client Evidence Trace Visibility**: Whether the technical `evidence_trace` array should be surfaced in an advanced "Astrology Breakdown" UI accordion or kept exclusively as an internal backend/audit layer.
@@ -906,7 +908,7 @@ The frontend state machine must maintain the following global and feature-level 
 The following features are **explicitly excluded** from V1 frontend requirements:
 - House overlay synastry (Synastry V1.1).
 - Extended asteroids (Chiron, Ceres, Juno, Pallas, Vesta) and Lunar Nodes (Synastry V2.0).
-- OpenAI / LLM conversational voice interpretations (`interpretation/` stubs).
+- OpenAI / LLM conversational voice interpretations (external LLM execution is not implemented; deterministic contracts, resolver and repository corpus exist).
 - Native iOS/Android push notification background receivers.
 - Group chat threads and message reactions.
 
@@ -916,8 +918,8 @@ The following features are **explicitly excluded** from V1 frontend requirements
 
 | Identified Gap | Description | Required Backend Action | Priority |
 | :--- | :--- | :--- | :--- |
-| **1. Dedicated Birth Data Endpoint** | Currently `birth_data` is written via direct Supabase client or DB scripts. A unified FastAPI `PUT /v1/birth-data` is cleaner for web clients. | Create `backend/app/astrology/birth_data_router.py`. | **HIGH** |
-| **2. Paginated Discovery Feed** | Currently frontend can only fetch profiles by ID `GET /v1/profiles/{id}`. A general discovery list is needed. | Add `GET /v1/people/discover?limit=20&cursor=...` endpoint. | **HIGH** |
+| **1. Birth Data Endpoint — implemented** | `POST /v1/astrology/birth-data` exists in `backend/app/astrology/router.py`. | Inspect the existing authorized onboarding contract; do not create a duplicate endpoint from this older gap list. | Resolved locally |
+| **2. Paginated Discovery — implemented** | `GET /v1/discovery/people` provides UUID cursor pagination and filters. | Use [Wave 3](DISCOVERY_WAVE3.md); personalized ranking remains a separate target. | Resolved locally |
 | **3. Realtime Chat Presence** | Typing indicators and online presence are not yet modeled in database tables. | Configure Supabase Presence channel on frontend. | **MEDIUM** |
 
 ---

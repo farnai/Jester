@@ -32,9 +32,11 @@ The deck mounts only the current selected photo and the next person's primary ph
 
 ## UI
 
+Discover owns the full candidate Swipe Deck. Home may use a horizontal, touch-friendly profile carousel without reproducing all deck interactions. Avoid vertical stacking of multiple candidate cards on mobile; full individual profiles may remain vertically scrollable.
+
 - Left swipe, focused ArrowLeft or Next advances locally, with no dislike/rejection/match/telemetry write.
 - Right swipe, focused ArrowRight or Connect opens a modal. Only explicit Send creates the canonical request; Escape/cancel sends nothing.
-- Horizontal displacement must exceed 65px and dominate vertical displacement. Native vertical touch scrolling cancels navigation. Reduced motion removes drag translation/transition. Photo taps and separate buttons switch photos.
+- Horizontal displacement must reach at least 65px and dominate vertical displacement. Native vertical touch scrolling cancels navigation. Reduced motion removes drag translation/transition. Photo taps and separate buttons switch photos.
 - URL state preserves filters, view and active person through profile navigation. Cached pages support return; direct return links fetch bounded pages as needed. Discovery refreshes periodically and on mount/focus. Already viewed pixels cannot be retroactively revoked.
 - Desktop presents filters, center photo card and social context. A browsable list avoids candidate photo downloads.
 - Shared connection controls reflect outgoing pending, incoming accept/decline and accepted conversation/Why. No Likes or Matches model is added.
@@ -42,4 +44,4 @@ The deck mounts only the current selected photo and the next person's primary ph
 
 ## Release boundary
 
-Local-only. Enforced 18+ eligibility, report/flag and moderation, account deletion and Architecture v1.2's other public launch gates remain outstanding. No age enforcement is claimed. Wave 2's legacy-public-media and unscheduled cleanup-worker limitations remain. Photo-first discovery deck interaction is **`FOUNDER_APPROVED`** under [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy); public deployment remains gated by Wave 5 requirements.
+Local-only. Enforced 18+ eligibility, report/flag and moderation, account deletion and Architecture v1.2's other public launch gates remain outstanding. No age enforcement is claimed. Wave 2's legacy-public-media and unscheduled cleanup-worker limitations remain. Photo-forward discovery is **`INTERACTION_POLICY_APPROVED`** under [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery--touch-native-swipe-interaction-policy); the deck is **`IMPLEMENTED_LOCAL`**, with **`VISUAL_REVIEW_PENDING`**. Approval of the interaction principle does not establish `FOUNDER_VISUAL_APPROVED` for the current Wave 3 visuals. Public deployment remains gated by Wave 5 requirements.

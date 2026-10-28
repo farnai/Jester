@@ -177,6 +177,8 @@ These invariants are permanent engineering constraints. Any pull request or refa
 - **Enforcement:** All database privileges on `public.user_interest_affinity` are revoked from client roles (`authenticated`, `anon`, `public`). The API and JESTER intelligence engine never project unconfirmed behavioral labels (e.g., "You are an adventurous person") onto the user.
 
 ### 9. Separation of Profile Presentation and Identity Verification (Trust System V1)
+
+> **Target controls, not current enforcement evidence:** Verification buckets/providers, biometric retention jobs and the proposed multi-domain tables in sections 9–17 require implementation and migration verification. Their presence in this policy does not establish that storage, grants or workers exist. Current source and migrations remain the persistence/security authority; existing privacy invariants are unchanged.
 *(Authoritative Spec: [`docs/TRUST_VERIFICATION_SYSTEM_V1_SPEC.md`](TRUST_VERIFICATION_SYSTEM_V1_SPEC.md))*
 - **Invariant:** Public profile imagery (`public.profile_photos`, `profiles.avatar_url`) and Biometric/Face Verification are strictly distinct concepts.
 - **Verification Evidence Isolation:** Ephemeral selfie verification media is stored exclusively in a private, encrypted storage bucket (`verification-evidence`) with `public = false`. All client roles (`authenticated`, `anon`, `public`) have zero access privileges (`REVOKE ALL`).

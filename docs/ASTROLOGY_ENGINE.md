@@ -97,7 +97,7 @@ Calculates positions using `swe.calc_ut` with default flags `swe.FLG_SWIEPH | sw
 | **Chiron & Lilith** | **MISSING** | Chiron (`swe.CHIRON`) and Black Moon Lilith (`swe.MEAN_LILITH`) are not calculated. |
 | **Asteroids & Part of Fortune** | **MISSING** | Ceres, Pallas, Juno, Vesta, and Part of Fortune are not calculated. |
 | **Alternative House Systems** | **MISSING** | No fallback to Whole Sign (`b"W"`) or Equal House when Placidus fails. |
-| **Daily Planetary Transits** | **STUB** | `backend/app/astrology/transits.py` is empty (47 bytes). |
+| **Daily Planetary Transits** | **IMPLEMENTED — REQUEST-TIME** | `compute_daily_transits` in `backend/app/astrology/transits.py` is called by the daily-energy interpretation endpoint. This does not establish scheduled persistence or delivery. |
 
 ---
 
@@ -108,4 +108,4 @@ Calculates positions using `swe.calc_ut` with default flags `swe.FLG_SWIEPH | sw
    - Hardcodes Placidus house system. Crashes/errors on polar coordinates ($> 66.5^\circ$) without fallback.
 
 2. **`backend/app/astrology/transits.py` Constraints**:
-   - Contains no implementation code.
+   - Computes request-time transits used by the interpretation route; fallback modes remain possible. A scheduled production Daily Energy lifecycle, persistence and notifications are not established by this implementation.

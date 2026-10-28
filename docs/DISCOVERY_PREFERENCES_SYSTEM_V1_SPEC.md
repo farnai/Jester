@@ -2,7 +2,7 @@
 ## Product, UX, Data Architecture & Relationship Intelligence Specification
 
 **Document Type:** Target System Specification  
-**Authority Level:** Level 4 (Domain Specification)  
+**Governance:** Target domain specification under [AGENTS.md](../AGENTS.md#source-of-truth)\
 **Status:** SPECIFIED / NOT YET IMPLEMENTED IN RUNTIME  
 **Implementation Note:** Current Wave 3 Discovery (`docs/DISCOVERY_WAVE3.md`) implements bounded UUID cursor pagination (`GET /v1/discovery/people`). The multi-criteria preference steering, intent partitioning, and ranking algorithm defined in this document represent the target architecture and are not yet deployed in runtime migrations or API services.
 

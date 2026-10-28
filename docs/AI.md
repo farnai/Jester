@@ -6,6 +6,8 @@ The `backend/app/interpretation/` directory houses the JESTER interpretation con
 
 **CURRENT IMPLEMENTATION STATUS: INTERPRETATION CONTRACT & CONTENT LAYER IMPLEMENTED**
 
+> **Capability boundary (2026-10-28):** Deterministic contracts, resolver and repository-backed/in-memory content exist. Multi-domain context assembly, copilot, external LLM execution, persistent editorial CMS and automated publishing are target architecture unless verified separately in source. The domain sections below describe intended integration, not proof of deployed services or persistent lifecycle support.
+
 The architecture separates deterministic astronomical calculations from consumer-facing copy:
 - **Interpretation Contracts (`contracts.py`)**: Formal semantic specifications mapping aspect signals to stable, human-relational IDs.
 - **Content Library (`library.py`)**: Dual-slot (`ai_draft` baseline vs `approved` copywriter final) with automated fallback and reset workflows.
@@ -341,5 +343,3 @@ LLM_MODEL: str = "gpt-4o-mini"
 ```
 
 The system operates fully offline with pre-seeded Georgian drafts and deterministic fallback, requiring zero active OpenAI network calls for standard runtime execution.
-
-

@@ -1,5 +1,7 @@
 # Jester — Architecture & Request Lifecycle
 
+> **Scope note (2026-10-28):** This document mixes runtime architecture with target domain flows. Sections 4–18 and the combined semantic-context diagram must be checked against source; proposed tables, providers, workers, quotas and LLM gateways are not implementation evidence. Connection notes, automatic note seeding, request caps, disconnect archives and cooldowns are target behavior, not the current Wave 4 contract. Use [media](SOCIAL_PROFILE_MEDIA.md), [discovery](DISCOVERY_WAVE3.md), [messaging](MESSAGING_WAVE4.md), code and migrations for current boundaries. Detailed reconciliation remains outstanding.
+
 ## 🏛️ System Architecture Overview
 
 Jester uses an asynchronous, layered architecture centered around FastAPI and Supabase PostgreSQL.
@@ -304,10 +306,5 @@ USER-FACING INSIGHT (Short, witty, human-readable)
 - **Trust & Verification Decoupling Invariant**: Profile photos, biometric verification, and human trustworthiness are completely separate concepts. JESTER strictly forbids numeric trust scores. Verification proves only that an ephemeral selfie matches the primary profile photo. Verification media is stored in a private, client-inaccessible bucket, never exposed in public APIs, and never passed to JESTER AI.
 - **Behavioral Intelligence & Anti-Profiling Invariant**: Behavioral intelligence captures observable product interactions strictly to refine candidate relevance and conversation starters. It is fundamentally barred from performing psychological profiling, diagnosing mental health, computing personality or attractiveness scores, or scoring communication response latency. Private message bodies are never parsed. Declared human truth always outranks behavioral observation.
 - **JESTER AI Context Isolation & Fail-Closed Boundary**: JESTER AI operates strictly through strongly typed, surface-scoped data contracts (`JesterAiContextV1`). It is never granted direct database connection handles or unrestricted table access. The Context Safety Gate fails closed upon detecting any prohibited data keys (`messages.body`, `latitude`, `selfie_bytes`, `birth_time`), guaranteeing zero private data leakage into third-party LLM APIs.
-- **Canonical Connection & Disconnect Isolation Invariant**: Connections are strictly canonical unordered pairs (`CHECK (user_a_id < user_b_id)`). Transitions follow a closed state machine (`pending`, `accepted`, `declined`, `blocked`, `removed`). Disconnecting (`removed`) transitions direct conversations into immutable read-only archives where past mutual messages remain visible for review/safety reporting, but new messages are permanently barred via database helper functions (`is_active_direct_conversation` calls `has_active_connection`). Blocking immediately renders the counterpart reciprocal HTTP 404. Direct messages are UTF-8 text-only up to 2,000 characters without read-receipt timers, typing speed surveillance, or AI training exploitation.
+- **Canonical Connection & Disconnect Isolation Invariant**: Connections are strictly canonical unordered pairs (`CHECK (user_a_id < user_b_id)`). Transitions follow a closed state machine (`pending`, `accepted`, `declined`, `blocked`, `removed`). In the implemented Wave 4 contract, disconnecting (`removed`) makes conversation history and sending inaccessible while retaining stored messages; reacceptance restores the same conversation. Read-only archives remain target behavior, not a current invariant. Blocking immediately renders the counterpart reciprocal HTTP 404. Direct messages are UTF-8 text-only up to 2,000 characters without read-receipt timers, typing speed surveillance, or AI training exploitation.
 - **Product Model Boundary**: Experience follows `ME → YOU → US → MORE PEOPLE`.
-
-
-
-
-

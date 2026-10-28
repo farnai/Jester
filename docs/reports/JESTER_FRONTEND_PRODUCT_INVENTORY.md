@@ -1,12 +1,14 @@
 # JESTER — Product Architecture Discovery & Frontend Inventory
 
-> **Authoritative Technical & Product Architecture Report**  
+> **Historical Technical & Product Architecture Snapshot**\
 > **Repository:** JESTER Platform (`farnai/Jester`)  
-> **Status:** READ-ONLY Discovery & Implementation Audit  
+> **Status:** HISTORICAL BASELINE — superseded in part by subsequent local implementation\
 > **Target Audience:** Founder & Lead System Architect  
 > **Date:** October 2026  
 
 ---
+
+> **Correction notice (2026-10-28):** This snapshot predates the current gallery, bounded discovery and conversations inbox. Its single-avatar, unbounded per-candidate Synastry, missing inbox and registration identity claims must not be read as current behavior. See [media](../SOCIAL_PROFILE_MEDIA.md), [discovery](../DISCOVERY_WAVE3.md), [messaging](../MESSAGING_WAVE4.md), [Home](../HOME_EXPERIENCE.md) and current source. Original findings below are retained as dated evidence, not active requirements.
 
 ## A. Executive Summary
 
