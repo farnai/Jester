@@ -59,6 +59,12 @@ test('distinct people with identical names and bios remain visible', () => {
   const people = [{ id: 'a', display_name: 'Same', bio: 'Same' }, { id: 'b', display_name: 'Same', bio: 'Same' }];
   assert.deepEqual(visibleHomePeople([...people, people[0]], [], 'viewer').map(p => p.id), ['a', 'b']);
 });
+const editorial = loadSource('../frontend/src/modules/home/HomeEditorial.tsx', {
+  './HomeElements': elements,
+  '../../assets/registration/hero_portrait.jpg': { default: '/editorial-portrait.jpg' },
+  '../../assets/registration/hero_woman_highres.jpg': { default: '/editorial-secondary.jpg' },
+  'react-router-dom': { Link: ({ to, children, ...props }) => React.createElement('a', { ...props, href: to }, children) },
+});
 const model = loadSource('../frontend/src/modules/home/homeModel.ts');
 const success = data => ({ data, isSuccess: true, refetch() {} });
 function renderHome(states) {
@@ -67,7 +73,7 @@ function renderHome(states) {
     '../../core/auth/useAuth': { useAuth: () => ({ user: { id: 'viewer' } }) },
     '../../core/api/endpoints': { API: { profiles: {}, connections: {} } },
     'react-router-dom': { Link: ({ to, children, ...props }) => React.createElement('a', { ...props, href: to }, children) },
-    './HomeElements': elements, './homeModel': model,
+    './HomeElements': elements, './homeModel': model, './HomeEditorial': editorial,
   });
   return renderToStaticMarkup(React.createElement(HomePage));
 }
@@ -98,4 +104,18 @@ test('pending profiles never receive deep comparison links or discovery fallback
   assert.doesNotMatch(html, /\/why|home-score/);
   const blocked = renderHome({ connections: success([{ ...pending, status: 'blocked' }]), 'discovery-people': success([person]) });
   assert.doesNotMatch(blocked, /Fixture observation|\/people\/candidate/);
+});
+
+test('accepted connection summary uses backend identity even outside the discovery page', () => {
+  const html = renderHome({
+    connections: success([{ id: 'connection', user_a_id: 'viewer', user_b_id: 'friend', status: 'accepted', other_display_name: 'Real friend', other_avatar_url: '/authorized-photo' }]),
+    'discovery-people': success([]),
+  });
+  assert.match(html, /Real friend/);
+  assert.match(html, /href="\/people\/friend"/);
+  assert.match(html, /src="\/authorized-photo"/);
+  assert.match(html, /home-conversation-invitation[\s\S]*href="\/messages"/);
+  assert.doesNotMatch(html, /\/people\/friend\/why|home-score/);
+  const empty = renderHome({ connections: success([]), 'discovery-people': success([]) });
+  assert.match(empty, /home-conversation-invitation[\s\S]*href="\/discover"/);
 });

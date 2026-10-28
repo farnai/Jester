@@ -6,7 +6,9 @@ import { useAuth } from '../../core/auth/useAuth';
 import type { ConnectionResponse, DiscoveryPerson } from '../../core/api/types';
 import { HomeAvatar, HomeIcon, HomeSkeleton, HomeState } from './HomeElements';
 import { calendarKey, connectionFor, georgianDate, guidanceItems, personObservation, visibleHomePeople } from './homeModel';
+import { HomeEditorialHero, HomeQuickActions, HomeConversationInvitation, HomeInsightArt } from './HomeEditorial';
 import './home.css';
+import './homeEditorial.css';
 
 function PersonPreview({
   person,
@@ -172,25 +174,8 @@ export function HomePage() {
 
   return (
     <div className="home-experience" lang="ka">
-      {/* 0. Entry: Editorial Header & Greeting */}
-      <header className="home-heading">
-        <div>
-          <div className="home-eyebrow-pill">
-            <HomeIcon kind="sparkles" />
-            <span>შენი სივრცე · {sourceDate || georgianDate(day) || 'დღეს'}</span>
-          </div>
-          <h1>
-            გამარჯობა, <span>{name}</span>
-          </h1>
-          <p className="home-heading-lead">შენით იწყება. ადამიანებით გრძელდება.</p>
-        </div>
-        <Link to="/me" className="home-self-link" aria-label="ჩემი პროფილი">
-          <HomeAvatar name={name} src={profile.data?.avatar_url} />
-          <span>
-            ჩემი პროფილი <HomeIcon />
-          </span>
-        </Link>
-      </header>
+      <HomeEditorialHero name={name} avatarUrl={profile.data?.avatar_url} connectionCount={connections.isSuccess ? accepted.length : undefined} incomingCount={connections.isSuccess ? incoming.length : undefined} />
+      <HomeQuickActions />
 
       {profile.isError && (
         <HomeState title="პროფილი ვერ ჩაიტვირთა" retry={() => void profile.refetch()}>
@@ -202,6 +187,7 @@ export function HomePage() {
       <div className="home-opening">
         {/* 01 Editorial Primary Hero */}
         <section
+          id="home-daily"
           className="home-insight"
           aria-labelledby={observation && !daily.isError ? 'home-insight-title' : undefined}
           aria-label={!observation || daily.isError ? 'პირადი დაკვირვება' : undefined}
@@ -220,6 +206,7 @@ export function HomePage() {
             </HomeState>
           ) : observation ? (
             <>
+              <HomeInsightArt />
               <p className="home-eyebrow home-insight-kicker">
                 {realDay ? 'დღის დაკვირვება' : 'შენი პროფილის დაკვირვება'}
               </p>
@@ -242,8 +229,10 @@ export function HomePage() {
                 </button>
               )}
 
+              <details className="home-insight-more">
+                <summary>მინიშნებები და დეტალები <HomeIcon kind="compass" /></summary>
               {(doItems.length > 0 || dontItems.length > 0) && (
-                <details className="home-guidance-disclosure" open>
+                <details className="home-guidance-disclosure">
                   <summary>
                     დღის პატარა მინიშნებები <span aria-hidden="true">+</span>
                   </summary>
@@ -306,6 +295,7 @@ export function HomePage() {
                     : 'შენს პროფილზე დაფუძნებული ზოგადი დაკვირვებაა; დღის პერსონალური გამოთვლა ამ პასუხში არ არის.'}
                 </p>
               </details>
+              </details>
             </>
           ) : (
             <HomeState title="შენი დაკვირვება ჯერ არ არის ხელმისაწვდომი">
@@ -323,21 +313,10 @@ export function HomePage() {
             <span>ჩვენი წრე</span>
           </div>
 
-          <h2 id="home-circle-title">
-            {accepted.length > 0 ? (
-              <>
-                კავშირი უკვე გაქვს.
-                <br />
-                <span>ახლა — გაიგე რატომ.</span>
-              </>
-            ) : (
-              <>
-                საინტერესოა,
-                <br />
-                <span>ვისთან გადაიკვეთები?</span>
-              </>
-            )}
-          </h2>
+          <div className="home-circle-heading">
+            <h2 id="home-circle-title">შენი ახლო კავშირები</h2>
+            <Link to="/connections" className="home-text-link">ყველა <HomeIcon /></Link>
+          </div>
 
           {connections.isLoading ? (
             <HomeSkeleton compact />
@@ -352,8 +331,26 @@ export function HomePage() {
                 </Link>
               )}
 
+              {accepted.length > 0 && (
+                <ul className="home-active-people">
+                  {accepted.slice(0, 3).map(connection => {
+                    const otherId = connection.user_a_id === viewer ? connection.user_b_id : connection.user_a_id;
+                    const person = people.find(p => p.id === otherId);
+                    const displayName = connection.other_display_name || person?.display_name || 'შენი კავშირი';
+                    return <li key={connection.id}>
+                      <Link to={`/people/${otherId}`}>
+                        <HomeAvatar name={displayName} src={connection.other_avatar_url || person?.avatar_url} />
+                        <span><strong>{displayName}</strong><small>უკვე დაკავშირებული ხართ</small>{person?.occupation && <span className="home-active-detail">{person.occupation}</span>}</span>
+                        <HomeIcon />
+                      </Link>
+                    </li>;
+                  })}
+                </ul>
+              )}
+
               {familiar ? (
-                <>
+                <details className="home-relationship-details">
+                  <summary>შენ &amp; {familiar.display_name} · თქვენი დინამიკა</summary>
                   <div className="home-pair" aria-label={`${name} და ${familiar.display_name}`}>
                     <HomeAvatar name={name} src={profile.data?.avatar_url} large />
                     <span className="home-pair-thread" aria-hidden="true">
@@ -397,16 +394,8 @@ export function HomePage() {
                   <Link to={`/people/${familiar.id}/why`} className="home-primary-link">
                     ჩვენი კავშირი <HomeIcon />
                   </Link>
-                </>
-              ) : accepted.length > 0 ? (
-                <div className="home-circle-empty">
-                  <HomeIcon kind="people" />
-                  <p>შენს წრეში {accepted.length} კავშირია. გააგრძელე მათი გაცნობა.</p>
-                  <Link to="/connections" className="home-primary-link">
-                    ჩემი კავშირები <HomeIcon />
-                  </Link>
-                </div>
-              ) : (
+                </details>
+              ) : accepted.length > 0 ? null : (
                 <div className="home-circle-empty">
                   <HomeIcon kind="people" />
                   <h3>ვისთან დაიწყებ?</h3>
@@ -434,17 +423,12 @@ export function HomePage() {
         </aside>
       </div>
 
-      {/* 03 Discover Preview */}
+      <div className="home-lower-grid">
+      {/* Real, authorized people: portraits still use the private-media component. */}
       <section id="home-people" className="home-discovery" aria-labelledby="home-people-title">
         <div className="home-discovery-heading">
           <div>
-            <div className="home-eyebrow-pill home-eyebrow-dark">
-              <span>ცნობისმოყვარეობა გრძელდება</span>
-            </div>
-            <h2 id="home-people-title">
-              ერთი პროფილის მიღმა —<br />
-              <span>მთელი ადამიანია.</span>
-            </h2>
+            <h2 id="home-people-title">გაიცანი ადამიანები</h2>
           </div>
           <Link to="/discover" className="home-outline-link">
             ყველა ადამიანი <HomeIcon />
@@ -563,6 +547,8 @@ export function HomePage() {
           </>
         )}
       </section>
+      <HomeConversationInvitation hasConnections={accepted.length > 0} />
+      </div>
 
       {/* Closing Editorial Action */}
       <footer className="home-closing">
