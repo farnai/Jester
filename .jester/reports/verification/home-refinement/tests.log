@@ -1,0 +1,104 @@
+TAP version 13
+# (node:31584) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: canonical pairs hide blocked people regardless of pair order, preserving server order
+ok 1 - canonical pairs hide blocked people regardless of pair order, preserving server order
+  ---
+  duration_ms: 1.4427
+  type: 'test'
+  ...
+# Subtest: unsupported or fallback sign provenance never produces a personalized hook
+ok 2 - unsupported or fallback sign provenance never produces a personalized hook
+  ---
+  duration_ms: 0.1327
+  type: 'test'
+  ...
+# Subtest: optional guidance remains absent, accepts both API representations
+ok 3 - optional guidance remains absent, accepts both API representations
+  ---
+  duration_ms: 0.1288
+  type: 'test'
+  ...
+# Subtest: calendar cache changes at the profile timezone midnight with safe invalid-zone fallback
+ok 4 - calendar cache changes at the profile timezone midnight with safe invalid-zone fallback
+  ---
+  duration_ms: 11.9938
+  type: 'test'
+  ...
+# Subtest: distinct people with identical names and bios remain visible
+ok 5 - distinct people with identical names and bios remain visible
+  ---
+  duration_ms: 0.1101
+  type: 'test'
+  ...
+# Subtest: loading and independent API errors render honest accessible states
+ok 6 - loading and independent API errors render honest accessible states
+  ---
+  duration_ms: 80.099
+  type: 'test'
+  ...
+# Subtest: empty Home and fallback daily content do not invent people, scores or transit claims
+ok 7 - empty Home and fallback daily content do not invent people, scores or transit claims
+  ---
+  duration_ms: 53.1561
+  type: 'test'
+  ...
+# Subtest: pending profiles never receive deep comparison links or discovery fallback scores
+ok 8 - pending profiles never receive deep comparison links or discovery fallback scores
+  ---
+  duration_ms: 46.924
+  type: 'test'
+  ...
+# Subtest: accepted connection summary uses backend identity even outside the discovery page
+ok 9 - accepted connection summary uses backend identity even outside the discovery page
+  ---
+  duration_ms: 43.1233
+  type: 'test'
+  ...
+# (node:63036) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: replayed realtime refresh and overlapping pages render each message once
+ok 10 - replayed realtime refresh and overlapping pages render each message once
+  ---
+  duration_ms: 7.9557
+  type: 'test'
+  ...
+# Subtest: equal timestamps have a deterministic UUID order
+ok 11 - equal timestamps have a deterministic UUID order
+  ---
+  duration_ms: 0.127
+  type: 'test'
+  ...
+# Subtest: lost acknowledgement retry retains its idempotency nonce
+ok 12 - lost acknowledgement retry retains its idempotency nonce
+  ---
+  duration_ms: 1.1574
+  type: 'test'
+  ...
+# Subtest: edited draft and new submission get new nonces
+ok 13 - edited draft and new submission get new nonces
+  ---
+  duration_ms: 0.0965
+  type: 'test'
+  ...
+# Subtest: only authorization/not-found responses hide a conversation
+ok 14 - only authorization/not-found responses hide a conversation
+  ---
+  duration_ms: 0.1034
+  type: 'test'
+  ...
+# Subtest: empty history is a valid initial state
+ok 15 - empty history is a valid initial state
+  ---
+  duration_ms: 0.0576
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 555.7646

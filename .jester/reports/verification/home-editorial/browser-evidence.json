@@ -1,0 +1,85 @@
+{
+  "checks": [
+    "Unconnected account invitation routes to Discover, never a stranger chat",
+    "Real accepted connection, private portrait and Messages invitation survive reload"
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "heroCtaHeight": 48,
+      "quickTargets": [
+        76,
+        76,
+        76,
+        76
+      ],
+      "navTargets": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "portraitLoaded": true
+    },
+    {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "heroCtaHeight": 48,
+      "quickTargets": [
+        76,
+        76,
+        76,
+        76
+      ],
+      "navTargets": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "portraitLoaded": true
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "heroCtaHeight": 48,
+      "quickTargets": [
+        76,
+        76,
+        76,
+        76
+      ],
+      "navTargets": [
+        48,
+        48,
+        48,
+        48,
+        48
+      ],
+      "portraitLoaded": true
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "heroCtaHeight": 48,
+      "quickTargets": [
+        86,
+        86,
+        86,
+        86
+      ],
+      "navTargets": [
+        48,
+        48,
+        48,
+        48,
+        48
+      ],
+      "portraitLoaded": true
+    }
+  ],
+  "pageErrors": []
+}

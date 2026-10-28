@@ -1,0 +1,44 @@
+{
+  "id": "TASK-HOME-EDITORIAL-REFERENCE",
+  "title": "Implement the founder-selected editorial Home reference",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Reference-led authenticated Home preserving real data and privacy",
+  "scope": [
+    "frontend/src/modules/home",
+    "scripts/home-model.test.mjs",
+    "scripts/home-editorial-qa.cjs",
+    "docs/HOME_EXPERIENCE.md",
+    ".jester/tasks",
+    ".jester/reports"
+  ],
+  "constraints": [
+    "No backend, database, auth, scoring or Discover changes",
+    "Preserve pre-existing visual-studio working-tree changes",
+    "Explicit user implementation request supersedes exploratory three-concept approval stage"
+  ],
+  "acceptance_criteria": [
+    "Editorial Home follows supplied composition using existing brand assets",
+    "Existing data, fallback, private media, connection and navigation behavior preserved",
+    "1440,1280,768,390,360 responsive browser checks and screenshots",
+    "Targeted frontend tests and production build pass"
+  ],
+  "verification": [
+    "node --experimental-strip-types --test scripts/home-model.test.mjs scripts/messaging-model.test.mjs",
+    "npm --prefix frontend run build",
+    "node scripts/home-editorial-qa.cjs",
+    "git diff --check"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-20",
+  "updated_at": "2026-10-20"
+}

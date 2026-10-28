@@ -1,0 +1,44 @@
+{
+  "id": "TASK-HOME-UX-REFINEMENT",
+  "title": "Focused Home refinement following visual and UX review",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Compact real-person cards, clearer personal context and insight actions, readable mobile navigation",
+  "scope": [
+    "frontend/src/modules/home",
+    "scripts/home-model.test.mjs",
+    "scripts/home-editorial-qa.cjs",
+    "docs/HOME_EXPERIENCE.md",
+    ".jester/tasks",
+    ".jester/reports"
+  ],
+  "constraints": [
+    "No backend/API/auth/privacy/routing changes",
+    "No commit, push or deploy",
+    "Preserve all pre-existing work"
+  ],
+  "acceptance_criteria": [
+    "Compact cards preserve real identity and photo delivery",
+    "Connection context uses existing successful response only",
+    "Insight copy/guidance/provenance remain accessible",
+    "Five viewport browser checks and mobile footer clearance pass"
+  ],
+  "verification": [
+    "node --experimental-strip-types --test scripts/home-model.test.mjs scripts/messaging-model.test.mjs",
+    "npm --prefix frontend run build",
+    "node scripts/home-editorial-qa.cjs",
+    "git diff --check"
+  ],
+  "dependencies": [],
+  "created_at": "2026-10-21",
+  "updated_at": "2026-10-21"
+}
