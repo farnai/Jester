@@ -1,0 +1,2327 @@
+{
+  "version": "2.21",
+  "children": [
+    {
+      "type": "frame",
+      "id": "uBvHx",
+      "x": 0,
+      "y": 0,
+      "name": "Concept A: Social Editorial (Desktop 1440)",
+      "width": 1440,
+      "height": 1040,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 32,
+      "padding": [
+        32,
+        60,
+        40,
+        60
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "E0vszT",
+          "name": "Top Navigation",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "NNbKd",
+              "name": "Logo",
+              "fill": "#FF7A2F",
+              "content": "JESTER",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 24,
+              "fontWeight": "800"
+            },
+            {
+              "type": "frame",
+              "id": "k5bBtI",
+              "name": "Links",
+              "gap": 28,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jTU4c",
+                  "name": "Nav მთავარი",
+                  "fill": "#FF7A2F",
+                  "content": "მთავარი",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "zp6DW",
+                  "name": "Nav აღმოაჩინე",
+                  "fill": "#6A716F",
+                  "content": "აღმოაჩინე",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "n9zjxb",
+                  "name": "Nav კავშირები",
+                  "fill": "#6A716F",
+                  "content": "კავშირები",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "BGGKR",
+                  "name": "Nav საუბრები",
+                  "fill": "#6A716F",
+                  "content": "საუბრები",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "eh8eJ",
+                  "name": "Nav ჩემი პროფილი",
+                  "fill": "#6A716F",
+                  "content": "ჩემი პროფილი",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "w3IoJa",
+              "name": "User Area",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "p8K1Wn",
+                  "name": "Bell",
+                  "fill": "#222630",
+                  "content": "🔔",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "HQpjq",
+                  "name": "Avatar",
+                  "width": 38,
+                  "height": 38,
+                  "fill": "#FF7A2F",
+                  "cornerRadius": 9999,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "K2Tqt",
+                      "name": "Initials",
+                      "fill": "#222630",
+                      "content": "დგ",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "S4i5Xh",
+          "name": "Editorial Split",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "RlY4h",
+              "name": "Left Column",
+              "width": 820,
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "cTWbg",
+                  "name": "Eyebrow",
+                  "fill": "#FFF6F0",
+                  "cornerRadius": 9999,
+                  "padding": [
+                    6,
+                    14
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "u71Pg",
+                      "name": "Eyebrow Text",
+                      "fill": "#FF7A2F",
+                      "content": "ME · პირადი ხედვა · 20 ოქტომბერი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "ohgQy",
+                  "name": "Greeting",
+                  "fill": "#222630",
+                  "content": "გამარჯობა, დავით",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 32,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "f3h86",
+                  "name": "Lead",
+                  "fill": "#6A716F",
+                  "content": "შენით იწყება. ადამიანებით გრძელდება.",
+                  "lineHeight": 1.55,
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 16
+                },
+                {
+                  "type": "frame",
+                  "id": "Eh5MO",
+                  "name": "Hero Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 18,
+                  "padding": 28,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "CAycs",
+                      "name": "Kicker",
+                      "fill": "#788A69",
+                      "content": "რას ამჩნევს JESTER დღეს",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "KaIWS",
+                      "name": "Quote",
+                      "fill": "#222630",
+                      "textGrowth": "fixed-width",
+                      "width": 764,
+                      "content": "„პირდაპირი ხარ, მაგრამ უხეშობის გარეშე. საუბარში სიმართლეს ეძებ და არა ზედაპირულ კომპლიმენტებს. შენთან დიალოგი ყოველთვის გამოცდაა, რომლის გავლაც ღირს.“",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BbWrk",
+                      "name": "Guidance",
+                      "width": "fill_container",
+                      "fill": "#FBEEE7",
+                      "cornerRadius": 12,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wfgnn",
+                          "name": "Do",
+                          "fill": "#222630",
+                          "content": "↗ სცადე: გაუზიარე აზრი ადამიანს, ვისთანაც დიალოგი გაინტერესებს.",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "OA7RX",
+                          "name": "Dont",
+                          "fill": "#6A716F",
+                          "content": "↘ ნუ იჩქარებ: ზედმეტ ანალიზში ნუ ჩაიკეტები.",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 14
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "n3jLu",
+                      "name": "Actions",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CZaNI",
+                          "name": "Copy CTA",
+                          "fill": "#FF7A2F",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            12,
+                            28
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "V49Sk",
+                              "name": "Copy Label",
+                              "fill": "#222630",
+                              "content": "კოპირება",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "bAcn9",
+                          "name": "Why Link",
+                          "fill": "#6A716F",
+                          "content": "რატომ ამბობს ამას JESTER?",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mAond",
+              "name": "Right Column",
+              "width": 468,
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "q5nfO",
+                  "name": "US Moment Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "D9DOK",
+                      "name": "Head",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "JCIn0",
+                          "name": "Chapter",
+                          "fill": "#95A686",
+                          "content": "US · კავშირის ვექტორი",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Eg1Za",
+                          "name": "Status",
+                          "fill": "#E8EFE2",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xVUPl",
+                              "name": "Status Text",
+                              "fill": "#4B6242",
+                              "content": "დაკავშირებული",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PuDy5",
+                      "name": "Person Row",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "MAMVF",
+                          "name": "Nino Av",
+                          "width": 48,
+                          "height": 48,
+                          "fill": "#95A686",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "riS6f",
+                              "name": "Init",
+                              "fill": "#FFFFFF",
+                              "content": "ნთ",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "q8HoI",
+                          "name": "Meta",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DZwOR",
+                              "name": "Name",
+                              "fill": "#222630",
+                              "content": "ნინო თ.",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 18,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TBhLs",
+                              "name": "Sub",
+                              "fill": "#6A716F",
+                              "content": "თბილისი · არქიტექტორი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 13
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BTEik",
+                      "name": "Quote Box",
+                      "width": "fill_container",
+                      "fill": "#FAF7F2",
+                      "cornerRadius": 12,
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "H3KS4",
+                          "name": "Tag",
+                          "fill": "#FF7A2F",
+                          "content": "საინტერესო ნაწილი — ახსნაა",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "W0NeXj",
+                          "name": "Synastry Quote",
+                          "fill": "#222630",
+                          "textGrowth": "fixed-width",
+                          "width": 420,
+                          "content": "„იუმორი გაკავშირებთ, მაგრამ დეტალებზე კამათი თქვენი მთავარი რიტუალია.“",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zF5oY",
+                      "name": "Button",
+                      "width": "fill_container",
+                      "fill": "#F3EEE6",
+                      "cornerRadius": 10,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "m9840",
+                          "name": "Button Label",
+                          "fill": "#222630",
+                          "content": "ჩვენი კავშირის ნახვა →",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G2DI6f",
+          "name": "Discovery Section",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "SkQND",
+              "name": "Header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "O8aJ2f",
+                  "name": "Title",
+                  "fill": "#222630",
+                  "content": "ადამიანები, რომლებსაც შესაძლოა ეძებდე",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 20,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "aawsH",
+                  "name": "All",
+                  "fill": "#FF7A2F",
+                  "content": "ყველა ადამიანი (24) →",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TLsFE",
+              "name": "Row",
+              "width": "fill_container",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "LA4Sn",
+                  "name": "Card ანო მ.",
+                  "width": 426,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "tEfJk",
+                      "name": "Top",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "KKXEJ",
+                          "name": "Av",
+                          "width": 40,
+                          "height": 40,
+                          "fill": "#95A686",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "J81qf",
+                              "name": "Init",
+                              "fill": "#FFFFFF",
+                              "content": "ამ",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PhqfI",
+                          "name": "Meta",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WCK7U",
+                              "name": "Name",
+                              "fill": "#222630",
+                              "content": "ანო მ.",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "K99O1",
+                              "name": "City",
+                              "fill": "#6A716F",
+                              "content": "ბათუმი · არქიტექტორი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "EEMfj",
+                      "name": "Quote",
+                      "fill": "#222630",
+                      "textGrowth": "fixed-width",
+                      "width": 386,
+                      "content": "„სივრცეს ისე აღიქვამს, როგორც მუსიკას.“",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "M5iB6K",
+                      "name": "Act",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "PjU5v",
+                          "name": "Link",
+                          "fill": "#FF7A2F",
+                          "content": "გაიცანი →",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h35Jf",
+                          "name": "Badge",
+                          "fill": "#4B6242",
+                          "content": "მაღალი სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "R88O2J",
+                  "name": "Card ლუკა ბ.",
+                  "width": 426,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "f5SLp",
+                      "name": "Top",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "esyBR",
+                          "name": "Av",
+                          "width": 40,
+                          "height": 40,
+                          "fill": "#FF7A2F",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZyNTF",
+                              "name": "Init",
+                              "fill": "#FFFFFF",
+                              "content": "ლბ",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ic52G",
+                          "name": "Meta",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YQu8K",
+                              "name": "Name",
+                              "fill": "#222630",
+                              "content": "ლუკა ბ.",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "C4spv",
+                              "name": "City",
+                              "fill": "#6A716F",
+                              "content": "თბილისი · მუსიკოსი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "GdaEK",
+                      "name": "Quote",
+                      "fill": "#222630",
+                      "textGrowth": "fixed-width",
+                      "width": 386,
+                      "content": "„ყველაფერს აკვირდება, მაგრამ იშვიათად საუბრობს პირველი.“",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "l7uqHT",
+                      "name": "Act",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Qfwa5",
+                          "name": "Link",
+                          "fill": "#FF7A2F",
+                          "content": "გაიცანი →",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "I0pC8V",
+                          "name": "Badge",
+                          "fill": "#4B6242",
+                          "content": "მაღალი სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "niTgI",
+                  "name": "Card მარიამ ქ.",
+                  "width": 426,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "v1KQx",
+                      "name": "Top",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "IYo3q",
+                          "name": "Av",
+                          "width": 40,
+                          "height": 40,
+                          "fill": "#788A69",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mlQmx",
+                              "name": "Init",
+                              "fill": "#FFFFFF",
+                              "content": "მქ",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FDSgE",
+                          "name": "Meta",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nZQTm",
+                              "name": "Name",
+                              "fill": "#222630",
+                              "content": "მარიამ ქ.",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "vSYcz",
+                              "name": "City",
+                              "fill": "#6A716F",
+                              "content": "თბილისი · დიზაინერი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "NltGX",
+                      "name": "Quote",
+                      "fill": "#222630",
+                      "textGrowth": "fixed-width",
+                      "width": 386,
+                      "content": "„იდეებით იწყებს, მაგრამ დასრულებაზე მეტად პროცესი ხიბლავს.“",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bxVK9",
+                      "name": "Act",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "U09i2",
+                          "name": "Link",
+                          "fill": "#FF7A2F",
+                          "content": "გაიცანი →",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "DXJli",
+                          "name": "Badge",
+                          "fill": "#4B6242",
+                          "content": "მაღალი სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "FMDhv",
+      "x": 1520,
+      "y": 0,
+      "name": "Concept A: Social Editorial (Mobile 390)",
+      "width": 390,
+      "height": 844,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": [
+        20,
+        16
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "ZE606",
+          "name": "Mobile Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "nsr8A",
+              "name": "Logo",
+              "fill": "#FF7A2F",
+              "content": "JESTER",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 20,
+              "fontWeight": "800"
+            },
+            {
+              "type": "frame",
+              "id": "ge3hu",
+              "name": "Avatar",
+              "width": 32,
+              "height": 32,
+              "fill": "#FF7A2F",
+              "cornerRadius": 9999,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "azAgC",
+                  "name": "Initials",
+                  "fill": "#222630",
+                  "content": "დგ",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 11,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "TFgnd",
+          "name": "Greeting",
+          "fill": "#222630",
+          "content": "გამარჯობა, დავით",
+          "fontFamily": "Noto Sans Georgian",
+          "fontSize": 24,
+          "fontWeight": "800"
+        },
+        {
+          "type": "frame",
+          "id": "SzGJj",
+          "name": "Hero Card",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "stroke": "#E6E0D7",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "gm6ll",
+              "name": "Tag",
+              "fill": "#FF7A2F",
+              "content": "ME · დღის დაკვირვება",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "XHCA3",
+              "name": "Quote",
+              "fill": "#222630",
+              "textGrowth": "fixed-width",
+              "width": 326,
+              "content": "„პირდაპირი ხარ, მაგრამ უხეშობის გარეშე. საუბარში სიმართლეს ეძებ.“",
+              "lineHeight": 1.55,
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 15,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "v2HaM",
+              "name": "Copy Button",
+              "fill": "#FF7A2F",
+              "cornerRadius": 9999,
+              "padding": [
+                10,
+                20
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c9hOk",
+                  "name": "Btn Text",
+                  "fill": "#222630",
+                  "content": "კოპირება",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "FPAlc",
+          "name": "Circle Card",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 14,
+          "stroke": "#E6E0D7",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 14,
+          "children": [
+            {
+              "type": "text",
+              "id": "f6JdkA",
+              "name": "Tag",
+              "fill": "#95A686",
+              "content": "US · ნინო თ.",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "lpLPZ",
+              "name": "Quote",
+              "fill": "#222630",
+              "content": "„იუმორი გაკავშირებთ, მაგრამ დეტალებზე კამათი რიტუალია.“",
+              "lineHeight": 1.5,
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "rLlVa",
+          "name": "Bottom Navigation",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 14,
+          "stroke": "#E6E0D7",
+          "strokeWidth": 1,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Jfa5z",
+              "name": "Tab მთავარი",
+              "fill": "#FF7A2F",
+              "content": "მთავარი",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 12,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "dcgV6",
+              "name": "Tab აღმოაჩინე",
+              "fill": "#6A716F",
+              "content": "აღმოაჩინე",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "nT8BS",
+              "name": "Tab კავშირი",
+              "fill": "#6A716F",
+              "content": "კავშირი",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "o19TOq",
+              "name": "Tab ჩატი",
+              "fill": "#6A716F",
+              "content": "ჩატი",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 12,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "nEMQh",
+              "name": "Tab მე",
+              "fill": "#6A716F",
+              "content": "მე",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 12,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Niex9",
+      "x": 0,
+      "y": 1120,
+      "name": "Concept B: Connection Atlas (Desktop 1440)",
+      "width": 1440,
+      "height": 1040,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": [
+        32,
+        60,
+        40,
+        60
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "peB6Y",
+          "name": "Atlas Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "GMxpm",
+              "name": "Logo Box",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "pnsKc",
+                  "name": "Compass Icon",
+                  "fill": "#FF7A2F",
+                  "content": "🧭",
+                  "fontFamily": "Inter",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "anNd2",
+                  "name": "Logo",
+                  "fill": "#222630",
+                  "content": "JESTER ATLAS",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 22,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "FlJhO",
+              "name": "Subtitle",
+              "fill": "#6A716F",
+              "content": "ურთიერთობების რუკა & სინერგია",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 14,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KiunV",
+          "name": "2x2 Relational Compass Grid",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "frame",
+              "id": "eV0au",
+              "name": "Grid Row 1",
+              "width": "fill_container",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tMe6o",
+                  "name": "Tile 1: ME Rhythm",
+                  "width": 650,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "V19t2",
+                      "name": "Tile 1 Tag",
+                      "fill": "#FF7A2F",
+                      "content": "ME · პირადი რიტმი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "huOWY",
+                      "name": "Tile 1 Body",
+                      "fill": "#222630",
+                      "content": "„დღეს დიალოგი შენი მთავარი ინსტრუმენტია. შინაგანი სიცხადე გეხმარება ადამიანებთან პირდაპირი ხიდების აგებაში.“",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kBdEC",
+                      "name": "Tags",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "s2JvF6",
+                          "name": "Tag Pill",
+                          "fill": "#FFF6F0",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "SCkiD",
+                              "name": "Text",
+                              "fill": "#FF7A2F",
+                              "content": "მერკური აქტიური",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hPVi9",
+                          "name": "Tag Pill",
+                          "fill": "#FFF6F0",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "c6BMoX",
+                              "name": "Text",
+                              "fill": "#FF7A2F",
+                              "content": "პირდაპირი ტონი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "QjowN",
+                          "name": "Tag Pill",
+                          "fill": "#FFF6F0",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "CEdRa",
+                              "name": "Text",
+                              "fill": "#FF7A2F",
+                              "content": "ფოკუსი",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vUQet",
+                  "name": "Tile 2: US Vector",
+                  "width": 650,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "SpIWj",
+                      "name": "Tile 2 Head",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "npiar",
+                          "name": "Tile 2 Tag",
+                          "fill": "#788A69",
+                          "content": "US · ქიმია: ნინო თ.",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Jcq5O",
+                          "name": "Score Pill",
+                          "fill": "#E8EFE2",
+                          "cornerRadius": 9999,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ir31M",
+                              "name": "Score Text",
+                              "fill": "#4B6242",
+                              "content": "88% სინერგია",
+                              "fontFamily": "Noto Sans Georgian",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "gq8dS",
+                      "name": "Tile 2 Body",
+                      "fill": "#222630",
+                      "content": "„ინტელექტუალური დაპირისპირება თქვენი სიძლიერეა — იდეების გაცვლა არასდროს არის მოსაწყენი.“",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Cha9b",
+                      "name": "CTA",
+                      "fill": "#F3EEE6",
+                      "cornerRadius": 8,
+                      "padding": [
+                        8,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "k9e6gO",
+                          "name": "CTA Text",
+                          "fill": "#222630",
+                          "content": "რატომ ჩვენ? (დეტალური ანალიზი) →",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "KbeK9",
+              "name": "Grid Row 2",
+              "width": "fill_container",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ri7xK",
+                  "name": "Tile 3: Social Cadence",
+                  "width": 650,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 22,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h7fKm",
+                      "name": "Tag",
+                      "fill": "#6A716F",
+                      "content": "სოციალური რიტმი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8t16I",
+                      "name": "Body",
+                      "fill": "#222630",
+                      "content": "Recharge Solo · Small Crews · Evening Focus",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OarJ5",
+                      "name": "Sub",
+                      "fill": "#6A716F",
+                      "content": "დიდი ხმაურიანი ჯგუფები გღლის; 2-3 ადამიანთან სიღრმისეული დიალოგი ენერგიას გაძლევს.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "g2SEpJ",
+                  "name": "Tile 4: Dialogue Style",
+                  "width": 650,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": "#E6E0D7",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 22,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "nMSS1",
+                      "name": "Tag",
+                      "fill": "#6A716F",
+                      "content": "დიალოგის სტილი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "I6gXh",
+                      "name": "Body",
+                      "fill": "#222630",
+                      "content": "Direct Banter · No Small Talk · Observant",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "O5U7ws",
+                      "name": "Sub",
+                      "fill": "#6A716F",
+                      "content": "ამინდზე საუბარი გბეზრდება; პირდაპირ არსზე გადასვლა შენი ბუნებრივი ენაა.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 14
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "nlNIH",
+          "name": "Atlas Discovery Strip",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "stroke": "#E6E0D7",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 16,
+          "padding": 22,
+          "children": [
+            {
+              "type": "frame",
+              "id": "YMsE8",
+              "name": "Head",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ONLmc",
+                  "name": "Title",
+                  "fill": "#222630",
+                  "content": "რუკაზე ახლოს მყოფი ადამიანები",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "AR3CD",
+                  "name": "All Link",
+                  "fill": "#FF7A2F",
+                  "content": "სრული რუკა (24) →",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "t1rVR",
+              "name": "Row",
+              "width": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "b6Vcj",
+                  "name": "Atlas Card: სანდრო კ.",
+                  "width": 410,
+                  "fill": "#FAF7F2",
+                  "cornerRadius": 12,
+                  "padding": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "BgzQ9",
+                      "name": "Meta",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "zNJHG",
+                          "name": "Name",
+                          "fill": "#222630",
+                          "content": "სანდრო კ.",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "etEdv",
+                          "name": "Intent",
+                          "fill": "#6A716F",
+                          "content": "შემოქმედებითი კოლაბორაცია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BsDdu",
+                      "name": "Resonance",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 9999,
+                      "stroke": "#E6E0D7",
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DSTSx",
+                          "name": "Score",
+                          "fill": "#FF7A2F",
+                          "content": "91% სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OAgp7",
+                  "name": "Atlas Card: თეკლა დ.",
+                  "width": 410,
+                  "fill": "#FAF7F2",
+                  "cornerRadius": 12,
+                  "padding": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "GISnf",
+                      "name": "Meta",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DgGCF",
+                          "name": "Name",
+                          "fill": "#222630",
+                          "content": "თეკლა დ.",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "nHww9",
+                          "name": "Intent",
+                          "fill": "#6A716F",
+                          "content": "საუბრები & დიალოგი",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "w9XeG",
+                      "name": "Resonance",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 9999,
+                      "stroke": "#E6E0D7",
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "PuePY",
+                          "name": "Score",
+                          "fill": "#788A69",
+                          "content": "85% სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kVIep",
+                  "name": "Atlas Card: გიორგი მ.",
+                  "width": 410,
+                  "fill": "#FAF7F2",
+                  "cornerRadius": 12,
+                  "padding": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Zj5it",
+                      "name": "Meta",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Ey1xe",
+                          "name": "Name",
+                          "fill": "#222630",
+                          "content": "გიორგი მ.",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "lOijy",
+                          "name": "Intent",
+                          "fill": "#6A716F",
+                          "content": "აქტივობის პარტნიორი",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "m9YRQ",
+                      "name": "Resonance",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 9999,
+                      "stroke": "#E6E0D7",
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "rj7qb",
+                          "name": "Score",
+                          "fill": "#95A686",
+                          "content": "82% სინერგია",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 11,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "wMerT",
+      "x": 1520,
+      "y": 1120,
+      "name": "Concept B: Connection Atlas (Mobile 390)",
+      "width": 390,
+      "height": 844,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": [
+        20,
+        16
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "B5EDt",
+          "name": "Logo",
+          "fill": "#222630",
+          "content": "JESTER ATLAS",
+          "fontFamily": "Noto Sans Georgian",
+          "fontSize": 20,
+          "fontWeight": "800"
+        },
+        {
+          "type": "frame",
+          "id": "D9ERUt",
+          "name": "Card 1",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 14,
+          "stroke": "#E6E0D7",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "GYm6p",
+              "name": "Tag",
+              "fill": "#FF7A2F",
+              "content": "ME · დღის რიტმი",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 11,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "O4VIOQ",
+              "name": "Quote",
+              "fill": "#222630",
+              "content": "დღეს დიალოგი შენი მთავარი ინსტრუმენტია.",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MZ2DS",
+          "name": "Card 2",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 14,
+          "stroke": "#E6E0D7",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "gAJFo",
+              "name": "Tag",
+              "fill": "#788A69",
+              "content": "US · ნინო თ. (88% სინერგია)",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 11,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "iI95E",
+              "name": "Quote",
+              "fill": "#222630",
+              "content": "ინტელექტუალური დაპირისპირება თქვენი სიძლიერეა.",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 14,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "r8tIh4",
+          "name": "Floating Action Pill",
+          "fill": "#FF7A2F",
+          "cornerRadius": 9999,
+          "padding": [
+            12,
+            24
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "gJSsp",
+              "name": "Text",
+              "fill": "#222630",
+              "content": "რატომ ჩვენ? (WHY)",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 14,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "NoE35",
+      "x": 0,
+      "y": 2240,
+      "name": "Concept C: Playful Intelligence (Desktop 1440)",
+      "width": 1440,
+      "height": 1040,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 30,
+      "padding": [
+        32,
+        60,
+        40,
+        60
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "ltdnM",
+          "name": "Playful Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "dpwOl",
+              "name": "Logo",
+              "fill": "#FF7A2F",
+              "content": "JESTER 🃏",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 26,
+              "fontWeight": "800"
+            },
+            {
+              "type": "text",
+              "id": "SgghF",
+              "name": "Tagline",
+              "fill": "#6A716F",
+              "content": "Score creates curiosity. Interpretation creates value.",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 14,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "aUdyq",
+          "name": "Hero Punchline Box",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 20,
+          "stroke": "#FF7A2F",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 20,
+          "padding": 36,
+          "children": [
+            {
+              "type": "text",
+              "id": "eKToZ",
+              "name": "Kicker",
+              "fill": "#FF7A2F",
+              "content": "⚡ რას ამჩნევს JESTER დღეს შენზე?",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 14,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "T5T99a",
+              "name": "Punchline",
+              "fill": "#222630",
+              "textGrowth": "fixed-width",
+              "width": 1240,
+              "content": "„დილით ფილოსოფოსი ხარ, საღამოს — სარკასტული კომენტატორი. ორივე გიხდება. დღეს ნუ ეცდები ყველას ასიამოვნო.“",
+              "lineHeight": 1.5,
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "TJgNq",
+              "name": "Share Actions Row",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "aXtrG",
+                  "name": "Share Button",
+                  "fill": "#FF7A2F",
+                  "cornerRadius": 9999,
+                  "padding": [
+                    14,
+                    32
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LWAC3",
+                      "name": "Share Label",
+                      "fill": "#222630",
+                      "content": "გაუზიარე მეგობარს (WhatsApp / Telegram) ↗",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "XFnlb",
+                  "name": "Copy Insight Link",
+                  "fill": "#6A716F",
+                  "content": "ტექსტის კოპირება",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ekhkr",
+          "name": "Circle Highlights Row",
+          "width": "fill_container",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bjxZY",
+              "name": "Friend Card: ნინო თ.",
+              "width": 648,
+              "fill": "#FFFFFF",
+              "cornerRadius": 16,
+              "stroke": "#E6E0D7",
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "rXhRB",
+                  "name": "Top",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OP2EX",
+                      "name": "Name",
+                      "fill": "#222630",
+                      "content": "ნინო თ. · დიალოგის ნაპერწკალი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qAEhO",
+                      "name": "Pill",
+                      "fill": "#FFF6F0",
+                      "cornerRadius": 9999,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "R10Od6",
+                          "name": "Pill Text",
+                          "fill": "#FF7A2F",
+                          "content": "92%",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "elplM",
+                  "name": "Quote",
+                  "fill": "#222630",
+                  "content": "„საათობით იცინით, მაგრამ გეგმებზე ვერ თანხმდებით.“",
+                  "lineHeight": 1.55,
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "UkdRF",
+                  "name": "Chat Button",
+                  "fill": "#FAF7F2",
+                  "cornerRadius": 8,
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "R065ma",
+                      "name": "Chat Label",
+                      "fill": "#222630",
+                      "content": "გაუგზავნე სიტყვა →",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NjeiQ",
+              "name": "Friend Card: სანდრო კ.",
+              "width": 648,
+              "fill": "#FFFFFF",
+              "cornerRadius": 16,
+              "stroke": "#E6E0D7",
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KT1CG",
+                  "name": "Top",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Z6tOn",
+                      "name": "Name",
+                      "fill": "#222630",
+                      "content": "სანდრო კ. · შემოქმედებითი დრაივი",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "g5Mtu",
+                      "name": "Pill",
+                      "fill": "#FFF6F0",
+                      "cornerRadius": 9999,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "nK8Rk",
+                          "name": "Pill Text",
+                          "fill": "#788A69",
+                          "content": "86%",
+                          "fontFamily": "Noto Sans Georgian",
+                          "fontSize": 12,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "SkLp7",
+                  "name": "Quote",
+                  "fill": "#222630",
+                  "content": "„იდეები თავისით ჩნდება, როცა ერთად მუშაობთ.“",
+                  "lineHeight": 1.55,
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "rkJDh",
+                  "name": "Chat Button",
+                  "fill": "#FAF7F2",
+                  "cornerRadius": 8,
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gz29Q",
+                      "name": "Chat Label",
+                      "fill": "#222630",
+                      "content": "გაუგზავნე სიტყვა →",
+                      "fontFamily": "Noto Sans Georgian",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tzfRl",
+      "x": 1520,
+      "y": 2240,
+      "name": "Concept C: Playful Intelligence (Mobile 390)",
+      "width": 390,
+      "height": 844,
+      "fill": "#FAF7F2",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": [
+        20,
+        16
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "eri4K",
+          "name": "Logo",
+          "fill": "#FF7A2F",
+          "content": "JESTER 🃏",
+          "fontFamily": "Noto Sans Georgian",
+          "fontSize": 22,
+          "fontWeight": "800"
+        },
+        {
+          "type": "frame",
+          "id": "Hn3FX",
+          "name": "Punchline Card",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "stroke": "#FF7A2F",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 18,
+          "children": [
+            {
+              "type": "text",
+              "id": "lPUzT",
+              "name": "Tag",
+              "fill": "#FF7A2F",
+              "content": "⚡ რას ამჩნევს JESTER დღეს?",
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 11,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "Vm4tt",
+              "name": "Punchline",
+              "fill": "#222630",
+              "textGrowth": "fixed-width",
+              "width": 322,
+              "content": "„დილით ფილოსოფოსი ხარ, საღამოს — სარკასტული კომენტატორი. ორივე გიხდება.“",
+              "lineHeight": 1.5,
+              "fontFamily": "Noto Sans Georgian",
+              "fontSize": 16,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "HnwAz",
+              "name": "Share",
+              "fill": "#FF7A2F",
+              "cornerRadius": 9999,
+              "padding": [
+                10,
+                20
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "D01lG",
+                  "name": "Label",
+                  "fill": "#222630",
+                  "content": "გაუზიარე მეგობარს ↗",
+                  "fontFamily": "Noto Sans Georgian",
+                  "fontSize": 14,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fileToken": "8341e88d-558d-4807-90f1-4bb28967d373"
+}

@@ -1,0 +1,2606 @@
+{
+  "version": "2.21",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "XufCt",
+      "x": 900,
+      "y": 0,
+      "name": "Jester Home — High Fidelity Exploration · Desktop",
+      "clip": true,
+      "width": 1440,
+      "fill": "$paper",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "hhF0C",
+          "name": "Desktop navigation",
+          "width": "fill_container",
+          "height": 96,
+          "stroke": "$line",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "padding": [
+            0,
+            64
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "zuO9n",
+              "name": "Jester wordmark",
+              "fill": "$ink",
+              "content": "jester",
+              "lineHeight": 1.55,
+              "fontFamily": "$font",
+              "fontSize": 36,
+              "fontWeight": "800"
+            },
+            {
+              "type": "frame",
+              "id": "pAJD7",
+              "name": "Main destinations",
+              "gap": 28,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FSAOV",
+                  "name": "მთავარი",
+                  "stroke": "$orange",
+                  "strokeWidth": {
+                    "bottom": 3
+                  },
+                  "padding": [
+                    12,
+                    4
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hs9iY",
+                      "name": "მთავარი label",
+                      "fill": "$ink",
+                      "content": "მთავარი",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HVhmy",
+                  "name": "აღმოაჩინე",
+                  "stroke": "#00000000",
+                  "strokeWidth": {
+                    "bottom": 3
+                  },
+                  "padding": [
+                    12,
+                    4
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xogsk",
+                      "name": "აღმოაჩინე label",
+                      "fill": "$ink",
+                      "content": "აღმოაჩინე",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "PsyqS",
+                  "name": "კავშირები",
+                  "stroke": "#00000000",
+                  "strokeWidth": {
+                    "bottom": 3
+                  },
+                  "padding": [
+                    12,
+                    4
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "b9xN6o",
+                      "name": "კავშირები label",
+                      "fill": "$ink",
+                      "content": "კავშირები",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Br12V",
+                  "name": "საუბრები",
+                  "stroke": "#00000000",
+                  "strokeWidth": {
+                    "bottom": 3
+                  },
+                  "padding": [
+                    12,
+                    4
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XlKhL",
+                      "name": "საუბრები label",
+                      "fill": "$ink",
+                      "content": "საუბრები",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VikKS",
+              "name": "Account utilities",
+              "gap": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "jZ4Tx",
+                  "name": "Notifications",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "bell",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "frame",
+                  "id": "te2RG",
+                  "name": "My profile",
+                  "width": 44,
+                  "height": 44,
+                  "fill": "$peach",
+                  "cornerRadius": 22,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "EUc39",
+                      "name": "Viewer initial",
+                      "fill": "$ink",
+                      "content": "ნ",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HMH3O",
+          "name": "Home editorial content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 36,
+          "padding": [
+            40,
+            64,
+            48,
+            64
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "Jw975",
+              "name": "Greeting and edition",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "zVZeK",
+                  "name": "Personal greeting",
+                  "fill": "$ink",
+                  "content": "გამარჯობა, ნინო",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "O4WXl9",
+                  "name": "Edition date",
+                  "fill": "$muted",
+                  "content": "სამშაბათი, 20 ოქტომბერი",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 13
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NObLm",
+              "name": "Hero · A conversation begins",
+              "width": "fill_container",
+              "gap": 40,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "wtXmG",
+                  "name": "Hero editorial copy",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "y40bK",
+                      "name": "Hero eyebrow",
+                      "fill": "$muted",
+                      "content": "შენით იწყება. ადამიანებით გრძელდება.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nktdE",
+                      "name": "Hero headline",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "კარგი საუბარი\nშემთხვევით არ იწყება.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 44,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "M8ty1",
+                      "name": "Hero introduction",
+                      "fill": "$muted",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "ცოტა ცნობისმოყვარეობა, ერთი ზუსტი დაკვირვება —\nდა „გამარჯობა“ უკვე სულ სხვა რამეს ნიშნავს.",
+                      "lineHeight": 1.65,
+                      "fontFamily": "$font",
+                      "fontSize": 17,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "V0U4b",
+                      "name": "Hero actions",
+                      "gap": 20,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "NczkC",
+                          "name": "Discover people button",
+                          "fill": "$orange",
+                          "cornerRadius": 12,
+                          "gap": 16,
+                          "padding": [
+                            14,
+                            22
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "yqyYg",
+                              "name": "Discover label",
+                              "fill": "$ink",
+                              "content": "აღმოაჩინე ადამიანები",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "k2L18Y",
+                              "name": "Discover arrow",
+                              "width": 20,
+                              "height": 20,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QJtZ2",
+                  "name": "Tactile dialogue sculpture",
+                  "clip": true,
+                  "width": 450,
+                  "height": 410,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 28
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HTySS",
+              "name": "Daily insight · Profile observation",
+              "width": "fill_container",
+              "fill": "$sage",
+              "cornerRadius": 20,
+              "gap": 32,
+              "padding": 28,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ZShXe",
+                  "name": "Insight provenance",
+                  "width": 225,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "V3K3cL",
+                      "name": "Insight title row",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "yVMaI",
+                          "name": "Observation icon",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "sun",
+                          "library": "lucide",
+                          "fill": "#4B6242"
+                        },
+                        {
+                          "type": "text",
+                          "id": "regFY",
+                          "name": "Daily title",
+                          "fill": "$ink",
+                          "content": "დღის დაკვირვება",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ACYfY",
+                      "name": "Truthful source",
+                      "fill": "#4B6242",
+                      "content": "შენი პროფილის მიხედვით",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ovov1",
+                  "name": "Daily observation copy",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "L414I",
+                      "name": "Daily insight quote",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "ყველას მოსმენა გამოგდის.\nდღეს შენი ამბავიც მოაყოლე.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 25,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ssadu",
+                      "name": "Insight explanation",
+                      "fill": "#4B6242",
+                      "content": "რატომ ამბობს ამას JESTER?  →",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "En5dy",
+                  "name": "Copy insight button",
+                  "width": 48,
+                  "height": 48,
+                  "cornerRadius": 24,
+                  "stroke": "#4B6242",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "LBfP9",
+                      "name": "Copy icon",
+                      "width": 19,
+                      "height": 19,
+                      "icon": "copy",
+                      "library": "lucide",
+                      "fill": "#4B6242"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OzDfd",
+              "name": "Your people section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dpS5p",
+                  "name": "Connections heading",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "i7ao4",
+                      "name": "Connections title",
+                      "fill": "$ink",
+                      "content": "შენი ადამიანები",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 27,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "LOrqg",
+                      "name": "All connections link",
+                      "fill": "$ink",
+                      "content": "ყველა კავშირი  →",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QJ5yA",
+                  "name": "Connection moment and circle",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kaQt6",
+                      "name": "Nino and Luka · Connection story",
+                      "clip": true,
+                      "width": 800,
+                      "height": 310,
+                      "fill": "$ink",
+                      "cornerRadius": 22,
+                      "gap": 28,
+                      "padding": 28,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YaqHR",
+                          "name": "Luka editorial portrait",
+                          "clip": true,
+                          "width": 215,
+                          "height": "fill_container",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "generated-3.png",
+                            "mode": "cover"
+                          },
+                          "cornerRadius": 14
+                        },
+                        {
+                          "type": "frame",
+                          "id": "E41p3e",
+                          "name": "Connection story copy",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 14,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ynzsf",
+                              "name": "Connection category",
+                              "fill": "#F5DDD1",
+                              "content": "შენ + ლუკა · მეგობრობა",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "vH5QY",
+                              "name": "Connection headline",
+                              "fill": "$paper",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "სხვადასხვა აზრი.\nერთი კარგი საუბარი.",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 26,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "sdlzq",
+                              "name": "Connection insight",
+                              "fill": "#F5DDD1",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "შენ დეტალებს ამჩნევ, ლუკა — დიდ სურათს. კამათიც ახალი იდეის დასაწყისია.",
+                              "lineHeight": 1.6,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Fusgr",
+                              "name": "Connection why link",
+                              "fill": "$orange",
+                              "content": "ნახე თქვენი დინამიკა  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "m1x187",
+                      "name": "Active connections",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 16,
+                      "padding": [
+                        12,
+                        0
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "HbSIp",
+                          "name": "Circle caption",
+                          "fill": "$ink",
+                          "content": "საუბარს გაგრძელება უხდება",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 15,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "gie1k",
+                          "name": "მარიამი connection row",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "padding": [
+                            4,
+                            0
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "S3gvvF",
+                              "name": "მარიამი avatar",
+                              "width": 48,
+                              "height": 48,
+                              "fill": "$peach",
+                              "cornerRadius": 24,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "d1Z8t",
+                                  "name": "მარიამი initial",
+                                  "fill": "$ink",
+                                  "content": "მ",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 20,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "u1Fbi2",
+                              "name": "მარიამი details",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TE8k8",
+                                  "name": "მარიამი name",
+                                  "fill": "$ink",
+                                  "content": "მარიამი",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "t7ss1",
+                                  "name": "მარიამი activity",
+                                  "fill": "$muted",
+                                  "content": "ბოლო საუბარი · გუშინ",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "b42y7",
+                              "name": "მარიამი message",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YlyOb",
+                          "name": "გიორგი connection row",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "padding": [
+                            4,
+                            0
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "x14x2i",
+                              "name": "გიორგი avatar",
+                              "width": 48,
+                              "height": 48,
+                              "fill": "$sage",
+                              "cornerRadius": 24,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "eBnWC",
+                                  "name": "გიორგი initial",
+                                  "fill": "$ink",
+                                  "content": "გ",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 20,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JE9cx",
+                              "name": "გიორგი details",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Vx996",
+                                  "name": "გიორგი name",
+                                  "fill": "$ink",
+                                  "content": "გიორგი",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "wXas7",
+                                  "name": "გიორგი activity",
+                                  "fill": "$muted",
+                                  "content": "ბოლო საუბარი · ორშაბათს",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "P6vNKi",
+                              "name": "გიორგი message",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "n6qFd",
+                          "name": "ანა connection row",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "padding": [
+                            4,
+                            0
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "SvWS0",
+                              "name": "ანა avatar",
+                              "width": 48,
+                              "height": 48,
+                              "fill": "#FFE7D7",
+                              "cornerRadius": 24,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cyCOY",
+                                  "name": "ანა initial",
+                                  "fill": "$ink",
+                                  "content": "ა",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 20,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "baNOA",
+                              "name": "ანა details",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "KVWVo",
+                                  "name": "ანა name",
+                                  "fill": "$ink",
+                                  "content": "ანა",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "H7jdX",
+                                  "name": "ანა activity",
+                                  "fill": "$muted",
+                                  "content": "თქვენ უკვე დაკავშირებული ხართ",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "G8Zi6",
+                              "name": "ანა message",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yyBZn",
+              "name": "Curiosity and new people",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 22,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JMExr",
+                  "name": "Discovery section heading",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "aJQcp",
+                      "name": "Discovery title",
+                      "fill": "$ink",
+                      "content": "ცნობისმოყვარეობას გაჰყევი",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 27,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "jNm7T",
+                      "name": "View everyone",
+                      "fill": "$ink",
+                      "content": "ყველა ადამიანი  →",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "x4Jt9",
+                  "name": "Editorial discovery spread",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "a2fl9v",
+                      "name": "Salome · Featured discovery",
+                      "clip": true,
+                      "width": 620,
+                      "height": 330,
+                      "fill": "#F3EEE6",
+                      "cornerRadius": 22,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "C4bgjL",
+                          "name": "Salome portrait",
+                          "width": 272,
+                          "height": "fill_container",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "generated-1.png",
+                            "mode": "cover"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "L0Iesz",
+                          "name": "Salome story",
+                          "width": "fill_container",
+                          "height": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Pzo8k",
+                              "name": "Salome name",
+                              "fill": "$ink",
+                              "content": "სალომე, 27",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 22,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "D0yrdi",
+                              "name": "Salome context",
+                              "fill": "$muted",
+                              "content": "თბილისი · არქიტექტორი",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 12
+                            },
+                            {
+                              "type": "text",
+                              "id": "NTuGG",
+                              "name": "Salome self expression",
+                              "fill": "$ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "„ქალაქში დაკარგვა ჩემი საყვარელი გეგმაა.“",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 21,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "P4BGn3",
+                              "name": "Salome interest",
+                              "fill": "$sage",
+                              "cornerRadius": 8,
+                              "padding": [
+                                6,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "nidOm",
+                                  "name": "Architecture interest",
+                                  "fill": "#4B6242",
+                                  "content": "არქიტექტურა",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Agd2s",
+                              "name": "Salome profile link",
+                              "fill": "$ink",
+                              "content": "გაიცანი სალომე  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "r29TTw",
+                      "name": "Dato · Discovery",
+                      "clip": true,
+                      "width": 310,
+                      "height": 330,
+                      "fill": "$paper",
+                      "cornerRadius": 22,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "NPRZz",
+                          "name": "Dato portrait",
+                          "width": "fill_container",
+                          "height": 170,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "generated-2.png",
+                            "mode": "cover"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "q3SMV",
+                          "name": "Dato caption",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "A7N8N",
+                              "name": "Dato name",
+                              "fill": "$ink",
+                              "content": "დათო, 29",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "YXGqO",
+                              "name": "Dato bio",
+                              "fill": "$muted",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "„ჯერ ყავა. მერე — უცნობი ქუჩები.“",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "d620d",
+                              "name": "Dato profile link",
+                              "fill": "$ink",
+                              "content": "გაიცანი დათო  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "IzeGs",
+                      "name": "Conversation starter invitation",
+                      "width": "fill_container",
+                      "height": 330,
+                      "fill": "$orange",
+                      "cornerRadius": 22,
+                      "layout": "vertical",
+                      "gap": 18,
+                      "padding": 24,
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "DG94k",
+                          "name": "Conversation symbol",
+                          "width": 34,
+                          "height": 34,
+                          "icon": "messages-square",
+                          "library": "lucide",
+                          "fill": "$ink"
+                        },
+                        {
+                          "type": "text",
+                          "id": "k7aFUf",
+                          "name": "Invitation eyebrow",
+                          "fill": "$ink",
+                          "content": "საუბრის საბაბი",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h9emnn",
+                          "name": "Invitation question",
+                          "fill": "$ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "რომელ თემაზე შეგიძლია საათობით ილაპარაკო?",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 22,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VN4OM",
+                          "name": "Invitation action",
+                          "fill": "$ink",
+                          "content": "ჰკითხე მეგობარს  →",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O6UqC",
+              "name": "Footer brand and adult policy",
+              "width": "fill_container",
+              "stroke": "$line",
+              "strokeWidth": {
+                "top": 1
+              },
+              "padding": [
+                24,
+                0,
+                0,
+                0
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Sre4r",
+                  "name": "Brand closing",
+                  "fill": "$ink",
+                  "content": "ნაკლები ფორმალობა. მეტი ნამდვილი ამბავი.",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "mbvUp",
+                  "name": "Adult policy",
+                  "fill": "$muted",
+                  "content": "JESTER · 18+",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "K075v",
+      "x": 2440,
+      "y": 0,
+      "name": "Jester Home — High Fidelity Exploration · Mobile",
+      "clip": true,
+      "width": 390,
+      "fill": "$paper",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "p6QKEA",
+          "name": "Mobile brand bar",
+          "width": "fill_container",
+          "height": 80,
+          "stroke": "$line",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "RyPOV",
+              "name": "Mobile wordmark",
+              "fill": "$ink",
+              "content": "jester",
+              "lineHeight": 1.55,
+              "fontFamily": "$font",
+              "fontSize": 30,
+              "fontWeight": "800"
+            },
+            {
+              "type": "frame",
+              "id": "aMKu9",
+              "name": "Mobile account utilities",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pHCZT",
+                  "name": "Mobile notifications touch target",
+                  "width": 48,
+                  "height": 48,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "k1DHd",
+                      "name": "Mobile bell",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "bell",
+                      "library": "lucide",
+                      "fill": "$ink"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pUwLy",
+                  "name": "Mobile account",
+                  "width": 48,
+                  "height": 48,
+                  "fill": "$peach",
+                  "cornerRadius": 24,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "pj5pe",
+                      "name": "Viewer initial",
+                      "fill": "$ink",
+                      "content": "ნ",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kBUDw",
+          "name": "Mobile content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "padding": [
+            24,
+            20,
+            32,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "U2Bvl",
+              "name": "Mobile greeting",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "e1NJ8x",
+                  "name": "Mobile hello",
+                  "fill": "$ink",
+                  "content": "გამარჯობა, ნინო",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "iLSoS",
+                  "name": "Mobile date",
+                  "fill": "$muted",
+                  "content": "სამშაბათი, 20 ოქტომბერი",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "K8RMfO",
+              "name": "Mobile hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UIL5N",
+                  "name": "Mobile hero headline",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "კარგი საუბარი\nშემთხვევით\nარ იწყება.",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 30,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "k1Hmq5",
+                  "name": "Mobile introduction",
+                  "fill": "$muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "ცოტა ცნობისმოყვარეობა, ერთი ზუსტი დაკვირვება — და „გამარჯობა“ უკვე სულ სხვა რამეს ნიშნავს.",
+                  "lineHeight": 1.65,
+                  "fontFamily": "$font",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "b0HzN",
+                  "name": "Mobile discover button",
+                  "width": "fill_container",
+                  "height": 52,
+                  "fill": "$orange",
+                  "cornerRadius": 12,
+                  "gap": 16,
+                  "padding": [
+                    14,
+                    22
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "B5cIR2",
+                      "name": "Discover label",
+                      "fill": "$ink",
+                      "content": "აღმოაჩინე ადამიანები",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "dIft6",
+                      "name": "Discover arrow",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$ink"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "i6KE0E",
+                  "name": "Mobile tactile dialogue motif",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 225,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 20
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "x2drkc",
+              "name": "Mobile daily profile insight",
+              "width": "fill_container",
+              "fill": "$sage",
+              "cornerRadius": 20,
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 22,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jqqIO",
+                  "name": "Insight provenance",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "h9SWs",
+                      "name": "Insight title row",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "OpKyj",
+                          "name": "Observation icon",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "sun",
+                          "library": "lucide",
+                          "fill": "#4B6242"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Tc8jH",
+                          "name": "Daily title",
+                          "fill": "$ink",
+                          "content": "დღის დაკვირვება",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ceKmO",
+                      "name": "Truthful source",
+                      "fill": "#4B6242",
+                      "content": "შენი პროფილის მიხედვით",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "e5REM",
+                  "name": "Daily observation copy",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sbgy6",
+                      "name": "Daily insight quote",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "ყველას მოსმენა გამოგდის. დღეს შენი ამბავიც მოაყოლე.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 21,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pXHEN",
+                      "name": "Insight explanation",
+                      "fill": "#4B6242",
+                      "content": "რატომ ამბობს ამას JESTER?  →",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hfLWt",
+                  "name": "Copy insight button",
+                  "width": 48,
+                  "height": 48,
+                  "cornerRadius": 24,
+                  "stroke": "#4B6242",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "sZU0x",
+                      "name": "Copy icon",
+                      "width": 19,
+                      "height": 19,
+                      "icon": "copy",
+                      "library": "lucide",
+                      "fill": "#4B6242"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MN2sq",
+              "name": "Mobile your people",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "depoI",
+                  "name": "Mobile people heading",
+                  "fill": "$ink",
+                  "content": "შენი ადამიანები",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 23,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "pvmzy",
+                  "name": "Mobile Luka connection story",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$ink",
+                  "cornerRadius": 22,
+                  "layout": "vertical",
+                  "gap": 18,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UrXlK",
+                      "name": "Luka editorial portrait",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 180,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "generated-3.png",
+                        "mode": "cover"
+                      },
+                      "cornerRadius": 14
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZtYAU",
+                      "name": "Connection story copy",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "HEyRP",
+                          "name": "Connection category",
+                          "fill": "#F5DDD1",
+                          "content": "შენ + ლუკა · მეგობრობა",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "d9N9v4",
+                          "name": "Connection headline",
+                          "fill": "$paper",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "სხვადასხვა აზრი.\nერთი კარგი საუბარი.",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 23,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "eU51N",
+                          "name": "Connection insight",
+                          "fill": "#F5DDD1",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "შენ დეტალებს ამჩნევ, ლუკა — დიდ სურათს. კამათიც ახალი იდეის დასაწყისია.",
+                          "lineHeight": 1.6,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "j2rWAs",
+                          "name": "Touch target · Connection why link",
+                          "width": "fill_container",
+                          "height": 48,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "r4yNL",
+                              "name": "Connection why link",
+                              "fill": "$orange",
+                              "content": "ნახე თქვენი დინამიკა  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "aDAdJ",
+                  "name": "Mobile active circle",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ydBcC",
+                      "name": "Circle caption",
+                      "fill": "$ink",
+                      "content": "საუბარს გაგრძელება უხდება",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pGLyr",
+                      "name": "მარიამი connection row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "padding": [
+                        4,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wvfcd",
+                          "name": "მარიამი avatar",
+                          "width": 48,
+                          "height": 48,
+                          "fill": "$peach",
+                          "cornerRadius": 24,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "IPQWM",
+                              "name": "მარიამი initial",
+                              "fill": "$ink",
+                              "content": "მ",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "CghHn",
+                          "name": "მარიამი details",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dzmTQ",
+                              "name": "მარიამი name",
+                              "fill": "$ink",
+                              "content": "მარიამი",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "O8h5wb",
+                              "name": "მარიამი activity",
+                              "fill": "$muted",
+                              "content": "ბოლო საუბარი · გუშინ",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 12
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "a14pb",
+                          "name": "მარიამი message",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$ink"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jYcLE",
+                      "name": "გიორგი connection row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "padding": [
+                        4,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "BhtZQ",
+                          "name": "გიორგი avatar",
+                          "width": 48,
+                          "height": 48,
+                          "fill": "$sage",
+                          "cornerRadius": 24,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "anxpi",
+                              "name": "გიორგი initial",
+                              "fill": "$ink",
+                              "content": "გ",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "i5AZh",
+                          "name": "გიორგი details",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Qn1GZ",
+                              "name": "გიორგი name",
+                              "fill": "$ink",
+                              "content": "გიორგი",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Z71pB",
+                              "name": "გიორგი activity",
+                              "fill": "$muted",
+                              "content": "ბოლო საუბარი · ორშაბათს",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 12
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "z9SfVa",
+                          "name": "გიორგი message",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$ink"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Atmnr",
+                      "name": "ანა connection row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "padding": [
+                        4,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "pgpvd",
+                          "name": "ანა avatar",
+                          "width": 48,
+                          "height": 48,
+                          "fill": "#FFE7D7",
+                          "cornerRadius": 24,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "RRtFj",
+                              "name": "ანა initial",
+                              "fill": "$ink",
+                              "content": "ა",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "x1Y2ai",
+                          "name": "ანა details",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QJJCu",
+                              "name": "ანა name",
+                              "fill": "$ink",
+                              "content": "ანა",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "X3NfF",
+                              "name": "ანა activity",
+                              "fill": "$muted",
+                              "content": "თქვენ უკვე დაკავშირებული ხართ",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 12
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "jjplM",
+                          "name": "ანა message",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$ink"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GSvfw",
+              "name": "Mobile curiosity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 18,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hQMFt",
+                  "name": "Mobile curiosity heading",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "ცნობისმოყვარეობას\nგაჰყევი",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 23,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "x6vaE",
+                  "name": "Mobile Salome discovery",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "#F3EEE6",
+                  "cornerRadius": 22,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "tgtF3",
+                      "name": "Salome portrait",
+                      "width": "fill_container",
+                      "height": 230,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "generated-1.png",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sOUlD",
+                      "name": "Salome story",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 22,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "FB7jR",
+                          "name": "Salome name",
+                          "fill": "$ink",
+                          "content": "სალომე, 27",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 22,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "nQ5E0",
+                          "name": "Salome context",
+                          "fill": "$muted",
+                          "content": "თბილისი · არქიტექტორი",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 12
+                        },
+                        {
+                          "type": "text",
+                          "id": "C9c6Et",
+                          "name": "Salome self expression",
+                          "fill": "$ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "„ქალაქში დაკარგვა ჩემი საყვარელი გეგმაა.“",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 22,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "zQd4Z",
+                          "name": "Salome interest",
+                          "fill": "$sage",
+                          "cornerRadius": 8,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "s70Fp",
+                              "name": "Architecture interest",
+                              "fill": "#4B6242",
+                              "content": "არქიტექტურა",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MTSSi",
+                          "name": "Touch target · Salome profile link",
+                          "width": "fill_container",
+                          "height": 48,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "J8cix",
+                              "name": "Salome profile link",
+                              "fill": "$ink",
+                              "content": "გაიცანი სალომე  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "q6Iex",
+                  "name": "Mobile Dato discovery",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$paper",
+                  "cornerRadius": 22,
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "BlgY5",
+                      "name": "Dato portrait",
+                      "width": "fill_container",
+                      "height": 200,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "generated-2.png",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qB7GY",
+                      "name": "Dato caption",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": 22,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tAU96",
+                          "name": "Dato name",
+                          "fill": "$ink",
+                          "content": "დათო, 29",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "fmHOe",
+                          "name": "Dato bio",
+                          "fill": "$muted",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "„ჯერ ყავა. მერე — უცნობი ქუჩები.“",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ujB1t",
+                          "name": "Touch target · Dato profile link",
+                          "width": "fill_container",
+                          "height": 48,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Z9Aph",
+                              "name": "Dato profile link",
+                              "fill": "$ink",
+                              "content": "გაიცანი დათო  →",
+                              "lineHeight": 1.55,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "uNFGQ",
+                  "name": "Mobile conversation invitation",
+                  "width": "fill_container",
+                  "fill": "$orange",
+                  "cornerRadius": 22,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "kx4kw",
+                      "name": "Conversation symbol",
+                      "width": 34,
+                      "height": 34,
+                      "icon": "messages-square",
+                      "library": "lucide",
+                      "fill": "$ink"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PF1Cz",
+                      "name": "Invitation eyebrow",
+                      "fill": "$ink",
+                      "content": "საუბრის საბაბი",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PiEIM",
+                      "name": "Invitation question",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "რომელ თემაზე შეგიძლია საათობით ილაპარაკო?",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 23,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "d75Ou",
+                      "name": "Touch target · Invitation action",
+                      "width": "fill_container",
+                      "height": 48,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "NGZ1o",
+                          "name": "Invitation action",
+                          "fill": "$ink",
+                          "content": "ჰკითხე მეგობარს  →",
+                          "lineHeight": 1.55,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "zTtMI",
+                  "name": "Mobile view all people button",
+                  "width": "fill_container",
+                  "height": 52,
+                  "cornerRadius": 12,
+                  "stroke": "$ink",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rGNWG",
+                      "name": "View all people label",
+                      "fill": "$ink",
+                      "content": "ყველა ადამიანი  →",
+                      "lineHeight": 1.55,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AEuC1",
+              "name": "Mobile policy footer",
+              "width": "fill_container",
+              "stroke": "$line",
+              "strokeWidth": {
+                "top": 1
+              },
+              "padding": [
+                16,
+                0,
+                0,
+                0
+              ],
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Q5x4Yp",
+                  "name": "Mobile footer brand",
+                  "fill": "$muted",
+                  "content": "ადამიანებით გრძელდება.",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "kwg1A",
+                  "name": "Mobile 18 plus",
+                  "fill": "$muted",
+                  "content": "18+",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "T1TvSn",
+          "name": "Mobile bottom navigation · pinned in implementation",
+          "width": "fill_container",
+          "fill": "$paper",
+          "stroke": "$line",
+          "strokeWidth": {
+            "top": 1
+          },
+          "padding": [
+            12,
+            12,
+            22,
+            12
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "AAMIT",
+              "name": "მთავარი mobile tab",
+              "width": 70,
+              "height": 54,
+              "fill": "#FFE7D7",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "gap": 5,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "k8ZzIH",
+                  "name": "მთავარი tab icon",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "house",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "text",
+                  "id": "f2ouhf",
+                  "name": "მთავარი tab label",
+                  "fill": "$ink",
+                  "content": "მთავარი",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vxs4U",
+              "name": "აღმოაჩინე mobile tab",
+              "width": 70,
+              "height": 54,
+              "fill": "#FAF7F2",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "gap": 5,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "E1M6F",
+                  "name": "აღმოაჩინე tab icon",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "compass",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "text",
+                  "id": "WQ3zE",
+                  "name": "აღმოაჩინე tab label",
+                  "fill": "$ink",
+                  "content": "აღმოაჩინე",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d65ksG",
+              "name": "კავშირები mobile tab",
+              "width": 70,
+              "height": 54,
+              "fill": "#FAF7F2",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "gap": 5,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "hxObH",
+                  "name": "კავშირები tab icon",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "users",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "text",
+                  "id": "V5yLDI",
+                  "name": "კავშირები tab label",
+                  "fill": "$ink",
+                  "content": "კავშირები",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "z5mYec",
+              "name": "საუბრები mobile tab",
+              "width": 70,
+              "height": 54,
+              "fill": "#FAF7F2",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "gap": 5,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "kWHme",
+                  "name": "საუბრები tab icon",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "message-circle",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "text",
+                  "id": "vrsAH",
+                  "name": "საუბრები tab label",
+                  "fill": "$ink",
+                  "content": "საუბრები",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mxqXO",
+              "name": "მე mobile tab",
+              "width": 70,
+              "height": 54,
+              "fill": "#FAF7F2",
+              "cornerRadius": 12,
+              "layout": "vertical",
+              "gap": 5,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "d3G7O",
+                  "name": "მე tab icon",
+                  "width": 22,
+                  "height": 22,
+                  "icon": "user-round",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "text",
+                  "id": "F8voF",
+                  "name": "მე tab label",
+                  "fill": "$ink",
+                  "content": "მე",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "muxVY",
+      "x": 900,
+      "y": -180,
+      "name": "Jester Home — High Fidelity Exploration",
+      "width": 1440,
+      "layout": "vertical",
+      "gap": 8,
+      "padding": [
+        20,
+        0
+      ],
+      "children": [
+        {
+          "type": "text",
+          "id": "dEyEf",
+          "name": "Exploration title",
+          "fill": "$ink",
+          "content": "Jester Home — High Fidelity Exploration",
+          "fontFamily": "Inter",
+          "fontSize": 32,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "Ji3Rv",
+          "name": "Exploration direction",
+          "fill": "$muted",
+          "content": "EDITORIAL DIALOGUE  /  Desktop + Mobile  /  20.10.2026",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal",
+          "letterSpacing": 2
+        },
+        {
+          "type": "text",
+          "id": "skPAz",
+          "name": "Concept content disclosure",
+          "fill": "$muted",
+          "content": "ვიზუალური კონცეფცია · გამოგონილი სრულწლოვანი პროფილები და საილუსტრაციო ტექსტები",
+          "lineHeight": 1.55,
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "paper": {
+      "type": "color",
+      "value": "#FAF7F2"
+    },
+    "ink": {
+      "type": "color",
+      "value": "#222630"
+    },
+    "orange": {
+      "type": "color",
+      "value": "#FF7A2F"
+    },
+    "muted": {
+      "type": "color",
+      "value": "#6A716F"
+    },
+    "line": {
+      "type": "color",
+      "value": "#E6E0D7"
+    },
+    "sage": {
+      "type": "color",
+      "value": "#E8EFE2"
+    },
+    "peach": {
+      "type": "color",
+      "value": "#F5DDD1"
+    },
+    "font": {
+      "type": "string",
+      "value": "Noto Sans Georgian"
+    }
+  },
+  "fileToken": "013779a9-eff7-4191-85cc-7fa8d1290f6b"
+}
