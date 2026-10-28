@@ -103,7 +103,7 @@ A status saying `IMPLEMENTED` is not a substitute for browser/DB verification. D
 
 First DB-filter candidate rows (exclude self, blocked, not discoverable, underage once policy shipped), indexed stable server pagination, lightweight enrichment (photo, bio, interest tags, shared counts) for just current page. Compute compatibility **on profile open / explicit preview**, or valid cache. Do not run full synastry on all candidates each request. Filtering by city + interests first; detailed affinity scoring deferred.
 
-**Implemented Wave 3:** [Bounded discovery and social profiles](../DISCOVERY_WAVE3.md) documents the owner-authorized swipe deck: left = local Next; right = explicit connection confirmation, with keyboard/buttons and a browsable list. It adds no Likes, Matches or permanent rejection. Canonical connection transitions remain authoritative. Card media is bounded to current/next; Person Profile places connection controls before progressive astrology disclosure. Visual status remains `FOUNDER_REVIEW_REQUIRED`.
+**Implemented Wave 3:** [Bounded discovery and social profiles](../DISCOVERY_WAVE3.md) documents the owner-authorized swipe deck: left = local Next; right = explicit connection confirmation, with keyboard/buttons and a browsable list. It adds no Likes, Matches or permanent rejection. Canonical connection transitions remain authoritative. Card media is bounded to current/next; Person Profile places connection controls before progressive astrology disclosure. Visual and interaction status is **`FOUNDER_APPROVED`** under [FDR-2026-01](../FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) (Photo-First Human Discovery).
 
 ---
 

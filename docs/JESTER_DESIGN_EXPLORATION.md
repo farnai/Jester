@@ -37,7 +37,7 @@ Every section is strictly tagged with its current status:
 - ❌ **Circus Clowns & Carnivals:** Floppy three-pronged hats, bells, carnival diamonds.
 - ❌ **Cartoon Mascots:** Bouncing mascots (no Clippy, no Duolingo owl).
 - ❌ **Cosmic Occult Temple:** Mystical crystal balls, purple-violet velvet gradients, zodiac wheels, planetary degree symbols in primary UI.
-- ❌ **Swipe Dating Clichés:** Tinder/Bumble card stacks, swipe gestures, contextless % numbers.
+- ❌ **Superficial Meat-Market Clichés:** Contextless binary hot-or-not cards, gamified discard culture, and naked percentage numbers without psychological meaning. (Touch-native candidate browsing via a bounded deck is approved under [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) with intentional bilateral confirmation; disposable matching mechanics remain strictly rejected).
 
 ---
 
@@ -105,9 +105,21 @@ export const jesterTokens = {
 
 ## 4. Layout & Navigation Concepts
 
-### 4.1 Anti-Swipe Vertical Discovery Feed `[APPROVED]`
-- Swiping right/left to discard or like is strictly prohibited.
-- Discovery is rendered as an intentional vertical stream of rich candidate cards.
+### 4.1 Touch-Native Discovery Deck & Curated Browsing `[APPROVED]`
+*(Governed by [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) and [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy))*
+
+- **Mobile Touch-Native Candidate Deck (`DiscoverSwipeCard.tsx`):**
+  - **Swipe Left (or ArrowLeft / Next button):** Advances locally to the next candidate (skip/pass) without writing negative rejection telemetry to the database.
+  - **Swipe Right (or ArrowRight / Connect button):** Opens a focused confirmation modal/drawer to send a connection invitation.
+  - **Intentional Bilateral Consent:** A right-swipe never triggers an immediate single-flick match; connection requires explicit button confirmation. Escape or "Not Now" cancels without dispatching network requests.
+- **Decoupled Gesture Hierarchy:**
+  - *Candidate navigation:* Horizontal swipe ($>65\text{px}$) or keyboard arrows navigate candidate cards.
+  - *Photo navigation:* Horizontal tapping or scrubbing within candidate cards cycles through photos (`photos[]`) without moving the candidate card.
+  - *Detail exploration:* Vertical scrolling sweeps down into deep candidate profile details (prompts, lifestyle cadence, shared interests, and WHY relational chemistry).
+- **Desktop Layout:** Presents a centered photo card with rich social context, filters, and an alternate browsable list view to conserve bandwidth.
+- **Photo Geometry & Framing Hierarchy:**
+  - Large candidate and lifestyle photos must use natural proportions with restrained modern rounded corners (`rounded-2xl` to `rounded-3xl` / 20–24px). Exaggerated arch masks are prohibited on full-bleed mobile candidate cards.
+  - Distinctive arch framing and circular cameo apertures are reserved for small avatars, profile thumbnails, and shared-interest seals.
 
 ### 4.2 Ergonomic Thumb-Zone Architecture `[PROPOSAL]`
 
@@ -189,4 +201,21 @@ The following decisions remain **open** and require formal design exploration, w
    - *Option B:* Dark-mode first by default (Obsidian Slate across all surfaces).
 5. **Photo Framing & Aspect Ratio:**  
    - *Option A:* Standard 4:5 vertical portrait framing.  
-   - *Option B:* 1:1 square editorial framing with generous surrounding text modules.
+   - *Option B:* 1:1 square editorial framing with generous surrounding text modules.  
+   *(Resolved by [FDR-2026-02](FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy): Large photographs use natural 4:5 or 3:4 portrait proportions with restrained modern rounded corners `rounded-2xl` to `rounded-3xl`; small avatars and cameo badges may use arch apertures).*
+
+---
+
+## 7. Visual Studio Exploration Synthesis & Directions `[APPROVED DIRECTION]`
+*(Governed by [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage))*
+
+Following the comprehensive multi-agent exploration in Visual Studio (`design/visual-studio/canvas/JESTER - Visual Exploration 02.pen`), the Founder has approved the synthesis direction for future UI iterations:
+
+1. **Foundational Visual Architecture: `KZzuf` (Warm Paper Salon / Personal Court):**  
+   - Grounded in warm editorial paper tones (`#FAF7F2`), subtle warm hairline borders (`#E6E0D7`), and restrained Carrot Orange (`#FF7A2F`) accents.
+   - Provides calm, culturally mature breathing room with high typographic authority in Noto Sans Georgian.
+2. **Opening Hero Stage: `phkQC` (Theatrical Spotlight Stage with Truth-Flip & 4-Facet ME Lens):**  
+   - Combines a theatrical personal spotlight with an interactive "Truth-Flip" daily hook card and structured 4-facet ME lenses (Identity, Voice, Spark, Rhythm).
+3. **Screen Boundary Invariant:**  
+   - **Authenticated Home (`/`):** Remains a curated editorial overview with zero binary discard mechanics.
+   - **Social Discovery (`/discover`):** Employs the bounded mobile swipe deck with decoupled photo scrubbing and explicit right-swipe confirmation modal.

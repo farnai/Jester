@@ -202,7 +202,7 @@ Strictly prohibited visual directions:
 - ❌ **No Circus Clowns or Carnivals:** Jester hats with bells, carnival diamonds, harlequin costumes.
 - ❌ **No Medieval Fantasy Heraldry:** Parchment textures, wax seals, shields, swords.
 - ❌ **No Cartoon Mascots:** Bouncing cartoon characters (no Duolingo-style owls or Clippy equivalents).
-- ❌ **No Swipe Dating Mechanics:** Tinder/Bumble card stacks, swipe gestures, contextless % match circles.
+- ❌ **No Reflexive Disposable Matching Mechanics on Home:** Contextless binary hot-or-not cards, gamified discard culture, and naked percentage numbers without psychological meaning. (Note: Swipeable candidate deck is approved specifically for Mobile Discovery under [FDR-2026-01](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy) with intentional bilateral confirmation; Home remains a curated editorial overview).
 
 ---
 
@@ -225,6 +225,7 @@ Areas where the AI Art Director, UI Designer, and Graphic Designer have complete
 
 | Domain | Canonical Repository Document | Status / Authority |
 | :--- | :--- | :--- |
+| **Founder Decision Records** | `docs/FOUNDER_DECISION_RECORDS.md` | Binding (Level 1.5) |
 | **Product Foundation** | `docs/JESTER_PRODUCT_FOUNDATION.md` | Authoritative (Level 2) |
 | **Marketing Foundation** | `docs/JESTER_STRATEGIC_MARKETING_FOUNDATION.md` | Authoritative (Level 3) |
 | **Design Exploration** | `docs/JESTER_DESIGN_EXPLORATION.md` | Explorations & Approved Tokens |
@@ -249,8 +250,8 @@ Areas where the AI Art Director, UI Designer, and Graphic Designer have complete
    *Finding:* `frontend/src/ui/tokens/typography.ts` lists system fonts without `Noto Sans Georgian` and sets `tight: 1.2`, while `frontend/src/index.css` self-hosts `NotoSansGeorgian-*.woff2` (weights 300–900) and `docs/JESTER_PRODUCT_FOUNDATION.md#L269` mandates `line-height >= 1.55` and minimum `12px` text (`homeEditorial.css` currently violates this with `9px–11px` labels and `1.24` line-height).  
    *Resolution:* Visual designs MUST use `Noto Sans Georgian`, `line-height >= 1.55` for Georgian body/UI copy, bold weight contrast (`700`/`800`) instead of `uppercase`, and a strict `12px` floor.
 3. **Anti-Swipe Mandate vs Wave 3 Discovery Deck:**  
-   *Finding:* `docs/JESTER_PRODUCT_FOUNDATION.md#L55` forbids swipe dating mechanics, while Wave 3 (`docs/DISCOVERY_WAVE3.md`, `frontend/src/modules/discover/DiscoverSwipeCard.tsx`) implements a bounded deck alongside a list view.  
-   *Resolution:* Authenticated Home MUST remain human-first and editorial/curated (vertical/scrollable story cards, arch-framed portraits, circular overlays) with zero Tinder-clone left/right discard swiping on Home.
+   *Finding:* `docs/JESTER_PRODUCT_FOUNDATION.md#L55` historically forbade swipe dating mechanics, creating a documented tension with Wave 3 (`docs/DISCOVERY_WAVE3.md`, `frontend/src/modules/discover/DiscoverSwipeCard.tsx`).  
+   *Resolution:* Formally reconciled by Founder Decision [FDR-2026-01](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy). Touch-native mobile candidate deck is approved for Social Discovery with bilateral consent confirmation and gesture decoupling (photo scrubbing vs candidate navigation). Authenticated Home remains human-first, curated, and editorial (vertical/scrollable story cards, photo-first highlights) with zero binary discard swiping on Home. Photo geometry follows [FDR-2026-02](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-02-photo-framing-geometric-hierarchy): natural proportions with restrained rounded corners (`rounded-2xl`/`rounded-3xl`) for large photography; arches/cameos for small avatars and seals. Future iterations synthesize `KZzuf` (Warm Paper Salon) and `phkQC` (Theatrical Spotlight Stage with Truth-Flip) per [FDR-2026-03](../../docs/FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage).
 4. **Verified Backend Capabilities (`EXISTING` / `DERIVABLE`) vs Unimplemented Specs (`PROPOSED`):**  
    - **`EXISTING`:** `GET /v1/interpretations/daily-energy` computes real Swiss Ephemeris planetary transits (`detection_mode: "real_transit" | "neutral_baseline" | "fallback_sun_sign"`) and returns **exact 3 `do` and 3 `dont` Georgian micro-tags** (`backend/app/interpretation/data/daily_energy_tags.json`).  
    - **`DERIVABLE` on Home:** `POST /v1/interpretations/resolve-natal` resolves **10 personal `ME` dimensions** (`identity`, `emotional`, `persona`, `cognition`, `relation`, `action`, `element`, `modality`, `synthesis`, `verdict`) when `mercury_sign`, `venus_sign`, and `mars_sign` from `GET /v1/astrology/profile/safe-astro` are passed. `GET /v1/discovery/people` returns up to **6 authorized gallery photos** (`photos[]`), `interests[]`, and **`common_interest_ids[]`** (verified shared interests).  

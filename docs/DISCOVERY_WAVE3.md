@@ -42,4 +42,4 @@ The deck mounts only the current selected photo and the next person's primary ph
 
 ## Release boundary
 
-Local-only. Enforced 18+ eligibility, report/flag and moderation, account deletion and Architecture v1.2's other public launch gates remain outstanding. No age enforcement is claimed. Wave 2's legacy-public-media and unscheduled cleanup-worker limitations remain. Technical verification does not replace `FOUNDER_REVIEW_REQUIRED` visual approval.
+Local-only. Enforced 18+ eligibility, report/flag and moderation, account deletion and Architecture v1.2's other public launch gates remain outstanding. No age enforcement is claimed. Wave 2's legacy-public-media and unscheduled cleanup-worker limitations remain. Photo-first discovery deck interaction is **`FOUNDER_APPROVED`** under [FDR-2026-01](FOUNDER_DECISION_RECORDS.md#fdr-2026-01-photo-first-human-discovery-touch-native-swipe-interaction-policy); public deployment remains gated by Wave 5 requirements.

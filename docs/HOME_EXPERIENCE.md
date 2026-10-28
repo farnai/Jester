@@ -56,3 +56,9 @@ Home is the authenticated front door to self-understanding, people discovery, an
 - Automated tests: `node --experimental-strip-types --test scripts/home-model.test.mjs` must pass all tests.
 - Browser integration: `node scripts/home-editorial-qa.cjs`, with temporary local accounts prepared using `python -m scripts.prepare_social_profile_qa --wave4`; remove only those manifest-verified accounts afterward with `--cleanup`.
 - Visual verification: Render and inspect desktop (1440, 1280), tablet (768), and mobile (390, 360), checking overflow, action targets, actual authorized connection data, navigation and independent error/retry.
+
+---
+
+## Design Status & Future Visual Synthesis
+
+The current codebase implements the verified editorial reference baseline (`frontend/src/modules/home/HomePage.tsx`). High-fidelity visual explorations conducted in Visual Studio (`design/visual-studio/canvas/JESTER - Visual Exploration 02.pen`) have established the approved synthesis direction for future UI iterations under [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture-phkqc-stage): foundational architecture `KZzuf` (Warm Paper Salon / Personal Court) with opening hero stage `phkQC` (Theatrical Spotlight Stage with Truth-Flip and 4-Facet ME Lens). Implementation in application code is deferred to a dedicated feature task with explicit Founder approval.
