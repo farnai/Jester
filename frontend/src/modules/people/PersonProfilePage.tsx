@@ -131,7 +131,9 @@ function PersonProfile({ targetId }: { targetId: string }) {
               />
             ) : (
               <div className="person-photo-empty-fallback" aria-hidden="true">
-                <span className="person-fallback-initial">{shortName.charAt(0) || 'J'}</span>
+                <div className="person-fallback-ring">
+                  <span className="person-fallback-initial">{shortName.charAt(0) || 'J'}</span>
+                </div>
                 {zodiacDisplay && <span className="person-fallback-zodiac">{zodiacDisplay}</span>}
               </div>
             )}

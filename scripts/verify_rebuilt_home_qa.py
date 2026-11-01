@@ -230,35 +230,6 @@ async def run_qa():
 
         print(f"   -> Verified {cards_with_photo} photo cards and {cards_with_fallback} fallback cards all preserve 3:4 portrait geometry!")
 
-        # Check Portrait Proportions and Fallbacks on Cards
-        cards_with_photo = 0
-        cards_with_fallback = 0
-
-        for idx in range(min(people_count, 6)):
-            card = person_cards.nth(idx)
-            wrap = card.locator(".home-person-photo-wrap")
-            bbox = await wrap.bounding_box()
-            if bbox:
-                ratio = bbox["height"] / bbox["width"]
-                print(f"   -> Card #{idx + 1} wrap dimensions: {bbox['width']:.1f}x{bbox['height']:.1f} (ratio: {ratio:.2f})")
-                assert 1.25 <= ratio <= 1.45, f"Card #{idx + 1} expected 3:4 ratio (~1.33), got {ratio:.2f}"
-
-            img_el = card.locator(".home-person-photo")
-            if await img_el.count() > 0:
-                cards_with_photo += 1
-                obj_fit = await img_el.evaluate("el => getComputedStyle(el).objectFit")
-                obj_pos = await img_el.evaluate("el => getComputedStyle(el).objectPosition")
-                print(f"   -> Card #{idx + 1} Photo styling: object-fit={obj_fit}, object-position={obj_pos}")
-                assert obj_fit == "cover", f"Expected object-fit cover, got {obj_fit}"
-            else:
-                fallback_el = card.locator(".home-person-photo-fallback")
-                if await fallback_el.count() > 0:
-                    cards_with_fallback += 1
-                    initial_text = await card.locator(".home-person-initial").inner_text()
-                    print(f"   -> Card #{idx + 1} Fallback avatar verified (Initial: {initial_text}, same 3:4 portrait wrap)")
-
-        print(f"   -> Verified {cards_with_photo} photo cards and {cards_with_fallback} fallback cards all preserve 3:4 portrait geometry!")
-
         # 9. Verify Detailed Person Profile Navigation
         print("[QA] 8.1. Navigating to Detailed Person Profile...")
         await first_card.locator("a.home-person-link").click()
@@ -275,9 +246,20 @@ async def run_qa():
         print(f"   -> Identity pills count: {badges_count}")
         assert badges_count > 0, "Expected at least 1 identity pill (zodiac/city/work)!"
 
-        # Verify Photos & Gallery
+        # Verify Photos & Gallery (3:4 Portrait Ratio verification)
         main_photo = page.locator(".person-main-photo-stage")
         assert await main_photo.count() == 1, "Main photo stage missing on Person Profile!"
+        profile_photo_bbox = await main_photo.bounding_box()
+        if profile_photo_bbox:
+            p_ratio = profile_photo_bbox["height"] / profile_photo_bbox["width"]
+            print(f"   -> Person Profile photo stage dimensions: {profile_photo_bbox['width']:.1f}x{profile_photo_bbox['height']:.1f} (ratio: {p_ratio:.2f})")
+            assert 1.25 <= p_ratio <= 1.45, f"Expected 3:4 portrait ratio (~1.33) on Person Profile, got {p_ratio:.2f}"
+            print("   -> Verified: Person Profile photo stage preserves exact 3:4 portrait ratio!")
+
+        # Capture screenshot of Person Profile on Desktop
+        profile_screenshot_path = os.path.join(ARTIFACTS_DIR, "rebuilt-person-profile-desktop-1280.png")
+        await page.screenshot(path=profile_screenshot_path, full_page=True)
+        print(f"   -> Captured Person Profile page: {profile_screenshot_path}")
 
         # Verify Compatibility Section
         compat_sec = page.locator(".person-compatibility-card")

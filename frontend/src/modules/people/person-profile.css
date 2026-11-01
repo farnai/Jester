@@ -83,22 +83,39 @@
    ============================================================================= */
 .person-gallery-wrap {
   width: 100%;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .person-main-photo-stage {
   width: 100%;
-  height: clamp(340px, 48vw, 500px);
+  max-width: 480px;
+  margin: 0 auto;
+  aspect-ratio: 3 / 4;
   position: relative;
   background: #F4EFEB;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
+  box-shadow: 0 4px 18px rgba(34, 38, 48, 0.06);
+}
+
+/* Top Vignette gradient for counter legibility */
+.person-main-photo-stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(180deg, rgba(18, 22, 28, 0.32) 0%, rgba(18, 22, 28, 0) 100%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .person-main-photo-stage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 20%;
   display: block;
 }
 
@@ -114,31 +131,45 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FAF4ED 0%, #EDE5D9 100%);
-  gap: 0.75rem;
+  background: radial-gradient(circle at 50% 38%, #FBF8F4 0%, #ECE4D8 100%);
+  gap: 1rem;
+}
+
+.person-fallback-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1.5px solid #E6DFD4;
+  box-shadow: 0 4px 14px rgba(34, 38, 48, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .person-fallback-initial {
-  font-size: 3.5rem;
-  font-weight: 800;
+  font-size: 2.75rem;
+  font-weight: 750;
   color: #8C8070;
+  line-height: 1;
 }
 
 .person-fallback-zodiac {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   color: #4A4D53;
-  padding: 0.35rem 0.85rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 9999px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .person-photo-index-pill {
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(18, 22, 28, 0.7);
+  background: rgba(18, 22, 28, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #FFFFFF;
@@ -146,42 +177,48 @@
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 9999px;
+  z-index: 2;
 }
 
 .person-thumbnails-track {
   display: flex;
   gap: 0.65rem;
   overflow-x: auto;
-  padding-top: 0.75rem;
+  padding-top: 0.85rem;
   padding-bottom: 0.25rem;
   scrollbar-width: thin;
+  justify-content: center;
 }
 
 .person-thumb-btn {
-  flex: 0 0 64px;
-  height: 64px;
+  flex: 0 0 56px;
+  height: 74.6px;
+  aspect-ratio: 3 / 4;
   border-radius: 10px;
   border: 2px solid transparent;
   padding: 0;
   background: #F0EBE3;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .person-thumb-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  border-color: #FED7AA;
 }
 
 .person-thumb-btn.is-active {
   border-color: var(--home-brand-orange, #FF7A2F);
-  box-shadow: 0 2px 8px rgba(255, 122, 47, 0.3);
+  box-shadow: 0 3px 10px rgba(255, 122, 47, 0.35);
 }
 
 .person-thumb-btn img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 20%;
+  display: block;
 }
 
 /* Identity Body */
@@ -477,7 +514,9 @@
     padding: 1.25rem 1rem;
   }
   .person-main-photo-stage {
-    height: 360px;
+    max-width: 100%;
+    aspect-ratio: 3 / 4;
+    height: auto;
   }
   .person-hero-actions {
     flex-direction: column;
