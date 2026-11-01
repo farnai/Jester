@@ -1,0 +1,849 @@
+/* =============================================================================
+   JESTER Home Page Rebuild (MVP) — Information Architecture & Functional Layout
+   Strict 4-Section Flow:
+     1. დღის ენერგია (Daily Energy)
+     2. გააკეთე / მოერიდე (Do & Don't)
+     3. გაიცანი საკუთარი თავი (Personal Insights - 7 Layers)
+     4. ახალი ადამიანები (New People - 18+ Discovery)
+   ============================================================================= */
+
+.jester-home-container {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  box-sizing: border-box;
+}
+
+.jester-home-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+/* Base Section Structure */
+.home-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.home-section-header {
+  margin-bottom: 0.85rem;
+}
+
+.home-section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.home-section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--home-text-primary, #222630);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.home-section-subtitle {
+  font-size: 0.875rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0.35rem 0 0;
+  line-height: 1.45;
+}
+
+/* Card Shell */
+.home-card {
+  background: var(--home-surface-card, #FFFFFF);
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(34, 38, 48, 0.03);
+  box-sizing: border-box;
+}
+
+/* Pills & Badges */
+.home-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  line-height: 1;
+}
+
+.home-date-badge {
+  background: #F3EFEA;
+  color: #4A4D53;
+}
+
+.home-archetype-badge {
+  background: #FFF1E6;
+  color: #C95618;
+  border: 1px solid #FFD0B2;
+}
+
+.home-real-badge {
+  background: #EAF4EA;
+  color: #2D6A2E;
+  border: 1px solid #C2E2C2;
+}
+
+.home-neutral-badge {
+  background: #F0F2F5;
+  color: #5A626F;
+}
+
+.home-layer-count-badge {
+  background: #F4EFEB;
+  color: #71462E;
+}
+
+.home-people-badge {
+  background: #EAF4EA;
+  color: #2D6A2E;
+  border: 1px solid #C2E2C2;
+}
+
+.home-star-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background: #FFF7ED;
+  color: #9A3412;
+  border: 1px solid #FED7AA;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.home-btn-primary {
+  background: var(--home-brand-orange, #FF7A2F);
+  color: #FFFFFF;
+}
+
+.home-btn-primary:hover {
+  background: #E9681F;
+}
+
+.home-btn-sm {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  min-height: 36px;
+}
+
+.home-btn-outline {
+  background: transparent;
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  color: var(--home-text-primary, #222630);
+}
+
+.home-copy-btn {
+  background: transparent;
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--home-text-secondary, #5A626F);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 36px;
+}
+
+.home-copy-btn:hover {
+  border-color: #FF7A2F;
+  color: #FF7A2F;
+}
+
+/* Banners */
+.home-banner {
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.home-missing-banner {
+  background: #FFF8F0;
+  border: 1px solid #FFDEBF;
+  color: #7A3B12;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.home-missing-content strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #5A2708;
+}
+
+.home-missing-content p {
+  margin: 0;
+  font-size: 0.825rem;
+  color: #7A3B12;
+}
+
+.home-time-notice {
+  background: #F5F7FA;
+  border: 1px solid #E2E6EC;
+  color: #4C5564;
+  margin-bottom: 1rem;
+}
+
+/* =============================================================================
+   SECTION 1: დღის ენერგია (Daily Energy)
+   ============================================================================= */
+.home-daily-card {
+  position: relative;
+}
+
+.home-daily-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-daily-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.home-daily-body {
+  margin-bottom: 1.25rem;
+}
+
+.home-daily-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--home-text-secondary, #5A626F);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem;
+}
+
+.home-daily-quote {
+  font-size: 1.2rem;
+  line-height: 1.65;
+  color: var(--home-text-primary, #222630);
+  font-style: italic;
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #FF7A2F;
+  background: #FFFBF7;
+  border-radius: 0 8px 8px 0;
+}
+
+.home-daily-explanation {
+  font-size: 0.925rem;
+  line-height: 1.6;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0;
+}
+
+.home-why-drawer {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--home-card-border, #E6E0D7);
+  padding-top: 0.85rem;
+}
+
+.home-why-toggle-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--home-brand-orange, #FF7A2F);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.home-why-toggle-btn:hover {
+  color: #E9681F;
+}
+
+.home-chevron {
+  display: inline-block;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.home-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.home-why-content {
+  margin-top: 0.75rem;
+  padding: 1.15rem;
+  background: #FAF8F5;
+  border-radius: 12px;
+  border: 1px solid #EFEAE3;
+  font-size: 0.875rem;
+}
+
+.home-transit-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.home-transit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.home-transit-prop {
+  color: var(--home-text-secondary, #5A626F);
+  flex-shrink: 0;
+}
+
+.home-transit-val {
+  color: var(--home-text-primary, #222630);
+  text-align: right;
+}
+
+.home-transit-muted {
+  margin: 0;
+  color: var(--home-text-secondary, #5A626F);
+  line-height: 1.5;
+}
+
+.home-epistemic-notice {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #DDD5CA;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #70757E;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.home-epistemic-notice p {
+  margin: 0;
+}
+
+/* =============================================================================
+   SECTION 2: გააკეთე / მოერიდე (Do & Don't)
+   ============================================================================= */
+.home-dodont-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 680px) {
+  .home-dodont-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-do-card {
+  background: #FAFDF8;
+  border-color: #D3E6CD;
+}
+
+.home-dont-card {
+  background: #FFFBFB;
+  border-color: #F4D3D2;
+}
+
+.home-do-header,
+.home-dont-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.home-do-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #E8F5E5;
+  color: #2D6A2E;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.home-dont-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #FDE8E8;
+  color: #AE3534;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.home-do-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2D6A2E;
+  margin: 0;
+}
+
+.home-dont-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #AE3534;
+  margin: 0;
+}
+
+.home-dodont-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.home-dodont-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: var(--home-text-primary, #222630);
+}
+
+.home-do-item .home-item-bullet {
+  color: #2D6A2E;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.home-dont-item .home-item-bullet {
+  color: #AE3534;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.home-item-text {
+  flex: 1;
+}
+
+/* =============================================================================
+   SECTION 3: გაიცანი საკუთარი თავი (Personal Insights - 7 Layers)
+   ============================================================================= */
+.home-insights-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.home-layer-card {
+  background: var(--home-surface-card, #FFFFFF);
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(34, 38, 48, 0.02);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-layer-card.is-open {
+  border-color: #FED7AA;
+  box-shadow: 0 4px 14px rgba(255, 122, 47, 0.06);
+}
+
+.home-layer-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.15rem 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+
+.home-layer-toggle:hover {
+  background: #FCFAF7;
+}
+
+.home-layer-main-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.home-layer-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #FAF2EC;
+  color: #C95618;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.home-layer-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-layer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--home-text-primary, #222630);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.home-layer-subtitle {
+  font-size: 0.8rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0.2rem 0 0;
+  line-height: 1.3;
+}
+
+.home-layer-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.home-layer-body {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid #F3EFE9;
+}
+
+.home-layer-summary {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0.85rem 0;
+  font-style: italic;
+}
+
+.home-topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.home-topic-chip {
+  font-size: 0.75rem;
+  background: #F3EFE9;
+  color: #525760;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.home-layer-items-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.home-layer-item-card {
+  background: #FAF8F5;
+  border: 1px solid #EFEAE3;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.home-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.home-item-label {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--home-text-primary, #222630);
+}
+
+.home-item-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #FFF0E6;
+  color: #C95618;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid #FFD0B2;
+}
+
+.home-item-text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--home-text-primary, #222630);
+  margin: 0;
+}
+
+.home-insights-empty-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.home-insights-cta-wrap {
+  margin-top: 1.25rem;
+}
+
+/* =============================================================================
+   SECTION 4: ახალი ადამიანები (New People - 18+ Discovery)
+   ============================================================================= */
+.home-people-container {
+  width: 100%;
+}
+
+/* Mobile: Horizontal Carousel */
+.home-people-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+/* Desktop / Tablet: Responsive Grid */
+@media (min-width: 768px) {
+  .home-people-track {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+}
+
+.home-person-card {
+  flex: 0 0 230px;
+  scroll-snap-align: start;
+  background: var(--home-surface-card, #FFFFFF);
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-person-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 38, 48, 0.08);
+}
+
+.home-person-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.home-person-photo-wrap {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: #F2EDE6;
+  overflow: hidden;
+}
+
+.home-person-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home-person-photo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FAF4ED 0%, #EDE5D9 100%);
+}
+
+.home-person-initial {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #8C8070;
+}
+
+.home-person-sign-tag {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.85);
+  color: #525760;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.home-person-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex-grow: 1;
+}
+
+.home-person-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--home-text-primary, #222630);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-person-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--home-text-secondary, #5A626F);
+}
+
+.home-person-age {
+  font-weight: 600;
+  color: var(--home-text-primary, #222630);
+}
+
+.home-person-dot {
+  color: #C0B7AB;
+}
+
+.home-person-city {
+  color: var(--home-text-secondary, #5A626F);
+}
+
+.home-person-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.home-person-interest-tag {
+  font-size: 0.725rem;
+  background: #F4EFEA;
+  color: #5B616D;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Skeletons & Errors */
+.home-skeleton-line {
+  height: 14px;
+  background: #F0EBE3;
+  border-radius: 6px;
+  margin-bottom: 0.65rem;
+  animation: homePulse 1.5s infinite ease-in-out;
+}
+
+.home-skeleton-line.title {
+  height: 22px;
+  width: 60%;
+}
+
+.home-skeleton-line.short {
+  width: 35%;
+}
+
+.home-skeleton-line.body {
+  width: 90%;
+}
+
+.home-skeleton-person {
+  flex: 0 0 230px;
+}
+
+.home-skeleton-avatar {
+  height: 200px;
+  background: #F0EBE3;
+  animation: homePulse 1.5s infinite ease-in-out;
+}
+
+@keyframes homePulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.home-error-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.home-error-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #AE3534;
+  margin: 0 0 0.5rem;
+}
+
+.home-error-desc {
+  font-size: 0.875rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0 0 1rem;
+}
+

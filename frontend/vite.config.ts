@@ -7,6 +7,30 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    allowedHosts: true,
+    proxy: {
+      "/v1": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/auth/v1": {
+        target: "http://127.0.0.1:54321",
+        changeOrigin: true,
+      },
+      "/rest/v1": {
+        target: "http://127.0.0.1:54321",
+        changeOrigin: true,
+      },
+      "/storage/v1": {
+        target: "http://127.0.0.1:54321",
+        changeOrigin: true,
+      },
+      "/realtime/v1": {
+        target: "http://127.0.0.1:54321",
+        changeOrigin: true,
+        ws: true,
+      },
+    },
   },
   resolve: {
     alias: {

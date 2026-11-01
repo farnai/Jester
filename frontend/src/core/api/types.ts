@@ -334,10 +334,14 @@ export interface NatalResolveResponseItem {
 export interface DiscoveryPerson {
   id: string;
   display_name: string;
+  age?: number | null;
+  city_name?: string | null;
   bio?: string | null;
   city?: string | null;
   occupation?: string | null;
   avatar_url?: string | null;
+  photos?: ProfilePhoto[];
+  interests?: InterestItem[];
   astrology: {
     sun_sign: string | null;
     moon_sign: string | null;
@@ -349,6 +353,44 @@ export interface DiscoveryPerson {
   hook_observation?: ResolvedInterpretationModel | null;
   presence_sign_source?: string | null;
   presence_sign?: string | null;
+}
+
+export interface PersonalCatalogItem {
+  id: string;
+  point?: string;
+  sign?: string;
+  label: string;
+  sign_badge?: string;
+  text: string;
+  aspect?: string;
+  orb?: number;
+  body1?: string;
+  body2?: string;
+  is_applying?: boolean;
+}
+
+export interface PersonalCatalogLayer {
+  layer_id: string;
+  number: number;
+  title: string;
+  subtitle: string;
+  summary: string;
+  is_locked: boolean;
+  star_cost: number;
+  topics: string[];
+  items: PersonalCatalogItem[];
+}
+
+export interface PersonalCatalogResponse {
+  has_data: boolean;
+  data_quality: {
+    has_birth_data: boolean;
+    has_exact_time: boolean;
+    missing_fields: string[];
+    birth_time_precision?: string;
+    place_label?: string;
+  };
+  layers: PersonalCatalogLayer[];
 }
 
 export interface ComparePreviewRequest {

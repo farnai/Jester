@@ -37,7 +37,7 @@ USERS_TO_CREATE = [
     {
         "id": "44444444-4444-4444-4444-444444444444",
         "email": "dev@jester.app",
-        "password": "123",
+        "password": "password123",
         "display_name": "Dev User",
         "bio": "Jester Local Development Persona. Exploration, testing, and connection intelligence.",
         "city": "London",
@@ -53,7 +53,7 @@ USERS_TO_CREATE = [
     {
         "id": "44444444-4444-4444-4444-444444444445",
         "email": "dev-alias@jester.app",
-        "password": "123",
+        "password": "password123",
         "display_name": "Dev User (Alias)",
         "bio": "Jester Local Development Persona (Secondary).",
         "city": "London",

@@ -1,0 +1,45 @@
+{
+  "id": "TASK-HOME-HUMANISM",
+  "title": "Implement reference-led Georgian Home redesign",
+  "type": "feature",
+  "status": "review",
+  "priority": "normal",
+  "role": "executor",
+  "assigned_agent": "codex",
+  "required_capabilities": [
+    "repository_read",
+    "repository_write",
+    "command_execution",
+    "testing"
+  ],
+  "goal": "Redesign the real authenticated Home with warm editorial photography, geometric composition, clearer narrative and responsive layouts.",
+  "scope": [
+    "frontend/src/modules/home",
+    "scripts/home-editorial-qa.cjs",
+    "scripts/home-model.test.mjs",
+    "docs/HOME_EXPERIENCE.md",
+    "design/visual-studio/PROJECT_BRIEF.md",
+    ".jester/reports/implementations/TASK-HOME-HUMANISM_report.md"
+  ],
+  "constraints": [
+    "Preserve API authorization and connection confirmation",
+    "Preserve existing unrelated configuration changes",
+    "Use Georgian typography and approved carrot palette",
+    "No fabricated profiles, activity, rankings or compatibility",
+    "Direct implementation authorized by current Founder request; pen.dev canvas unavailable"
+  ],
+  "acceptance_criteria": [
+    "Reference-led photographic hero and clear working CTAs",
+    "Real insights, conversation prompts, carousel, relationship explanations and profile CTA retained",
+    "Responsive desktop, tablet and mobile without horizontal overflow",
+    "Loading, empty, error and interaction states verified"
+  ],
+  "verification": [
+    "node --experimental-strip-types --test scripts/home-model.test.mjs",
+    "npm run build --prefix frontend",
+    "node scripts/home-editorial-qa.cjs"
+  ],
+  "dependencies": [],
+  "created_at": "2026-11-01",
+  "updated_at": "2026-11-01"
+}

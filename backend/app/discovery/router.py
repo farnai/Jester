@@ -22,6 +22,7 @@ class DiscoveryPerson(BaseModel):
     bio: str | None
     occupation: str | None
     avatar_url: str | None
+    age: int | None = None
     photos: list[PhotoResponse]
     interests: list[InterestItem]
     common_interest_ids: list[uuid.UUID]
@@ -40,13 +41,20 @@ class DiscoveryPage(BaseModel):
     next_cursor: uuid.UUID | None
 
 
-def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=False, q=''):
-    # Keyset pagination uses immutable UUIDs, independent of names or edits.
+def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=False, q='', order: Literal['id', 'newest'] = 'id'):
+    # Keyset pagination or newest first; enforces server-level 18+ eligibility.
+    order_clause = 'ORDER BY p.created_at DESC, p.id DESC' if order == 'newest' else 'ORDER BY p.id'
+    age_filter = (
+        "AND (bd.birth_date IS NOT NULL AND bd.birth_date <= (current_date - interval '18 years'))"
+        if order == 'newest'
+        else "AND (bd.birth_date IS NULL OR bd.birth_date <= (current_date - interval '18 years'))"
+    )
     with db.cursor() as cur:
-        cur.execute('''SELECT p.id, p.display_name, p.bio, p.city, p.occupation, p.avatar_url,
+        cur.execute(f'''SELECT p.id, p.display_name, p.bio, p.city, p.occupation, p.avatar_url,
             coalesce(p.current_city_id = me.current_city_id, false) AS same_city,
             s.sun_sign, s.moon_sign, s.ascendant_sign, s.element_primary, s.modality_primary,
-            c.id AS connection_id, c.status AS connection_status, c.initiated_by
+            c.id AS connection_id, c.status AS connection_status, c.initiated_by,
+            extract(year from age(current_date, bd.birth_date))::int AS age
             FROM public.profiles p
             LEFT JOIN public.profiles me ON me.id = %s
             LEFT JOIN public.birth_data bd ON bd.user_id = p.id
@@ -56,6 +64,7 @@ def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=F
                 AND c.user_b_id = greatest(p.id, %s)
             WHERE p.is_discoverable AND p.id <> %s
                 AND NOT public.is_user_blocked(%s, p.id)
+                {age_filter}
                 AND (%s::uuid IS NULL OR p.id > %s)
                 AND (%s::uuid IS NULL OR p.current_city_id = %s)
                 AND (%s = '' OR position(lower(%s) in lower(p.display_name)) > 0)
@@ -65,7 +74,7 @@ def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=F
                     JOIN public.interests i ON i.id = theirs.interest_id AND i.status = 'active'
                     JOIN public.interest_categories cat ON cat.id = i.category_id AND cat.status = 'active'
                     WHERE theirs.user_id = p.id))
-            ORDER BY p.id LIMIT %s''',
+            {order_clause} LIMIT %s''',
             (viewer, viewer, viewer, viewer, viewer, after, after, city_id, city_id, q, q, shared_only, viewer, limit + 1))
         rows = cur.fetchall()
         more = len(rows) > limit
@@ -105,6 +114,7 @@ def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=F
             state = 'pending_out' if row['initiated_by'] == viewer else 'pending_in'
         items.append(DiscoveryPerson(
             **{key: row[key] for key in ('id','display_name','city','bio','occupation','avatar_url','same_city','connection_id')},
+            age=row.get('age'),
             photos=photo_map[uid], interests=interest_map[uid], common_interest_ids=common_map[uid],
             connection_state=state, astrology={key: row[key] for key in ('sun_sign','moon_sign','ascendant_sign','element_primary','modality_primary')},
             hook_observation=hook.model_dump() if hook else None, presence_sign=sign, presence_sign_source=source))
@@ -115,5 +125,6 @@ def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=F
 def people(limit: int = Query(12, ge=1, le=24), after: uuid.UUID | None = None,
            city_id: uuid.UUID | None = None, shared_only: bool = False,
            q: str = Query('', max_length=80),
+           order: Literal['id', 'newest'] = Query('id'),
            current_user: AuthenticatedUser = Depends(get_current_user), db=Depends(get_db)):
-    return discovery_page(db, current_user.id, limit, after, city_id, shared_only, q.strip())
+    return discovery_page(db, current_user.id, limit, after, city_id, shared_only, q.strip(), order=order)

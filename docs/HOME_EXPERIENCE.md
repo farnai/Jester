@@ -1,70 +1,46 @@
-# Home Experience Specification (v1.3)
+# Home Experience Specification (v1.4)
 
-Home is the authenticated front door to self-understanding, people discovery, and existing relationships. It reflects the product thesis: **ME → YOU → US → MORE PEOPLE**.
+Home is the authenticated front door to self-understanding, people discovery, and existing relationships. It reflects **ME → YOU → US → MORE PEOPLE**. Public registration and onboarding gates remain separate.
 
-## Approved Mobile Interaction Policy
+## Information Hierarchy
 
-Home may display a horizontal, touch-friendly profile carousel. Discover uses the full candidate Swipe Deck; Home need not implement all Discover interactions. Avoid vertical stacking of multiple candidate cards on mobile. The Home page and full individual profiles may remain vertically scrollable.
+1. **Personal welcome and photographic hero.** Georgian headline, Discover CTA, and an anchor to personal insight. Accepted-connection and incoming-request counts appear only after a successful response. Existing registration photography is decorative brand artwork, never fabricated members or activity evidence. Restrained intersecting circles and axes express connection. Mobile stacks copy and photography; tablet and desktop retain a split composition.
+2. **Personal insight and conversation prompt.** A light featured card displays the returned daily observation or natal baseline, preserving provenance disclosure, full-text expansion and copy feedback. Daily/verdict tabs retain the personal lens. Optional DO / DON'T guidance is initially collapsed and remains interactive when expanded. The neighboring generic conversation prompt can be cycled and copied. Its action opens Messages when accepted connections exist, otherwise Discover; it never sends a message or creates a conversation.
+3. **People discovery.** Real authorized portraits, names, city/occupation, supplied interests and verified shared-interest IDs remain central. Supported observations require `sun` or `ascendant` provenance; otherwise cards use the person's bio. Filters preserve server ordering. Desktop shows three cards per client page; tablet shows four in two columns. Below 768px, one active candidate appears in a horizontal carousel with touch, keyboard and button navigation. Photo navigation is separate from candidate navigation. Requests still require sender confirmation and recipient acceptance.
+4. **Connection benefits.** Three descriptive cards link to existing Connections, Discover and Me routes. They explain relationship dynamics, shared interests and self-understanding without inventing rankings, scores or personalized recommendations.
+5. **Relationships and deeper self-understanding.** The connection panel shows authorized accepted-connection metadata even when a person is absent from discovery. For an accepted person also returned by discovery, Home requests the existing relationship explanation and index, with a link to the full Why page. Otherwise it retains profile navigation or an honest empty state. Incoming requests remain actionable. Alongside it, the four-facet personal lens displays existing natal interpretation content, safe sign summaries and the profile action.
+6. **Closing profile invitation.** Encourages the viewer to complete or refine their own profile, followed by the 18+ and birth-data privacy notice.
 
-This is `INTERACTION_POLICY_APPROVED`, not a claim that the carousel is implemented. The local baseline below still uses a two-column mobile candidate grid (`homeEditorial.css`); alignment is deferred to a separate application task.
+## Interaction and Presentation
 
-## Information Hierarchy & Visual Composition — Local Baseline
-
-1. **Editorial Hero and Quick Actions:**
-   - Georgian headline, authenticated greeting and Discover CTA alongside organic portrait composition. Existing accepted-connection and incoming-request counts appear only after a successful connections response; loading/error is never presented as zero.
-   - Existing registration photography is decorative brand artwork, never a fabricated member or proof of user activity.
-   - Four shortcuts: personal insight anchor, Discover, Connections and Messages.
-   - Mobile retains a compact two-column hero and the existing bottom navigation.
-
-2. **Personal Insight (ME):**
-   - Displays one genuine personal observation (`daily.data?.interpretation?.text`) or profile insight.
-   - Clear distinction between computed daily transits (`real_transit`) and natal profile baseline (`fallback_sun_sign`).
-   - One primary action CTA and an accessible, grounded "რატომ ამბობს ამას JESTER?" disclosure explaining signal provenance without exposing raw birth data.
-   - Primary full-text action remains visible. Copy, optional guidance and provenance are grouped in an expandable details area, with copy feedback preserved.
-   - Optional DO / DON'T guidance inside an expandable disclosure when returned by the API.
-
-3. **Active Connections (Circle / Relationship):**
-   - Up to three accepted connections, using authorized `other_display_name` and `other_avatar_url` metadata even when absent from the discovery response. No fabricated online/activity indicators.
-   - When an accepted person also exists in authorized discovery: an expandable relationship moment (`API.compatibility.why`), with interpretation, grounded compatibility index note ("საინტერესო ნაწილი — ახსნაა"), and direct CTA to `/people/:id/why`.
-   - If incoming connection requests are pending: Displays a clear action banner to review requests.
-   - If user has no connections: Provides an honest, thoughtful first-connection path without fabricated mock data.
-
-4. **Discovery Preview (Up to Four Distinct Real People):**
-   - Four portrait cards per client page from `GET /v1/interpretations/discovery-people`, with preserved server ordering, observation/all filters and pagination. The existing baseline uses two columns on smaller screens; this is an implementation gap against the approved mobile browsing direction, not the future layout requirement.
-   - Shows real names, avatars/photos, cities, occupations, and genuine observations (if `presence_sign_source` is `sun` or `ascendant`) or authentic user bio.
-   - Dedicated "ყველა ადამიანი" CTA leading to the full `/discover` experience.
-   - Never repeats the same candidate or duplicate generic paragraphs.
-
-5. **Conversation Invitation and Closing Action:**
-   - Orange invitation with a clearly generic conversation question; links to Messages only when an accepted connection exists, otherwise Discover. Does not create a chat or send a message.
-   - A warm, purposeful invitation to complete/refine the user's own profile and bio.
-
-6. **Shared AppShell Navigation (unchanged):**
-   - 5 canonical destinations: **მთავარი** (`/`), **აღმოაჩინე** (`/discover`), **კავშირები** (`/connections`), **საუბრები** (`/messages`), **ჩემი პროფილი** (`/me`).
-   - Clean notifications utility with live unread counter (`/notifications`).
-   - User account dropdown with profile links and secure sign-out.
-   - Home bottom navigation uses 48px touch targets including 360px, an opaque surface and safe-area spacing. Other routes retain their existing navigation styling.
+- Approved warm paper surfaces, carrot orange actions with charcoal labels, and restrained rounded photo framing. No fake match percentages.
+- Self-hosted Noto Sans Georgian; minimum 12px labels and line-height of at least 1.55 in Home's editorial stylesheet.
+- Daily/verdict and personal-facet tabs support arrow keys, Home/End, roving focus and named panels. Keyboard focus remains visible on the carousel region and controls. Reduced-motion preferences disable transitions.
+- Loading, empty, error/retry and clipboard feedback remain local to the affected section. Failed requests never fabricate zero counts, people, scores or observations.
+- The five existing navigation destinations, notification utility, account menu and secure sign-out remain in AppShell. Mobile navigation retains safe-area spacing and at least 48px target height.
+- Home supports horizontal candidate navigation without copying Discover's full swipe deck. Navigating between people never sends a request or rejects a person.
 
 ## Data and Authorization
 
-| Content | Source Endpoint | Boundary & Privacy Rule |
+| Content | Source | Boundary |
 | --- | --- | --- |
-| Viewer identity / avatar / bio | `GET /v1/profiles/me` | Owner data; no email or raw birth data displayed |
-| Personal observation | `GET /v1/interpretations/daily-energy` (`auto`, `ka`) | Display returned text; label fallback truthfully |
-| Discoverable people | `GET /v1/interpretations/discovery-people` | Authenticated; deduplicated; blocked users filtered |
-| Connections & pending requests | `GET /v1/connections` | Canonical pairs (`user_a_id < user_b_id`) |
-| Relationship why / index | `GET /v1/people/{id}/why` | Only requested for returned person with accepted connection |
-| Notifications | `GET /v1/notifications` + Supabase Realtime | Live unread counter badge |
+| Viewer identity / avatar / bio | `GET /v1/profiles/me` | Owner data; Home body never displays raw birth data |
+| Personal observation | `GET /v1/interpretations/daily-energy` (`auto`, `ka`) | Returned text; distinguish daily signals from natal fallback |
+| Personal facets | `GET /v1/astrology/profile/safe-astro` and `POST /v1/interpretations/resolve-natal` | Approved safe summary only |
+| Discoverable people | `GET /v1/discovery/people`; existing fallback to `GET /v1/interpretations/discovery-people` | Authenticated, server ordered, deduplicated and block-aware |
+| Connections / requests | `GET /v1/connections` and existing create endpoint | Canonical pairs and explicit confirmation |
+| Relationship explanation / index | `GET /v1/people/{id}/why` | Only requested for a returned discovery person with an accepted connection |
+| Notifications | Existing notification API and Supabase Realtime | Shared AppShell behavior |
 
-## Verification Requirements
+This redesign changes presentation and grouping, not discovery eligibility, scoring, API contracts, authentication or privacy rules. Relationship explanations depend on existing authorized data; the hero and benefit cards do not manufacture one.
 
-- Build: `npm run build --prefix frontend` must succeed without errors.
-- Automated tests: `node --experimental-strip-types --test scripts/home-model.test.mjs` must pass all tests.
-- Browser integration: `node scripts/home-editorial-qa.cjs`, with temporary local accounts prepared using `python -m scripts.prepare_social_profile_qa --wave4`; remove only those manifest-verified accounts afterward with `--cleanup`.
-- Visual verification: Render and inspect desktop (1440, 1280), tablet (768), and mobile (390, 360), checking overflow, action targets, actual authorized connection data, navigation and independent error/retry.
+## Verification
 
----
+- `npm run build --prefix frontend`
+- `node --experimental-strip-types --test scripts/home-model.test.mjs`
+- `node scripts/home-editorial-qa.cjs` against local services. Prepare isolated accounts with `python -m scripts.prepare_social_profile_qa --wave4`; remove only those manifest-verified accounts afterward with `--cleanup`. `JESTER_BASE_URL` and `JESTER_QA_OUTPUT` select the preview and evidence directory.
+- Inspect desktop (1440, 1280), tablet (768), and mobile (390, 360, 320): no horizontal overflow, readable Georgian, unobstructed closing CTA, independent failure/retry, carousel controls, copy, tabs, confirmation and real route navigation.
 
-## Design Status & Future Visual Synthesis
+## Design Status
 
-The current codebase implements the editorial reference baseline (`IMPLEMENTED_LOCAL`; `VISUAL_REVIEW_PENDING`) (`frontend/src/modules/home/HomePage.tsx`). High-fidelity visual explorations conducted in Visual Studio ([Visual Exploration 02 canvas](<../design/visual-studio/canvas/JESTER — Visual Exploration 02.pen>)) have established the approved synthesis direction for future UI iterations under [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture--phkqc-stage): foundational architecture `KZzuf` (Warm Paper Salon / Personal Court) with opening hero stage `phkQC` (Theatrical Spotlight Stage with Truth-Flip and 4-Facet ME Lens). The synthesis is `DESIGN_DIRECTION_SELECTED`; final visual approval of an implementation remains pending. No `FOUNDER_VISUAL_APPROVED` status is established for the current baseline or future synthesis. Implementation changes are deferred to a dedicated feature task with explicit Founder approval.
+The Founder request dated 2026-11-01 explicitly authorized implementation of the supplied Contemporary Renaissance / Geometric Humanism reference. The resulting Home is `IMPLEMENTED_LOCAL`, with final Founder visual review pending. Earlier canvas synthesis remains historical design provenance under [FDR-2026-03](FOUNDER_DECISION_RECORDS.md#fdr-2026-03-visual-exploration-synthesis-kzzuf-architecture--phkqc-stage); the current request governs this implementation. pen.dev was unavailable during this task, so no updated canvas is claimed. See the [implementation and verification report](../.jester/reports/implementations/TASK-HOME-HUMANISM_report.md).

@@ -29,12 +29,13 @@ import {
   ProfilePhoto,
   PersonInterests,
   DiscoveryPageResponse,
+  PersonalCatalogResponse,
 } from "./types";
 
 export const API = {
   discovery: {
-    people: (filters: { q?: string; city_id?: string; shared_only?: boolean; after?: string }, signal?: AbortSignal) => {
-      const params = new URLSearchParams({ limit: '12' });
+    people: (filters: { q?: string; city_id?: string; shared_only?: boolean; after?: string; order?: 'id' | 'newest'; limit?: number }, signal?: AbortSignal) => {
+      const params = new URLSearchParams({ limit: String(filters.limit || 12) });
       Object.entries(filters).forEach(([key, value]) => { if (value) params.set(key, String(value)); });
       return apiRequest<DiscoveryPageResponse>(`/v1/discovery/people?${params}`, { signal });
     },
@@ -262,6 +263,8 @@ export const API = {
       if (tone) params.append("tone", tone);
       return apiRequest<DailyEnergyResponse>(`/v1/interpretations/daily-energy?${params.toString()}`);
     },
+    getPersonalCatalog: (locale: string = "ka") =>
+      apiRequest<PersonalCatalogResponse>(`/v1/interpretations/personal-catalog?locale=${locale}`),
     resolveNatal: (payload: NatalResolveRequest) =>
       apiRequest<NatalResolveResponseItem[]>("/v1/interpretations/resolve-natal", {
         method: "POST",

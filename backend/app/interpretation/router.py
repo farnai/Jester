@@ -20,6 +20,7 @@ from backend.app.core.database import get_db, db_manager
 from backend.app.core.errors import ForbiddenException, JesterAPIException, PrivacySafeNotFoundException
 from backend.app.interpretation.engine import interpretation_engine
 from backend.app.interpretation.library import content_library
+from backend.app.interpretation.personal_catalog import get_personal_catalog
 from backend.app.interpretation.models import (
     ContentAsset,
     ContentAssetCreatePayload,
@@ -493,6 +494,29 @@ async def resolve_natal_profile_interpretations(
         })
 
     return results
+
+
+@router.get("/interpretations/personal-catalog", response_model=dict[str, Any])
+async def get_user_personal_catalog(
+    locale: str = "ka",
+    current_user: AuthenticatedUser | None = Depends(get_optional_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> dict[str, Any]:
+    """
+    Returns the deterministic 7-Layer Personal Insights Catalog for the user.
+    """
+    if not current_user:
+        return {
+            "has_data": False,
+            "data_quality": {
+                "has_birth_data": False,
+                "has_exact_time": False,
+                "missing_fields": ["unauthenticated"],
+            },
+            "layers": [],
+        }
+    return get_personal_catalog(current_user.id, db, locale=locale)
+
 
 
 @router.get("/interpretations/discovery-people", response_model=list[dict[str, Any]])

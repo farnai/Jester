@@ -470,7 +470,7 @@ export function HomePersonCarousel({
         </div>
 
         <p className="home-people-provenance">
-          ავთენტური პროფილები · ქულებისა და ხელოვნური რეიტინგის გარეშე
+          ყოველი პროფილი — ახალი ამბავი. გაეცანი შენი ტემპით.
         </p>
       </div>
 

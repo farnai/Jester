@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
+import heroPortrait from '../../assets/registration/hero_woman_highres.jpg';
+import portraitDetail from '../../assets/registration/hero_portrait.jpg';
 import {
   ConnectionThreadMotif,
   HomeAvatar,
@@ -90,6 +92,18 @@ function greetingByHour(hour: number) {
   return 'საღამო მშვიდობისა';
 }
 
+function navigateTabs(event: KeyboardEvent<HTMLDivElement>) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+  const index = tabs.indexOf(document.activeElement as HTMLButtonElement);
+  if (index < 0) return;
+  event.preventDefault();
+  const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
+    : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+  tabs[next].focus();
+  tabs[next].click();
+}
+
 export interface SafeAstroSummary {
   sun_sign: string;
   moon_sign: string;
@@ -106,13 +120,30 @@ export interface NatalFacetItem {
   interpretation?: { text: string };
 }
 
-/** Compact, personalized salon masthead — opens straight into personal value. */
+/** Decorative geometry: independent perspectives meeting on a common axis. */
+function ConnectionGeometry() {
+  return (
+    <svg className="home-connection-geometry" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="0.8">
+        <circle cx="310" cy="282" r="248" />
+        <circle cx="398" cy="370" r="160" />
+        <path d="M18 282H580M310 8V582M62 100H558V530H62Z" />
+        <path d="M558 370a160 160 0 0 1-160 160 99 99 0 0 1-99-99 61 61 0 0 1 61-61 38 38 0 0 1 38 38 23 23 0 0 1-23 23" />
+      </g>
+      <g fill="currentColor">
+        <circle cx="62" cy="282" r="4" /><circle cx="310" cy="530" r="4" />
+        <circle cx="558" cy="100" r="4" /><circle cx="558" cy="282" r="4" />
+      </g>
+    </svg>
+  );
+}
+
+/** Authenticated editorial opening. Brand portraits are never member evidence. */
 export function HomeSalonMasthead({
   name,
   avatarUrl,
   editionDate,
   hour,
-  peopleCount,
   connectionCount,
   incomingCount,
 }: {
@@ -120,7 +151,6 @@ export function HomeSalonMasthead({
   avatarUrl?: string | null;
   editionDate?: string;
   hour: number;
-  peopleCount?: number;
   connectionCount?: number;
   incomingCount?: number;
 }) {
@@ -128,22 +158,12 @@ export function HomeSalonMasthead({
 
   return (
     <header className="home-salon-masthead">
-      <div className="home-salon-identity">
-        <div className="home-salon-kicker">
-          <ThreePerspectiveSpark />
-          <span>პირადი სცენა{editionDate ? ` · ${editionDate}` : ''}</span>
-        </div>
-        <h1 className="home-salon-greeting">
-          {greeting}, <span>{name}.</span>
-        </h1>
-        <p className="home-salon-subtitle">
-          {peopleCount && peopleCount > 0
-            ? `დღეს JESTER-ს შენთვის პირადი დაკვირვება და ${peopleCount} საინტერესო ადამიანი ჰყავს შემონახული.`
-            : 'დღეს JESTER-ს შენთვის პირადი დაკვირვება და ახალი ადამიანური კონტექსტი აქვს მომზადებული.'}
-        </p>
-      </div>
-
-      <div className="home-salon-pills">
+      <div className="home-welcome-bar">
+        <Link to="/me" className="home-welcome-person">
+          <HomeAvatar name={name} src={avatarUrl} />
+          <span>{greeting}, <strong>{name}.</strong></span>
+        </Link>
+        <div className="home-salon-pills">
         {!!incomingCount && incomingCount > 0 && (
           <Link to="/connections?tab=incoming" className="home-pill-incoming">
             <span>{incomingCount} ახალი მოთხოვნა</span>
@@ -158,12 +178,55 @@ export function HomeSalonMasthead({
           </Link>
         )}
 
-        <Link to="/me" className="home-pill-profile" aria-label={`ჩემი პროფილი — ${name}`}>
-          <HomeAvatar name={name} src={avatarUrl} arch />
-          <span>ჩემი პორტრეტი</span>
-        </Link>
+          {editionDate && <span className="home-edition-date">{editionDate}</span>}
+        </div>
+      </div>
+      <div className="home-humanism-hero">
+        <div className="home-hero-copy">
+          <span className="home-section-kicker"><ThreePerspectiveSpark />ადამიანები ახალ სამყაროს გვიხსნიან</span>
+          <h1>აღმოაჩინე ადამიანი.<br /><span>იგრძენი კავშირი.</span></h1>
+          <p className="home-hero-description">საერთო ინტერესები, განსხვავებული ხასიათები და საუბრები, რომლებიც გაცნობას ნამდვილ კავშირად აქცევს.</p>
+          <div className="home-hero-actions">
+            <Link to="/discover" className="home-cta-orange"><span>აღმოაჩინე ადამიანები</span><HomeIcon /></Link>
+            <a href="#home-daily" className="home-pill-action"><HomeIcon kind="sparkles" /><span>რას ამჩნევს JESTER?</span></a>
+          </div>
+          <p className="home-hero-note"><span aria-hidden="true" />მეგობრობისთვის. იდეებისთვის. რაღაც ახლისთვის.</p>
+        </div>
+        <div className="home-hero-art" aria-hidden="true">
+          <div className="home-hero-photo"><img src={heroPortrait} alt="" fetchPriority="high" width="896" height="1200" /></div>
+          <ConnectionGeometry />
+          <div className="home-hero-cameo"><img src={portraitDetail} alt="" width="896" height="1200" /></div>
+          <div className="home-hero-coordinate"><span>ხასიათი</span><span>ინტერესები</span><span>კავშირი</span></div>
+          <div className="home-hero-caption"><ThreePerspectiveSpark /><span>ყოველი ადამიანი —<br />ახალი პერსპექტივა.</span></div>
+        </div>
       </div>
     </header>
+  );
+}
+
+const CONNECTION_BENEFITS = [
+  { icon: 'people', title: 'კავშირს თავისი ხასიათი აქვს', text: 'ორმხრივი კავშირის შემდეგ გაეცანი თქვენს საერთო დინამიკას — რა გაერთიანებთ და სად განსხვავდებით.', to: '/connections', action: 'ჩემი კავშირები' },
+  { icon: 'compass', title: 'საერთო ინტერესი — კარგი დასაწყისი', text: 'მუსიკა, მოგზაურობა თუ დიდი იდეები. აღმოაჩინე ადამიანი, რომელსაც შენი ცნობისმოყვარეობა ესმის.', to: '/discover', action: 'აღმოაჩინე მეტი' },
+  { icon: 'sparkles', title: 'გაცნობა საკუთარი თავით იწყება', text: 'შეხედე შენს ხასიათსა და ურთიერთობის სტილს ახალი კუთხით. საინტერესო საუბარი აქაც იწყება.', to: '/me', action: 'ჩემი პორტრეტი' },
+] as const;
+
+export function HomeConnectionBenefits() {
+  return (
+    <section id="home-benefits" className="home-benefits" aria-labelledby="home-benefits-title">
+      <div className="home-benefits-heading">
+        <span className="home-section-kicker">მეტი, ვიდრე პირველი შთაბეჭდილება</span>
+        <h2 id="home-benefits-title">გაცნობას სიღრმე აქვს.</h2>
+      </div>
+      <div className="home-benefits-grid">
+        {CONNECTION_BENEFITS.map(({ icon, title, text, to, action }) => (
+          <Link key={icon} to={to} className={`home-benefit home-benefit-${icon}`}>
+            <div className="home-benefit-drawing" aria-hidden="true"><span /><span /><HomeIcon kind={icon} /></div>
+            <h3>{title}</h3><p>{text}</p>
+            <span className="home-benefit-action">{action}<HomeIcon /></span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -235,10 +298,13 @@ export function HomeSpotlightStage({
           </span>
         </span>
 
-        <div className="home-truth-switcher" role="tablist" aria-label="JESTER-ის ხედვის რეჟიმი">
+        <div className="home-truth-switcher" role="tablist" aria-label="JESTER-ის ხედვის რეჟიმი" onKeyDown={navigateTabs}>
           <button
             type="button"
             role="tab"
+            id="home-daily-tab"
+            aria-controls="home-insight-panel"
+            tabIndex={mode === 'daily' ? 0 : -1}
             aria-selected={mode === 'daily'}
             className={`home-truth-pill${mode === 'daily' ? ' is-active' : ''}`}
             onClick={() => setMode('daily')}
@@ -248,6 +314,9 @@ export function HomeSpotlightStage({
           <button
             type="button"
             role="tab"
+            id="home-verdict-tab"
+            aria-controls="home-insight-panel"
+            tabIndex={mode === 'verdict' ? 0 : -1}
             aria-selected={mode === 'verdict'}
             className={`home-truth-pill${mode === 'verdict' ? ' is-active' : ''}`}
             onClick={() => setMode('verdict')}
@@ -258,7 +327,7 @@ export function HomeSpotlightStage({
       </div>
 
       {mode === 'daily' ? (
-        <div className="home-spotlight-body" role="tabpanel">
+        <div className="home-spotlight-body" role="tabpanel" id="home-insight-panel" aria-labelledby="home-daily-tab">
           <h2 id="home-insight-title" className="home-spotlight-headline">
             {dailyLabel}
           </h2>
@@ -289,6 +358,8 @@ export function HomeSpotlightStage({
 
           {/* Integrated 3 Do / 3 Don't Ritual Apron */}
           {(doItems.length > 0 || dontItems.length > 0) && (
+            <details className="home-guidance">
+              <summary>პატარა ნაბიჯები დღისთვის <HomeIcon /></summary>
             <div className="home-ritual-ledger" aria-label="დღის რიტუალი — 3 გაბედე და 3 მოერიდე">
               {doItems.length > 0 && (
                 <div className="home-ritual-row">
@@ -340,6 +411,7 @@ export function HomeSpotlightStage({
                 </div>
               )}
             </div>
+            </details>
           )}
 
           {lastStamped && (
@@ -381,8 +453,8 @@ export function HomeSpotlightStage({
           </div>
         </div>
       ) : (
-        <div className="home-spotlight-body" role="tabpanel">
-          <h2 className="home-spotlight-headline">ვინ ხარ, როცა არავის არაფერს უმტკიცებ?</h2>
+        <div className="home-spotlight-body" role="tabpanel" id="home-insight-panel" aria-labelledby="home-verdict-tab">
+          <h2 id="home-insight-title" className="home-spotlight-headline">ვინ ხარ, როცა არავის არაფერს უმტკიცებ?</h2>
 
           {coreVerdictText ? (
             <div className="home-truth-frame">
@@ -510,11 +582,11 @@ export function HomeMeAtelier({
   return (
     <aside className="home-me-atelier" aria-labelledby="home-me-atelier-title">
       <div className="home-me-header">
-        <span className="home-section-kicker">ME · ცოცხალი ლინზა · 4 განზომილება</span>
+        <span className="home-section-kicker">შენი ხასიათის ოთხი მხარე</span>
         <h2 id="home-me-atelier-title">რა იმალება შენი ჩვევების უკან?</h2>
       </div>
 
-      <div className="home-me-tabs" role="tablist" aria-label="პიროვნული წახნაგები">
+      <div className="home-me-tabs" role="tablist" aria-label="პიროვნული წახნაგები" onKeyDown={navigateTabs}>
         {(['identity', 'voice', 'spark', 'rhythm'] as const).map((key) => {
           const item = facets[key];
           const isSelected = activeKey === key;
@@ -523,6 +595,9 @@ export function HomeMeAtelier({
               type="button"
               key={key}
               role="tab"
+              id={`home-facet-${key}`}
+              aria-controls="home-facet-panel"
+              tabIndex={isSelected ? 0 : -1}
               aria-selected={isSelected}
               className={`home-me-tab${isSelected ? ' is-active' : ''}`}
               onClick={() => setActiveKey(key)}
@@ -534,7 +609,7 @@ export function HomeMeAtelier({
         })}
       </div>
 
-      <div className="home-me-callout" role="tabpanel">
+      <div className="home-me-callout" role="tabpanel" id="home-facet-panel" aria-labelledby={`home-facet-${activeKey}`}>
         <span className="home-me-corner" aria-hidden="true" />
         <div className="home-me-meta">
           <span className="home-me-subtitle">არჩეული შტრიხი: {current.subtitle}</span>
@@ -560,7 +635,7 @@ export function HomeMeAtelier({
       <div className="home-me-footer">
         <span className="home-me-footnote">ყველა შტრიხი და სრული პორტრეტი პირად გვერდზე</span>
         <Link to="/me" className="home-pill-action">
-          <span>სრული ME</span>
+          <span>ჩემი სრული პორტრეტი</span>
           <HomeIcon />
         </Link>
       </div>
@@ -580,20 +655,24 @@ const CONVERSATION_SPARKS = [
 export function HomeConversationInvitation({ hasConnections }: { hasConnections: boolean }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const currentQuestion = CONVERSATION_SPARKS[questionIndex];
 
   const handleNextQuestion = () => {
     setQuestionIndex((prev) => (prev + 1) % CONVERSATION_SPARKS.length);
     setCopied(false);
+    setCopyFailed(false);
   };
 
   const handleCopyQuestion = async () => {
+    setCopyFailed(false);
     try {
       await navigator.clipboard.writeText(`„${currentQuestion}“`);
       setCopied(true);
     } catch {
       setCopied(false);
+      setCopyFailed(true);
     }
   };
 
@@ -634,6 +713,7 @@ export function HomeConversationInvitation({ hasConnections }: { hasConnections:
           </button>
         </div>
 
+        {copyFailed && <p className="home-spark-copy-feedback" role="status">კოპირება ვერ მოხერხდა. შეგიძლია კითხვა მონიშნო და დააკოპირო.</p>}
         <Link to={hasConnections ? '/messages' : '/discover'} className="home-primary-link">
           <span>{hasConnections ? 'აირჩიე საუბარი' : 'იპოვე თანამოსაუბრე'}</span>
           <HomeIcon />

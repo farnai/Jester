@@ -124,3 +124,15 @@ test('accepted connection summary uses backend identity even outside the discove
   const empty = renderHome({ connections: success([]), 'discovery-people': success([]) });
   assert.match(empty, /home-conversation-invitation[\s\S]*href="\/discover"/);
 });
+
+test('authorized relationship explanation accompanies its index and full Why link', () => {
+  const html = renderHome({
+    connections: success([{ id: 'connection', user_a_id: 'viewer', user_b_id: 'friend', status: 'accepted' }]),
+    'discovery-people': success([{ id: 'friend', display_name: 'Authorized friend', presence_sign_source: 'sun', hook_observation: { text: 'Authorized observation' } }]),
+    'home-relationship': success({ score: 68, interpretation: { text: 'Authorized relationship explanation' } }),
+  });
+  assert.match(html, /Authorized relationship explanation/);
+  assert.match(html, /href="\/people\/friend\/why"/);
+  assert.match(html, /კავშირის ინდექსი/);
+  assert.match(html, /საინტერესო ნაწილი — ახსნაა/);
+});

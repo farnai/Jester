@@ -78,9 +78,21 @@ async function shot(page, name) {
     await login(b, accounts[1]);
     await ready(a);
 
-    assert.equal(await a.locator('.home-editorial-hero').count(), 0);
-    assert.equal(await a.locator('.home-quick-actions').count(), 0);
-    pass('Obsolete public landing hero and duplicate quick-action strip are removed');
+    assert.equal(await a.locator('.home-humanism-hero h1').count(), 1);
+    assert.equal(await a.locator('.home-hero-actions a').first().getAttribute('href'), '/discover');
+    await a.locator('.home-hero-actions a[href="#home-daily"]').click();
+    assert.equal(new URL(a.url()).hash, '#home-daily');
+    assert(await a.locator('#home-daily').isVisible());
+    assert.equal(await a.locator('.home-benefit').count(), 3);
+    pass('Photographic hero has working discovery and insight actions; benefits use real routes');
+
+    const firstQuestion = await a.locator('.home-spark-quote').innerText();
+    await a.getByRole('button', { name: 'სხვა კითხვა', exact: true }).click();
+    assert.notEqual(await a.locator('.home-spark-quote').innerText(), firstQuestion);
+    await a.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await a.getByRole('button', { name: 'დააკოპირე', exact: true }).click();
+    assert.equal(await a.evaluate(() => navigator.clipboard.readText()), await a.locator('.home-spark-quote').innerText());
+    pass('Conversation shuffle and clipboard copy work without sending a message');
 
     assert.equal(
       await a.locator('.home-conversation-invitation a.home-primary-link').getAttribute('href'),
@@ -120,6 +132,19 @@ async function shot(page, name) {
     await a.getByRole('tab', { name: 'შენი ვერდიქტი' }).click();
     await a.getByRole('tab', { name: 'დღის სიმართლე' }).click();
     pass('Spotlight Stage provenance, Truth-Flip and 4-facet ME Atelier switch cleanly');
+
+    await a.getByRole('tab', { name: 'დღის სიმართლე' }).focus();
+    await a.keyboard.press('ArrowRight');
+    assert.equal(await a.getByRole('tab', { name: 'შენი ვერდიქტი' }).getAttribute('aria-selected'), 'true');
+    await a.keyboard.press('Home');
+    assert.equal(await a.getByRole('tab', { name: 'დღის სიმართლე' }).getAttribute('aria-selected'), 'true');
+    assert.equal(await a.locator('.home-guidance').getAttribute('open'), null);
+    await a.locator('.home-guidance summary').click();
+    const guidance = a.locator('.home-ritual-move').first();
+    await guidance.click();
+    assert.equal(await guidance.getAttribute('aria-pressed'), 'true');
+    await a.locator('.home-guidance summary').click();
+    pass('Keyboard tabs and optional daily guidance retain accessible state');
 
     await a.locator('.home-filter button').nth(1).click();
 
@@ -177,13 +202,35 @@ async function shot(page, name) {
     }
     pass('Six viewport sizes (1440, 1280, 768, 390, 360, 320): zero overflow, single-card mobile deck, >=44px targets');
 
+    await a.setViewportSize({ width: 390, height: 844 });
+    const mobileCard = a.locator('.home-mobile-deck .home-candidate-card');
+    const firstCandidate = await mobileCard.getAttribute('data-person-id');
+    await a.getByRole('button', { name: 'შემდეგი ადამიანი', exact: true }).click();
+    assert.notEqual(await mobileCard.getAttribute('data-person-id'), firstCandidate);
+    await a.getByRole('button', { name: 'წინა ადამიანი', exact: true }).click();
+    assert.equal(await mobileCard.getAttribute('data-person-id'), firstCandidate);
+    await a.locator('.home-mobile-deck-stage').focus();
+    await a.keyboard.press('ArrowRight');
+    assert.notEqual(await mobileCard.getAttribute('data-person-id'), firstCandidate);
+    pass('Mobile candidate navigation works with buttons and keyboard');
+
     await a.setViewportSize({ width: 1440, height: 1000 });
     await ready(a);
+    await a.getByRole('button', { name: 'შემდეგი პროფილები', exact: true }).click();
+    await a.getByRole('button', { name: 'წინა პროფილები', exact: true }).click();
+    const connect = a.locator('.home-desktop-cards-grid').getByRole('button', { name: 'დაკავშირება', exact: true }).first();
+    if (await connect.count()) {
+      await connect.click();
+      await a.getByRole('dialog').waitFor();
+      await a.getByRole('button', { name: 'ჯერ არა', exact: true }).click();
+      assert.equal(await a.getByRole('dialog').count(), 0);
+    }
+    pass('Desktop pagination and connection confirmation dismissal work');
     for (const selector of [
-      '.home-pill-profile',
+      '.home-welcome-person',
       '.home-circle-top a',
       '.home-conversation-invitation a.home-primary-link',
-      '.home-candidate-name a',
+      '.home-desktop-cards-grid .home-candidate-name a',
     ]) {
       const href = await a.locator(selector).first().getAttribute('href');
       await a.locator(selector).first().click();

@@ -1,5 +1,5 @@
 /* =============================================================================
-   JESTER Authenticated Home — Unified Editorial Salon & Living Stage
+   JESTER Authenticated Home — Contemporary Renaissance / Geometric Humanism
    Palette: Canvas #FAF7F2 | Card #FFFFFF | Charcoal #222630 | Carrot #FF7A2F
             Sage #E8EFE2 / #4B6242 | Peach #FBEEE7 | Border #E6E0D7
    Contrast Invariant: #FF7A2F surfaces ALWAYS use #222630 ink (5.82:1 WCAG AA).
@@ -7,9 +7,9 @@
                strict 12px floor, zero uppercase Georgian transforms.
    ============================================================================= */
 
-.app-main-viewport.home-main-viewport {
-  max-width: 1280px;
-  padding: 24px 32px 96px;
+.app-main-viewport.home-main-viewport:has(.home-rebuilt) {
+  max-width: 1440px;
+  padding: 20px 56px 80px;
 }
 
 .home-experience.home-rebuilt {
@@ -19,6 +19,8 @@
   color: #222630;
   font-size: 16px;
   line-height: 1.6;
+  --home-line: var(--jester-border-soft, #E6E0D7);
+  --home-paper: var(--jester-surface-base, #FFFDFA);
 }
 
 #home-daily,
@@ -40,7 +42,7 @@
   gap: 8px;
   font-size: 13.5px;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.55;
   color: #9E4215;
 }
 
@@ -70,8 +72,8 @@
   color: #222630 !important;
   font-size: 14.5px;
   font-weight: 700;
-  line-height: 1.3;
-  box-shadow: 0 6px 18px -4px rgba(255, 122, 47, 0.35);
+  line-height: 1.55;
+  box-shadow: none;
   transition: transform 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
   width: fit-content;
   max-width: 100%;
@@ -82,7 +84,7 @@
   background: #E9681F !important;
   color: #222630 !important;
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px -4px rgba(255, 122, 47, 0.42);
+  box-shadow: 0 4px 14px rgba(34, 38, 48, 0.08);
 }
 
 .home-rebuilt .home-cta-orange svg,
@@ -102,7 +104,7 @@
   color: #FFFFFF;
   font-size: 14.5px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.55;
   transition: transform 0.16s ease, background-color 0.16s ease;
   width: 100%;
 }
@@ -126,9 +128,9 @@
   color: #222630;
   font-size: 14px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.55;
   transition: border-color 0.16s ease, background-color 0.16s ease, transform 0.16s ease;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .home-rebuilt .home-pill-action:hover {
@@ -180,60 +182,103 @@
 }
 
 /* =============================================================================
-   BAND 0: PERSONAL SALON MASTHEAD
+   OPENING: PERSONAL WELCOME + PHOTOGRAPHIC HERO
    ============================================================================= */
 .home-salon-masthead {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  padding-bottom: 20px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #E6E0D7;
+  margin-bottom: 56px;
 }
 
-.home-salon-identity {
+.home-welcome-bar {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--home-line);
+  font-size: 13px;
+  color: #6A716F;
+}
+
+.home-welcome-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
   min-width: 0;
 }
 
-.home-salon-kicker {
-  display: inline-flex;
+.home-welcome-person strong { color: #222630; font-weight: 600; }
+.home-welcome-person .home-avatar { width: 30px; height: 30px; }
+.home-edition-date { white-space: nowrap; }
+
+.home-humanism-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 24px;
   align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #9E4215;
+  padding: 40px 0 20px;
 }
 
-.home-salon-greeting {
-  font-size: clamp(26px, 2.5vw, 34px);
-  font-weight: 800;
-  line-height: 1.32;
-  letter-spacing: -0.025em;
-  color: #222630;
+.home-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
 }
 
-.home-salon-greeting span {
-  color: #222630;
-}
-
-.home-salon-subtitle {
-  font-size: 15.5px;
+.home-hero-copy h1 {
+  font-size: clamp(30px, 3.1vw, 45px);
+  font-weight: 500;
   line-height: 1.55;
-  color: #5A626F;
-  max-width: 660px;
+  letter-spacing: -0.045em;
+  color: #222630;
+  overflow-wrap: anywhere;
 }
+
+.home-hero-copy h1 span { color: #C95618; }
+.home-hero-description {
+  max-width: 480px;
+  font-size: 18px;
+  line-height: 1.75;
+  color: #6A716F;
+}
+
+.home-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.home-hero-note { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #6A716F; }
+.home-hero-note > span { width: 7px; height: 7px; border-radius: 50%; background: #788A69; flex-shrink: 0; }
+
+.home-hero-art {
+  position: relative;
+  min-width: 0;
+  height: clamp(360px, 39vw, 540px);
+  isolation: isolate;
+}
+
+.home-hero-photo {
+  position: absolute;
+  inset: 3% 12% 4% 19%;
+  border-radius: 38px 38px 18px 18px;
+  overflow: hidden;
+  background: #F3EEE6;
+}
+
+.home-hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; }
+.home-hero-art .home-connection-geometry { position: absolute; inset: 0; width: 100%; height: 100%; color: #C95618; opacity: .45; pointer-events: none; }
+.home-hero-cameo { position: absolute; top: 25%; left: 0; width: 21%; aspect-ratio: 1; border-radius: 50%; border: 5px solid #FAF7F2; overflow: hidden; }
+.home-hero-cameo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; transform: scale(1.65); }
+.home-hero-coordinate { position: absolute; right: 0; top: 16%; display: flex; flex-direction: column; gap: 28px; font-size: 12px; color: #9E4215; }
+.home-hero-coordinate span { background: #FAF7F2; padding: 3px 0 3px 10px; }
+.home-hero-caption { position: absolute; bottom: 9%; left: 3%; display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: var(--home-paper); border: 1px solid var(--home-line); border-radius: 14px; font-size: 13px; box-shadow: 0 10px 28px #2226300a; }
 
 .home-salon-pills {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  flex-shrink: 0;
+  gap: 16px;
 }
 
 .home-pill-incoming {
@@ -298,10 +343,10 @@
    ============================================================================= */
 .home-stage-band {
   display: grid;
-  grid-template-columns: minmax(0, 1.36fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
   gap: 24px;
   align-items: stretch;
-  margin-bottom: 44px;
+  margin-bottom: 72px;
 }
 
 .home-daily-column {
@@ -321,20 +366,18 @@
   justify-content: center;
 }
 
-/* Signature Contained Deep Charcoal Spotlight Stage (Desktop, Tablet & Mobile) */
+/* A calm featured observation, with secondary context available on demand. */
 .home-spotlight-stage {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #222630;
-  background-image:
-    radial-gradient(circle at 90% 10%, rgba(255, 122, 47, 0.18) 0%, transparent 48%),
-    radial-gradient(circle at 8% 92%, rgba(232, 239, 226, 0.08) 0%, transparent 46%);
-  color: #FAF7F2;
+  background: var(--home-paper);
+  color: #222630;
+  border: 1px solid var(--home-line);
   border-radius: 24px;
-  padding: 28px 30px;
-  box-shadow: 0 18px 42px -14px rgba(34, 38, 48, 0.25);
+  padding: 32px;
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 }
@@ -352,20 +395,20 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 14px;
+  padding: 7px 0;
   border-radius: 9999px;
-  background: #FAF7F2;
-  color: #222630;
+  background: transparent;
+  color: #9E4215;
   font-size: 13.5px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.55;
 }
 
 .home-truth-switcher {
   display: inline-flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #F3EEE6;
+  border: 1px solid var(--home-line);
   border-radius: 9999px;
   padding: 4px;
   gap: 4px;
@@ -380,13 +423,13 @@
   border-radius: 9999px;
   font-size: 13.5px;
   font-weight: 700;
-  color: #E5E0D8;
+  color: #6A716F;
   white-space: nowrap;
   transition: background-color 0.16s ease, color 0.16s ease;
 }
 
 .home-rebuilt .home-truth-pill:hover {
-  color: #FFFFFF;
+  color: #222630;
 }
 
 .home-rebuilt .home-truth-pill.is-active {
@@ -403,10 +446,10 @@
 
 .home-spotlight-headline {
   font-size: clamp(21px, 2vw, 26px);
-  font-weight: 800;
-  line-height: 1.38;
+  font-weight: 600;
+  line-height: 1.55;
   letter-spacing: -0.02em;
-  color: #FFFFFF;
+  color: #222630;
 }
 
 .home-truth-frame {
@@ -429,7 +472,7 @@
   font-size: clamp(16.5px, 1.3vw, 19px);
   font-weight: 500;
   line-height: 1.62;
-  color: #FAF7F2;
+  color: #222630;
 }
 
 .home-spotlight-quote.is-clamped {
@@ -446,9 +489,15 @@
   gap: 6px;
   font-size: 14px;
   font-weight: 700;
-  color: #FFB284;
+  color: #9E4215;
   min-height: 44px;
 }
+
+.home-guidance { border-top: 1px solid var(--home-line); border-bottom: 1px solid var(--home-line); }
+.home-guidance summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 10px 0; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; }
+.home-guidance summary::-webkit-details-marker { display: none; }
+.home-guidance[open] summary svg { transform: rotate(90deg); }
+.home-guidance .home-ritual-ledger { margin-bottom: 14px; }
 
 /* Integrated 3 Do / 3 Don't Ritual Apron */
 .home-ritual-ledger {
@@ -457,8 +506,8 @@
   gap: 10px;
   padding: 16px 18px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #FAF7F2;
+  border: 1px solid var(--home-line);
 }
 
 .home-ritual-row {
@@ -471,7 +520,7 @@
 .home-ritual-label {
   font-size: 13.5px;
   font-weight: 700;
-  color: #D8D2C9;
+  color: #6A716F;
   min-width: 72px;
 }
 
@@ -491,7 +540,7 @@
   border-radius: 9999px;
   font-size: 13.5px;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.55;
   transition: transform 0.14s ease, background-color 0.14s ease;
   text-align: left;
 }
@@ -523,14 +572,14 @@
 .home-spotlight-whisper {
   font-size: 14px;
   line-height: 1.55;
-  color: #E8EFE2;
+  color: #4B6242;
   font-style: italic;
 }
 
 .home-spotlight-empty-verdict {
   font-size: 16px;
   line-height: 1.6;
-  color: #E5E0D8;
+  color: #6A716F;
 }
 
 .home-verdict-badges {
@@ -545,9 +594,9 @@
   min-height: 38px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.11);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #FAF7F2;
+  background: #F3EEE6;
+  border: 1px solid var(--home-line);
+  color: #222630;
   font-size: 13.5px;
   font-weight: 600;
 }
@@ -575,21 +624,21 @@
   min-height: 46px;
   padding: 9px 18px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
+  background: #F3EEE6;
+  color: #222630;
   font-size: 14px;
   font-weight: 700;
   transition: background-color 0.15s ease;
 }
 
 .home-spotlight-secondary-link:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #FFE7D7;
 }
 
 .home-spotlight-stage .home-insight-context {
   margin: 0;
   font-size: 13.5px;
-  color: #D5CFC7;
+  color: #6A716F;
 }
 
 .home-spotlight-stage .home-insight-context summary {
@@ -601,7 +650,7 @@
   align-items: center;
   gap: 6px;
   list-style: none;
-  color: #E5E0D8;
+  color: #6A716F;
 }
 
 .home-spotlight-stage .home-insight-context summary::-webkit-details-marker {
@@ -621,15 +670,15 @@
 }
 
 .home-spotlight-stage .home-insight-context summary:hover {
-  color: #FFFFFF;
+  color: #222630;
 }
 
 .home-spotlight-stage .home-insight-context p {
   margin-top: 6px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #FAF7F2;
+  background: #F3EEE6;
+  color: #222630;
   font-size: 13.5px;
   line-height: 1.55;
   max-width: 520px;
@@ -638,7 +687,7 @@
 .home-spotlight-copy-note {
   font-size: 13.5px;
   font-weight: 600;
-  color: #E8EFE2;
+  color: #4B6242;
 }
 
 /* Right Column: 4-Facet ME Self-Discovery Atelier */
@@ -663,7 +712,7 @@
 .home-me-header h2 {
   font-size: clamp(20px, 1.75vw, 24px);
   font-weight: 800;
-  line-height: 1.38;
+  line-height: 1.55;
   letter-spacing: -0.02em;
   color: #222630;
 }
@@ -799,7 +848,7 @@
    BAND 2: PHOTO-FORWARD HUMAN DISCOVERY (FULL-WIDTH SHOWCASE)
    ============================================================================= */
 .home-people-showcase {
-  margin-bottom: 48px;
+  margin-bottom: 64px;
 }
 
 .home-people-header {
@@ -820,7 +869,7 @@
 .home-people-heading-copy h2 {
   font-size: clamp(24px, 2.3vw, 30px);
   font-weight: 800;
-  line-height: 1.32;
+  line-height: 1.55;
   letter-spacing: -0.025em;
   color: #222630;
 }
@@ -885,8 +934,8 @@
 .home-candidate-card {
   background: #FFFFFF;
   border: 1px solid #E6E0D7;
-  border-radius: 24px;
-  padding: 14px 14px 20px;
+  border-radius: 18px;
+  padding: 0 0 22px;
   box-shadow: 0 8px 24px -10px rgba(34, 38, 48, 0.06);
   display: flex;
   flex-direction: column;
@@ -905,8 +954,8 @@
 .home-candidate-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 18px;
+  aspect-ratio: 1 / 1;
+  border-radius: 17px 17px 0 0;
   overflow: hidden;
   background: #F3EEE6;
   isolation: isolate;
@@ -981,7 +1030,7 @@
 .home-portrait-poster-monogram {
   font-size: 46px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.55;
   color: #222630;
   letter-spacing: -0.03em;
 }
@@ -1033,7 +1082,7 @@
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.55;
 }
 
 .home-common-seal {
@@ -1051,7 +1100,7 @@
   border: 2px solid #FFFFFF;
   font-size: 13px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.55;
   box-shadow: 0 4px 12px rgba(34, 38, 48, 0.2);
 }
 
@@ -1078,7 +1127,7 @@
   color: #222630;
   font-size: 22px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.55;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1102,7 +1151,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 2px 6px 0;
+  padding: 2px 22px 0;
   flex: 1;
   min-width: 0;
 }
@@ -1124,7 +1173,7 @@
 .home-candidate-name {
   font-size: 21px;
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.55;
   letter-spacing: -0.02em;
   color: #222630;
   overflow-wrap: break-word;
@@ -1143,13 +1192,13 @@
   color: #364B2F;
   font-size: 13px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.55;
 }
 
 .home-candidate-meta {
   font-size: 14.5px;
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.55;
   color: #5A626F;
 }
 
@@ -1168,7 +1217,7 @@
   color: #222630;
   font-size: 13.5px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.55;
 }
 
 .home-interest-pill.is-shared {
@@ -1320,8 +1369,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
   gap: 24px;
-  align-items: stretch;
-  margin-bottom: 44px;
+  align-items: start;
+  margin-bottom: 64px;
 }
 
 .home-rebuilt .home-circle {
@@ -1346,7 +1395,7 @@
 .home-rebuilt .home-circle h2 {
   font-size: clamp(20px, 1.8vw, 24px);
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.55;
   margin: 4px 0 0;
   color: #222630;
 }
@@ -1489,7 +1538,7 @@
 
 .home-rebuilt .home-score span {
   font-size: 13px;
-  line-height: 1.35;
+  line-height: 1.55;
   color: #222630;
   font-weight: 700;
 }
@@ -1586,7 +1635,7 @@
 .home-spark-header h2 {
   font-size: clamp(20px, 1.8vw, 24px);
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.55;
   color: #222630;
 }
 
@@ -1598,10 +1647,10 @@
 
 .home-spark-question-box {
   flex: 1;
-  background: #FFFFFF;
-  border: 1px solid #F0D9CB;
-  border-radius: 18px;
-  padding: 20px 22px;
+  background: transparent;
+  border-top: 1px solid #F0D9CB;
+  border-bottom: 1px solid #F0D9CB;
+  padding: 22px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1674,9 +1723,9 @@
    ============================================================================= */
 .home-rebuilt .home-closing {
   margin-top: 0;
-  padding: 26px 30px;
-  border-radius: 22px;
-  background: #FFFFFF;
+  padding: 48px;
+  border-radius: 24px;
+  background: #F3EEE6;
   border: 1px solid #E6E0D7;
   box-shadow: none;
   display: flex;
@@ -1688,12 +1737,12 @@
 .home-closing-copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
 .home-rebuilt .home-closing h2 {
-  font-size: clamp(19px, 1.7vw, 22px);
-  font-weight: 800;
+  font-size: clamp(24px, 2.3vw, 32px);
+  font-weight: 600;
   margin: 0;
   color: #222630;
 }
@@ -1766,7 +1815,7 @@
 .home-connect-dialog-inner h2 {
   font-size: 20px;
   font-weight: 800;
-  line-height: 1.38;
+  line-height: 1.55;
 }
 
 .home-connect-dialog-inner p {
@@ -1788,13 +1837,54 @@
   flex-wrap: wrap;
 }
 
-/* =============================================================================
-   RESPONSIVE ARCHITECTURE — TABLET (<=1080px) & FIRST-CLASS MOBILE (<=767px)
-   ============================================================================= */
+/* A reusable trio of connection motifs; no decorative metrics or fake people. */
+.home-benefits { margin-bottom: 64px; }
+.home-benefits-heading { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.home-benefits-heading h2 { font-size: clamp(24px, 2.3vw, 32px); font-weight: 600; line-height: 1.55; }
+.home-benefits-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.home-benefit { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 28px; border: 1px solid var(--home-line); border-radius: 18px; background: var(--home-paper); transition: border-color .2s; }
+.home-benefit:hover { border-color: #FF7A2F; }
+.home-benefit h3 { font-size: 19px; font-weight: 600; line-height: 1.55; }
+.home-benefit p { font-size: 14px; color: #6A716F; line-height: 1.7; }
+.home-benefit-drawing { position: relative; display: grid; place-items: center; width: 100%; height: 100px; margin-bottom: 6px; }
+.home-benefit-drawing::before { content: ''; position: absolute; left: 8%; right: 8%; top: 50%; border-top: 1px solid #F5DDD1; }
+.home-benefit-drawing > span { position: absolute; width: 92px; height: 92px; border: 1px solid #FFB185; border-radius: 50%; }
+.home-benefit-drawing > span:first-child { transform: translateX(-28px); }
+.home-benefit-drawing > span:nth-child(2) { transform: translateX(28px); }
+.home-benefit-drawing svg { position: relative; width: 42px; height: 42px; padding: 10px; background: #FFE7D7; border-radius: 50%; color: #9E4215; }
+.home-benefit-compass .home-benefit-drawing > span:first-child { transform: none; width: 96px; height: 96px; }
+.home-benefit-compass .home-benefit-drawing > span:nth-child(2) { transform: none; width: 66px; height: 66px; }
+.home-benefit-sparkles .home-benefit-drawing > span { border-radius: 20px 20px 50% 50%; transform: rotate(-25deg); width: 76px; }
+.home-benefit-sparkles .home-benefit-drawing > span:nth-child(2) { transform: rotate(25deg); }
+.home-benefit-action { margin-top: auto; padding-top: 8px; display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; }
+.home-benefit-action svg { width: 40px; height: 40px; padding: 10px; border: 1px solid var(--home-line); border-radius: 50%; }
+
+.home-rebuilt :is(h2, h3) { line-height: 1.55; }
+.home-rebuilt :is(a, button, summary):focus-visible { outline: 3px solid #9E4215; outline-offset: 4px; }
+.home-rebuilt .home-mobile-deck-stage:focus-visible { outline: 3px solid #9E4215; outline-offset: 4px; }
+.home-rebuilt :is(button, a) { -webkit-tap-highlight-color: transparent; }
+.home-rebuilt :is(.home-people-heading-copy h2, .home-me-header h2, .home-circle h2, .home-spark-header h2) { font-weight: 600; }
+.home-rebuilt .home-candidate-actions { flex-wrap: wrap; }
+.home-rebuilt .home-candidate-actions > * { flex: 1 1 auto; }
+.home-rebuilt .home-closing-cta { flex-shrink: 0; }
+.home-spark-copy-feedback { font-size: 13px; line-height: 1.6; }
+
+/* Responsive composition: preserve reading order and independent photo controls. */
 @media (max-width: 1080px) {
-  .app-main-viewport.home-main-viewport {
+  .app-main-viewport.home-main-viewport:has(.home-rebuilt) {
     padding: 20px 22px 96px;
   }
+
+  .home-humanism-hero { gap: 10px; padding: 30px 0 10px; }
+  .home-hero-copy { gap: 18px; }
+  .home-hero-copy h1 { font-size: 32px; }
+  .home-hero-description { font-size: 16px; }
+  .home-hero-coordinate { display: none; }
+  .home-hero-photo { inset: 0 3% 5% 12%; }
+  .home-hero-caption { bottom: 0; left: 0; padding: 12px; font-size: 12px; }
+  .home-welcome-bar { flex-wrap: wrap; }
+  .home-benefit { padding: 22px; }
+  .home-benefit h3 { font-size: 17px; }
 
   .home-stage-band,
   .home-social-band {
@@ -1809,34 +1899,41 @@
 }
 
 @media (max-width: 767px) {
-  .app-main-viewport.home-main-viewport {
-    padding: 12px 14px 104px;
+  .app-main-viewport.home-main-viewport:has(.home-rebuilt) {
+    padding: 12px 20px 104px;
   }
 
-  /* Compact Opening Masthead so Personalized Spotlight Stage Sits High Above Fold */
-  .home-salon-masthead {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding-bottom: 12px;
-    margin-bottom: 14px;
-  }
-
-  .home-salon-greeting {
-    font-size: 24px;
-    line-height: 1.28;
-  }
-
-  .home-salon-subtitle {
-    font-size: 14.5px;
-    line-height: 1.48;
-  }
-
-  .home-salon-pills {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 8px;
-  }
+  .home-salon-masthead { margin-bottom: 36px; }
+  .home-welcome-bar { gap: 6px; padding-bottom: 12px; }
+  .home-salon-pills { justify-content: flex-start; gap: 10px; }
+  .home-edition-date { display: none; }
+  .home-welcome-bar .home-pill-neutral { padding: 6px 12px; font-size: 12px; }
+  .home-humanism-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 26px; }
+  .home-hero-copy { gap: 18px; }
+  .home-hero-copy h1 { font-size: clamp(27px, 7.5vw, 43px); letter-spacing: -.04em; }
+  .home-hero-copy > .home-section-kicker { font-size: 12px; }
+  .home-hero-description { font-size: 15px; max-width: 520px; }
+  .home-hero-actions { width: 100%; gap: 10px; }
+  .home-hero-actions > * { flex: 1 1 auto; }
+  .home-hero-note { font-size: 12px; }
+  .home-hero-art { width: 100%; max-width: 440px; height: auto; justify-self: center; aspect-ratio: 1.35; }
+  .home-hero-photo { inset: 0 10% 3% 21%; border-radius: 24px 24px 14px 14px; }
+  .home-hero-photo img { object-position: 50% 30%; }
+  .home-hero-cameo { left: 4%; top: 20%; }
+  .home-hero-caption { left: 0; bottom: 3%; }
+  .home-stage-band, .home-social-band, .home-people-showcase, .home-benefits { margin-bottom: 40px; }
+  .home-benefits-grid { grid-template-columns: 1fr; gap: 12px; }
+  .home-benefit { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px 18px; padding: 20px; }
+  .home-benefit-drawing { grid-row: 1 / 4; height: 72px; margin: 0; }
+  .home-benefit-drawing > span { max-width: 55px; max-height: 55px; }
+  .home-benefit-drawing > span:first-child { transform: translateX(-8px); }
+  .home-benefit-drawing > span:nth-child(2) { transform: translateX(8px); }
+  .home-benefit p, .home-benefit-action { grid-column: 2; }
+  .home-benefit h3 { font-size: 16px; }
+  .home-benefit p { font-size: 13px; }
+  .home-benefit-action { font-size: 12px; }
+  .home-candidate-media { aspect-ratio: 4 / 5; }
+  .home-candidate-body { padding-inline: 18px; }
 
   .home-pill-incoming,
   .home-pill-neutral,
@@ -1849,7 +1946,7 @@
     min-height: 48px;
   }
 
-  /* Preserve Signature #222630 Deep Charcoal Theatrical Spotlight Stage on Mobile */
+  /* Keep readable observations and comfortable controls on small screens. */
   .home-spotlight-stage {
     padding: 18px 16px;
     border-radius: 22px;
@@ -2058,12 +2155,8 @@
 
 /* Ultra-Compact Mobile (<=350px, including 320px) — Clean Full-Width Single-Line CTAs */
 @media (max-width: 350px) {
-  .app-main-viewport.home-main-viewport {
+  .app-main-viewport.home-main-viewport:has(.home-rebuilt) {
     padding: 10px 10px 104px;
-  }
-
-  .home-salon-greeting {
-    font-size: 22px;
   }
 
   .home-spotlight-stage,
@@ -2076,7 +2169,7 @@
   }
 
   .home-candidate-card {
-    padding: 10px 10px 16px;
+    padding: 0 0 16px;
     border-radius: 20px;
   }
 

@@ -147,7 +147,7 @@ const features = [
 export function RegistrationStory() {
   return (
     <section className="registration-story" aria-labelledby="registration-headline">
-      <h1 id="registration-headline">შექმენი თავი.<br />შექმენი სხვა.<br /><span>შეიგრძენი კავშირი.</span></h1>
+      <h1 id="registration-headline">ყოველი ადამიანი<br /><span>მთელი სამყაროა.</span></h1>
       <p className="registration-intro">JESTER გეხმარება გაიგო შენი თავი, აღმოაჩინო სხვა ადამიანები და უკეთ გაიგო ნამდვილი, ღრმა კავშირები.</p>
       <div className="registration-features" id="registration-features">
         {features.map(({ icon, title, description }) => (

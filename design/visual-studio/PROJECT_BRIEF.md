@@ -1,11 +1,15 @@
 # JESTER Project Brief — Verified Repository Context
 
-> **Document Status:** WORKING CONTEXT; selected claims refreshed 2026-10-28; consult source before implementation\
+> **Document Status:** WORKING CONTEXT; Home direction refreshed 2026-11-01; consult source before implementation\
 > **Source of Truth:** Canonical docs, design tokens, and frontend code checked into `farnai/Jester`  
 > **Target Audience:** Jester Visual Studio agents (`jester-art-director`, `jester-ui-designer`, `jester-graphic-designer`, `jester-visual-critic`)  
 > **Governance:** Derived visual-design reference under `AGENTS.md`; canonical documents retain ownership\
 
 ---
+
+## Current Home Implementation Direction — 2026-11-01
+
+The current Founder request explicitly authorizes a real-code Contemporary Renaissance / Geometric Humanism Home based on the supplied photographic reference. This task selects one direction directly rather than reopening three-concept exploration. Approved palette, Georgian typography, 18+ policy and privacy remain binding. The implementation uses existing brand photography, subtle geometric axes, a light featured insight, conversation prompt, authorized people carousel, benefit links, relationship explanation and personal facets. See `docs/HOME_EXPERIENCE.md` for the current contract; older baseline descriptions below are not current implementation evidence. pen.dev was disconnected during implementation, so the canvas remains unchanged. Final Founder visual review remains pending.
 
 ## 1. Verified Product Identity
 
