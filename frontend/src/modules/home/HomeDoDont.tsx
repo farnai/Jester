@@ -14,16 +14,20 @@ export function HomeDoDont({ doItems, dontItems, isLoading, isError }: HomeDoDon
   if (isLoading) {
     return (
       <section className="home-section home-dodont-section" aria-label="გააკეთე და მოერიდე">
-        <div className="home-dodont-grid">
-          <div className="home-card home-skeleton-card">
+        <div className="home-card home-dodont-card">
+          <div className="home-section-header">
             <div className="home-skeleton-line title" />
-            <div className="home-skeleton-line body" />
-            <div className="home-skeleton-line body" />
+            <div className="home-skeleton-line short" />
           </div>
-          <div className="home-card home-skeleton-card">
-            <div className="home-skeleton-line title" />
-            <div className="home-skeleton-line body" />
-            <div className="home-skeleton-line body" />
+          <div className="home-dodont-grid">
+            <div className="home-dodont-block home-do-card">
+              <div className="home-skeleton-line title" />
+              <div className="home-skeleton-line body" />
+            </div>
+            <div className="home-dodont-block home-dont-card">
+              <div className="home-skeleton-line title" />
+              <div className="home-skeleton-line body" />
+            </div>
           </div>
         </div>
       </section>
@@ -41,48 +45,50 @@ export function HomeDoDont({ doItems, dontItems, isLoading, isError }: HomeDoDon
 
   return (
     <section className="home-section home-dodont-section" aria-labelledby="home-dodont-heading">
-      <div className="home-section-header">
-        <h2 id="home-dodont-heading" className="home-section-title">
-          გააკეთე / მოერიდე
-        </h2>
-        <p className="home-section-subtitle">დღის ენერგიიდან გამომდინარე ფოკუსი და რისკები</p>
-      </div>
-
-      <div className="home-dodont-grid">
-        {/* DO Column */}
-        <div className="home-card home-do-card">
-          <div className="home-do-header">
-            <span className="home-do-icon" aria-hidden="true">
-              ✓
-            </span>
-            <h3 className="home-do-title">რა გააკეთო (DO)</h3>
-          </div>
-          <ul className="home-dodont-list home-do-list">
-            {finalDos.map((item, idx) => (
-              <li key={`do-${idx}`} className="home-dodont-item home-do-item">
-                <span className="home-item-bullet">✦</span>
-                <span className="home-item-text">{item}</span>
-              </li>
-            ))}
-          </ul>
+      <div className="home-card home-dodont-card">
+        <div className="home-section-header">
+          <h2 id="home-dodont-heading" className="home-section-title">
+            გააკეთე / მოერიდე
+          </h2>
+          <p className="home-section-subtitle">დღის ენერგიიდან გამომდინარე ფოკუსი და რისკები</p>
         </div>
 
-        {/* DON'T Column */}
-        <div className="home-card home-dont-card">
-          <div className="home-dont-header">
-            <span className="home-dont-icon" aria-hidden="true">
-              ✕
-            </span>
-            <h3 className="home-dont-title">რას მოერიდო (DON'T)</h3>
+        <div className="home-dodont-grid">
+          {/* DO Column */}
+          <div className="home-dodont-block home-do-card">
+            <div className="home-do-header">
+              <span className="home-do-icon" aria-hidden="true">
+                ✓
+              </span>
+              <h3 className="home-do-title">რა გააკეთო (DO)</h3>
+            </div>
+            <ul className="home-dodont-list home-do-list">
+              {finalDos.map((item, idx) => (
+                <li key={`do-${idx}`} className="home-dodont-item home-do-item">
+                  <span className="home-item-bullet">✦</span>
+                  <span className="home-item-text">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="home-dodont-list home-dont-list">
-            {finalDonts.map((item, idx) => (
-              <li key={`dont-${idx}`} className="home-dodont-item home-dont-item">
-                <span className="home-item-bullet">✕</span>
-                <span className="home-item-text">{item}</span>
-              </li>
-            ))}
-          </ul>
+
+          {/* DON'T Column */}
+          <div className="home-dodont-block home-dont-card">
+            <div className="home-dont-header">
+              <span className="home-dont-icon" aria-hidden="true">
+                ✕
+              </span>
+              <h3 className="home-dont-title">რას მოერიდო (DON'T)</h3>
+            </div>
+            <ul className="home-dodont-list home-dont-list">
+              {finalDonts.map((item, idx) => (
+                <li key={`dont-${idx}`} className="home-dodont-item home-dont-item">
+                  <span className="home-item-bullet">✕</span>
+                  <span className="home-item-text">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

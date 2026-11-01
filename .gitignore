@@ -37,5 +37,6 @@ yarn-error.log*
 Thumbs.db
 *.db
 
-# Scratch
+# Scratch & Test Artifacts
 scratch/
+artifacts/

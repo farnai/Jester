@@ -178,7 +178,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "ცნობიერი ეგო, ემოციური ბირთვი და პირველი შთაბეჭდილება",
         "summary": "შენი პიროვნების ფუნდამენტური სამკუთხედი: რასაც გარეთ აჩვენებ, რას განიცდი შინაგანად და რა არის შენი შინაგანი ბრძოლა.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["მზე", "მთვარე", "ასცენდენტი", "მზე-მთვარის სინთეზი"],
         "items": layer_1_items
     })
@@ -218,7 +218,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "მერკური, გადაწყვეტილების მიღება და კამათის სტილი",
         "summary": "ინტელექტუალური სტილი, ლოგიკა, რამდენად სწრაფად ან ღრმად აანალიზებ და რა არის შენი სუსტი წერტილი დისკუსიაში.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["მერკური", "ლოგიკა", "გადაწყვეტილებები", "სიტყვიერი იარაღი"],
         "items": layer_2_items
     })
@@ -260,7 +260,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "ვენერა, მიზიდულობა, ვნება და ურთიერთობის გამაღიზიანებლები",
         "summary": "რა გხიბლავს სინამდვილეში ადამიანში, როგორ გამოხატავ სიყვარულს და რა ერთი ქცევა კლავს შენში სიმპათიას წამიერად.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["ვენერა", "მარსი", "მიზიდულობა", "Turn-Offs"],
         "items": layer_3_items
     })
@@ -302,7 +302,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "მარსი, მოტივაცია, ბრაზის გამოხატვა და დაბრკოლებები",
         "summary": "რა გაძლევს მოტივაციას, რა ტემპით მუშაობ, როგორ გამოხატავ გაღიზიანებას და როგორ უმკლავდები წნეხს.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["მარსი", "მოტივაცია", "ბრაზი", "გამძლეობა"],
         "items": layer_4_items
     })
@@ -351,7 +351,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "სატურნი, პლუტონი, ნეპტუნი და თვითსაბოტაჟის პატერნები",
         "summary": "ყველაზე ღრმა და მტკივნეული სიმართლე: რის გეშინია გაუცნობიერებლად, სად ცდილობ სხვების კონტროლს და სად აზიანებ საკუთარ თავს.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["სატურნი", "პლუტონი", "ნეპტუნი", "თვითსაბოტაჟი"],
         "items": layer_5_items
     })
@@ -420,7 +420,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "ნატალური ასპექტები და პლანეტარული შეერთებები",
         "summary": "რეალური გრადუსობრივი ასპექტები შენს დაბადების რუკაში: მზე-სატურნი, ვენერა-პლუტონი, მარსი-სატურნი და მთვარე-მერკური.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["ნატალური ასპექტები", "ორბისები", "შეერთება", "კვადრატურა"],
         "items": detected_aspect_items
     })
@@ -474,7 +474,7 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "subtitle": "სტიქიები, მოდალობა, ვერდიქტი და მომხმარებლის სახელმძღვანელო",
         "summary": "სრული სინთეზი: ენერგიის საწვავი, ცხოვრების მთავარი ვერდიქტი და პრაქტიკული ინსტრუქცია სხვებისთვის — როგორ მოგექცნენ.",
         "is_locked": False,
-        "star_cost": 5,
+        "star_cost": None,
         "topics": ["სტიქია", "მოდალობა", "ვერდიქტი", "User Manual"],
         "items": layer_7_items
     })

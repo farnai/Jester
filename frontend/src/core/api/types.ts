@@ -24,6 +24,7 @@ export interface ProfileResponse {
   occupation: string | null;
   timezone: string;
   is_discoverable: boolean;
+  age?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -376,7 +377,7 @@ export interface PersonalCatalogLayer {
   subtitle: string;
   summary: string;
   is_locked: boolean;
-  star_cost: number;
+  star_cost?: number | null;
   topics: string[];
   items: PersonalCatalogItem[];
 }

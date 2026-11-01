@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { PersonalCatalogResponse } from '../../core/api/types';
+import type { PersonalCatalogResponse, PersonalCatalogLayer, PersonalCatalogItem } from '../../core/api/types';
+import { ShareCardModal } from './ShareCardModal';
 
 interface HomePersonalInsightsProps {
   catalog?: PersonalCatalogResponse | null;
@@ -15,7 +16,16 @@ export function HomePersonalInsights({
   isError,
   onRetry,
 }: HomePersonalInsightsProps) {
-  // Allow toggling open layers. Open layer 1 by default for discovery.
+  // Outer accordion: collapsed by default
+  const [isOuterExpanded, setIsOuterExpanded] = useState(false);
+
+  // Sharing state for individual card export
+  const [sharingCard, setSharingCard] = useState<{
+    layer: PersonalCatalogLayer;
+    item: PersonalCatalogItem;
+  } | null>(null);
+
+  // Allow toggling open layers. Open layer 1 by default for discovery when parent opened.
   const [openLayers, setOpenLayers] = useState<Record<string, boolean>>({
     layer_1_core_identity: true,
   });
@@ -30,16 +40,9 @@ export function HomePersonalInsights({
   if (isLoading) {
     return (
       <section className="home-section home-insights-section" aria-label="გაიცანი საკუთარი თავი">
-        <div className="home-section-header">
+        <div className="home-card home-insights-card">
           <div className="home-skeleton-line title" />
           <div className="home-skeleton-line short" />
-        </div>
-        <div className="home-insights-accordion">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="home-card home-skeleton-card">
-              <div className="home-skeleton-line body" />
-            </div>
-          ))}
         </div>
       </section>
     );
@@ -87,99 +90,143 @@ export function HomePersonalInsights({
 
   return (
     <section className="home-section home-insights-section" aria-labelledby="home-insights-heading">
-      <div className="home-section-header">
-        <div className="home-section-title-row">
-          <h2 id="home-insights-heading" className="home-section-title">
-            გაიცანი საკუთარი თავი
-          </h2>
-          <span className="home-badge home-layer-count-badge">7 სიღრმისეული შრე</span>
-        </div>
-        <p className="home-section-subtitle">
-          შენი ნატალური რუკის ანატომია — დაბადების მომენტის ზუსტი ციური კონფიგურაცია და ფსიქოლოგიური რეალობა
-        </p>
-      </div>
-
-      {!hasExactTime && (
-        <div className="home-banner home-time-notice" role="note">
-          <span>ℹ დაბადების ზუსტი დრო უცნობია — ასცენდენტი და სახლები დამალულია. დანარჩენი პლანეტები ზუსტად არის გამოთვლილი.</span>
-        </div>
-      )}
-
-      <div className="home-insights-accordion">
-        {catalog.layers.map((layer) => {
-          const isOpen = !!openLayers[layer.layer_id];
-          const itemPanelId = `layer-panel-${layer.layer_id}`;
-          const itemHeaderId = `layer-header-${layer.layer_id}`;
-
-          return (
-            <div
-              key={layer.layer_id}
-              className={`home-layer-card ${isOpen ? 'is-open' : ''}`}
-            >
-              <button
-                type="button"
-                id={itemHeaderId}
-                className="home-layer-toggle"
-                onClick={() => toggleLayer(layer.layer_id)}
-                aria-expanded={isOpen}
-                aria-controls={itemPanelId}
-              >
-                <div className="home-layer-main-info">
-                  <span className="home-layer-num">{layer.number}</span>
-                  <div className="home-layer-titles">
-                    <h3 className="home-layer-title">{layer.title}</h3>
-                    <p className="home-layer-subtitle">{layer.subtitle}</p>
-                  </div>
-                </div>
-
-                <div className="home-layer-meta">
-                  <span className="home-star-pill" title="მომავალი განბლოკვის ფასი">
-                    ✦ {layer.star_cost} ვარსკვლავი
-                  </span>
-                  <span className={`home-chevron ${isOpen ? 'expanded' : ''}`} aria-hidden="true">
-                    ▼
-                  </span>
-                </div>
-              </button>
-
-              {isOpen && (
-                <div
-                  id={itemPanelId}
-                  role="region"
-                  aria-labelledby={itemHeaderId}
-                  className="home-layer-body"
-                >
-                  <p className="home-layer-summary">{layer.summary}</p>
-
-                  {layer.topics && layer.topics.length > 0 && (
-                    <div className="home-topic-chips">
-                      {layer.topics.map((t, idx) => (
-                        <span key={idx} className="home-topic-chip">
-                          #{t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="home-layer-items-grid">
-                    {layer.items.map((item) => (
-                      <div key={item.id} className="home-layer-item-card">
-                        <div className="home-item-top">
-                          <span className="home-item-label">{item.label}</span>
-                          {item.sign_badge && (
-                            <span className="home-item-badge">{item.sign_badge}</span>
-                          )}
-                        </div>
-                        <p className="home-item-text">{item.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+      <div className="home-card home-insights-card">
+        {/* Parent Accordion Trigger */}
+        <button
+          type="button"
+          id="home-insights-accordion-toggle"
+          className="home-insights-header-toggle"
+          onClick={() => setIsOuterExpanded((prev) => !prev)}
+          aria-expanded={isOuterExpanded}
+          aria-controls="home-insights-body"
+        >
+          <div className="home-insights-toggle-info">
+            <div className="home-section-title-row">
+              <h2 id="home-insights-heading" className="home-section-title">
+                გაიცანი საკუთარი თავი
+              </h2>
+              <span className="home-badge home-layer-count-badge">7 ასტროლოგიური შრე</span>
             </div>
-          );
-        })}
+            <p className="home-section-subtitle">
+              შენი პიროვნების 7 ასტროლოგიური შრე
+            </p>
+          </div>
+
+          <div className="home-insights-toggle-indicator" aria-hidden="true">
+            <span className={`home-chevron ${isOuterExpanded ? 'expanded' : ''}`}>
+              ▼
+            </span>
+          </div>
+        </button>
+
+        {/* Parent Accordion Content: 7 Layers */}
+        {isOuterExpanded && (
+          <div
+            id="home-insights-body"
+            role="region"
+            aria-labelledby="home-insights-accordion-toggle"
+            className="home-insights-body"
+          >
+            {!hasExactTime && (
+              <div className="home-banner home-time-notice" role="note">
+                <span>ℹ დაბადების ზუსტი დრო უცნობია — ასცენდენტი და სახლები დამალულია. დანარჩენი პლანეტები ზუსტად არის გამოთვლილი.</span>
+              </div>
+            )}
+
+            <div className="home-insights-accordion">
+              {catalog.layers.map((layer) => {
+                const isOpen = !!openLayers[layer.layer_id];
+                const itemPanelId = `layer-panel-${layer.layer_id}`;
+                const itemHeaderId = `layer-header-${layer.layer_id}`;
+
+                return (
+                  <div
+                    key={layer.layer_id}
+                    className={`home-layer-card ${isOpen ? 'is-open' : ''}`}
+                  >
+                    <button
+                      type="button"
+                      id={itemHeaderId}
+                      className="home-layer-toggle"
+                      onClick={() => toggleLayer(layer.layer_id)}
+                      aria-expanded={isOpen}
+                      aria-controls={itemPanelId}
+                    >
+                      <div className="home-layer-main-info">
+                        <span className="home-layer-num">{layer.number}</span>
+                        <div className="home-layer-titles">
+                          <h3 className="home-layer-title">{layer.title}</h3>
+                          <p className="home-layer-subtitle">{layer.subtitle}</p>
+                        </div>
+                      </div>
+
+                      <div className="home-layer-meta">
+                        <span className={`home-chevron ${isOpen ? 'expanded' : ''}`} aria-hidden="true">
+                          ▼
+                        </span>
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <div
+                        id={itemPanelId}
+                        role="region"
+                        aria-labelledby={itemHeaderId}
+                        className="home-layer-body"
+                      >
+                        <p className="home-layer-summary">{layer.summary}</p>
+
+                        {layer.topics && layer.topics.length > 0 && (
+                          <div className="home-topic-chips">
+                            {layer.topics.map((t, idx) => (
+                              <span key={idx} className="home-topic-chip">
+                                #{t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="home-layer-items-grid">
+                          {layer.items.map((item) => (
+                            <div key={item.id} className="home-layer-item-card">
+                              <div className="home-item-top">
+                                <div className="home-item-label-group">
+                                  <span className="home-item-label">{item.label}</span>
+                                  {item.sign_badge && (
+                                    <span className="home-item-badge">{item.sign_badge}</span>
+                                  )}
+                                </div>
+                                <button
+                                  type="button"
+                                  className="home-card-share-btn"
+                                  onClick={() => setSharingCard({ layer, item })}
+                                  title="ბარათის გაზიარება"
+                                  aria-label={`ბარათის გაზიარება: ${item.label}`}
+                                >
+                                  გაზიარება ↗
+                                </button>
+                              </div>
+                              <p className="home-item-text">{item.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Individual Card Sharing Modal */}
+      <ShareCardModal
+        isOpen={!!sharingCard}
+        onClose={() => setSharingCard(null)}
+        layer={sharingCard?.layer || null}
+        item={sharingCard?.item || null}
+      />
     </section>
   );
 }

@@ -42,13 +42,8 @@ class DiscoveryPage(BaseModel):
 
 
 def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=False, q='', order: Literal['id', 'newest'] = 'id'):
-    # Keyset pagination or newest first; enforces server-level 18+ eligibility.
+    # Keyset pagination or newest first; strictly enforces server-level 18+ eligibility on all queries.
     order_clause = 'ORDER BY p.created_at DESC, p.id DESC' if order == 'newest' else 'ORDER BY p.id'
-    age_filter = (
-        "AND (bd.birth_date IS NOT NULL AND bd.birth_date <= (current_date - interval '18 years'))"
-        if order == 'newest'
-        else "AND (bd.birth_date IS NULL OR bd.birth_date <= (current_date - interval '18 years'))"
-    )
     with db.cursor() as cur:
         cur.execute(f'''SELECT p.id, p.display_name, p.bio, p.city, p.occupation, p.avatar_url,
             coalesce(p.current_city_id = me.current_city_id, false) AS same_city,
@@ -64,7 +59,7 @@ def discovery_page(db, viewer, limit=12, after=None, city_id=None, shared_only=F
                 AND c.user_b_id = greatest(p.id, %s)
             WHERE p.is_discoverable AND p.id <> %s
                 AND NOT public.is_user_blocked(%s, p.id)
-                {age_filter}
+                AND (bd.birth_date IS NOT NULL AND bd.birth_date <= (current_date - interval '18 years'))
                 AND (%s::uuid IS NULL OR p.id > %s)
                 AND (%s::uuid IS NULL OR p.current_city_id = %s)
                 AND (%s = '' OR position(lower(%s) in lower(p.display_name)) > 0)

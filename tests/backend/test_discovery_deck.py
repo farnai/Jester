@@ -18,6 +18,7 @@ def population():
         for uid in ids:
             db.execute("INSERT INTO auth.users(id,email,raw_user_meta_data,role,aud) VALUES(%s,%s,'{}','authenticated','authenticated')", (uid, f'wave3-{uid}@example.invalid'))
             db.execute('INSERT INTO public.profiles(id,display_name) VALUES(%s,%s) ON CONFLICT(id) DO UPDATE SET display_name=excluded.display_name', (uid,label))
+            db.execute("INSERT INTO public.birth_data(user_id,birth_date,birth_time_precision,birth_timezone) VALUES(%s,'2000-01-01','unknown','UTC') ON CONFLICT(user_id) DO NOTHING", (uid,))
     try:
         yield ids, label
     finally:

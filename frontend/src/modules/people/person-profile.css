@@ -1,20 +1,498 @@
-.person-breadcrumb { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .85rem; }
-.person-breadcrumb a { color: var(--jester-brand-orange-800); min-height: 44px; display: inline-flex; align-items: center; }
-.person-connection-bar { margin-top: 28px; }
-.person-preview { border: 1px solid var(--jester-border-soft); border-radius: 24px; background: var(--jester-surface-alt); padding: clamp(20px, 3vw, 36px); }
-.person-preview-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
-.person-preview-heading .social-eyebrow { margin-bottom: 10px; }
-.person-preview h2 { font-size: clamp(1.15rem, 2vw, 1.6rem); margin: 0; }
-.person-score { border-radius: 30px; padding: 10px 16px; border: 1px solid var(--jester-border-soft); font-size: .8rem; }
-.person-score strong { font-size: 1.2rem; margin-left: 6px; }
-.person-hook { line-height: 1.8; max-width: 75ch; }
-.person-details { padding: 20px 0; border-bottom: 1px solid var(--jester-border-soft); }
-.person-details summary { cursor: pointer; min-height: 44px; font-weight: 600; }
-@media (max-width: 700px) {
-  .person-profile { padding-bottom: 100px; }
-  .person-profile .social-portrait { aspect-ratio: 4 / 3; }
-  .person-connection-bar { position: fixed; z-index: 25; bottom: calc(61px + env(safe-area-inset-bottom)); left: 0; right: 0; margin: 0; padding: 10px 16px; background: var(--jester-surface-base); border-top: 1px solid var(--jester-border-soft); box-shadow: 0 -4px 18px #3122160c; }
-  .person-connection-bar .connection-actions { justify-content: center; }
-  .person-connection-bar button, .person-connection-bar a { flex: 1; text-align: center; }
+/* =============================================================================
+   JESTER Person Profile — Thematic Public Social Profile
+   Mobile-First, Photo-Forward, Clean Information Architecture
+   ============================================================================= */
+
+.person-profile-container {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 5rem;
+  box-sizing: border-box;
 }
-@media (max-width: 360px) { .person-connection-bar { bottom: calc(53px + env(safe-area-inset-bottom)); } }
+
+/* Top Navigation */
+.person-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.person-back-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--home-brand-orange, #FF7A2F);
+  text-decoration: none;
+  min-height: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.person-back-link:hover {
+  opacity: 0.85;
+}
+
+/* Base Card */
+.person-card {
+  background: var(--home-surface-card, #FFFFFF);
+  border: 1px solid var(--home-card-border, #E6E0D7);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(34, 38, 48, 0.03);
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+}
+
+.person-section-heading {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: var(--home-text-primary, #222630);
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.person-section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.person-section-header-row .person-section-heading {
+  margin: 0;
+}
+
+.person-sub-eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--home-brand-orange, #FF7A2F);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+/* =============================================================================
+   1. Photos & Identity (Hero)
+   ============================================================================= */
+.person-gallery-wrap {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.person-main-photo-stage {
+  width: 100%;
+  height: clamp(340px, 48vw, 500px);
+  position: relative;
+  background: #F4EFEB;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.person-main-photo-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.person-photo-loading {
+  width: 100%;
+  height: 100%;
+}
+
+.person-photo-empty-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FAF4ED 0%, #EDE5D9 100%);
+  gap: 0.75rem;
+}
+
+.person-fallback-initial {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #8C8070;
+}
+
+.person-fallback-zodiac {
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.9);
+  color: #4A4D53;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.person-photo-index-pill {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(18, 22, 28, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.person-thumbnails-track {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.person-thumb-btn {
+  flex: 0 0 64px;
+  height: 64px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  padding: 0;
+  background: #F0EBE3;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.person-thumb-btn:hover {
+  opacity: 0.9;
+}
+
+.person-thumb-btn.is-active {
+  border-color: var(--home-brand-orange, #FF7A2F);
+  box-shadow: 0 2px 8px rgba(255, 122, 47, 0.3);
+}
+
+.person-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Identity Body */
+.person-identity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.person-name-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.person-display-name {
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 800;
+  color: var(--home-text-primary, #222630);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.person-age-tag {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--home-text-secondary, #5A626F);
+}
+
+.person-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.person-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  line-height: 1.2;
+}
+
+.person-zodiac-pill {
+  background: #FFF1E6;
+  color: #C95618;
+  border: 1px solid #FFD0B2;
+}
+
+.person-city-pill {
+  background: #F3EFEA;
+  color: #4A4D53;
+  border: 1px solid #E4DDD3;
+}
+
+.person-work-pill {
+  background: #F0F4F8;
+  color: #384A62;
+  border: 1px solid #D8E2EC;
+}
+
+.person-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--home-card-border, #E6E0D7);
+}
+
+.person-compare-action {
+  min-height: 44px;
+}
+
+/* =============================================================================
+   2. ჩემ შესახებ — About Me
+   ============================================================================= */
+.person-bio-quote {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--home-text-primary, #222630);
+  font-style: italic;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1.15rem;
+  background: #FFFBF7;
+  border-left: 3px solid #FF7A2F;
+  border-radius: 0 10px 10px 0;
+}
+
+.person-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.person-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: #FAF8F5;
+  border: 1px solid #EFEAE3;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.person-detail-label {
+  font-size: 0.75rem;
+  color: var(--home-text-secondary, #5A626F);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.person-detail-value {
+  font-size: 0.95rem;
+  color: var(--home-text-primary, #222630);
+  font-weight: 700;
+}
+
+/* =============================================================================
+   3. ჩემი ინტერესები — My Interests
+   ============================================================================= */
+.person-common-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #EAF4EA;
+  color: #2D6A2E;
+  border: 1px solid #C2E2C2;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+}
+
+.person-interests-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.person-interest-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.825rem;
+  font-weight: 550;
+  background: #F4EFEB;
+  color: #4C525E;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.person-interest-chip.is-common {
+  background: #EAF5EA;
+  color: #225C23;
+  border-color: #C8E6C8;
+  font-weight: 700;
+}
+
+.person-sparkle {
+  color: #2D6A2E;
+  margin-right: 0.25rem;
+}
+
+/* =============================================================================
+   4. ჩვენი კავშირი — Compatibility / First Sight
+   ============================================================================= */
+.person-compatibility-card {
+  background: linear-gradient(175deg, #FFFFFF 0%, #FFFBF7 100%);
+  border-color: #FED7AA;
+}
+
+.person-compat-score-pill {
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #FFF1E6;
+  color: #C95618;
+  border: 1px solid #FFD0B2;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.person-compat-score-pill strong {
+  font-size: 1.15rem;
+  margin-left: 0.3rem;
+}
+
+.person-compat-hook {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--home-text-primary, #222630);
+  margin: 0.75rem 0 1.25rem;
+  padding: 0.85rem 1.15rem;
+  background: #FFFFFF;
+  border-left: 3px solid #FF7A2F;
+  border-radius: 0 10px 10px 0;
+  border: 1px solid #EFEAE3;
+}
+
+.person-compat-status {
+  font-size: 0.9rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0.75rem 0 1.25rem;
+}
+
+.person-retry-btn {
+  background: none;
+  border: none;
+  color: var(--home-brand-orange, #FF7A2F);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.person-compat-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #F0EAE1;
+}
+
+.person-compat-note {
+  font-size: 0.825rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0;
+  max-width: 44ch;
+  line-height: 1.5;
+}
+
+/* =============================================================================
+   5. ასტროლოგიური კონტექსტი — Astrological Context
+   ============================================================================= */
+.person-astro-subtitle {
+  font-size: 0.85rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: -0.5rem 0 1.25rem;
+  line-height: 1.45;
+}
+
+.person-astro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.person-astro-item {
+  background: #FAF8F5;
+  border: 1px solid #EFEAE3;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.person-astro-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--home-text-secondary, #5A626F);
+  text-transform: uppercase;
+}
+
+.person-astro-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--home-text-primary, #222630);
+}
+
+.person-astro-privacy-notice {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #70757E;
+  padding: 0.75rem 1rem;
+  background: #F5F7FA;
+  border-radius: 10px;
+  border: 1px solid #E2E6EC;
+}
+
+/* Mobile responsive bar */
+@media (max-width: 640px) {
+  .person-profile-container {
+    padding: 1rem 0.75rem 5rem;
+  }
+  .person-card {
+    padding: 1.25rem 1rem;
+  }
+  .person-main-photo-stage {
+    height: 360px;
+  }
+  .person-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .person-hero-actions > * {
+    width: 100%;
+    text-align: center;
+  }
+  .person-compat-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .person-compat-footer a {
+    width: 100%;
+    text-align: center;
+  }
+}

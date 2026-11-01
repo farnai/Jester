@@ -39,6 +39,7 @@ class ProfileResponse(ProfileBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
+    age: int | None = None
     created_at: datetime
     updated_at: datetime
 

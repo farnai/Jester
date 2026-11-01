@@ -413,6 +413,12 @@ async def test_discovery_presence_fallback_order(db_conn, clean_db):
     seed_user_birth_data(db_conn, c1, birth_date="1994-09-18", birth_time="17:30:00")
     # c2: Unknown birth time -> Taurus Sun, Ascendant=None
     seed_user_birth_data(db_conn, c2, birth_date="1990-05-10", birth_time=None, precision="unknown")
+    with db_conn.cursor() as cur:
+        set_auth_context(cur, None, "admin")
+        cur.execute(
+            "INSERT INTO public.birth_data (user_id, birth_date, birth_time_precision, birth_timezone) VALUES (%s, '1990-01-01', 'unknown', 'UTC') ON CONFLICT (user_id) DO NOTHING;",
+            (c3,),
+        )
 
     token_v = generate_test_jwt(user_id=viewer, email=em_v)
 

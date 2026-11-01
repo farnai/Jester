@@ -70,7 +70,16 @@ async def get_my_profile(
     Returns 404 if profile has not been initialized.
     """
     with db.cursor() as cur:
-        cur.execute("SELECT * FROM public.profiles WHERE id = %s;", (current_user.id,))
+        cur.execute(
+            """
+            SELECT p.*,
+                   extract(year from age(current_date, bd.birth_date))::int AS age
+            FROM public.profiles p
+            LEFT JOIN public.birth_data bd ON bd.user_id = p.id
+            WHERE p.id = %s;
+            """,
+            (current_user.id,),
+        )
         row = cur.fetchone()
         if not row:
             raise PrivacySafeNotFoundException("Profile not found")
@@ -283,7 +292,13 @@ async def get_profile_by_id(
             raise PrivacySafeNotFoundException("Profile not found")
 
         cur.execute(
-            "SELECT * FROM public.profiles WHERE id = %s AND (id = %s OR is_discoverable = true);",
+            """
+            SELECT p.*,
+                   extract(year from age(current_date, bd.birth_date))::int AS age
+            FROM public.profiles p
+            LEFT JOIN public.birth_data bd ON bd.user_id = p.id
+            WHERE p.id = %s AND (p.id = %s OR p.is_discoverable = true);
+            """,
             (profile_id, current_user.id),
         )
         row = cur.fetchone()
