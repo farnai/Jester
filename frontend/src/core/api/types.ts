@@ -308,8 +308,86 @@ export interface DailyEnergyResponse {
   primary_transit?: ActiveTransitSignal | null;
   supporting_transits?: ActiveTransitSignal[];
   detection_mode?: string;
+  explanation?: string;
   do?: string[] | string;
   dont?: string[] | string;
+}
+
+export interface SignificantPeriodModel {
+  peak_date_iso: string;
+  day_name_ka: string;
+  transit_label_ka: string;
+  aspect_type: string;
+  orb_diff: number;
+  aspect_strength: number;
+  significance_description_ka: string;
+}
+
+export interface WeeklyEnergyPreview {
+  archetype_id: string;
+  archetype_label: string;
+  teaser: string;
+}
+
+export interface WeeklyEnergyInterpretation {
+  archetype: string;
+  label: string;
+  quote: string;
+  theme: string;
+  reflection: string;
+  focus: string;
+}
+
+export interface ActiveWeeklyTransitSignal {
+  transit_planet: string;
+  natal_point: string;
+  aspect_type: string;
+  min_orb_diff: number;
+  max_orb: number;
+  aspect_strength: number;
+  peak_datetime_iso: string;
+  peak_day_ka: string;
+  duration_days: number;
+  duration_factor: number;
+  transit_retrograde: boolean;
+  archetype_id: string;
+  ranking_score?: number;
+  context_label_ka: string;
+}
+
+export interface WeeklyEnergyBasis {
+  primary_transit?: ActiveWeeklyTransitSignal | null;
+  supporting_transits?: ActiveWeeklyTransitSignal[];
+  detection_mode?: string;
+  epistemic_astronomy: string;
+  epistemic_interpretation: string;
+}
+
+export interface WeeklyEnergyResponse {
+  period: string;
+  iso_year: number;
+  iso_week: number;
+  week_start: string;
+  week_end: string;
+  is_unlocked: boolean;
+  star_cost: number | null;
+  wallet_available: boolean;
+  notice: string;
+  has_birth_data: boolean;
+  preview: WeeklyEnergyPreview;
+  interpretation: WeeklyEnergyInterpretation | null;
+  significant_periods: SignificantPeriodModel[];
+  astrological_basis: WeeklyEnergyBasis | null;
+}
+
+export interface WeeklyEnergyUnlockResponse {
+  success: boolean;
+  already_unlocked: boolean;
+  iso_year: number;
+  iso_week: number;
+  star_cost: number | null;
+  wallet_available: boolean;
+  message: string;
 }
 
 export interface NatalResolveRequest {

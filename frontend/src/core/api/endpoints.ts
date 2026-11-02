@@ -30,6 +30,8 @@ import {
   PersonInterests,
   DiscoveryPageResponse,
   PersonalCatalogResponse,
+  WeeklyEnergyResponse,
+  WeeklyEnergyUnlockResponse,
 } from "./types";
 
 export const API = {
@@ -262,6 +264,18 @@ export const API = {
       const params = new URLSearchParams({ energy_type: energyType, locale });
       if (tone) params.append("tone", tone);
       return apiRequest<DailyEnergyResponse>(`/v1/interpretations/daily-energy?${params.toString()}`);
+    },
+    getWeeklyEnergy: (targetDate?: string, locale: string = "ka", devUnlock: boolean = false) => {
+      const params = new URLSearchParams({ locale });
+      if (targetDate) params.append("target_date", targetDate);
+      if (devUnlock) params.append("dev_unlock", "true");
+      return apiRequest<WeeklyEnergyResponse>(`/v1/interpretations/weekly-energy?${params.toString()}`);
+    },
+    unlockWeeklyEnergy: (targetDate?: string, timezone?: string) => {
+      return apiRequest<WeeklyEnergyUnlockResponse>("/v1/interpretations/weekly-energy/unlock", {
+        method: "POST",
+        body: JSON.stringify({ target_date: targetDate, timezone }),
+      });
     },
     getPersonalCatalog: (locale: string = "ka") =>
       apiRequest<PersonalCatalogResponse>(`/v1/interpretations/personal-catalog?locale=${locale}`),

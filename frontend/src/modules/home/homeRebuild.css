@@ -1227,3 +1227,272 @@
   margin: 0 0 1rem;
 }
 
+/* =============================================================================
+   WEEKLY ENERGY TABS, LOCKED PREVIEW & 3-POINT BREAKDOWN
+   ============================================================================= */
+
+.home-energy-tabs-nav {
+  display: flex;
+  gap: 0.35rem;
+  background: #F4F1EC;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.25rem;
+  border: 1px solid #EAE4DC;
+}
+
+.home-energy-tab-btn {
+  flex: 1;
+  min-height: 42px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--home-text-secondary, #5A626F);
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all 0.15s ease-in-out;
+  padding: 0.5rem 0.75rem;
+  outline-offset: 2px;
+}
+
+.home-energy-tab-btn:hover {
+  color: var(--home-text-primary, #222630);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.home-energy-tab-btn:focus-visible {
+  outline: 2px solid #FF7A2F;
+}
+
+.home-energy-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--home-text-primary, #222630);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.home-tab-star-badge {
+  color: #E07000;
+  font-size: 0.875rem;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.home-star-cost-badge {
+  background: #FEF3C7;
+  color: #92400E;
+  font-weight: 700;
+  border: 1px solid #FDE68A;
+}
+
+/* Locked Weekly Preview */
+.home-weekly-locked-card {
+  background: #FAF8F5;
+  border: 1px dashed #DCCFBF;
+  border-radius: 12px;
+  padding: 1.35rem;
+  margin-top: 0.5rem;
+}
+
+.home-weekly-locked-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.home-weekly-lock-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.home-weekly-teaser-quote {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--home-text-primary, #222630);
+  font-style: italic;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #E07000;
+  background: #FFFFFF;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.home-weekly-status-notice {
+  background: #FFF9F2;
+  border: 1px solid #FFE4C7;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-notice-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #B45309;
+  margin-bottom: 0.25rem;
+  display: inline-block;
+}
+
+.home-notice-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #78350F;
+  margin: 0;
+}
+
+.home-weekly-locked-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-btn-disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
+
+.home-dev-unlock-btn {
+  font-size: 0.825rem;
+  padding: 0.45rem 0.85rem;
+  color: #4B5563;
+  border-color: #D1D5DB;
+  background: #FFFFFF;
+}
+
+.home-dev-unlock-btn:hover {
+  background: #F3F4F6;
+  border-color: #9CA3AF;
+}
+
+/* Unlocked 3-Point Breakdown */
+.home-weekly-points-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+}
+
+.home-weekly-point-card {
+  background: #FAF8F5;
+  border: 1px solid #ECE7E0;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: transform 0.15s ease;
+}
+
+.home-point-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.home-point-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #FF7A2F;
+  background: #FFF0E6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.home-point-title {
+  font-size: 0.925rem;
+  color: var(--home-text-primary, #222630);
+  font-weight: 700;
+}
+
+.home-point-text {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0;
+}
+
+/* Significant Periods / Peak Days */
+.home-weekly-periods-block {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--home-card-border, #E6E0D7);
+}
+
+.home-periods-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--home-text-secondary, #5A626F);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.85rem;
+}
+
+.home-periods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.home-period-item {
+  background: #FFFFFF;
+  border: 1px solid #EAE5DE;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.home-period-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.home-period-day-badge {
+  background: #F3E8FF;
+  color: #6B21A8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.home-period-transit {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--home-text-primary, #222630);
+}
+
+.home-period-desc {
+  font-size: 0.85rem;
+  color: var(--home-text-secondary, #5A626F);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.home-tab-loading {
+  padding: 1.5rem 0;
+}
+
+.home-error-inline {
+  padding: 1rem;
+  background: #FEF2F2;
+  border: 1px solid #FEE2E2;
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.home-error-inline p {
+  color: #B91C1C;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+}
+

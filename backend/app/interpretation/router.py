@@ -11,7 +11,18 @@ from pydantic import BaseModel, Field
 import psycopg
 
 from backend.app.astrology.natal import recalculate_user_astrology
-from backend.app.astrology.transits import compute_daily_transits, get_daily_guidance
+from backend.app.astrology.transits import compute_daily_transits, compute_weekly_transits, get_daily_guidance
+from backend.app.config import get_settings
+from backend.app.interpretation.weekly_energy import (
+    EPISTEMIC_ASTRONOMY_NOTICE_KA,
+    EPISTEMIC_INTERPRETATION_NOTICE_KA,
+    TEMPORARY_WALLET_NOTICE_KA,
+    WEEKLY_ENERGY_STAR_COST,
+    get_weekly_energy_content,
+    is_weekly_energy_unlocked,
+    record_weekly_energy_unlock,
+    _WEEKLY_CACHE,
+)
 from backend.app.auth.dependencies import get_current_user, get_optional_user, require_copywriter_or_admin
 from backend.app.auth.models import AuthenticatedUser
 from backend.app.compatibility.engine import CompatibilityEngine
@@ -262,6 +273,22 @@ DAILY_ENERGY_ARCHETYPES = [
     {"id": "neutral", "label_ka": "სტაბილური ფონი", "transit": "none"},
 ]
 
+DAILY_ENERGY_EXPLANATIONS_KA: dict[str, str] = {
+    "confidence": "დღევანდელი ენერგია მოქმედებისა და ინიციატივის ზონას აძლიერებს. ნუ დაელოდები იდეალურ მომენტს — გადადგი პირველი ნაბიჯი, ოღონდ სხვების მოსმენასაც დაუთმე სივრცე.",
+    "clarity": "მშრალი ლოგიკა და სტრატეგიული მოთმინება დღის მთავარი რესურსია. გადახედე შეთანხმებებს და გაასუფთავე სამუშაო მაგიდა — მკაფიო გეგმა ზედმეტ შფოთვას გააქრობს.",
+    "vitality": "ფიზიკური და მენტალური ენერგია პიკზეა. მიმართე ეს ძალა კონკრეტულ შედეგზე, რათა იმპულსი უაზრო კამათში არ დაიხარჯოს.",
+    "creativity": "ჩვეული შაბლონები დღეს არ მუშაობს. ენდე ინტუიციას და გააკეთე ის, რაც რუტინაში არ ჯდება — ახალი პერსპექტივა მოულოდნელ გადახვევაშია.",
+    "communication": "პირდაპირი დიალოგისა და მოლაპარაკებების დროა. თქვი სათქმელი მკაფიოდ და ლაკონიურად, ზედმეტი გაპრანჭვის გარეშე.",
+    "social": "ურთიერთობები და სოციალური კავშირები დღეს ბუნებრივად ლაგდება. გაატარე დრო მათთან, ვისთანაც ბუნებრივი ხარ.",
+    "introspection": "დროებითი შენელება და შინაგანი სივრცის მოწესრიგება. შეამცირე სოციალური ხმაური და მიეცი თავს ფიქრების დალაგების უფლება.",
+    "curiosity": "გონება ღიაა ახალი ცოდნისა და ექსპერიმენტებისთვის. დასვი კითხვები და გამოიკვლიე დეტალები, რომლებიც აქამდე გამოგრჩა.",
+    "discipline": "სისტემური შრომა და დაწყებული საქმეების ბოლომდე მიყვანა. დღეს შედეგს მოთმინება და თანმიმდევრულობა განსაზღვრავს.",
+    "receptivity": "ემოციური მგრძნობელობა მომატებულია. ნუ აიღებ საკუთარ თავზე სხვების განწყობას — შეინარჩუნე პირადი საზღვრები.",
+    "restlessness": "მოუსვენრობა და ცვლილებების სურვილი. მიეცი ენერგიას ფიზიკური გამოსავალი და თავი შეიკავე ნაჩქარევი გადაწყვეტილებებისგან.",
+    "focus": "ყურადღების გაფანტვის მაღალი ალბათობა. გამორთე შეტყობინებები, აირჩიე ერთი პრიორიტეტი და ბოლომდე მიიყვანე.",
+    "neutral": "ფონი მშვიდი და სტაბილურია. საუკეთესო დროა ჩვეულ ტემპში სამუშაოდ ყოველგვარი ზედმეტი დრამის გარეშე.",
+}
+
 DEFAULT_DEMO_USER_ID = uuid.UUID("26098ac8-f8f0-4cd3-9bbb-78dc8467ba07")
 compatibility_engine_instance = CompatibilityEngine()
 
@@ -442,8 +469,242 @@ async def get_daily_energy_interpretation(
         "primary_transit": primary_transit,
         "supporting_transits": supporting_transits,
         "detection_mode": detection_mode,
+        "explanation": DAILY_ENERGY_EXPLANATIONS_KA.get(
+            effective_energy_type,
+            "ეს გზავნილი ასახავს შენი მიმდინარე კოსმიური ამინდის ხასიათს. გამოიყენე ეს ენერგია გაცნობიერებულად — ნუ შეებრძოლები იმას, რაც დღეს ისედაც ზედაპირზე ტივტივებს.",
+        ),
         "do": guidance["do"],
         "dont": guidance["dont"],
+    }
+
+
+class WeeklyEnergyUnlockRequest(BaseModel):
+    target_date: str | None = None
+    timezone: str | None = None
+
+
+@router.get("/interpretations/weekly-energy", response_model=dict[str, Any])
+async def get_weekly_energy_interpretation(
+    target_date: str | None = None,
+    locale: str = "ka",
+    dev_unlock: bool = Query(False, description="Developer test unlock bypass"),
+    current_user: AuthenticatedUser | None = Depends(get_optional_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> dict[str, Any]:
+    """
+    Returns the resolved Weekly Energy interpretation for the ISO calendar week in Georgian.
+    Uses real Swiss Ephemeris 7-day transit calculations against the user's natal placements,
+    taking planetary velocities, peak detection, and duration factor into account.
+
+    Star-Based Unlock Policy:
+    If locked: returns preview teaser, period badge, star cost (5), and temporary wallet status notice.
+    The full 3-point interpretation, significant peak periods, and astronomical breakdown are returned
+    ONLY when unlocked.
+    """
+    user_tz_str = "UTC"
+    calc_date: date
+    has_birth_data = False
+    natal_placements: dict[str, float | None] | None = None
+    precision = "unknown"
+    data_ver = 1
+
+    if current_user:
+        with db.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 
+                    b.birth_timezone,
+                    b.birth_time_precision,
+                    b.data_version,
+                    p.sun_longitude,
+                    p.moon_longitude,
+                    p.mercury_longitude,
+                    p.venus_longitude,
+                    p.mars_longitude,
+                    p.jupiter_longitude,
+                    p.saturn_longitude,
+                    p.uranus_longitude,
+                    p.neptune_longitude,
+                    p.pluto_longitude,
+                    p.ascendant_longitude,
+                    s.sun_sign
+                FROM public.birth_data b
+                LEFT JOIN public.astro_private p ON b.user_id = p.user_id
+                LEFT JOIN public.astro_safe_profile s ON b.user_id = s.user_id
+                WHERE b.user_id = %s;
+                """,
+                (current_user.id,),
+            )
+            row = cur.fetchone()
+            if row:
+                user_tz_str = row["birth_timezone"] or "UTC"
+                precision = row.get("birth_time_precision") or "unknown"
+                data_ver = row["data_version"] or 1
+                if row["sun_longitude"] is not None:
+                    has_birth_data = True
+                    natal_placements = {
+                        "sun": row["sun_longitude"],
+                        "moon": row["moon_longitude"],
+                        "mercury": row["mercury_longitude"],
+                        "venus": row["venus_longitude"],
+                        "mars": row["mars_longitude"],
+                        "jupiter": row["jupiter_longitude"],
+                        "saturn": row["saturn_longitude"],
+                        "uranus": row["uranus_longitude"],
+                        "neptune": row["neptune_longitude"],
+                        "pluto": row["pluto_longitude"],
+                        "ascendant": row["ascendant_longitude"],
+                    }
+
+    if target_date:
+        try:
+            calc_date = date.fromisoformat(target_date)
+        except ValueError:
+            calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+    else:
+        try:
+            calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+        except Exception:
+            calc_date = datetime.now(timezone.utc).date()
+
+    iso_year, iso_week, _ = calc_date.isocalendar()
+
+    settings = get_settings()
+    effective_dev_unlock = bool(dev_unlock) if not settings.is_production else False
+
+    # Determine server-side unlock status
+    is_unlocked = effective_dev_unlock
+    if current_user and not is_unlocked:
+        is_unlocked = is_weekly_energy_unlocked(current_user.id, iso_year, iso_week)
+
+    # Check Cache
+    cache_key = f"{current_user.id if current_user else 'guest'}:{iso_year}:{iso_week}:{data_ver}:{user_tz_str}"
+    if cache_key in _WEEKLY_CACHE:
+        weekly_result = _WEEKLY_CACHE[cache_key]
+    else:
+        if natal_placements:
+            weekly_result = compute_weekly_transits(
+                natal_placements=natal_placements,
+                target_date=calc_date,
+                user_timezone=user_tz_str,
+                birth_time_precision=precision,
+            )
+        else:
+            # Fallback for users without calculated natal data
+            start_d = calc_date - (calc_date.weekday() * date.resolution)
+            end_d = start_d + (6 * date.resolution)
+            from backend.app.astrology.transits import format_georgian_week_period, WeeklyTransitsResult
+            weekly_result = WeeklyTransitsResult(
+                iso_year=iso_year,
+                iso_week=iso_week,
+                start_date=start_d,
+                end_date=end_d,
+                period_ka=format_georgian_week_period(start_d, end_d),
+                dominant_transit=None,
+                supporting_transits=[],
+                significant_periods=[],
+                active_archetype="confidence",
+            )
+        _WEEKLY_CACHE[cache_key] = weekly_result
+
+    content = get_weekly_energy_content(weekly_result.active_archetype)
+
+    preview_payload = {
+        "archetype_id": weekly_result.active_archetype,
+        "archetype_label": content["label_ka"],
+        "teaser": content["preview_teaser_ka"],
+    }
+
+    if is_unlocked:
+        interpretation_payload = {
+            "archetype": weekly_result.active_archetype,
+            "label": content["label_ka"],
+            "quote": content["quote_ka"],
+            "theme": content["theme_ka"],
+            "reflection": content["reflection_ka"],
+            "focus": content["focus_ka"],
+        }
+        significant_periods_payload = [p.to_dict() for p in weekly_result.significant_periods]
+        basis_payload = {
+            "primary_transit": weekly_result.dominant_transit.to_dict() if weekly_result.dominant_transit else None,
+            "supporting_transits": [t.to_dict() for t in weekly_result.supporting_transits],
+            "detection_mode": "real_transit" if weekly_result.dominant_transit else "neutral_baseline",
+            "epistemic_astronomy": EPISTEMIC_ASTRONOMY_NOTICE_KA,
+            "epistemic_interpretation": EPISTEMIC_INTERPRETATION_NOTICE_KA,
+        }
+    else:
+        # Security invariant: zero paid content leaked when locked
+        interpretation_payload = None
+        significant_periods_payload = []
+        basis_payload = None
+
+    return {
+        "period": weekly_result.period_ka,
+        "iso_year": weekly_result.iso_year,
+        "iso_week": weekly_result.iso_week,
+        "week_start": weekly_result.start_date.isoformat(),
+        "week_end": weekly_result.end_date.isoformat(),
+        "is_unlocked": is_unlocked,
+        "star_cost": WEEKLY_ENERGY_STAR_COST,
+        "wallet_available": False,
+        "notice": TEMPORARY_WALLET_NOTICE_KA,
+        "has_birth_data": has_birth_data,
+        "preview": preview_payload,
+        "interpretation": interpretation_payload,
+        "significant_periods": significant_periods_payload,
+        "astrological_basis": basis_payload,
+    }
+
+
+@router.post("/interpretations/weekly-energy/unlock", response_model=dict[str, Any])
+async def unlock_weekly_energy(
+    payload: WeeklyEnergyUnlockRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> dict[str, Any]:
+    """
+    Unlocks Weekly Energy for the current ISO calendar week.
+    Idempotent: unlocking an already unlocked week does not duplicate actions.
+    Security policy: In production, real purchases cannot proceed without an approved wallet/ledger.
+    In development/testing, enables test session entitlement.
+    """
+    settings = get_settings()
+    if settings.is_production:
+        raise JesterAPIException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            error_code="monetization_pending_approval",
+            message="ვარსკვლავების სისტემა დამტკიცების პროცესშია. რეალური შესყიდვა დროებით შეზღუდულია.",
+        )
+    user_tz_str = payload.timezone or "UTC"
+    if current_user:
+        with db.cursor() as cur:
+            cur.execute("SELECT birth_timezone FROM public.birth_data WHERE user_id = %s;", (current_user.id,))
+            r = cur.fetchone()
+            if r and r["birth_timezone"]:
+                user_tz_str = r["birth_timezone"]
+
+    if payload.target_date:
+        try:
+            calc_date = date.fromisoformat(payload.target_date)
+        except ValueError:
+            calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+    else:
+        calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
+
+    iso_year, iso_week, _ = calc_date.isocalendar()
+
+    already_unlocked = is_weekly_energy_unlocked(current_user.id, iso_year, iso_week)
+    if not already_unlocked:
+        record_weekly_energy_unlock(current_user.id, iso_year, iso_week)
+
+    return {
+        "success": True,
+        "already_unlocked": already_unlocked,
+        "iso_year": iso_year,
+        "iso_week": iso_week,
+        "star_cost": WEEKLY_ENERGY_STAR_COST,
+        "wallet_available": False,
+        "message": "კვირის ენერგია წარმატებით განბლოკილია მიმდინარე კალენდარული კვირისთვის.",
     }
 
 
