@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { JesterLogo } from '../../shared/ui/JesterLogo';
 import { HomeIcon, HomeAvatar } from './HomeElements';
+import { useWallet } from '../wallet/useWallet';
+import { WalletModal } from '../wallet/WalletModal';
 import './home.css';
 
 const navigation = [
@@ -28,9 +30,11 @@ export function HomeNavigation({
   userEmail,
 }: HomeNavigationProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [walletOpen, setWalletOpen] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [failed, setFailed] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { balance, isLoading: walletLoading } = useWallet();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -69,6 +73,20 @@ export function HomeNavigation({
         </nav>
 
         <div className="home-utilities" ref={menuRef}>
+          {/* Stars Wallet Pill */}
+          <button
+            type="button"
+            className="home-stars-pill"
+            onClick={() => setWalletOpen(true)}
+            title="ვარსკვლავების საფულე"
+            aria-label={`ვარსკვლავების ბალანსი: ${balance}`}
+          >
+            <span className="home-stars-icon" aria-hidden="true">✦</span>
+            <span className="home-stars-balance">
+              {walletLoading ? '…' : balance.toLocaleString()}
+            </span>
+          </button>
+
           <Link
             to="/notifications"
             className="home-icon-button"
@@ -128,6 +146,19 @@ export function HomeNavigation({
                     <span>შეტყობინებები</span>
                     {unreadCount > 0 && <span className="home-menu-badge">{unreadCount}</span>}
                   </Link>
+                  <button
+                    type="button"
+                    className="home-nav-link"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 0.8rem', borderRadius: '8px' }}
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setWalletOpen(true);
+                    }}
+                  >
+                    <span style={{ color: '#D97706', fontSize: '1rem' }}>✦</span>
+                    <span style={{ fontWeight: 600, color: '#222630' }}>საფულე ({balance.toLocaleString()})</span>
+                  </button>
                 </div>
 
                 {import.meta.env.DEV && (
@@ -172,6 +203,7 @@ export function HomeNavigation({
           </div>
         </div>
       </div>
+      <WalletModal isOpen={walletOpen} onClose={() => setWalletOpen(false)} />
     </header>
   );
 }

@@ -11,6 +11,7 @@ from psycopg.rows import dict_row
 from backend.app.astrology.aspects import detect_aspect, AspectType
 from backend.app.astrology.calculator import longitude_to_sign
 from backend.app.interpretation.library import content_library
+from backend.app.wallet.service import get_user_entitlements_map, PRICING_CONFIG
 
 GEORGIAN_SIGNS = {
     "aries": "ვერძი", "taurus": "კურო", "gemini": "ტყუპები", "cancer": "კირჩხიბი",
@@ -479,6 +480,30 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
         "items": layer_7_items
     })
 
+    user_layer_entitlements = get_user_entitlements_map(user_id, db).get("personal_layer", set())
+    layer_cost = PRICING_CONFIG.get("personal_layer", 5)
+
+    sanitized_layers = []
+    for l in layers:
+        lid = l["layer_id"]
+        is_unlocked = lid in user_layer_entitlements
+        l["is_locked"] = not is_unlocked
+        l["star_cost"] = layer_cost
+
+        if not is_unlocked:
+            # Mask paid text in locked layers to prevent leak over the wire
+            sanitized_items = []
+            for item in l.get("items", []):
+                item_copy = dict(item)
+                item_copy["text"] = None
+                item_copy["is_locked"] = True
+                sanitized_items.append(item_copy)
+            l["items"] = sanitized_items
+        else:
+            for item in l.get("items", []):
+                item["is_locked"] = False
+        sanitized_layers.append(l)
+
     return {
         "has_data": True,
         "data_quality": {
@@ -487,5 +512,5 @@ def get_personal_catalog(user_id: uuid.UUID, db: psycopg.Connection, locale: str
             "precision": precision,
             "missing_fields": [] if has_exact_time else ["birth_time"]
         },
-        "layers": layers
+        "layers": sanitized_layers
     }

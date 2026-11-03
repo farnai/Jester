@@ -13,6 +13,7 @@ from backend.app.notifications.router import router as notifications_router
 from backend.app.interpretation.router import router as interpretation_router
 from backend.app.geo.router import router as geo_router
 from backend.app.interests.router import router as interests_router
+from backend.app.wallet.router import router as wallet_router
 
 api_router = APIRouter()
 
@@ -34,5 +35,6 @@ api_v1_router.include_router(notifications_router)
 api_v1_router.include_router(interpretation_router)
 api_v1_router.include_router(geo_router)
 api_v1_router.include_router(interests_router)
+api_v1_router.include_router(wallet_router)
 
 api_router.include_router(api_v1_router)

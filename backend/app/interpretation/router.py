@@ -32,6 +32,7 @@ from backend.app.core.errors import ForbiddenException, JesterAPIException, Priv
 from backend.app.interpretation.engine import interpretation_engine
 from backend.app.interpretation.library import content_library
 from backend.app.interpretation.personal_catalog import get_personal_catalog
+from backend.app.wallet.service import has_entitlement, spend_stars_and_entitle, PRICING_CONFIG
 from backend.app.interpretation.models import (
     ContentAsset,
     ContentAssetCreatePayload,
@@ -487,7 +488,6 @@ class WeeklyEnergyUnlockRequest(BaseModel):
 async def get_weekly_energy_interpretation(
     target_date: str | None = None,
     locale: str = "ka",
-    dev_unlock: bool = Query(False, description="Developer test unlock bypass"),
     current_user: AuthenticatedUser | None = Depends(get_optional_user),
     db: psycopg.Connection = Depends(get_db),
 ) -> dict[str, Any]:
@@ -497,9 +497,9 @@ async def get_weekly_energy_interpretation(
     taking planetary velocities, peak detection, and duration factor into account.
 
     Star-Based Unlock Policy:
-    If locked: returns preview teaser, period badge, star cost (5), and temporary wallet status notice.
+    If locked: returns preview teaser, period badge, star cost (5), and wallet status notice.
     The full 3-point interpretation, significant peak periods, and astronomical breakdown are returned
-    ONLY when unlocked.
+    ONLY when legitimately unlocked via Entitlements. No HTTP query parameter bypass is permitted.
     """
     user_tz_str = "UTC"
     calc_date: date
@@ -568,14 +568,12 @@ async def get_weekly_energy_interpretation(
             calc_date = datetime.now(timezone.utc).date()
 
     iso_year, iso_week, _ = calc_date.isocalendar()
+    item_key = f"{iso_year}-W{iso_week:02d}"
 
-    settings = get_settings()
-    effective_dev_unlock = bool(dev_unlock) if not settings.is_production else False
-
-    # Determine server-side unlock status
-    is_unlocked = effective_dev_unlock
-    if current_user and not is_unlocked:
-        is_unlocked = is_weekly_energy_unlocked(current_user.id, iso_year, iso_week)
+    # Determine server-side unlock status strictly via database entitlements
+    is_unlocked = False
+    if current_user:
+        is_unlocked = has_entitlement(current_user.id, "weekly_energy", item_key, db)
 
     # Check Cache
     cache_key = f"{current_user.id if current_user else 'guest'}:{iso_year}:{iso_week}:{data_ver}:{user_tz_str}"
@@ -645,15 +643,19 @@ async def get_weekly_energy_interpretation(
         "week_start": weekly_result.start_date.isoformat(),
         "week_end": weekly_result.end_date.isoformat(),
         "is_unlocked": is_unlocked,
-        "star_cost": WEEKLY_ENERGY_STAR_COST,
-        "wallet_available": False,
-        "notice": TEMPORARY_WALLET_NOTICE_KA,
+        "star_cost": PRICING_CONFIG["weekly_energy"],
+        "wallet_available": True,
+        "notice": "კვირის სრული ენერგია იხსნება 5 ვარსკვლავით.",
         "has_birth_data": has_birth_data,
         "preview": preview_payload,
         "interpretation": interpretation_payload,
         "significant_periods": significant_periods_payload,
         "astrological_basis": basis_payload,
     }
+
+
+class PersonalLayerUnlockRequest(BaseModel):
+    layer_id: str = Field(description="Layer identifier (e.g. 'layer_2')")
 
 
 @router.post("/interpretations/weekly-energy/unlock", response_model=dict[str, Any])
@@ -663,18 +665,9 @@ async def unlock_weekly_energy(
     db: psycopg.Connection = Depends(get_db),
 ) -> dict[str, Any]:
     """
-    Unlocks Weekly Energy for the current ISO calendar week.
-    Idempotent: unlocking an already unlocked week does not duplicate actions.
-    Security policy: In production, real purchases cannot proceed without an approved wallet/ledger.
-    In development/testing, enables test session entitlement.
+    Unlocks Weekly Energy for the current ISO calendar week using 5 Stars.
+    Enforces atomic wallet check, row-locking, and idempotency.
     """
-    settings = get_settings()
-    if settings.is_production:
-        raise JesterAPIException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            error_code="monetization_pending_approval",
-            message="ვარსკვლავების სისტემა დამტკიცების პროცესშია. რეალური შესყიდვა დროებით შეზღუდულია.",
-        )
     user_tz_str = payload.timezone or "UTC"
     if current_user:
         with db.cursor() as cur:
@@ -692,19 +685,51 @@ async def unlock_weekly_energy(
         calc_date = datetime.now(ZoneInfo(user_tz_str)).date()
 
     iso_year, iso_week, _ = calc_date.isocalendar()
+    item_key = f"{iso_year}-W{iso_week:02d}"
 
-    already_unlocked = is_weekly_energy_unlocked(current_user.id, iso_year, iso_week)
-    if not already_unlocked:
-        record_weekly_energy_unlock(current_user.id, iso_year, iso_week)
+    unlock_res = spend_stars_and_entitle(
+        user_id=current_user.id,
+        item_type="weekly_energy",
+        item_key=item_key,
+        db=db,
+    )
 
     return {
         "success": True,
-        "already_unlocked": already_unlocked,
+        "already_unlocked": unlock_res["already_unlocked"],
         "iso_year": iso_year,
         "iso_week": iso_week,
-        "star_cost": WEEKLY_ENERGY_STAR_COST,
-        "wallet_available": False,
-        "message": "კვირის ენერგია წარმატებით განბლოკილია მიმდინარე კალენდარული კვირისთვის.",
+        "star_cost": PRICING_CONFIG["weekly_energy"],
+        "balance_after": unlock_res["balance_after"],
+        "wallet_available": True,
+        "message": unlock_res["message"],
+    }
+
+
+@router.post("/interpretations/personal-catalog/unlock", response_model=dict[str, Any])
+async def unlock_personal_catalog_layer(
+    payload: PersonalLayerUnlockRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: psycopg.Connection = Depends(get_db),
+) -> dict[str, Any]:
+    """
+    Unlocks a specific personal catalog layer (5 Stars).
+    Permanent entitlement per layer per user.
+    """
+    unlock_res = spend_stars_and_entitle(
+        user_id=current_user.id,
+        item_type="personal_layer",
+        item_key=payload.layer_id,
+        db=db,
+    )
+    return {
+        "success": True,
+        "already_unlocked": unlock_res["already_unlocked"],
+        "layer_id": payload.layer_id,
+        "star_cost": PRICING_CONFIG["personal_layer"],
+        "balance_after": unlock_res["balance_after"],
+        "wallet_available": True,
+        "message": unlock_res["message"],
     }
 
 

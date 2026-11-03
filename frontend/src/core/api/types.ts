@@ -386,8 +386,61 @@ export interface WeeklyEnergyUnlockResponse {
   iso_year: number;
   iso_week: number;
   star_cost: number | null;
+  balance_after?: number;
   wallet_available: boolean;
   message: string;
+}
+
+export interface PersonalLayerUnlockResponse {
+  success: boolean;
+  already_unlocked: boolean;
+  layer_id: string;
+  star_cost: number;
+  balance_after: number;
+  wallet_available: boolean;
+  message: string;
+}
+
+export interface WalletResponse {
+  user_id: string;
+  balance: number;
+  total_earned: number;
+  total_spent: number;
+  updated_at: string;
+}
+
+export interface WalletTransactionItem {
+  id: string;
+  amount: number;
+  balance_after: number;
+  transaction_type: string;
+  reference_id: string | null;
+  description_ka: string;
+  created_at: string;
+  metadata?: Record<string, any>;
+}
+
+export interface TransactionsListResponse {
+  items: WalletTransactionItem[];
+  total: number;
+}
+
+export interface EntitlementItem {
+  id: string;
+  item_type: string;
+  item_key: string;
+  unlocked_at: string;
+  expires_at?: string | null;
+}
+
+export interface EntitlementsListResponse {
+  items: EntitlementItem[];
+}
+
+export interface PricingConfigResponse {
+  weekly_energy_stars: number;
+  personal_layer_stars: number;
+  free_features: string[];
 }
 
 export interface NatalResolveRequest {
@@ -440,7 +493,8 @@ export interface PersonalCatalogItem {
   sign?: string;
   label: string;
   sign_badge?: string;
-  text: string;
+  text?: string | null;
+  is_locked?: boolean;
   aspect?: string;
   orb?: number;
   body1?: string;

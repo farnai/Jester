@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../core/api/endpoints';
 import { useAuth } from '../../core/auth/useAuth';
 import type { DailyEnergyResponse } from '../../core/api/types';
@@ -22,18 +22,19 @@ export function HomeDailyEnergy({
   onRetry,
 }: HomeDailyEnergyProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly'>('daily');
   const [whyExpanded, setWhyExpanded] = useState(false);
   const [weeklyWhyExpanded, setWeeklyWhyExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [weeklyCopied, setWeeklyCopied] = useState(false);
-  const [devUnlock, setDevUnlock] = useState(false);
   const [isUnlocking, setIsUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState<string | null>(null);
 
   // Weekly Energy Query (fetched on demand or cached for the ISO calendar week)
   const weekly = useQuery({
-    queryKey: ['weekly-energy', user?.id, devUnlock],
-    queryFn: () => API.interpretations.getWeeklyEnergy(undefined, 'ka', devUnlock),
+    queryKey: ['weekly-energy', user?.id],
+    queryFn: () => API.interpretations.getWeeklyEnergy(undefined, 'ka'),
     enabled: activeTab === 'weekly',
     staleTime: 120_000,
   });
@@ -86,14 +87,20 @@ export function HomeDailyEnergy({
     }
   };
 
-  const handleUnlockSession = async () => {
+  const handleUnlockWeekly = async () => {
     setIsUnlocking(true);
+    setUnlockError(null);
     try {
       await API.interpretations.unlockWeeklyEnergy();
-      setDevUnlock(true);
-      await weekly.refetch();
-    } catch (err) {
-      console.error('Failed to unlock session:', err);
+      await Promise.all([
+        weekly.refetch(),
+        queryClient.invalidateQueries({ queryKey: ['wallet-me'] }),
+        queryClient.invalidateQueries({ queryKey: ['wallet-transactions'] }),
+      ]);
+    } catch (err: any) {
+      console.error('Failed to unlock weekly energy:', err);
+      const msg = err?.message || 'განბლოკვა ვერ მოხერხდა. გადაამოწმე ვარსკვლავების ბალანსი.';
+      setUnlockError(msg);
     } finally {
       setIsUnlocking(false);
     }
@@ -380,35 +387,30 @@ export function HomeDailyEnergy({
                       „{weeklyData.preview?.teaser || 'კვირის ასტრონომიული მოძრაობა განსაკუთრებულ ყურადღებას მოითხოვს.'}“
                     </blockquote>
 
-                    {/* Temporary Status Banner: In-app purchase & wallet pending founder approval */}
+                    {/* Status Banner */}
                     <div className="home-weekly-status-notice" role="status">
-                      <div className="home-notice-badge">✦ წინასწარი შეტყობინება</div>
+                      <div className="home-notice-badge">✦ ვარსკვლავებით განბლოკვა</div>
                       <p className="home-notice-text">
                         {weeklyData.notice ||
-                          'ვარსკვლავების სისტემა დამტკიცების პროცესშია. კვირის სრული ენერგია მალე გაიხსნება ვარსკვლავებით.'}
+                          'კვირის სრული ენერგია და 3-პუნქტიანი რეფლექსია იხსნება 5 ვარსკვლავით.'}
                       </p>
                     </div>
 
                     <div className="home-weekly-locked-actions">
                       <button
                         type="button"
-                        disabled
-                        className="home-btn home-btn-primary home-btn-disabled"
-                        title="ვარსკვლავების სისტემა დამტკიცების პროცესშია"
-                      >
-                        განბლოკვა (ვარსკვლავებით)
-                      </button>
-
-                      {/* Developer / QA Test Entitlement Bypass */}
-                      <button
-                        type="button"
-                        onClick={handleUnlockSession}
+                        onClick={handleUnlockWeekly}
                         disabled={isUnlocking}
-                        className="home-btn home-btn-outline home-dev-unlock-btn"
-                        title="ტესტირებისთვის კვირის ენერგიის გახსნა"
+                        className="home-btn home-btn-primary"
+                        title="კვირის ენერგიის განბლოკვა 5 ვარსკვლავით"
                       >
-                        {isUnlocking ? 'მოწმდება...' : 'ტესტირება: სესიის განბლოკვა ✦'}
+                        {isUnlocking ? 'იხსნება…' : `განბლოკვა (${weeklyData.star_cost ?? 5} ✦ ვარსკვლავი)`}
                       </button>
+                      {unlockError && (
+                        <p role="alert" className="home-unlock-error" style={{ color: '#B91C1C', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                          {unlockError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}

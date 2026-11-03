@@ -181,27 +181,45 @@ def test_significant_periods_detection():
 
 
 @pytest.mark.asyncio
-async def test_weekly_energy_api_locked_and_unlocked():
+async def test_weekly_energy_api_locked_and_unlocked(db_conn):
     """
     Tests GET /v1/interpretations/weekly-energy:
-    1. Default is locked: interpretation is null, preview is returned.
-    2. dev_unlock=true: interpretation and astronomical basis are returned.
+    1. Default is locked: interpretation is null, preview is returned, star_cost=5.
+    2. Attempting dev_unlock=true query parameter is strictly ignored (no public HTTP bypass).
+    3. Legitimate unlock: requires entitlement in database (unlocked via Stars or granted entitlement).
     """
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        # 1. Locked state
+        # 1. Locked state (guest / no entitlement)
         res_locked = await client.get("/v1/interpretations/weekly-energy")
         assert res_locked.status_code == 200
         data_locked = res_locked.json()
         assert data_locked["is_unlocked"] is False
-        assert data_locked["star_cost"] is None  # Pricing pending founder approval
-        assert data_locked["wallet_available"] is False
+        assert data_locked["star_cost"] == 5
+        assert data_locked["wallet_available"] is True
         assert data_locked["interpretation"] is None
         assert data_locked["preview"]["archetype_id"] is not None
         assert "ნოემბერი" in data_locked["period"] or len(data_locked["period"]) > 0
 
-        # 2. Dev unlocked state (in development/test)
-        res_unlocked = await client.get("/v1/interpretations/weekly-energy?dev_unlock=true")
+        # 2. dev_unlock=true query parameter MUST NOT bypass lock in any environment
+        res_attempt = await client.get("/v1/interpretations/weekly-energy?dev_unlock=true")
+        assert res_attempt.status_code == 200
+        data_attempt = res_attempt.json()
+        assert data_attempt["is_unlocked"] is False
+        assert data_attempt["interpretation"] is None
+
+        # 3. Legitimate entitlement unlock
+        test_uid = str(uuid.uuid4())
+        create_test_user(db_conn, test_uid, f"entitlement_test_{test_uid[:6]}@jester.app", "Entitled User")
+        from backend.app.wallet.service import grant_stars, spend_stars_and_entitle
+        grant_stars(uuid.UUID(test_uid), 100, "test_grant", "ტესტ ჩარიცხვა", db_conn)
+        spend_stars_and_entitle(uuid.UUID(test_uid), "weekly_energy", "2026-W45", db_conn)
+
+        token = generate_test_jwt(user_id=test_uid, email=f"entitlement_test_{test_uid[:6]}@jester.app")
+        res_unlocked = await client.get(
+            "/v1/interpretations/weekly-energy?target_date=2026-11-04",
+            headers={"Authorization": f"Bearer {token}"},
+        )
         assert res_unlocked.status_code == 200
         data_unlocked = res_unlocked.json()
         assert data_unlocked["is_unlocked"] is True
@@ -214,12 +232,12 @@ async def test_weekly_energy_api_locked_and_unlocked():
 
 
 @pytest.mark.asyncio
-async def test_production_security_invariants(monkeypatch):
+async def test_production_security_invariants(monkeypatch, db_conn):
     """
     Tests that in ENV=production:
     1. dev_unlock=true query parameter is strictly ignored (remains locked).
     2. Zero paid interpretation content leaks when locked.
-    3. POST /v1/interpretations/weekly-energy/unlock is rejected with 400 monetization_pending_approval.
+    3. POST /v1/interpretations/weekly-energy/unlock enforces real Stars wallet balance.
     """
     from backend.app.config import get_settings
     settings = get_settings()
@@ -236,15 +254,19 @@ async def test_production_security_invariants(monkeypatch):
         assert data["significant_periods"] == []
         assert data["astrological_basis"] is None
 
-        # 2. Attempt unlock in production with auth -> MUST return 400 monetization_pending_approval
-        user_id = uuid.UUID("26098ac8-f8f0-4cd3-9bbb-78dc8467ba07")
+        # 2. Attempt unlock without stars balance -> returns 400 insufficient_stars
+        test_uid = str(uuid.uuid4())
+        create_test_user(db_conn, test_uid, f"poor_prod_{test_uid[:6]}@jester.app", "Poor Prod User")
         from backend.app.auth.dependencies import get_current_user
         from backend.app.auth.models import AuthenticatedUser
-        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(id=user_id, email="test@jester.app", role="user")
+        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(id=uuid.UUID(test_uid), email=f"poor_prod_{test_uid[:6]}@jester.app", role="user")
         try:
-            unlock_res = await client.post("/v1/interpretations/weekly-energy/unlock", json={})
+            unlock_res = await client.post(
+                "/v1/interpretations/weekly-energy/unlock",
+                json={},
+            )
             assert unlock_res.status_code == 400
             err_body = unlock_res.json()
-            assert err_body["error"]["code"] == "monetization_pending_approval"
+            assert err_body["error"]["code"] == "insufficient_stars"
         finally:
             app.dependency_overrides.pop(get_current_user, None)

@@ -32,6 +32,11 @@ import {
   PersonalCatalogResponse,
   WeeklyEnergyResponse,
   WeeklyEnergyUnlockResponse,
+  PersonalLayerUnlockResponse,
+  WalletResponse,
+  TransactionsListResponse,
+  EntitlementsListResponse,
+  PricingConfigResponse,
 } from "./types";
 
 export const API = {
@@ -265,10 +270,9 @@ export const API = {
       if (tone) params.append("tone", tone);
       return apiRequest<DailyEnergyResponse>(`/v1/interpretations/daily-energy?${params.toString()}`);
     },
-    getWeeklyEnergy: (targetDate?: string, locale: string = "ka", devUnlock: boolean = false) => {
+    getWeeklyEnergy: (targetDate?: string, locale: string = "ka") => {
       const params = new URLSearchParams({ locale });
       if (targetDate) params.append("target_date", targetDate);
-      if (devUnlock) params.append("dev_unlock", "true");
       return apiRequest<WeeklyEnergyResponse>(`/v1/interpretations/weekly-energy?${params.toString()}`);
     },
     unlockWeeklyEnergy: (targetDate?: string, timezone?: string) => {
@@ -279,6 +283,11 @@ export const API = {
     },
     getPersonalCatalog: (locale: string = "ka") =>
       apiRequest<PersonalCatalogResponse>(`/v1/interpretations/personal-catalog?locale=${locale}`),
+    unlockPersonalLayer: (layerId: string) =>
+      apiRequest<PersonalLayerUnlockResponse>("/v1/interpretations/personal-catalog/unlock", {
+        method: "POST",
+        body: JSON.stringify({ layer_id: layerId }),
+      }),
     resolveNatal: (payload: NatalResolveRequest) =>
       apiRequest<NatalResolveResponseItem[]>("/v1/interpretations/resolve-natal", {
         method: "POST",
@@ -295,6 +304,20 @@ export const API = {
       }),
     getContract: (interpretationId: string, locale: string = "ka") =>
       apiRequest<Record<string, any>>(`/v1/interpretations/${interpretationId}?locale=${locale}`),
+  },
+
+  // Stars Economy & Wallet
+  wallet: {
+    getMe: () => apiRequest<WalletResponse>("/v1/wallet/me"),
+    getTransactions: (limit: number = 20, offset: number = 0) =>
+      apiRequest<TransactionsListResponse>(`/v1/wallet/transactions?limit=${limit}&offset=${offset}`),
+    getEntitlements: () => apiRequest<EntitlementsListResponse>("/v1/wallet/entitlements"),
+    getPricing: () => apiRequest<PricingConfigResponse>("/v1/wallet/pricing"),
+    unlock: (itemType: string, itemKey: string) =>
+      apiRequest<{ success: boolean; already_unlocked: boolean; item_type: string; item_key: string; stars_spent: number; balance_after: number; message: string }>("/v1/wallet/unlock", {
+        method: "POST",
+        body: JSON.stringify({ item_type: itemType, item_key: itemKey }),
+      }),
   },
 
   // Content & Logic Inspector (Internal QA)
