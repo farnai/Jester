@@ -1,12 +1,21 @@
+import os
 from functools import lru_cache
 from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def get_env_file() -> str:
+    if os.getenv("ENV_FILE"):
+        return os.getenv("ENV_FILE")
+    if os.getenv("ENV", "").lower() == "test":
+        return ".env.test"
+    return ".env"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=get_env_file(),
         env_file_encoding="utf-8",
         extra="ignore",
     )

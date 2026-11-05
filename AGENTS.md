@@ -79,6 +79,41 @@ Do not implement from documentation alone when source can answer the question. D
 
 Prefer the smallest change that correctly solves the requested problem. Avoid unrelated refactors, speculative abstractions, broad renames, dependency additions without justification, accidental public API changes, and unrelated product-flow edits. If adjacent work is needed for safety, explain why and keep scope explicit.
 
+## CRITICAL — User Data Protection
+
+AI agents MUST NOT:
+
+1. Delete existing users from `auth.users`.
+2. Delete records from `public.profiles`.
+3. Delete user birth data, private astrology information or photo records.
+4. Delete wallet balances, ledger transactions or purchase entitlements.
+5. Execute broad `DELETE`, `TRUNCATE`, `DROP` or destructive `CASCADE` operations affecting user data.
+6. Use Supabase Admin `deleteUser()` or equivalent destructive API calls.
+7. Recreate existing users by deleting their original accounts.
+8. Reset existing accounts to make tests pass.
+9. Execute database seed scripts that overwrite existing valid user information without explicit approval.
+10. Allow automated test fixtures to clean up shared development or real user accounts.
+11. Introduce destructive migrations or cleanup jobs without explicit Founder authorization.
+
+These rules also apply to indirect deletion through foreign-key cascades, test teardown, reset scripts and administrative tools.
+
+The prohibition applies to development, staging and production user data, including synthetic accounts already present in a shared database.
+
+**The existence of a test account is not permission to delete it.**
+
+If deletion is genuinely necessary, the agent must first explain:
+
+- Which exact records would be affected.
+- Why deletion is necessary.
+- Whether non-destructive alternatives exist.
+- The backup and rollback strategy.
+
+The agent must stop and obtain explicit Founder approval for that specific operation.
+
+General permission to develop, run tests or fix bugs does not constitute deletion approval.
+
+Do not reinterpret this rule as permission to automatically delete "temporary" or "demo" users.
+
 ## Security & Privacy Invariants
 
 These are hard invariants unless an approved architecture decision explicitly changes them.
@@ -127,6 +162,20 @@ Do not bypass backend authorization by adding arbitrary client-to-Supabase queri
 ## Database / Migration Discipline
 
 Make database changes through ordered migrations. Before changing tables, columns, indexes, constraints, RLS, grants, database functions, or triggers, inspect related migrations and security tests. Do not casually rewrite historical migrations that may have been applied. A migration must be safe for the intended deployment model. Schema changes affecting APIs require matching contracts, consumers, tests, and docs.
+
+## Canonical Data Management & CLI Discipline
+
+All cohort management, database presence verification, and persona provisioning must operate strictly through the canonical Data Manager CLI:
+`python -m backend.app.tools.data_manager {list,status,verify,plan,seed}`
+
+Ad-hoc, uncoordinated seed scripts (e.g. `seed_demo_accounts.py`) are strictly prohibited in production and CI flows.
+
+Rules for Data Management:
+1. **Zero Destructive Actions:** The CLI does not support `DELETE`, `TRUNCATE`, `DROP`, or `RESET`. Tests and workflows must never attempt to recreate such commands.
+2. **Read-Only Before Write:** Always run `status`, `verify`, or `plan` prior to executing any seed operation.
+3. **Guarded Provisioning:** Provisioning requires explicit `--apply-plan`. Seeding is strictly creation-only (`ON CONFLICT DO NOTHING`) and fully idempotent.
+4. **Protected Cohorts:** Cohorts tagged as `protected_dev` or `historical_unmanaged` (e.g. `protected-core-dev-v1`, `historical-unmanaged-dev`) are strictly immutable and cannot be planned or seeded.
+5. **Environment Enforcement:** Every command fail-closes if database port/fingerprint does not match the targeted `--env` (`development` on 54322 vs `test` on 54422).
 
 ## API Contract Discipline
 

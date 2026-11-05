@@ -310,7 +310,7 @@ def test_georgian_content_returned_correctly():
     # Daily energy Georgian string
     daily_res = engine.resolve_daily_energy("creativity")
     assert daily_res is not None
-    assert "ახალი ხედვა" in daily_res.text
+    assert "რუტინა" in daily_res.text
 
     daily_focus = engine.resolve_daily_energy("focus")
     assert daily_focus is not None

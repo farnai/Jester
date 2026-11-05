@@ -183,6 +183,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setHasBirthData(null);
   }, [queryClient]);
 
+  const isProfileResolving = !!user && profile === null && profileError === null;
+  const effectiveLoading = isLoading || isProfileResolving;
   const onboardingCompleted = !!profile?.onboarding_completed;
   const onboardingStep = profile?.onboarding_step ?? 1;
 
@@ -192,7 +194,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         session,
         profile,
-        isLoading,
+        isLoading: effectiveLoading,
         profileError,
         onboardingCompleted,
         onboardingStep,

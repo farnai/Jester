@@ -62,7 +62,7 @@ def test_inspector_endpoint_structure():
     # Daily Energy verification (5 layers: Archetypes, Interpretation Assets, DO, DON'T, Neutral)
     daily_energy = data["daily_energy"]
     assert len(daily_energy["archetypes"]) == 13
-    assert len(daily_energy["interpretation_assets"]) == 831
+    assert len(daily_energy["interpretation_assets"]) == 840
     assert len(daily_energy["do_tags"]) == 39
     assert len(daily_energy["dont_tags"]) == 39
     assert daily_energy["summary"]["missing_assets_count"] == 0

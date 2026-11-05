@@ -39,8 +39,13 @@ USERS_TO_CREATE = [
         "email": "dev@jester.app",
         "password": "password123",
         "display_name": "Dev User",
+        "first_name": "Dev",
+        "last_name": "User",
         "bio": "Jester Local Development Persona. Exploration, testing, and connection intelligence.",
         "city": "London",
+        "city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
+        "current_city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
+        "birth_city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
         "occupation": "Developer",
         "birth_date": "2000-01-01",
         "birth_time": "12:00:00",
@@ -55,28 +60,35 @@ USERS_TO_CREATE = [
         "email": "dev-alias@jester.app",
         "password": "password123",
         "display_name": "Dev User (Alias)",
+        "first_name": "Dev",
+        "last_name": "Alias",
         "bio": "Jester Local Development Persona (Secondary).",
         "city": "London",
+        "city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
+        "current_city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
+        "birth_city_id": "c6383804-ec3d-507c-bbee-97f23941339e",
         "occupation": "Developer",
         "birth_date": "2000-01-01",
         "birth_time": "12:00:00",
         "birth_timezone": "UTC",
         "latitude": 51.5074,
         "longitude": -0.1278,
-        "place_label": "London, United Kingdom",
+        "place_label": "London, United License",
         "is_discoverable": False,
     },
 ]
 
 
-def clean_existing_user(cur, email: str, uid: str):
-    """Clean up any pre-existing records to ensure a fresh, consistent user creation."""
-    cur.execute("DELETE FROM public.astro_safe_profile WHERE user_id = %s;", (uid,))
-    cur.execute("DELETE FROM public.astro_private WHERE user_id = %s;", (uid,))
-    cur.execute("DELETE FROM public.birth_data WHERE user_id = %s;", (uid,))
-    cur.execute("DELETE FROM public.profiles WHERE id = %s;", (uid,))
-    cur.execute("DELETE FROM auth.identities WHERE email = %s OR user_id = %s;", (email, uid))
-    cur.execute("DELETE FROM auth.users WHERE email = %s OR id = %s;", (email, uid))
+def ensure_auth_user(cur, user_info: dict) -> str:
+    """Ensure user exists in Supabase Auth without deleting or resetting existing records."""
+    email = user_info["email"]
+    uid = user_info["id"]
+    cur.execute("SELECT id FROM auth.users WHERE email = %s OR id = %s;", (email, uid))
+    existing = cur.fetchone()
+    if existing:
+        print(f"  [*] Auth user already exists in GoTrue (ID: {existing['id']})")
+        return str(existing["id"])
+    return create_user_via_admin_api(user_info)
 
 
 def create_user_via_admin_api(user_info: dict) -> str:
@@ -142,32 +154,41 @@ def seed_farna():
 
             print(f"\n--- Setting up {email} (ID: {uid}) ---")
 
-            # 1. Clean up stale records
-            clean_existing_user(cur, email, uid)
-
-            # 2. Create in Supabase Auth via Admin API
-            created_id = create_user_via_admin_api(user_info)
-            print(f"  [+] Auth user registered in GoTrue (ID: {created_id})")
+            # 1. Ensure user exists in Supabase Auth safely without deletion
+            created_id = ensure_auth_user(cur, user_info)
 
             # 3. Create public.profiles
             is_disc = user_info.get("is_discoverable", True)
             cur.execute(
                 """
-                INSERT INTO public.profiles (id, display_name, bio, city, occupation, timezone, is_discoverable)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO public.profiles (
+                    id, display_name, first_name, last_name, bio, city, city_id, current_city_id,
+                    occupation, timezone, is_discoverable, onboarding_completed, onboarding_step
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, true, 4)
                 ON CONFLICT (id) DO UPDATE SET
                     display_name = excluded.display_name,
+                    first_name = excluded.first_name,
+                    last_name = excluded.last_name,
                     bio = excluded.bio,
                     city = excluded.city,
+                    city_id = excluded.city_id,
+                    current_city_id = excluded.current_city_id,
                     occupation = excluded.occupation,
                     timezone = excluded.timezone,
-                    is_discoverable = excluded.is_discoverable;
+                    is_discoverable = excluded.is_discoverable,
+                    onboarding_completed = true,
+                    onboarding_step = 4;
                 """,
                 (
                     user_uuid,
                     user_info["display_name"],
+                    user_info["first_name"],
+                    user_info["last_name"],
                     user_info["bio"],
                     user_info["city"],
+                    user_info["city_id"],
+                    user_info["current_city_id"],
                     user_info["occupation"],
                     user_info["birth_timezone"],
                     is_disc,
@@ -179,9 +200,10 @@ def seed_farna():
             cur.execute(
                 """
                 INSERT INTO public.birth_data (
-                    user_id, birth_date, birth_time, birth_time_precision, birth_timezone, latitude, longitude, place_label
+                    user_id, birth_date, birth_time, birth_time_precision, birth_timezone,
+                    latitude, longitude, place_label, birth_city_id
                 )
-                VALUES (%s, %s, %s, 'exact', %s, %s, %s, %s)
+                VALUES (%s, %s, %s, 'exact', %s, %s, %s, %s, %s)
                 ON CONFLICT (user_id) DO UPDATE SET
                     birth_date = excluded.birth_date,
                     birth_time = excluded.birth_time,
@@ -189,7 +211,8 @@ def seed_farna():
                     birth_timezone = excluded.birth_timezone,
                     latitude = excluded.latitude,
                     longitude = excluded.longitude,
-                    place_label = excluded.place_label;
+                    place_label = excluded.place_label,
+                    birth_city_id = excluded.birth_city_id;
                 """,
                 (
                     user_uuid,
@@ -199,6 +222,7 @@ def seed_farna():
                     user_info["latitude"],
                     user_info["longitude"],
                     user_info["place_label"],
+                    user_info["birth_city_id"],
                 ),
             )
             print("  [+] public.birth_data created")

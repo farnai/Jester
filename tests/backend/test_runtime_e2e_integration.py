@@ -90,9 +90,9 @@ async def test_full_connection_journey_and_all_ten_endpoints(db_conn, clean_db):
     token_b = generate_test_jwt(user_id=user_b, email=em_b)
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        # 1. DISCOVERY: Alice discovers Bob
+        # 1. DISCOVERY: Alice discovers Bob using name search
         res_disc = await ac.get(
-            "/v1/interpretations/discovery-people",
+            "/v1/interpretations/discovery-people?q=Bob",
             headers={"Authorization": f"Bearer {token_a}"},
         )
         assert res_disc.status_code == 200
@@ -401,12 +401,13 @@ async def test_discovery_presence_fallback_order(db_conn, clean_db):
     c1 = str(uuid.uuid4())  # Candidate with Ascendant Pisces
     c2 = str(uuid.uuid4())  # Candidate with unknown birth time (no Ascendant), Sun Taurus
     c3 = str(uuid.uuid4())  # Candidate with no astro profile
+    run_tag = uuid.uuid4().hex[:6]
 
-    em_v = f"v_{uuid.uuid4().hex[:6]}@test.jester.app"
-    create_test_user(db_conn, viewer, em_v, "Viewer")
-    create_test_user(db_conn, c1, "c1@test.jester.app", "Candidate One")
-    create_test_user(db_conn, c2, "c2@test.jester.app", "Candidate Two")
-    create_test_user(db_conn, c3, "c3@test.jester.app", "Candidate Three")
+    em_v = f"v_{run_tag}@test.jester.app"
+    create_test_user(db_conn, viewer, em_v, f"Viewer {run_tag}")
+    create_test_user(db_conn, c1, f"c1_{run_tag}@test.jester.app", f"CandOne {run_tag}")
+    create_test_user(db_conn, c2, f"c2_{run_tag}@test.jester.app", f"CandTwo {run_tag}")
+    create_test_user(db_conn, c3, f"c3_{run_tag}@test.jester.app", f"CandThree {run_tag}")
 
     seed_user_birth_data(db_conn, viewer, birth_date="1990-01-01", birth_time="12:00:00")
     # c1: Pisces Ascendant (1994-09-18 17:30 London)
@@ -424,7 +425,7 @@ async def test_discovery_presence_fallback_order(db_conn, clean_db):
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         res = await ac.get(
-            "/v1/interpretations/discovery-people",
+            f"/v1/interpretations/discovery-people?q={run_tag}",
             headers={"Authorization": f"Bearer {token_v}"},
         )
         assert res.status_code == 200

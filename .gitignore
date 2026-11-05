@@ -21,6 +21,9 @@ ENV/
 # Supabase
 supabase/.temp/
 supabase/.branches/
+supabase_test/supabase/migrations/
+supabase_test/supabase/.temp/
+supabase_test/supabase/.branches/
 
 # Node
 node_modules/

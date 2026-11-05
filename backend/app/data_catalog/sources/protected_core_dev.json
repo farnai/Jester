@@ -1,0 +1,42 @@
+[
+  {
+    "id": "44444444-4444-4444-4444-444444444444",
+    "email": "dev@jester.app",
+    "first_name": "Dev",
+    "last_name": "Jester",
+    "display_name": "Dev Jester",
+    "role": "developer",
+    "environment": "development",
+    "protected": true
+  },
+  {
+    "id": "44444444-4444-4444-4444-444444444445",
+    "email": "dev-alias@jester.app",
+    "first_name": "Dev",
+    "last_name": "Alias",
+    "display_name": "Dev Alias",
+    "role": "developer",
+    "environment": "development",
+    "protected": true
+  },
+  {
+    "id": "67e89f59-29e5-4e86-914e-fc41439f4d29",
+    "email": "farna@yahoo.com",
+    "first_name": "Farna",
+    "last_name": "Founder",
+    "display_name": "Farna",
+    "role": "founder",
+    "environment": "development",
+    "protected": true
+  },
+  {
+    "id": "66cb967c-8049-406c-a839-af4eb6c16a99",
+    "email": "farna1@gmail.com",
+    "first_name": "Farna",
+    "last_name": "Founder",
+    "display_name": "Farna 1",
+    "role": "founder",
+    "environment": "development",
+    "protected": true
+  }
+]

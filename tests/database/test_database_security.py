@@ -3,75 +3,15 @@ import pytest
 import psycopg
 from psycopg.rows import dict_row
 
-# Standard Supabase local connection string
-DB_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-
-@pytest.fixture(scope="session")
-def db_conn():
-    conn = psycopg.connect(DB_URL, autocommit=True, row_factory=dict_row)
-    yield conn
-    conn.close()
-
-@pytest.fixture(autouse=True)
-def clean_db(db_conn):
-    """Clean tables before each test and create test users in auth.users"""
-    with db_conn.cursor() as cur:
-        # Reset role to postgres/superuser
-        cur.execute("RESET ROLE;")
-        
-        # Clean application tables
-        cur.execute("""
-            TRUNCATE TABLE 
-                public.messages,
-                public.conversation_members,
-                public.conversations,
-                public.compatibility_results,
-                public.connections,
-                public.daily_energies,
-                public.notifications,
-                public.astro_safe_profile,
-                public.astro_private,
-                public.birth_data,
-                public.user_interests,
-                public.profiles
-            CASCADE;
-        """)
-        
-        # Clean auth.users for test IDs
-        cur.execute("DELETE FROM auth.users WHERE email LIKE '%@test.jester.app';")
-
-def create_test_user(db_conn, user_id: str, email: str, display_name: str = "Test User"):
-    with db_conn.cursor() as cur:
-        cur.execute("RESET ROLE;")
-        cur.execute("""
-            INSERT INTO auth.users (id, email, raw_user_meta_data, role, aud)
-            VALUES (%s, %s, %s, 'authenticated', 'authenticated')
-            ON CONFLICT (id) DO NOTHING;
-        """, (user_id, email, '{"name": "%s"}' % display_name))
-        
-        cur.execute("""
-            INSERT INTO public.profiles (id, display_name, is_discoverable)
-            VALUES (%s, %s, true)
-            ON CONFLICT (id) DO UPDATE SET display_name = excluded.display_name, is_discoverable = excluded.is_discoverable;
-        """, (user_id, display_name))
-
-def set_auth_context(cur, user_id: str | None = None, role: str = "authenticated"):
-    if role == "anon":
-        cur.execute("SET ROLE anon;")
-        cur.execute("SELECT set_config('request.jwt.claim.sub', '', false);")
-        cur.execute("SELECT set_config('request.jwt.claims', '', false);")
-    elif role == "authenticated":
-        cur.execute("SET ROLE authenticated;")
-        cur.execute("SELECT set_config('request.jwt.claim.sub', %s, false);", (user_id,))
-        cur.execute("SELECT set_config('request.jwt.claims', %s, false);", (f'{{"sub": "{user_id}", "role": "authenticated"}}',))
-    elif role == "service_role":
-        cur.execute("SET ROLE service_role;")
-        cur.execute("SELECT set_config('request.jwt.claim.sub', '', false);")
-        cur.execute("SELECT set_config('request.jwt.claims', '{\"role\": \"service_role\"}', false);")
-    else:
-        cur.execute("RESET ROLE;")
-        cur.execute("SELECT set_config('request.jwt.claim.sub', '', false);")
-        cur.execute("SELECT set_config('request.jwt.claims', '', false);")
+from tests.conftest import (
+    db_conn,
+    clean_db,
+    test_txn,
+    create_test_user,
+    set_auth_context,
+    track_test_user,
+    track_test_conversation,
+)
 
 # ==============================================================================
 # 1. BIRTH DATA PRIVACY TESTS
@@ -216,10 +156,9 @@ def test_safe_astrology_profile_visibility(db_conn):
 # ==============================================================================
 
 def test_canonical_pair_constraint_and_reverse_prevention(db_conn):
-    u1 = "00000000-0000-0000-0000-000000000001"
-    u2 = "00000000-0000-0000-0000-000000000002"
-    create_test_user(db_conn, u1, "u1@test.jester.app", "U1")
-    create_test_user(db_conn, u2, "u2@test.jester.app", "U2")
+    u1, u2 = sorted([str(uuid.uuid4()), str(uuid.uuid4())])
+    create_test_user(db_conn, u1, f"u1_{u1[:8]}@test.jester.app", "U1")
+    create_test_user(db_conn, u2, f"u2_{u2[:8]}@test.jester.app", "U2")
     
     with db_conn.cursor() as cur:
         # 1. Insert canonical pair (u1 < u2) as u1 -> Success
@@ -367,6 +306,7 @@ def test_chat_rls_and_block_enforcement(db_conn):
     with db_conn.cursor() as cur:
         # Create direct conversation between U1 and U2
         conv_id = str(uuid.uuid4())
+        track_test_conversation(conv_id)
         set_auth_context(cur, None, "admin")
         cur.execute("INSERT INTO public.conversations (id, conversation_type, created_by) VALUES (%s, 'direct', %s);", (conv_id, u1))
         cur.execute("INSERT INTO public.conversation_members (conversation_id, user_id) VALUES (%s, %s), (%s, %s);", (conv_id, u1, conv_id, u2))
@@ -438,6 +378,7 @@ def test_account_deletion_cascades_all_user_data(db_conn):
         cur.execute("INSERT INTO public.compatibility_results (user_a_id, user_b_id, user_a_birth_data_version, user_b_birth_data_version, engine_version) VALUES (%s, %s, 1, 1, '1.0.0');", (u_min, u_max))
         
         conv_id = str(uuid.uuid4())
+        track_test_conversation(conv_id)
         cur.execute("INSERT INTO public.conversations (id, conversation_type, created_by) VALUES (%s, 'direct', %s);", (conv_id, user_a))
         cur.execute("INSERT INTO public.conversation_members (conversation_id, user_id) VALUES (%s, %s), (%s, %s);", (conv_id, user_a, conv_id, user_b))
         cur.execute("INSERT INTO public.messages (conversation_id, sender_user_id, body) VALUES (%s, %s, 'Hey');", (conv_id, user_a))

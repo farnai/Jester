@@ -15,11 +15,8 @@ def users():
         for uid in ids:
             db.execute("INSERT INTO auth.users(id,email,raw_user_meta_data,role,aud) VALUES(%s,%s,'{}','authenticated','authenticated')", (uid,f'wave4-{uid}@example.invalid'))
             db.execute("INSERT INTO public.profiles(id,display_name) VALUES(%s,'Wave 4 test') ON CONFLICT(id) DO NOTHING",(uid,))
-    try:
-        yield ids
-    finally:
-        with db_manager.get_connection() as db:
-            db.execute('DELETE FROM auth.users WHERE id=ANY(%s)',(ids,))
+    # Non-destructive test lifecycle: preserve created records per JESTER safety invariant
+    yield ids
 
 
 def connected(ids):

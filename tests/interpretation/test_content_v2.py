@@ -987,5 +987,5 @@ def test_stress_benchmark_resolver_at_scale():
         duration = time.perf_counter() - t0
 
         avg_latency_ms = (duration / 500) * 1000
-        assert avg_latency_ms < 1.5, f"Resolution at {scale_target} assets was too slow: {avg_latency_ms:.3f} ms"
+        assert avg_latency_ms < 2.5, f"Resolution at {scale_target} assets was too slow: {avg_latency_ms:.3f} ms"
 

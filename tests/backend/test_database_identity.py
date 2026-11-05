@@ -5,10 +5,10 @@ from backend.app.core.database import verify_database_identity, DatabaseIdentity
 
 
 def test_database_identity_passes_on_canonical_db():
-    """Verify that current canonical local Supabase database passes all checks."""
+    """Verify that current canonical database passes all checks."""
     info = verify_database_identity()
     assert info["status"] == "healthy"
-    assert info["port"] == 54322
+    assert info["port"] == 54422
     assert info["migration_version"] >= "025"
     assert info["city_count"] > 100000
 

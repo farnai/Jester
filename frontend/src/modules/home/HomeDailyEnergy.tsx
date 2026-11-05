@@ -5,6 +5,7 @@ import { API } from '../../core/api/endpoints';
 import { useAuth } from '../../core/auth/useAuth';
 import type { DailyEnergyResponse } from '../../core/api/types';
 import { georgianDate } from './homeModel';
+import { HomeIcon } from './HomeElements';
 
 interface HomeDailyEnergyProps {
   data?: DailyEnergyResponse | null;
@@ -183,8 +184,11 @@ export function HomeDailyEnergy({
             onKeyDown={handleTabKeyDown}
           >
             <span>კვირის ენერგია</span>
-            <span className="home-tab-star-badge" aria-label="პრემიუმ ვარსკვლავები">
-              ✦
+            <span
+              className={`home-tab-star-badge ${weeklyData?.is_unlocked ? 'is-unlocked' : ''}`}
+              aria-label={weeklyData?.is_unlocked ? 'გახსნილია' : '5 ვარსკვლავი'}
+            >
+              ✦ {weeklyData?.is_unlocked ? 'გახსნილია' : '5'}
             </span>
           </button>
         </div>
@@ -218,11 +222,12 @@ export function HomeDailyEnergy({
               <button
                 type="button"
                 onClick={handleCopyDaily}
-                className="home-copy-btn"
+                className={`home-copy-btn ${copied ? 'is-copied' : ''}`}
                 title="ფრაზის კოპირება"
                 aria-label="ფრაზის კოპირება"
               >
-                {copied ? 'დაკოპირდა ✓' : 'კოპირება ⎘'}
+                <HomeIcon kind={copied ? 'check' : 'copy'} />
+                <span>{copied ? 'დაკოპირდა' : 'კოპირება'}</span>
               </button>
             </div>
 
@@ -364,11 +369,12 @@ export function HomeDailyEnergy({
                     <button
                       type="button"
                       onClick={handleCopyWeekly}
-                      className="home-copy-btn"
+                      className={`home-copy-btn ${weeklyCopied ? 'is-copied' : ''}`}
                       title="ფრაზის კოპირება"
                       aria-label="ფრაზის კოპირება"
                     >
-                      {weeklyCopied ? 'დაკოპირდა ✓' : 'კოპირება ⎘'}
+                      <HomeIcon kind={weeklyCopied ? 'check' : 'copy'} />
+                      <span>{weeklyCopied ? 'დაკოპირდა' : 'კოპირება'}</span>
                     </button>
                   )}
                 </div>
@@ -377,10 +383,13 @@ export function HomeDailyEnergy({
                 {!weeklyData.is_unlocked && (
                   <div className="home-weekly-locked-card">
                     <div className="home-weekly-locked-header">
-                      <span className="home-weekly-lock-icon" aria-hidden="true">
-                        🔒
-                      </span>
-                      <h2 className="home-daily-title">კვირის ენერგია (დახურული Preview)</h2>
+                      <div className="home-weekly-lock-icon" aria-hidden="true">
+                        <HomeIcon kind="lock" />
+                      </div>
+                      <div className="home-weekly-locked-title-group">
+                        <h2 className="home-daily-title">კვირის ენერგია</h2>
+                        <span className="home-weekly-locked-badge">დახურული Preview</span>
+                      </div>
                     </div>
 
                     <blockquote className="home-weekly-teaser-quote">
@@ -401,13 +410,16 @@ export function HomeDailyEnergy({
                         type="button"
                         onClick={handleUnlockWeekly}
                         disabled={isUnlocking}
-                        className="home-btn home-btn-primary"
+                        className="home-btn home-btn-primary home-weekly-unlock-cta"
                         title="კვირის ენერგიის განბლოკვა 5 ვარსკვლავით"
                       >
-                        {isUnlocking ? 'იხსნება…' : `განბლოკვა (${weeklyData.star_cost ?? 5} ✦ ვარსკვლავი)`}
+                        <span className="home-btn-star-icon">✦</span>
+                        <span>
+                          {isUnlocking ? 'იხსნება…' : `განბლოკვა (${weeklyData.star_cost ?? 5} ვარსკვლავი)`}
+                        </span>
                       </button>
                       {unlockError && (
-                        <p role="alert" className="home-unlock-error" style={{ color: '#B91C1C', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                        <p role="alert" className="home-unlock-error">
                           {unlockError}
                         </p>
                       )}

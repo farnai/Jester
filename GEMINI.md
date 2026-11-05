@@ -1,6 +1,6 @@
 # GEMINI.md — JESTER Agent Guidelines
 
-See `AGENTS.md` for the primary instructions and invariants governing the JESTER repository.
+See `AGENTS.md` for the primary instructions and invariants governing the JESTER repository, including the mandatory **CRITICAL — User Data Protection** policy which strictly prohibits deleting or resetting existing user accounts, profiles, birth data, or financial state under any circumstances, and the canonical Data Manager CLI (`python -m backend.app.tools.data_manager`) for all cohort and seed operations.
 
 ## JESTER Visual Design Tasks
 

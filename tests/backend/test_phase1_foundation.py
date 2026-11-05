@@ -9,27 +9,17 @@ import pytest
 import psycopg
 from psycopg.rows import dict_row
 
-DB_URL = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-
-
-@pytest.fixture(scope="session")
-def db_conn():
-    conn = psycopg.connect(DB_URL, autocommit=True, row_factory=dict_row)
-    yield conn
-    conn.close()
-
-
-@pytest.fixture(autouse=True)
-def clean_test_env(db_conn):
-    with db_conn.cursor() as cur:
-        cur.execute("RESET ROLE;")
-        cur.execute("DELETE FROM public.user_interests WHERE user_id IN (SELECT id FROM auth.users WHERE email LIKE '%@test.jester.app');")
-        cur.execute("DELETE FROM public.birth_data WHERE user_id IN (SELECT id FROM auth.users WHERE email LIKE '%@test.jester.app');")
-        cur.execute("DELETE FROM public.profiles WHERE id IN (SELECT id FROM auth.users WHERE email LIKE '%@test.jester.app');")
-        cur.execute("DELETE FROM auth.users WHERE email LIKE '%@test.jester.app';")
+from tests.conftest import (
+    db_conn,
+    clean_db,
+    test_txn,
+    track_test_user,
+    set_auth_context,
+)
 
 
 def create_user(db_conn, user_id: uuid.UUID, email: str, first_name: str = "Test", last_name: str = "User"):
+    track_test_user(str(user_id))
     with db_conn.cursor() as cur:
         cur.execute("RESET ROLE;")
         cur.execute(

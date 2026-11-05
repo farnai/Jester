@@ -65,6 +65,9 @@ To prevent unsafe or harmful outputs, the prompt engine enforces this hierarchy:
 
 **Safety Invariant**: JESTER must never become cruel, abusive, degrading, or fatalistic. "JESTER Voice" must never be used as an excuse for harmful, harassing, or psychologically damaging content.
 
+### 🛡️ User Data & System Safety Boundary
+AI agents, automated test runners, and coding assistants operating on JESTER must strictly adhere to the mandatory **CRITICAL — User Data Protection** policy in `AGENTS.md`. Under no circumstances may an agent delete or reset existing users in `auth.users`, records in `public.profiles`, `public.birth_data`, `public.wallets`, `public.wallet_transactions`, or `public.entitlements`. Test execution or bug fixing never constitutes approval for data deletion.
+
 ---
 
 ## 🔮 The "Today's Energy / Day Vibe" Experience

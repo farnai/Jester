@@ -25,9 +25,9 @@ def actors():
         for uid in ids:
             db.execute("INSERT INTO auth.users(id, email, raw_user_meta_data, role, aud) VALUES (%s,%s,'{}','authenticated','authenticated')", (uid, f'wave2-{uid}@example.invalid'))
             db.execute("INSERT INTO public.profiles(id, display_name) VALUES (%s,'Wave 2 integration fixture') ON CONFLICT(id) DO NOTHING", (uid,))
+    # Non-destructive test lifecycle: preserve created records per JESTER safety invariant
     yield ids
     with db_manager.get_connection() as db:
-        db.execute('DELETE FROM auth.users WHERE id = ANY(%s)', (ids,))
         photos.drain_cleanup(db)
 
 

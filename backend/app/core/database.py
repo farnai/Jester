@@ -4,16 +4,22 @@ import psycopg
 from psycopg.rows import dict_row
 
 from backend.app.config import get_settings
+from backend.app.core.environment_verifier import verify_environment_safety, EnvironmentSafetyError
 
 
 class DatabaseManager:
-    def __init__(self):
-        self.settings = get_settings()
+    @property
+    def settings(self):
+        return get_settings()
 
     def get_connection(self) -> psycopg.Connection:
         """
         Creates a new connection directly to PostgreSQL with dict_row factory.
+        Enforces fail-closed environment verification when running in test mode.
         """
+        if self.settings.is_test:
+            verify_environment_safety(db_url=self.settings.DATABASE_URL, expected_env="test")
+
         return psycopg.connect(
             self.settings.DATABASE_URL,
             autocommit=True,
@@ -23,7 +29,14 @@ class DatabaseManager:
     def get_admin_headers(self) -> dict[str, str]:
         """
         Returns headers for privileged admin/service_role operations.
+        Guards against using DEV credentials or calling DEV gateway during testing.
         """
+        if self.settings.is_test:
+            if ":54321" in self.settings.SUPABASE_URL:
+                raise EnvironmentSafetyError(
+                    "CRITICAL SAFETY VIOLATION: Test code attempted to use admin headers against DEV Supabase Gateway (54321)!"
+                )
+
         return {
             "apikey": self.settings.SUPABASE_SERVICE_ROLE_KEY.get_secret_value(),
             "Authorization": f"Bearer {self.settings.SUPABASE_SERVICE_ROLE_KEY.get_secret_value()}",

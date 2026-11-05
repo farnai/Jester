@@ -10,7 +10,7 @@ import "./login.css";
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, onboardingCompleted, isLoading: isAuthLoading } = useAuth();
+  const { user, onboardingCompleted, isLoading: isAuthLoading, refreshProfile } = useAuth();
 
   const initialEmail = (location.state as any)?.email || "";
   const [email, setEmail] = useState(initialEmail);
@@ -19,7 +19,8 @@ export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const from = (location.state as any)?.from?.pathname || "/";
+  const rawFrom = (location.state as any)?.from?.pathname;
+  const from = rawFrom && !rawFrom.startsWith("/onboarding") && !rawFrom.startsWith("/auth") ? rawFrom : "/";
 
   // If already authenticated, redirect
   if (!isAuthLoading && user) {
@@ -65,7 +66,10 @@ export const LoginPage: React.FC = () => {
       }
 
       if (!data.session) throw new Error("სესიის შექმნა ვერ მოხერხდა. სცადეთ ხელახლა.");
-      // AuthProvider handles profile rehydration & route resolution automatically.
+      const p = await refreshProfile().catch(() => null);
+      const isComplete = !!p?.onboarding_completed;
+      const target = isComplete ? from : "/onboarding";
+      navigate(target, { replace: true });
     } catch (err: any) {
       setError(err?.message || "შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.");
     } finally {

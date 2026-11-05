@@ -16,7 +16,8 @@ export type HomeIconKind =
   | 'check'
   | 'pin'
   | 'refresh'
-  | 'share';
+  | 'share'
+  | 'lock';
 
 export function HomeIcon({ kind = 'arrow' }: { kind?: HomeIconKind }) {
   const paths: Record<HomeIconKind, ReactNode> = {
@@ -74,6 +75,12 @@ export function HomeIcon({ kind = 'arrow' }: { kind?: HomeIconKind }) {
         <circle cx="6" cy="12" r="3" />
         <circle cx="18" cy="19" r="3" />
         <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+      </>
+    ),
+    lock: (
+      <>
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
       </>
     ),
   };

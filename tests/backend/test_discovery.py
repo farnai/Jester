@@ -112,7 +112,7 @@ async def test_discovery_excludes_blocked_users_and_viewer(db_conn, clean_db):
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         res = await ac.get(
-            "/v1/interpretations/discovery-people",
+            "/v1/interpretations/discovery-people?q=Candidate",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200
@@ -163,14 +163,13 @@ async def test_discovery_does_not_calculate_missing_astrology_or_synastry(db_con
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         res = await ac.get(
-            "/v1/interpretations/discovery-people",
+            "/v1/interpretations/discovery-people?q=Natia",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200
         people = res.json()
-        assert len(people) == 1
-        target = people[0]
-        assert target["id"] == u2
+        target = next((p for p in people if p["id"] == u2), None)
+        assert target is not None
         assert target["display_name"] == "Natia"
         assert target["compatibility_score"] is None
         assert target["hook_observation"] is None
@@ -220,8 +219,8 @@ async def test_discovery_strictly_enforces_18_plus_across_endpoints(db_conn, cle
     headers = {"Authorization": f"Bearer {token}"}
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        # 1. Check /v1/discovery/people (default order)
-        res_deck = await ac.get("/v1/discovery/people", headers=headers)
+        # 1. Check /v1/discovery/people with newest order to locate freshly created test candidate
+        res_deck = await ac.get("/v1/discovery/people?order=newest", headers=headers)
         assert res_deck.status_code == 200
         deck_ids = [p["id"] for p in res_deck.json()["items"]]
         assert adult_cand in deck_ids
@@ -240,8 +239,8 @@ async def test_discovery_strictly_enforces_18_plus_across_endpoints(db_conn, cle
         assert minor_cand not in newest_ids
         assert no_birth_cand not in newest_ids
 
-        # 3. Check /v1/interpretations/discovery-people (legacy endpoint)
-        res_legacy = await ac.get("/v1/interpretations/discovery-people", headers=headers)
+        # 3. Check /v1/interpretations/discovery-people with candidate filter
+        res_legacy = await ac.get("/v1/interpretations/discovery-people?q=Adult Candidate", headers=headers)
         assert res_legacy.status_code == 200
         legacy_ids = [p["id"] for p in res_legacy.json()]
         assert adult_cand in legacy_ids

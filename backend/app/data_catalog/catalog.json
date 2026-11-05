@@ -1,0 +1,165 @@
+{
+  "$schema": "https://jester.app/schemas/data_catalog.v1.json",
+  "catalog_version": "1.0.0",
+  "updated_at": "2026-11-05T04:00:00Z",
+  "description": "JESTER Canonical Declarative Data Catalog & Cohort Registry",
+  "supported_environments": ["development", "test", "staging", "production"],
+  "supported_categories": [
+    "persistent_demo",
+    "protected_dev",
+    "auth_qa",
+    "onboarding_qa",
+    "discovery_qa",
+    "wallet_qa",
+    "privacy_rls_qa",
+    "historical_unmanaged"
+  ],
+  "supported_statuses": ["active", "disabled", "retired"],
+  "cohorts": [
+    {
+      "id": "demo-people-v1",
+      "category": "persistent_demo",
+      "version": "1.0.0",
+      "description": "20 Diverse synthetic Georgian personas with full Swiss Ephemeris charts, diverse locations, and complete profiles.",
+      "environment": ["development", "test"],
+      "origin": "synthetic",
+      "persistence_policy": "permanent",
+      "status": "active",
+      "source": "backend/app/data_catalog/sources/demo_people_v1.json",
+      "expected_count": 20,
+      "dependencies": [],
+      "validation_rules": {
+        "require_profiles": true,
+        "require_birth_data": true,
+        "require_adult_age": true,
+        "require_astrology_calculated": true,
+        "expected_domain": "jester.test",
+        "unique_emails": true,
+        "onboarding_completed_required": true
+      }
+    },
+    {
+      "id": "protected-core-dev-v1",
+      "category": "protected_dev",
+      "version": "1.0.0",
+      "description": "Core development personas (dev@jester.app, dev-alias@jester.app) and Founder accounts (farna@yahoo.com, farna1@gmail.com).",
+      "environment": ["development"],
+      "origin": "founder",
+      "persistence_policy": "permanent",
+      "status": "active",
+      "source": "backend/app/data_catalog/sources/protected_core_dev.json",
+      "expected_count": 4,
+      "dependencies": [],
+      "validation_rules": {
+        "require_profiles": false,
+        "protected_wallets": true,
+        "deletion_strictly_prohibited": true,
+        "unique_emails": true
+      }
+    },
+    {
+      "id": "auth-qa-v1",
+      "category": "auth_qa",
+      "version": "1.0.0",
+      "description": "Authentication and JWT verification test fixtures; validates asymmetric JWKS, token claims, and session restoration.",
+      "environment": ["test"],
+      "origin": "qa_test",
+      "persistence_policy": "ephemeral_test",
+      "status": "active",
+      "source": "tests/backend/test_jwt_verification.py",
+      "expected_count": 2,
+      "dependencies": [],
+      "validation_rules": {
+        "unique_emails": true,
+        "require_valid_jwt": true
+      }
+    },
+    {
+      "id": "onboarding-qa-v1",
+      "category": "onboarding_qa",
+      "version": "1.0.0",
+      "description": "Multi-step onboarding boundary validation fixtures; verifies step transitions, completion immutability, and atomic rollback.",
+      "environment": ["test"],
+      "origin": "qa_test",
+      "persistence_policy": "ephemeral_test",
+      "status": "active",
+      "source": "tests/backend/test_onboarding_completion_boundary.py",
+      "expected_count": 2,
+      "dependencies": [],
+      "validation_rules": {
+        "require_profiles": true,
+        "require_step_progression": true
+      }
+    },
+    {
+      "id": "discovery-qa-v1",
+      "category": "discovery_qa",
+      "version": "1.0.0",
+      "description": "Candidate decks for validating 18+ enforcement, location-based fallback, and mutual block exclusion in Discovery.",
+      "environment": ["test"],
+      "origin": "qa_test",
+      "persistence_policy": "ephemeral_test",
+      "status": "active",
+      "source": "tests/backend/test_discovery.py",
+      "expected_count": 5,
+      "dependencies": [],
+      "validation_rules": {
+        "require_profiles": true,
+        "require_adult_age": true,
+        "require_discoverable_flag": true
+      }
+    },
+    {
+      "id": "wallet-qa-v1",
+      "category": "wallet_qa",
+      "version": "1.0.0",
+      "description": "Test accounts for concurrent Stars purchases, idempotent grants, entitlement checks, and ledger mathematical consistency.",
+      "environment": ["test"],
+      "origin": "qa_test",
+      "persistence_policy": "ephemeral_test",
+      "status": "active",
+      "source": "tests/backend/test_stars_concurrent_purchases.py",
+      "expected_count": 4,
+      "dependencies": [],
+      "validation_rules": {
+        "require_wallets": true,
+        "require_ledger_records": true,
+        "zero_negative_balances": true
+      }
+    },
+    {
+      "id": "privacy-rls-qa-v1",
+      "category": "privacy_rls_qa",
+      "version": "1.0.0",
+      "description": "Identities used for validating PostgreSQL Row-Level Security: owner-only birth_data, astro_private isolation, and anonymous rejection.",
+      "environment": ["test"],
+      "origin": "qa_test",
+      "persistence_policy": "ephemeral_test",
+      "status": "active",
+      "source": "tests/database/test_database_security.py",
+      "expected_count": 3,
+      "dependencies": [],
+      "validation_rules": {
+        "verify_rls_isolation": true,
+        "owner_only_birth_data": true
+      }
+    },
+    {
+      "id": "historical-unmanaged-dev",
+      "category": "historical_unmanaged",
+      "version": "1.0.0",
+      "description": "Historical development accounts created during early prototyping (@example.com, @gmail.com); protected from unapproved deletion.",
+      "environment": ["development"],
+      "origin": "historical_migration",
+      "persistence_policy": "protected_historical",
+      "status": "active",
+      "source": "database/historical_archive",
+      "expected_count": 2156,
+      "dependencies": [],
+      "validation_rules": {
+        "deletion_strictly_prohibited": true,
+        "immutable_identity": true
+      }
+    }
+  ]
+}
