@@ -413,26 +413,49 @@ $$ LANGUAGE plpgsql;
 - **CLI Automated Test Suite:** Implemented `tests/backend/test_data_manager_cli.py` (13 tests passing 100%).
 - **DEV Database Integrity:** Verified 100% identical state (2,180 users, 72 profiles) with zero corruption.
 
-### Phase A6: Final Engineering & Security Audit (COMPLETED)
+### Phase A6: Final Engineering, Security & Retention Audit (COMPLETED)
 - **Status:** [x] Done
-- **DEV / TEST Physical Isolation:** Verified 100% independent Docker containers, storage volumes, and ports.
+- **DEV / TEST Dedicated Environment Isolation:** Dedicated Docker containers, isolated network ports, and separate volumes:
   - DEV Stack: PostgreSQL `:54322`, Kong `:54321`, Inbucket `:54324`, Studio `:54323`.
   - TEST Stack: PostgreSQL `:54422`, Kong `:54421`, Inbucket `:54424`, Studio `:54423`.
-- **Environment Metadata Canonical Table:** Verified and unified as `public.database_environment_meta` across both stacks and `backend/app/core/environment_verifier.py`.
-- **Plan Execution Integrity (TOCTOU Guard):** Implemented cryptographic SHA256 plan fingerprinting in `generate_seed_plan`, displayed in `plan`, and enforced in `seed --apply-plan --fingerprint <hash>`.
+- **Environment Metadata Canonical Table:** Unified as `public.database_environment_meta` across both databases and `backend/app/core/environment_verifier.py`.
+- **Harden Plan Execution Integrity (TOCTOU Guard):**
+  - Cryptographic SHA256 plan fingerprint (`plan_fingerprint`) binds:
+    * Cohort ID & Version
+    * Target Environment
+    * Database Cluster Fingerprint (`cluster_fingerprint`)
+    * Complete canonical source data digest (`source_data_digest`) binding all names, birth dates, cities, and coordinates
+    * Precondition record counts and sorted IDs of existing records
+    * Sorted list of emails to create
+  - Execution via `seed --apply-plan --fingerprint <hash>` strictly validates that neither the source specifications nor the target database state changed between review and application.
+- **Transaction Atomicity & Concurrency Boundary:**
+  - Each user in cohort seed execution runs within an atomic PostgreSQL transaction (`with conn.transaction():`). If an error occurs on record N, that specific record rolls back cleanly while previously committed records (1 to N-1) remain safely preserved.
+  - Limits documented: Direct PostgreSQL writes participate in SQL transactions; external GoTrue HTTP requests operate outside Postgres transaction boundaries. Data Manager CLI uses direct Postgres connection for atomic cohort provisioning.
 - **Zero Automatic Test Deletions:** Eliminated teardown user deletions across all test fixtures (`test_discovery_deck.py`, `test_messaging_wave4.py`, `test_social_profiles.py`, `conftest.py`).
-- **Regression Verification:** All 442 automated tests passing in 47.69s.
-- **DEV Database Integrity:** 100% match with pre-refactoring baseline (2,180 users, 72 profiles, 32 wallets, 30 transactions, 10 entitlements).
+- **Regression Verification:** All 445 automated tests passing.
+- **DEV Baseline History & Preservation:**
+  - Historical context: Pre-A3 baseline was 2,181 auth users and 73 profiles. During early Phase A3 setup testing, 1 temporary test account was accidentally written to DEV and subsequently deleted during forensic analysis (investigated and resolved in A3.1).
+  - Revised stable baseline: 2,180 auth users, 72 profiles, 50 birth data, 32 wallets, 30 transactions, 10 entitlements.
+  - Verification: Post-A3.1, A4, A5, and A6 test runs preserved this revised baseline identically (0 mutations across 2,180 accounts).
+- **Canonical Interpretation Assets Count:**
+  - 840 assets across 12 archetypes (12 x 70 items = 840 total items), matching active Georgian content corpus v2 and `test_inspector_endpoint.py`.
 - **Known Limitations:** Automated Playwright browser E2E test suite remains absent (documented as coverage limitation; not substituted with backend pytest).
 
 ---
 
 ## 8. Non-Destructive Retention Strategy & AI Agent Instructions
 
-### 8.1 Retention Policy for Test Environments
-1. **Zero Deletion Invariant:** Pytest suites must never delete accounts from `auth.users` or user-owned tables.
+### 8.1 Non-Destructive Retention & Volume Lifecycle
+1. **Zero Deletion Invariant:** Pytest suites, fixtures, and CI automation must never delete accounts from `auth.users` or user-owned tables.
 2. **Unique Namespacing:** Dynamic test fixtures must use unique namespaced identifiers (e.g. `{prefix}_{uuid[:8]}@{domain}`) and dynamic sorted ID pairs (`min(u1, u2), max(u1, u2)`).
-3. **Container-Level Lifecycle:** If the TEST database accumulates excessive rows (>50,000 rows), the entire test container may be reset via explicit, Founder-approved infrastructure tooling (`scripts/setup_test_environment.py`), which fail-closes against port 54322. Pytest fixtures themselves must remain 100% non-destructive.
+3. **Persistent Volume Behavior:** Standard Docker container restarts (`docker restart`, `docker compose restart`) do **not** erase data from persistent PostgreSQL named volumes (`supabase_db_jester_test-data`). Test records persist across container restarts.
+4. **Monitoring via Data Manager CLI:**
+   - Execute `python -m backend.app.tools.data_manager status --env test` to monitor:
+     * Total Test Auth identities and profile counts.
+     * Database disk consumption (`pg_database_size`).
+     * Retention status against the documented threshold (`TEST_RETENTION_WARNING_THRESHOLD = 50,000`).
+   - If user count exceeds 50,000, `status` prints a retention warning without performing any automated cleanup.
+5. **Separate Disposal Procedure:** Any eventual recreation or pruning of the isolated Test database volume requires explicit, separate Founder authorization and the dedicated infrastructure script (`scripts/setup_test_environment.py`), which fail-closes against Development port `:54322`.
 
 ### 8.2 Instructions for Future AI Agents
 1. **Never use ad-hoc seed scripts:** All seed, status, and verification operations must execute strictly via `python -m backend.app.tools.data_manager`.

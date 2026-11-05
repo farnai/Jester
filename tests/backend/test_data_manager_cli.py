@@ -228,3 +228,101 @@ def test_cli_seed_accepts_valid_fingerprint(capsys):
 
     captured = capsys.readouterr().out
     assert "[IDEMPOTENT]" in captured or "SUCCESS" in captured
+
+
+def test_plan_fingerprint_changes_when_source_content_altered(monkeypatch):
+    """
+    Verify that altering any attribute of a source record (birth date, city, etc.)
+    while preserving emails and counts alters the plan fingerprint and causes
+    a previously reviewed plan to be rejected.
+    """
+    from backend.app.tools import data_manager
+    cohort = get_cohort("demo-people-v1")
+    original_plan = generate_seed_plan(cohort, "test")
+    original_fp = original_plan["plan_fingerprint"]
+
+    # Load real sources and modify only birth_date on the first record
+    real_sources = data_manager.load_cohort_source(cohort)
+    altered_sources = [dict(s) for s in real_sources]
+    altered_sources[0]["birth_date"] = "1970-01-01"  # changed birth date
+
+    monkeypatch.setattr(data_manager, "load_cohort_source", lambda *args, **kwargs: altered_sources)
+    altered_plan = generate_seed_plan(cohort, "test")
+    altered_fp = altered_plan["plan_fingerprint"]
+
+    assert original_fp != altered_fp, "Fingerprint failed to change when birth date was altered!"
+
+    # Now verify that passing the stale original fingerprint to seed is rejected
+    with patch.object(
+        sys,
+        "argv",
+        ["data_manager", "seed", "demo-people-v1", "--env", "test", "--apply-plan", "--fingerprint", original_fp],
+    ):
+        exit_code = main()
+        assert exit_code == 1
+
+
+def test_plan_fingerprint_changes_when_db_cluster_altered(monkeypatch):
+    """Verify that targeting a different database cluster alters the plan fingerprint."""
+    from backend.app.tools import data_manager
+    cohort = get_cohort("demo-people-v1")
+    original_plan = generate_seed_plan(cohort, "test")
+    original_fp = original_plan["plan_fingerprint"]
+
+    # Mock connection to return a different cluster_fingerprint
+    real_conn_func = data_manager.get_verified_connection
+
+    class PatchedCursor:
+        def __init__(self, real_cur):
+            self.real_cur = real_cur
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return self.real_cur.__exit__(*args)
+
+        def execute(self, query, params=None):
+            if "SELECT cluster_fingerprint::text" in query:
+                self._fake = True
+            else:
+                self._fake = False
+                self.real_cur.execute(query, params)
+
+        def fetchall(self):
+            return self.real_cur.fetchall()
+
+        def fetchone(self):
+            if getattr(self, "_fake", False):
+                return {"cluster_fingerprint": "11111111-2222-3333-4444-555555555555"}
+            return self.real_cur.fetchone()
+
+    class PatchedConn:
+        def __init__(self, real_conn):
+            self.real_conn = real_conn
+
+        def cursor(self, *args, **kwargs):
+            return PatchedCursor(self.real_conn.cursor(*args, **kwargs))
+
+        def close(self):
+            self.real_conn.close()
+
+    monkeypatch.setattr(data_manager, "get_verified_connection", lambda env: PatchedConn(real_conn_func(env)))
+    altered_plan = generate_seed_plan(cohort, "test")
+    assert altered_plan["plan_fingerprint"] != original_fp
+
+
+def test_cli_status_reports_storage_and_retention(capsys):
+    """Verify 'status --env test' reports storage size and retention metrics."""
+    with patch.object(sys, "argv", ["data_manager", "status", "--env", "test", "--format", "json"]):
+        exit_code = main()
+        assert exit_code == 0
+
+    captured = capsys.readouterr().out
+    report = json.loads(captured)
+    metrics = report["database_metrics"]
+    assert "database_size_pretty" in metrics
+    assert "database_size_bytes" in metrics
+    assert metrics["database_size_bytes"] > 0
+    assert "retention_warning" in metrics
+    assert metrics["retention_warning"] is False

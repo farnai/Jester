@@ -66,11 +66,12 @@ async def test_discovery_excludes_blocked_users_and_viewer(db_conn, clean_db):
     candidate_blocker_of_viewer = str(uuid.uuid4())
     candidate_hidden = str(uuid.uuid4())
 
-    create_test_user(db_conn, viewer, f"v_{uuid.uuid4().hex[:6]}@test.jester.app", "Viewer")
-    create_test_user(db_conn, candidate_normal, f"c_{uuid.uuid4().hex[:6]}@test.jester.app", "Normal Candidate")
-    create_test_user(db_conn, candidate_blocked_by_viewer, f"b1_{uuid.uuid4().hex[:6]}@test.jester.app", "Blocked By Viewer")
-    create_test_user(db_conn, candidate_blocker_of_viewer, f"b2_{uuid.uuid4().hex[:6]}@test.jester.app", "Blocker Of Viewer")
-    create_test_user(db_conn, candidate_hidden, f"h_{uuid.uuid4().hex[:6]}@test.jester.app", "Hidden Candidate")
+    cand_tag = uuid.uuid4().hex[:6]
+    create_test_user(db_conn, viewer, f"v_{cand_tag}@test.jester.app", f"Viewer_{cand_tag}")
+    create_test_user(db_conn, candidate_normal, f"c_{cand_tag}@test.jester.app", f"Normal_{cand_tag}")
+    create_test_user(db_conn, candidate_blocked_by_viewer, f"b1_{cand_tag}@test.jester.app", f"Blocked1_{cand_tag}")
+    create_test_user(db_conn, candidate_blocker_of_viewer, f"b2_{cand_tag}@test.jester.app", f"Blocked2_{cand_tag}")
+    create_test_user(db_conn, candidate_hidden, f"h_{cand_tag}@test.jester.app", f"Hidden_{cand_tag}")
 
     # Set candidate_hidden as not discoverable and seed adult birth_data for discoverability
     with db_conn.cursor() as cur:
@@ -112,7 +113,7 @@ async def test_discovery_excludes_blocked_users_and_viewer(db_conn, clean_db):
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         res = await ac.get(
-            "/v1/interpretations/discovery-people?q=Candidate",
+            f"/v1/interpretations/discovery-people?q={cand_tag}",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200

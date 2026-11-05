@@ -57,6 +57,7 @@ from backend.app.astrology.natal import recalculate_user_astrology
 from backend.app.wallet.service import get_or_create_wallet
 
 PROTECTED_COHORT_IDS = {"protected-core-dev-v1", "historical-unmanaged-dev"}
+TEST_RETENTION_WARNING_THRESHOLD = 50000
 
 
 def get_environment_db_url(env_name: str) -> str:
@@ -140,6 +141,10 @@ def cmd_status(args: argparse.Namespace) -> int:
         total_birth_data = cur.fetchone()["cnt"]
         cur.execute("SELECT count(*) as cnt FROM public.wallets;")
         total_wallets = cur.fetchone()["cnt"]
+        cur.execute("SELECT pg_size_pretty(pg_database_size(current_database())) as size_str, pg_database_size(current_database()) as size_bytes;")
+        size_info = cur.fetchone()
+        db_size_str = size_info["size_str"] if size_info else "unknown"
+        db_size_bytes = size_info["size_bytes"] if size_info else 0
 
     # Filter cohorts for this environment
     cohorts_to_check = [
@@ -203,7 +208,10 @@ def cmd_status(args: argparse.Namespace) -> int:
                 "total_profiles": total_profiles,
                 "total_birth_data": total_birth_data,
                 "total_wallets": total_wallets,
+                "database_size_pretty": db_size_str,
+                "database_size_bytes": db_size_bytes,
                 "unmanaged_identities_count": unmanaged_count,
+                "retention_warning": total_users >= TEST_RETENTION_WARNING_THRESHOLD if target_env == "test" else False,
             },
             "cohorts": cohort_reports,
         }
@@ -215,6 +223,14 @@ def cmd_status(args: argparse.Namespace) -> int:
     print("=" * 80)
     print(f"Total Users:      {total_users:<6} | Total Profiles: {total_profiles}")
     print(f"Total Birth Data: {total_birth_data:<6} | Total Wallets:  {total_wallets}")
+    print(f"Database Disk Size: {db_size_str} ({db_size_bytes:,} bytes)")
+    if target_env == "test":
+        if total_users >= TEST_RETENTION_WARNING_THRESHOLD:
+            print(f"[RETENTION WARNING] Test users ({total_users}) exceed threshold ({TEST_RETENTION_WARNING_THRESHOLD}).")
+            print("  -> Non-destructive policy active: automatic cleanup is strictly disabled.")
+            print("  -> Dedicated disposal requires explicit, separate Founder authorization.")
+        else:
+            print(f"Test Retention Status: NORMAL ({total_users}/{TEST_RETENTION_WARNING_THRESHOLD} users, minimal storage pressure)")
     if unmanaged_count > 0:
         print(f"Historical / Unmanaged Identities: {unmanaged_count} (Protected from unauthorized deletion)")
     print("-" * 80)
@@ -307,6 +323,9 @@ def generate_seed_plan(cohort: Cohort, target_env: str) -> Dict[str, Any]:
     with conn.cursor() as cur:
         cur.execute("SELECT id::text, email FROM auth.users WHERE email = ANY(%s);", (emails,))
         found_users = {row["email"]: row["id"] for row in cur.fetchall()}
+        cur.execute("SELECT cluster_fingerprint::text FROM public.database_environment_meta LIMIT 1;")
+        fp_row = cur.fetchone()
+        cluster_fp = fp_row["cluster_fingerprint"] if fp_row else "unfingerprinted"
 
     conn.close()
 
@@ -355,17 +374,26 @@ def generate_seed_plan(cohort: Cohort, target_env: str) -> Dict[str, Any]:
         "is_executable": len(conflicts) == 0,
     }
 
-    # Deterministic plan fingerprint (TOCTOU guard)
+    # Deterministic canonical digest of exact source data (binds names, birth dates, cities, coords)
+    source_canonical = json.dumps(sorted(sources, key=lambda s: s.get("email", "")), sort_keys=True).encode("utf-8")
+    source_data_digest = hashlib.sha256(source_canonical).hexdigest()[:16]
+
+    # Deterministic plan fingerprint binding ALL content, DB identity, and preconditions
     fingerprint_raw = json.dumps({
         "cohort_id": plan["cohort_id"],
         "cohort_version": plan["cohort_version"],
         "target_environment": plan["target_environment"],
+        "cluster_fingerprint": cluster_fp,
+        "source_data_digest": source_data_digest,
         "total_source_records": plan["total_source_records"],
         "records_already_present_count": plan["records_already_present_count"],
         "records_to_create_count": plan["records_to_create_count"],
+        "already_present_ids": sorted(r["id"] for r in records_present),
         "to_create_emails": sorted(r["email"] for r in plan["records_to_create"]),
     }, sort_keys=True).encode("utf-8")
     plan["plan_fingerprint"] = hashlib.sha256(fingerprint_raw).hexdigest()[:16]
+    plan["source_data_digest"] = source_data_digest
+    plan["cluster_fingerprint"] = cluster_fp
 
     return plan
 
@@ -468,69 +496,71 @@ def execute_seed_provisioning(plan: Dict[str, Any], cohort: Cohort, target_env: 
         c_city = cities_map.get(c_city_name) or b_city
 
         try:
-            with conn.cursor() as cur:
-                # 1. Insert into auth.users (creation-only)
-                cur.execute("""
-                    INSERT INTO auth.users (
-                        id, email, raw_user_meta_data, role, aud, email_confirmed_at, created_at, updated_at
-                    )
-                    VALUES (
-                        %s, %s, %s, 'authenticated', 'authenticated', now(), now(), now()
-                    )
-                    ON CONFLICT (id) DO NOTHING;
-                """, (user_uuid, email, '{"name": "%s"}' % display_name))
+            with conn.transaction():
+                with conn.cursor() as cur:
+                    # 1. Insert into auth.users (creation-only)
+                    cur.execute("""
+                        INSERT INTO auth.users (
+                            id, email, raw_user_meta_data, role, aud, email_confirmed_at, created_at, updated_at
+                        )
+                        VALUES (
+                            %s, %s, %s, 'authenticated', 'authenticated', now(), now(), now()
+                        )
+                        ON CONFLICT (id) DO NOTHING;
+                    """, (user_uuid, email, '{"name": "%s"}' % display_name))
 
-                # 2. Insert public.profiles (creation-only)
-                cur.execute("""
-                    INSERT INTO public.profiles (
-                        id, display_name, first_name, last_name, bio,
-                        city, city_id, current_city_id, occupation,
-                        timezone, is_discoverable, onboarding_completed, onboarding_step
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, true, true, 4)
-                    ON CONFLICT (id) DO NOTHING;
-                """, (
-                    user_uuid, display_name, fn, ln, spec.get("bio", ""),
-                    c_city["name"], c_city["id"], c_city["id"], spec.get("occupation", ""),
-                    c_city["timezone"],
-                ))
+                    # 2. Insert public.profiles (creation-only)
+                    cur.execute("""
+                        INSERT INTO public.profiles (
+                            id, display_name, first_name, last_name, bio,
+                            city, city_id, current_city_id, occupation,
+                            timezone, is_discoverable, onboarding_completed, onboarding_step
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, true, true, 4)
+                        ON CONFLICT (id) DO NOTHING;
+                    """, (
+                        user_uuid, display_name, fn, ln, spec.get("bio", ""),
+                        c_city["name"], c_city["id"], c_city["id"], spec.get("occupation", ""),
+                        c_city["timezone"],
+                    ))
 
-                # 3. Insert public.birth_data (creation-only)
-                b_date = spec.get("birth_date", "1995-01-01")
-                b_time = spec.get("birth_time", "12:00:00")
-                cur.execute("""
-                    INSERT INTO public.birth_data (
-                        user_id, birth_date, birth_time, birth_time_precision,
-                        birth_timezone, latitude, longitude, place_label, birth_city_id
-                    )
-                    VALUES (%s, %s, %s, 'exact', %s, %s, %s, %s, %s)
-                    ON CONFLICT (user_id) DO NOTHING;
-                """, (
-                    user_uuid, b_date, b_time,
-                    b_city["timezone"], b_city["latitude"], b_city["longitude"],
-                    f"{b_city['name']}, Georgia", b_city["id"],
-                ))
+                    # 3. Insert public.birth_data (creation-only)
+                    b_date = spec.get("birth_date", "1995-01-01")
+                    b_time = spec.get("birth_time", "12:00:00")
+                    cur.execute("""
+                        INSERT INTO public.birth_data (
+                            user_id, birth_date, birth_time, birth_time_precision,
+                            birth_timezone, latitude, longitude, place_label, birth_city_id
+                        )
+                        VALUES (%s, %s, %s, 'exact', %s, %s, %s, %s, %s)
+                        ON CONFLICT (user_id) DO NOTHING;
+                    """, (
+                        user_uuid, b_date, b_time,
+                        b_city["timezone"], b_city["latitude"], b_city["longitude"],
+                        f"{b_city['name']}, Georgia", b_city["id"],
+                    ))
 
-                # 4. Insert user interests
-                for slug in spec.get("interest_slugs", []):
-                    if slug in interest_slug_to_id:
-                        cur.execute("""
-                            INSERT INTO public.user_interests (user_id, interest_id)
-                            VALUES (%s, %s)
-                            ON CONFLICT DO NOTHING;
-                        """, (user_uuid, interest_slug_to_id[slug]))
+                    # 4. Insert user interests
+                    for slug in spec.get("interest_slugs", []):
+                        if slug in interest_slug_to_id:
+                            cur.execute("""
+                                INSERT INTO public.user_interests (user_id, interest_id)
+                                VALUES (%s, %s)
+                                ON CONFLICT DO NOTHING;
+                            """, (user_uuid, interest_slug_to_id[slug]))
 
-            # 5. Swiss Ephemeris calculation using canonical engine
-            recalculate_user_astrology(user_uuid, conn)
+                # 5. Swiss Ephemeris calculation using canonical engine
+                recalculate_user_astrology(user_uuid, conn)
 
-            # 6. Initialize Stars Wallet using canonical wallet service
-            get_or_create_wallet(user_uuid, conn)
+                # 6. Initialize Stars Wallet using canonical wallet service
+                get_or_create_wallet(user_uuid, conn)
 
             created_records.append({"email": email, "id": str(user_uuid)})
 
         except Exception as e:
             failed_record = {"email": email, "error": str(e)}
-            # Stop immediately without deleting created users as rollback
+            # Single failing user transaction is rolled back by context manager.
+            # Stop immediately preserving all previously committed users.
             break
 
     conn.close()
