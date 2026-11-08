@@ -80,22 +80,14 @@ async def set_my_interests(
     """
     Sets the current user's selected interests.
     Enforces rules:
-    - Minimum 3 interests if selecting any.
-    - Zero interests (Skip) is valid.
-    - 1 or 2 selected interests rejected.
+    - 0 to 7 interests allowed (One-Tap Onboarding V3).
+    - Maximum 7 interests enforced.
     - All interest IDs must exist in public.interests.
     - Transactional replacement preventing duplicates.
     """
     raw_ids = payload.interest_ids
     # Deduplicate while preserving order
     unique_ids: list[uuid.UUID] = list(dict.fromkeys(raw_ids))
-
-    if len(unique_ids) in (1, 2):
-        raise JesterAPIException(
-            status_code=400,
-            error_code="min_three_interests_required",
-            message="მინიმუმ 3 ინტერესის არჩევაა საჭირო, ან გამოტოვეთ ეს ეტაპი (Must select at least 3 interests or skip).",
-        )
 
     if len(unique_ids) > 7:
         raise JesterAPIException(

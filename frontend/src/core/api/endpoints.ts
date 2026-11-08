@@ -37,6 +37,12 @@ import {
   TransactionsListResponse,
   EntitlementsListResponse,
   PricingConfigResponse,
+  PersonalityTraitsListResponse,
+  UserPersonalityTraitsResponse,
+  PersonPersonalityResponse,
+  ConnectionIntentionsListResponse,
+  UserConnectionIntentionsResponse,
+  PersonIntentionsResponse,
 } from "./types";
 
 export const API = {
@@ -203,6 +209,30 @@ export const API = {
         method: "PUT",
         body: JSON.stringify({ interest_ids: interestIds }),
       }),
+  },
+
+  // Personality Traits
+  personality: {
+    list: () => apiRequest<PersonalityTraitsListResponse>("/v1/personality-traits"),
+    getMyTraits: () => apiRequest<UserPersonalityTraitsResponse>("/v1/personality-traits/me"),
+    setMyTraits: (traitIds: string[]) =>
+      apiRequest<UserPersonalityTraitsResponse>("/v1/personality-traits/me", {
+        method: "PUT",
+        body: JSON.stringify({ trait_ids: traitIds }),
+      }),
+    forPerson: (id: string) => apiRequest<PersonPersonalityResponse>(`/v1/personality-traits/people/${id}`),
+  },
+
+  // Connection Intentions
+  intentions: {
+    list: () => apiRequest<ConnectionIntentionsListResponse>("/v1/connection-intentions"),
+    getMyIntentions: () => apiRequest<UserConnectionIntentionsResponse>("/v1/connection-intentions/me"),
+    setMyIntentions: (intentionIds: string[]) =>
+      apiRequest<UserConnectionIntentionsResponse>("/v1/connection-intentions/me", {
+        method: "PUT",
+        body: JSON.stringify({ intention_ids: intentionIds }),
+      }),
+    forPerson: (id: string) => apiRequest<PersonIntentionsResponse>(`/v1/connection-intentions/people/${id}`),
   },
 
   // Connections

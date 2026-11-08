@@ -3,6 +3,8 @@
  * Strictly mirrors FastAPI Pydantic responses.
  */
 
+export type VisibilityPolicy = 'public' | 'connections_only' | 'private';
+
 export interface UserResponse {
   id: string;
   email: string | null;
@@ -25,6 +27,8 @@ export interface ProfileResponse {
   timezone: string;
   is_discoverable: boolean;
   age?: number | null;
+  personality_visibility?: VisibilityPolicy;
+  intentions_visibility?: VisibilityPolicy;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +47,8 @@ export interface ProfileUpdate {
   occupation?: string;
   timezone?: string;
   is_discoverable?: boolean;
+  personality_visibility?: VisibilityPolicy;
+  intentions_visibility?: VisibilityPolicy;
 }
 
 export interface ProfileInitializeRequest {
@@ -77,6 +83,51 @@ export interface UserInterestsResponse {
 
 export interface UserInterestsUpdateRequest {
   interest_ids: string[];
+}
+
+export interface PersonalityTraitItem {
+  id: string;
+  slug: string;
+  name: string;
+  name_ka: string;
+  name_en: string;
+  sort_order: number;
+}
+
+export interface PersonalityTraitsListResponse {
+  items: PersonalityTraitItem[];
+}
+
+export interface UserPersonalityTraitsResponse {
+  trait_ids: string[];
+}
+
+export interface ConnectionIntentionItem {
+  id: string;
+  slug: string;
+  name: string;
+  name_ka: string;
+  name_en: string;
+  icon?: string | null;
+  sort_order: number;
+}
+
+export interface ConnectionIntentionsListResponse {
+  items: ConnectionIntentionItem[];
+}
+
+export interface UserConnectionIntentionsResponse {
+  intention_ids: string[];
+}
+
+export interface PersonPersonalityResponse {
+  items: PersonalityTraitItem[];
+  visibility: string;
+}
+
+export interface PersonIntentionsResponse {
+  items: ConnectionIntentionItem[];
+  visibility: string;
 }
 
 export interface SafeDerivedAstrologyResponse {

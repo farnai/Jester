@@ -11,7 +11,7 @@ import { BirthDateStep } from "./steps/BirthDateStep";
 import { BirthTimeStep, BirthTimePrecision } from "./steps/BirthTimeStep";
 import { BirthPlaceStep } from "./steps/BirthPlaceStep";
 import { WhereYouLiveStep } from "./steps/WhereYouLiveStep";
-import { InterestsStep } from "./steps/InterestsStep";
+import { ProfileEnrichmentModule } from "./steps/ProfileEnrichmentModule";
 import { ProfilePhotoStep } from "./steps/ProfilePhotoStep";
 import { FinishStep } from "./steps/FinishStep";
 
@@ -279,34 +279,16 @@ export const BirthDataOnboardingPage: React.FC = () => {
     }
   };
 
-  // Step 6: Advance from Interests
-  const handleStep6Next = async (selected: string[]) => {
+  // Step 6: Advance from Profile Enrichment (Interests, Personality, Intentions)
+  const handleStep6EnrichmentComplete = async () => {
     setStepError(null);
     setSavingStep(true);
     try {
-      await API.interests.setMyInterests(selected);
-      setSelectedInterests(selected);
       await API.profiles.updateMyProfile({ onboarding_step: 7 });
       await refreshProfile();
       setCurrentStep(7);
     } catch (err: any) {
-      setStepError(err.message || "ინტერესების შენახვა ვერ მოხერხდა.");
-    } finally {
-      setSavingStep(false);
-    }
-  };
-
-  const handleStep6Skip = async () => {
-    setStepError(null);
-    setSavingStep(true);
-    try {
-      await API.interests.setMyInterests([]);
-      setSelectedInterests([]);
-      await API.profiles.updateMyProfile({ onboarding_step: 7 });
-      await refreshProfile();
-      setCurrentStep(7);
-    } catch (err: any) {
-      setStepError(err.message || "ინტერესების გამოტოვება ვერ მოხერხდა.");
+      setStepError(err.message || "პროფილის შენახვა ვერ მოხერხდა.");
     } finally {
       setSavingStep(false);
     }
@@ -366,7 +348,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
     3: "დაბადების დრო (Birth Time)",
     4: "დაბადების ადგილი (Birth Place)",
     5: "საცხოვრებელი ქალაქი (Where You Live)",
-    6: "ინტერესები (Interests)",
+    6: "პროფილის შევსება (Enrichment)",
     7: "პროფილის ფოტო (Photo)",
     8: "გადამოწმება და დასრულება (Finish)",
   };
@@ -530,13 +512,11 @@ export const BirthDataOnboardingPage: React.FC = () => {
           />
         )}
 
-        {/* STEP 6: Interests */}
+        {/* STEP 6: Profile Enrichment Module (Interests, Personality, Intentions) */}
         {currentStep === 6 && (
-          <InterestsStep
-            selectedIds={selectedInterests}
-            onNext={handleStep6Next}
-            onSkip={handleStep6Skip}
-            onBack={() => setCurrentStep(5)}
+          <ProfileEnrichmentModule
+            onComplete={handleStep6EnrichmentComplete}
+            onBackToStep5={() => setCurrentStep(5)}
           />
         )}
 

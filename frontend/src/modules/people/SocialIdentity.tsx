@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { API } from '../../core/api/endpoints';
-import type { ProfilePhoto, ProfileResponse } from '../../core/api/types';
+import type { ProfilePhoto, ProfileResponse, VisibilityPolicy } from '../../core/api/types';
 import { ProfileImage } from '../../shared/ui/ProfileImage';
 import './social-profile.css';
 
@@ -70,7 +70,11 @@ export function SocialIdentity({ profile, editable = false, actions, connectionA
       <p className="social-bio">{profile.bio || (editable ? 'მოუყევი სხვებს შენზე — რა გიყვარს, რა გაინტერესებს, რა გაბედნიერებს.' : 'აღწერა ჯერ არ არის დამატებული.')}</p>
       {editable && <p className="social-visibility">{profile.is_discoverable ? '● პროფილი აღმოჩენადია' : '○ პროფილი დამალულია'}</p>}
       <div className="social-identity-actions">{actions}</div>
-      <ProfileInterests owner={profile.id} editable={editable} />
+      <div className="social-enrichment-sections">
+        <ProfileInterests owner={profile.id} editable={editable} />
+        <ProfilePersonality owner={profile.id} editable={editable} initialVisibility={profile.personality_visibility} />
+        <ProfileIntentions owner={profile.id} editable={editable} initialVisibility={profile.intentions_visibility} />
+      </div>
       {connectionActions}
     </div>
   </section>;
@@ -99,7 +103,7 @@ function ProfileInterests({ owner, editable }: { owner: string; editable: boolea
       {!interests.data?.items.length && <p className="social-note">ინტერესები ჯერ არ არის არჩეული.</p>}
     </>}
     {editing && <form className="social-interest-editor" onSubmit={event => { event.preventDefault(); mutation.mutate(selected); }}>
-      <p>აირჩიე 3-დან 7 ინტერესამდე (ან გაასუფთავე არჩევანი). არჩეულია: {selected.length} / 7 {selected.length > 0 && selected.length < 3 && `(კიდევ ${3 - selected.length})`}</p>
+      <p>აირჩიე 0-დან 7 ინტერესამდე (ან გაასუფთავე არჩევანი). არჩეულია: {selected.length} / 7</p>
       <input aria-label="ინტერესების ძებნა" placeholder="მოძებნე ინტერესი (ქართულად ან ინგლისურად)" value={search} onChange={e => setSearch(e.target.value)} />
       {catalog.isPending && <p role="status">კატალოგი იტვირთება…</p>}
       {catalog.isError && <p role="alert">კატალოგი ვერ ჩაიტვირთა. <button type="button" onClick={() => catalog.refetch()}>ხელახლა ცდა</button></p>}
@@ -113,9 +117,251 @@ function ProfileInterests({ owner, editable }: { owner: string; editable: boolea
         if (ids.length >= 7) return ids;
         return [...ids, item.id];
       })}>{item.name}</button>)}</div>
-      <div className="social-editor-actions"><button type="submit" disabled={mutation.isPending || (selected.length > 0 && selected.length < 3) || selected.length > 7 || !catalog.data}>{mutation.isPending ? 'ინახება…' : 'ინტერესების შენახვა'}</button><button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>გასუფთავება</button></div>
+      <div className="social-editor-actions"><button type="submit" disabled={mutation.isPending || selected.length > 7 || !catalog.data}>{mutation.isPending ? 'ინახება…' : 'ინტერესების შენახვა'}</button><button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>გასუფთავება</button></div>
       {mutation.error && <p role="alert">{mutation.error.message}</p>}
     </form>}
     {mutation.isSuccess && <p role="status">ინტერესები შენახულია.</p>}
   </section>;
+}
+
+function ProfilePersonality({ owner, editable, initialVisibility }: { owner: string; editable: boolean; initialVisibility?: VisibilityPolicy }) {
+  const cache = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [visibility, setVisibility] = useState<VisibilityPolicy>(initialVisibility || 'public');
+  const traits = useQuery({ queryKey: ['person-traits', owner], queryFn: () => API.personality.forPerson(owner) });
+  const catalog = useQuery({ queryKey: ['personality-catalog'], queryFn: API.personality.list, enabled: editing });
+  const saved = useQuery({ queryKey: ['my-traits'], queryFn: API.personality.getMyTraits, enabled: editable });
+
+  const mutation = useMutation({
+    mutationFn: async ({ traitIds, vis }: { traitIds: string[]; vis: VisibilityPolicy }) => {
+      await API.personality.setMyTraits(traitIds);
+      await API.profiles.updateMyProfile({ personality_visibility: vis });
+    },
+    onSuccess: () => {
+      cache.invalidateQueries({ queryKey: ['person-traits'] });
+      cache.invalidateQueries({ queryKey: ['my-traits'] });
+      cache.invalidateQueries({ queryKey: ['profile'] });
+      setEditing(false);
+    },
+  });
+
+  return (
+    <section className="social-interests social-personality">
+      <div className="social-section-heading">
+        <h2>ჩემი ხასიათი</h2>
+        {editable && (
+          <button
+            disabled={!saved.data}
+            onClick={() => {
+              setSelected(saved.data?.trait_ids || []);
+              if (initialVisibility) setVisibility(initialVisibility);
+              setEditing(!editing);
+              mutation.reset();
+            }}
+          >
+            {editing ? 'გაუქმება' : 'რედაქტირება'}
+          </button>
+        )}
+      </div>
+
+      {traits.isPending ? (
+        <p role="status">ხასიათის თვისებები იტვირთება…</p>
+      ) : traits.isError || saved.isError ? (
+        <p role="alert">
+          თვისებები ვერ ჩაიტვირთა.{' '}
+          <button onClick={() => { traits.refetch(); saved.refetch(); }}>ხელახლა ცდა</button>
+        </p>
+      ) : (
+        <>
+          <div className="social-tags">
+            {traits.data?.items.map((item) => (
+              <span key={item.id}>{item.name_ka || item.name}</span>
+            ))}
+          </div>
+          {!traits.data?.items.length && <p className="social-note">ხასიათის თვისებები ჯერ არ არის არჩეული.</p>}
+        </>
+      )}
+
+      {editing && (
+        <form
+          className="social-interest-editor"
+          onSubmit={(e) => {
+            e.preventDefault();
+            mutation.mutate({ traitIds: selected, vis: visibility });
+          }}
+        >
+          <p>აირჩიე 0-დან 5 თვისებამდე (არჩეულია: {selected.length} / 5)</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+            <label htmlFor="personality-vis-select">ხილვადობა:</label>
+            <select
+              id="personality-vis-select"
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as VisibilityPolicy)}
+              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+            >
+              <option value="public">საჯარო (Public)</option>
+              <option value="connections_only">მხოლოდ კონტაქტებისთვის (Connections)</option>
+              <option value="private">პირადი (Private)</option>
+            </select>
+          </div>
+
+          {catalog.isPending && <p role="status">კატალოგი იტვირთება…</p>}
+          <div className="social-tags">
+            {catalog.data?.items.map((item) => (
+              <button
+                disabled={mutation.isPending}
+                type="button"
+                key={item.id}
+                aria-pressed={selected.includes(item.id)}
+                onClick={() =>
+                  setSelected((ids) => {
+                    if (ids.includes(item.id)) return ids.filter((id) => id !== item.id);
+                    if (ids.length >= 5) return ids;
+                    return [...ids, item.id];
+                  })
+                }
+              >
+                {item.name_ka || item.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="social-editor-actions">
+            <button type="submit" disabled={mutation.isPending || selected.length > 5 || !catalog.data}>
+              {mutation.isPending ? 'ინახება…' : 'თვისებების შენახვა'}
+            </button>
+            <button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>
+              გასუფთავება
+            </button>
+          </div>
+          {mutation.error && <p role="alert">{mutation.error.message}</p>}
+        </form>
+      )}
+      {mutation.isSuccess && <p role="status">ხასიათის თვისებები შენახულია.</p>}
+    </section>
+  );
+}
+
+function ProfileIntentions({ owner, editable, initialVisibility }: { owner: string; editable: boolean; initialVisibility?: VisibilityPolicy }) {
+  const cache = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [visibility, setVisibility] = useState<VisibilityPolicy>(initialVisibility || 'public');
+  const intentions = useQuery({ queryKey: ['person-intentions', owner], queryFn: () => API.intentions.forPerson(owner) });
+  const catalog = useQuery({ queryKey: ['intentions-catalog'], queryFn: API.intentions.list, enabled: editing });
+  const saved = useQuery({ queryKey: ['my-intentions'], queryFn: API.intentions.getMyIntentions, enabled: editable });
+
+  const mutation = useMutation({
+    mutationFn: async ({ intentionIds, vis }: { intentionIds: string[]; vis: VisibilityPolicy }) => {
+      await API.intentions.setMyIntentions(intentionIds);
+      await API.profiles.updateMyProfile({ intentions_visibility: vis });
+    },
+    onSuccess: () => {
+      cache.invalidateQueries({ queryKey: ['person-intentions'] });
+      cache.invalidateQueries({ queryKey: ['my-intentions'] });
+      cache.invalidateQueries({ queryKey: ['profile'] });
+      setEditing(false);
+    },
+  });
+
+  return (
+    <section className="social-interests social-intentions">
+      <div className="social-section-heading">
+        <h2>რას ვეძებ</h2>
+        {editable && (
+          <button
+            disabled={!saved.data}
+            onClick={() => {
+              setSelected(saved.data?.intention_ids || []);
+              if (initialVisibility) setVisibility(initialVisibility);
+              setEditing(!editing);
+              mutation.reset();
+            }}
+          >
+            {editing ? 'გაუქმება' : 'რედაქტირება'}
+          </button>
+        )}
+      </div>
+
+      {intentions.isPending ? (
+        <p role="status">მიზნები იტვირთება…</p>
+      ) : intentions.isError || saved.isError ? (
+        <p role="alert">
+          მიზნები ვერ ჩაიტვირთა.{' '}
+          <button onClick={() => { intentions.refetch(); saved.refetch(); }}>ხელახლა ცდა</button>
+        </p>
+      ) : (
+        <>
+          <div className="social-tags">
+            {intentions.data?.items.map((item) => (
+              <span key={item.id}>
+                {item.icon ? `${item.icon} ` : ''}
+                {item.name_ka || item.name}
+              </span>
+            ))}
+          </div>
+          {!intentions.data?.items.length && <p className="social-note">მიზნები ჯერ არ არის არჩეული.</p>}
+        </>
+      )}
+
+      {editing && (
+        <form
+          className="social-interest-editor"
+          onSubmit={(e) => {
+            e.preventDefault();
+            mutation.mutate({ intentionIds: selected, vis: visibility });
+          }}
+        >
+          <p>აირჩიე 0-დან 3 მიზნამდე (არჩეულია: {selected.length} / 3)</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+            <label htmlFor="intentions-vis-select">ხილვადობა:</label>
+            <select
+              id="intentions-vis-select"
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as VisibilityPolicy)}
+              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+            >
+              <option value="public">საჯარო (Public)</option>
+              <option value="connections_only">მხოლოდ კონტაქტებისთვის (Connections)</option>
+              <option value="private">პირადი (Private)</option>
+            </select>
+          </div>
+
+          {catalog.isPending && <p role="status">კატალოგი იტვირთება…</p>}
+          <div className="social-tags">
+            {catalog.data?.items.map((item) => (
+              <button
+                disabled={mutation.isPending}
+                type="button"
+                key={item.id}
+                aria-pressed={selected.includes(item.id)}
+                onClick={() =>
+                  setSelected((ids) => {
+                    if (ids.includes(item.id)) return ids.filter((id) => id !== item.id);
+                    if (ids.length >= 3) return ids;
+                    return [...ids, item.id];
+                  })
+                }
+              >
+                {item.icon ? `${item.icon} ` : ''}
+                {item.name_ka || item.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="social-editor-actions">
+            <button type="submit" disabled={mutation.isPending || selected.length > 3 || !catalog.data}>
+              {mutation.isPending ? 'ინახება…' : 'მიზნების შენახვა'}
+            </button>
+            <button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>
+              გასუფთავება
+            </button>
+          </div>
+          {mutation.error && <p role="alert">{mutation.error.message}</p>}
+        </form>
+      )}
+      {mutation.isSuccess && <p role="status">მიზნები შენახულია.</p>}
+    </section>
+  );
 }

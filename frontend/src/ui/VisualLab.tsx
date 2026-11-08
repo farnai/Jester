@@ -15,12 +15,11 @@ import {
 import { colors, spacing } from "./tokens";
 import { haptics, clipboard, storage } from "../platform";
 import { BirthDateInput } from "../shared/ui";
-import { InterestsStep } from "../modules/onboarding/steps/InterestsStep";
+import { ProfileEnrichmentModule } from "../modules/onboarding/steps/ProfileEnrichmentModule";
 
 export const VisualLab: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [labBirthDate, setLabBirthDate] = useState("1996-07-20");
-  const [labInterests, setLabInterests] = useState<string[]>([]);
   const [buttonLoading, setButtonLoading] = useState(false);
   const [storageStatus, setStorageStatus] = useState("Untested");
   const [copyStatus, setCopyStatus] = useState("Click to copy token");
@@ -267,20 +266,15 @@ export const VisualLab: React.FC = () => {
 
         <Divider spacing={16} />
 
-        {/* 4c. Interests System V2 */}
+        {/* 4c. Onboarding V3 Profile Enrichment Module */}
         <View style={{ marginTop: 8 }}>
           <Text variant="base" weight="bold" color="primary" style={{ marginBottom: 12 }}>
-            4c. Interests System V2 (9 Categories, 79 Interests)
+            4c. Onboarding V3: Profile Enrichment (Interests, Personality & Intentions)
           </Text>
-          <InterestsStep
-            selectedIds={labInterests}
-            onNext={(ids) => setLabInterests(ids)}
-            onSkip={() => setLabInterests([])}
-            onBack={() => {}}
+          <ProfileEnrichmentModule
+            onComplete={() => alert("Profile enrichment completed or skipped successfully!")}
+            onBackToStep5={() => alert("Navigating back to step 5")}
           />
-          <Text variant="xs" color="secondary" style={{ marginTop: 8 }}>
-            შერჩეული ID-ები ({labInterests.length}): {labInterests.join(", ") || "(არცერთი არ არის შერჩეული)"}
-          </Text>
         </View>
       </Card>
 

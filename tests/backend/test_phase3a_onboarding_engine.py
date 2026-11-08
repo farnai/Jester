@@ -280,22 +280,22 @@ async def test_step6_interests_lifecycle_and_validation(db_conn):
         assert all("name_ka" in item and "name_en" in item and "aliases" in item for item in items)
         interest_ids = [item["id"] for item in items[:9]]
 
-        # 14. 1 or 2 selected interests rejected with 400
+        # 14. 1 or 2 selected interests are now valid (Onboarding V3 0-7 rule)
         res_one = await ac.put(
             "/v1/interests/me",
             headers={"Authorization": f"Bearer {token}"},
             json={"interest_ids": [interest_ids[0]]},
         )
-        assert res_one.status_code == 400
-        assert res_one.json()["error"]["code"] == "min_three_interests_required"
+        assert res_one.status_code == 200
+        assert len(res_one.json()["interest_ids"]) == 1
 
         res_two = await ac.put(
             "/v1/interests/me",
             headers={"Authorization": f"Bearer {token}"},
             json={"interest_ids": interest_ids[:2]},
         )
-        assert res_two.status_code == 400
-        assert res_two.json()["error"]["code"] == "min_three_interests_required"
+        assert res_two.status_code == 200
+        assert len(res_two.json()["interest_ids"]) == 2
 
         # 14b. More than 7 selected interests rejected with 400 (max_seven_interests_exceeded)
         res_eight = await ac.put(
@@ -342,6 +342,73 @@ async def test_step6_interests_lifecycle_and_validation(db_conn):
         with db_conn.cursor() as cur:
             cur.execute("SELECT count(*) as cnt FROM public.user_interests WHERE user_id = %s;", (uid,))
             assert cur.fetchone()["cnt"] == 0
+
+
+@pytest.mark.asyncio
+async def test_onboarding_v3_enrichment_endpoints(db_conn):
+    """
+    Onboarding V3 Enrichment Suite:
+    - Personality descriptors (14 catalog items, max 5 selectable, skip/clear allowed).
+    - Connection intentions (6 catalog items, max 3 selectable, skip/clear allowed).
+    - Profile visibility control and authorization.
+    """
+    uid = str(uuid.uuid4())
+    email = f"enrichment_{uid[:8]}@example.com"
+    insert_auth_user(db_conn, uid, email)
+    token = generate_test_jwt(user_id=uid, email=email)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        await ac.post("/v1/profiles/initialize", headers=headers)
+
+        # 1. Personality catalog & validation
+        traits_res = await ac.get("/v1/personality-traits")
+        assert traits_res.status_code == 200
+        traits = traits_res.json()["items"]
+        assert len(traits) == 14
+        trait_ids = [t["id"] for t in traits]
+
+        # Reject > 5 traits
+        res_six = await ac.put("/v1/personality-traits/me", headers=headers, json={"trait_ids": trait_ids[:6]})
+        assert res_six.status_code == 400
+        assert res_six.json()["error"]["code"] == "max_five_traits_exceeded"
+
+        # Accept 3 traits
+        res_three_traits = await ac.put("/v1/personality-traits/me", headers=headers, json={"trait_ids": trait_ids[:3]})
+        assert res_three_traits.status_code == 200
+        assert len(res_three_traits.json()["trait_ids"]) == 3
+
+        # Verify GET /me
+        my_traits = await ac.get("/v1/personality-traits/me", headers=headers)
+        assert my_traits.status_code == 200
+        assert len(my_traits.json()["trait_ids"]) == 3
+
+        # 2. Intentions catalog & validation
+        intentions_res = await ac.get("/v1/connection-intentions")
+        assert intentions_res.status_code == 200
+        intentions = intentions_res.json()["items"]
+        assert len(intentions) == 6
+        intention_ids = [i["id"] for i in intentions]
+
+        # Reject > 3 intentions
+        res_four = await ac.put("/v1/connection-intentions/me", headers=headers, json={"intention_ids": intention_ids[:4]})
+        assert res_four.status_code == 400
+        assert res_four.json()["error"]["code"] == "max_three_intentions_exceeded"
+
+        # Accept 2 intentions
+        res_two_intentions = await ac.put("/v1/connection-intentions/me", headers=headers, json={"intention_ids": intention_ids[:2]})
+        assert res_two_intentions.status_code == 200
+        assert len(res_two_intentions.json()["intention_ids"]) == 2
+
+        # 3. Visibility test via PATCH /v1/profiles/me
+        patch_vis = await ac.patch(
+            "/v1/profiles/me",
+            headers=headers,
+            json={"personality_visibility": "private", "intentions_visibility": "connections_only"},
+        )
+        assert patch_vis.status_code == 200
+        assert patch_vis.json()["personality_visibility"] == "private"
+        assert patch_vis.json()["intentions_visibility"] == "connections_only"
 
 
 # ---------------------------------------------------------------------------

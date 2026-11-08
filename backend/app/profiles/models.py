@@ -17,6 +17,8 @@ class ProfileBase(BaseModel):
     occupation: str | None = None
     timezone: str = "UTC"
     is_discoverable: bool = True
+    personality_visibility: str = "public"
+    intentions_visibility: str = "public"
 
 
 class ProfileUpdate(BaseModel):
@@ -33,6 +35,8 @@ class ProfileUpdate(BaseModel):
     occupation: str | None = None
     timezone: str | None = None
     is_discoverable: bool | None = None
+    personality_visibility: str | None = None
+    intentions_visibility: str | None = None
 
 
 class ProfileResponse(ProfileBase):

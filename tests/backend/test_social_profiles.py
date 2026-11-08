@@ -108,7 +108,8 @@ def test_legacy_avatar_and_interests(actors):
     assert ac.get('/v1/profiles/me').json()['avatar_url'] == legacy
     ids = [r['id'] for r in ac.get('/v1/interests').json()['items'][:4]]
     assert len(ids) == 4
-    assert ac.put('/v1/interests/me', json={'interest_ids': ids[:2]}).status_code == 400
+    # Onboarding V3: 0 to 7 interests are permitted; 1 or 2 interests now succeed
+    assert ac.put('/v1/interests/me', json={'interest_ids': ids[:2]}).status_code == 200
     assert ac.put('/v1/interests/me', json={'interest_ids': ids[:3]}).status_code == 200
     assert other.put('/v1/interests/me', json={'interest_ids': ids[1:]}).status_code == 200
     shared = other.get(f'/v1/interests/people/{owner}').json()

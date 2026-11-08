@@ -4,10 +4,11 @@ import { InterestItem } from "../../../core/api/types";
 import { LoadingState } from "../../../shared/StatusState";
 import "./interests.css";
 
-interface InterestsStepProps {
+export interface InterestsStepProps {
   selectedIds: string[];
   onNext: (selected: string[]) => void;
-  onSkip: () => void;
+  onSkip?: () => void;
+  onSkipAll?: () => void;
   onBack: () => void;
 }
 
@@ -23,23 +24,49 @@ const CATEGORY_ICONS: Record<string, string> = {
   "hobbies-lifestyle": "✨",
 };
 
+// 16 curated high-frequency interests across all 9 categories for instant 1-tap selection
+const FEATURED_SLUGS = [
+  "music",
+  "cinema",
+  "travel",
+  "books",
+  "coffee",
+  "fitness",
+  "photography",
+  "gaming",
+  "technology",
+  "psychology",
+  "art",
+  "nature",
+  "pets",
+  "yoga-pilates",
+  "home-cooking",
+  "tv-series",
+];
+
 export const InterestsStep: React.FC<InterestsStepProps> = ({
   selectedIds,
   onNext,
   onSkip,
+  onSkipAll,
   onBack,
 }) => {
   const [interests, setInterests] = useState<InterestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set(selectedIds));
+  const [showFullCatalog, setShowFullCatalog] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const categoryScrollRef = useRef<HTMLDivElement>(null);
 
-  // Load catalog from API
+  // Sync with external selectedIds if updated from parent
+  useEffect(() => {
+    setSelected(new Set(selectedIds));
+  }, [selectedIds]);
+
+  // Load catalog from API (database remains single source of truth)
   useEffect(() => {
     let isMounted = true;
     API.interests
@@ -64,11 +91,27 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     };
   }, []);
 
-  // Map of interest by ID for rapid lookup (e.g. for selected tray)
-  const interestMap = useMemo(() => {
-    const map = new Map<string, InterestItem>();
-    interests.forEach((item) => map.set(item.id, item));
-    return map;
+  // Direct 1-tap featured list resolved from API catalog
+  const featuredInterests = useMemo(() => {
+    const slugMap = new Map<string, InterestItem>();
+    interests.forEach((item) => slugMap.set(item.slug, item));
+
+    const result: InterestItem[] = [];
+    FEATURED_SLUGS.forEach((slug) => {
+      const match = slugMap.get(slug);
+      if (match) result.push(match);
+    });
+
+    // Fallback if featured slugs differ
+    if (result.length < 12) {
+      interests.slice(0, 16).forEach((item) => {
+        if (!result.some((r) => r.id === item.id)) {
+          result.push(item);
+        }
+      });
+    }
+
+    return result.slice(0, 16);
   }, [interests]);
 
   // Distinct categories ordered as returned by API
@@ -89,7 +132,7 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     return Array.from(map.values());
   }, [interests]);
 
-  // Toggle selection with strict 3..7 constraint enforcement
+  // Direct one-tap toggle (0–7 rule)
   const toggleInterest = (id: string) => {
     setError(null);
     setSelected((prev) => {
@@ -107,33 +150,17 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     });
   };
 
-  const removeSelectedInterest = (id: string) => {
-    setError(null);
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
-  };
-
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     const count = selected.size;
-    if (count === 0) {
-      onSkip();
-      return;
-    }
-    if (count < 3) {
-      setError("გთხოვთ აირჩიოთ მინიმუმ 3 ინტერესი, ან გამოიყენეთ 'გამოტოვება'.");
-      return;
-    }
     if (count > 7) {
       setError("მაქსიმუმ 7 ინტერესის არჩევაა შესაძლებელი.");
       return;
     }
 
+    // 0 to 7 choices are fully valid
     onNext(Array.from(selected));
   };
 
@@ -142,12 +169,9 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     const q = searchQuery.toLowerCase().trim();
 
     return interests.filter((item) => {
-      // 1. Category filter
       if (activeCategory !== "all" && item.category_slug !== activeCategory) {
         return false;
       }
-
-      // 2. Query search
       if (!q) return true;
 
       const candidates = [
@@ -164,7 +188,7 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     });
   }, [interests, activeCategory, searchQuery]);
 
-  // Group filtered results by category for clear hierarchical presentation
+  // Group filtered results by category
   const groupedCategories = useMemo(() => {
     const map = new Map<string, { slug: string; name: string; icon: string; items: InterestItem[] }>();
 
@@ -191,242 +215,251 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
   const count = selected.size;
   const isMaxReached = count >= 7;
 
-  // Selected items array for the overview tray
-  const selectedItems = Array.from(selected)
-    .map((id) => interestMap.get(id))
-    .filter((item): item is InterestItem => Boolean(item));
-
   return (
-    <form onSubmit={handleContinue} className="interests-step-v2">
+    <form onSubmit={handleContinue} className="interests-step-v3">
       {/* Header */}
-      <div className="interests-v2-header">
-        <span className="interests-v2-step-tag">ნაბიჯი 6 / 7</span>
+      <div className="onboarding-v3-stage-header">
+        <div className="onboarding-v3-badge-row">
+          <span className="onboarding-v3-stage-tag">ნაბიჯი 6.1 • ინტერესები</span>
+          <span className="onboarding-v3-optional-pill">სურვილისამებრ</span>
+        </div>
         <h2>რა გაინტერესებს?</h2>
         <p>
-          აირჩიე <strong>3-დან 7-მდე</strong> ინტერესი, რათა JESTER-მა შეძლოს შენთან
-          რეზონანსული ადამიანების პოვნა და საუბრის დაწყება.
+          მონიშნე პირდაპირ ერთი შეხებით (მაქსიმუმ 7). შეგიძლია აირჩიო თუნდაც 1 ან 2, ან სურვილისამებრ გამოტოვო.
         </p>
       </div>
 
       {/* Error Notice */}
       {error && (
-        <div className="interests-v2-alert" role="alert">
-          <span className="interests-v2-alert-icon">⚠️</span>
+        <div className="onboarding-v3-alert" role="alert">
+          <span className="onboarding-v3-alert-icon">⚠️</span>
           <span>{error}</span>
         </div>
       )}
 
-      {/* Selected Items Tray & Status Counter */}
-      <section className="interests-v2-tray-card" aria-label="შერჩეული ინტერესები">
-        <div className="interests-v2-tray-header">
-          <div className="interests-v2-counter-group">
-            <span className="interests-v2-counter-label">შერჩეულია</span>
-            <span
-              className={`interests-v2-counter-pill ${
-                count === 0
-                  ? "empty"
-                  : count < 3
-                  ? "need-more"
-                  : isMaxReached
-                  ? "maxed"
-                  : "ready"
-              }`}
-            >
-              {count} / 7
-            </span>
-          </div>
-
-          <div className="interests-v2-counter-hint">
-            {count === 0 && "აირჩიეთ მინიმუმ 3 თემა"}
-            {count > 0 && count < 3 && `დარჩა კიდევ ${3 - count} ინტერესი`}
-            {count >= 3 && count < 7 && "მზადაა გასაგრძელებლად (შეგიძლიათ კიდევ დაამატოთ)"}
-            {isMaxReached && "მიღწეულია მაქსიმალური ლიმიტი (7)"}
-          </div>
-        </div>
-
-        {selectedItems.length > 0 && (
-          <div className="interests-v2-tray-chips">
-            {selectedItems.map((item) => (
-              <span key={item.id} className="interests-v2-tray-chip">
-                <span>{item.name_ka || item.name}</span>
-                <button
-                  type="button"
-                  aria-label={`წაშლა: ${item.name_ka || item.name}`}
-                  onClick={() => removeSelectedInterest(item.id)}
-                  className="interests-v2-tray-chip-remove"
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Search Input Bar */}
-      <div className="interests-v2-search-container">
-        <div className="interests-v2-search-box">
-          <svg
-            className="interests-v2-search-icon"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
+      {/* Compact Status Counter Bar (No repetitive tall trays) */}
+      <div className="onboarding-v3-compact-counter">
+        <div className="onboarding-v3-counter-left">
+          <span className="onboarding-v3-counter-title">შერჩეულია:</span>
+          <span
+            className={`onboarding-v3-counter-number ${
+              count === 0 ? "zero" : isMaxReached ? "maxed" : "active"
+            }`}
           >
-            <circle cx="8.5" cy="8.5" r="5.5" />
-            <path d="M13 13l4 4" strokeLinecap="round" />
-          </svg>
-          <input
-            ref={searchInputRef}
-            type="search"
-            aria-label="ინტერესების ძებნა"
-            placeholder="ძებნა (მაგ. როკი, კინო, იოგა, anime, tech)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              aria-label="ძებნის გასუფთავება"
-              onClick={() => {
-                setSearchQuery("");
-                searchInputRef.current?.focus();
-              }}
-              className="interests-v2-search-clear"
-            >
-              ✕
-            </button>
-          )}
+            {count} / 7
+          </span>
+        </div>
+        <div className="onboarding-v3-counter-hint">
+          {count === 0 && "არცერთი არ არის შერჩეული"}
+          {count > 0 && count < 7 && `შეგიძლია დაამატო კიდევ ${7 - count}`}
+          {isMaxReached && "მაქსიმალური ლიმიტი (7)"}
         </div>
       </div>
 
-      {/* Horizontal Category Quick-Filter Bar */}
-      <nav
-        ref={categoryScrollRef}
-        className="interests-v2-categories-nav"
-        aria-label="კატეგორიების ფილტრი"
-      >
+      {/* Section 1: One-Tap Direct Discovery Grid (16 curated choices) */}
+      <div className="interests-v3-one-tap-section">
+        <span className="interests-v3-section-title">პოპულარული ინტერესები:</span>
+        <div className="interests-v3-pills-grid">
+          {featuredInterests.map((item) => {
+            const isSelected = selected.has(item.id);
+            const isBlocked = !isSelected && isMaxReached;
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                disabled={isBlocked}
+                onClick={() => toggleInterest(item.id)}
+                className={`interests-v3-pill ${isSelected ? "selected" : ""} ${
+                  isBlocked ? "disabled" : ""
+                }`}
+                aria-pressed={isSelected}
+              >
+                <span className="interests-v3-pill-check" aria-hidden="true">
+                  {isSelected ? "✓" : "+"}
+                </span>
+                <span className="interests-v3-pill-text">
+                  {item.name_ka || item.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Toggle to expand/collapse the full 79 catalog */}
+      <div className="interests-v3-expand-wrapper">
         <button
           type="button"
-          onClick={() => setActiveCategory("all")}
-          className={`interests-v2-cat-btn ${activeCategory === "all" ? "active" : ""}`}
-          aria-pressed={activeCategory === "all"}
+          onClick={() => {
+            setShowFullCatalog((prev) => !prev);
+            if (!showFullCatalog) {
+              setTimeout(() => searchInputRef.current?.focus(), 100);
+            }
+          }}
+          className="interests-v3-btn-toggle-catalog"
+          aria-expanded={showFullCatalog}
         >
-          <span className="interests-v2-cat-icon">✨</span>
-          <span>ყველა</span>
-          <span className="interests-v2-cat-count">{interests.length}</span>
+          <span>
+            {showFullCatalog
+              ? "▲ სრული კატალოგის დახურვა"
+              : "▼ სხვა ინტერესების ნახვა (სრული 79 თემა & ძებნა)"}
+          </span>
         </button>
+      </div>
 
-        {categoryTabs.map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          return (
-            <button
-              key={cat.slug}
-              type="button"
-              onClick={() => setActiveCategory(cat.slug)}
-              className={`interests-v2-cat-btn ${isActive ? "active" : ""}`}
-              aria-pressed={isActive}
+      {/* Section 2: Extended Discovery (Full 79 Catalog with Search & Categories) */}
+      {showFullCatalog && (
+        <div className="interests-v3-full-catalog-panel">
+          {/* Search Input */}
+          <div className="interests-v3-search-box">
+            <svg
+              className="interests-v3-search-icon"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
             >
-              <span className="interests-v2-cat-icon">{cat.icon}</span>
-              <span>{cat.name}</span>
-              <span className="interests-v2-cat-count">{cat.count}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Grouped Interest Pills */}
-      <div className="interests-v2-grid-scroll">
-        {groupedCategories.length === 0 ? (
-          <div className="interests-v2-empty-state">
-            <span className="interests-v2-empty-icon">🔍</span>
-            <h3>ინტერესი ვერ მოიძებნა</h3>
-            <p>
-              სცადეთ სხვა საძიებო სიტყვა (ქართულად ან ინგლისურად), ან აირჩიეთ კატეგორია „ყველა“.
-            </p>
+              <circle cx="8.5" cy="8.5" r="5.5" />
+              <path d="M13 13l4 4" strokeLinecap="round" />
+            </svg>
+            <input
+              ref={searchInputRef}
+              type="search"
+              aria-label="ინტერესების ძებნა"
+              placeholder="მოძებნე ნებისმიერი ინტერესი (ქართულად ან ინგლისურად)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
-                className="interests-v2-btn-reset-search"
+                aria-label="ძებნის გასუფთავება"
+                onClick={() => {
+                  setSearchQuery("");
+                  searchInputRef.current?.focus();
+                }}
+                className="interests-v3-search-clear"
               >
-                ძებნის გასუფთავება
+                ✕
               </button>
             )}
           </div>
-        ) : (
-          groupedCategories.map((group) => (
-            <div key={group.slug} className="interests-v2-group-card">
-              <div className="interests-v2-group-title">
-                <span className="interests-v2-group-icon">{group.icon}</span>
-                <h4>{group.name}</h4>
-              </div>
 
-              <div className="interests-v2-pills">
-                {group.items.map((item) => {
-                  const isSelected = selected.has(item.id);
-                  const isBlocked = !isSelected && isMaxReached;
+          {/* Category Chips Bar */}
+          <nav className="interests-v3-category-bar" aria-label="კატეგორიების ფილტრი">
+            <button
+              type="button"
+              onClick={() => setActiveCategory("all")}
+              className={`interests-v3-cat-btn ${activeCategory === "all" ? "active" : ""}`}
+              aria-pressed={activeCategory === "all"}
+            >
+              <span>ყველა</span>
+              <span className="interests-v3-cat-badge">{interests.length}</span>
+            </button>
+            {categoryTabs.map((cat) => (
+              <button
+                key={cat.slug}
+                type="button"
+                onClick={() => setActiveCategory(cat.slug)}
+                className={`interests-v3-cat-btn ${activeCategory === cat.slug ? "active" : ""}`}
+                aria-pressed={activeCategory === cat.slug}
+              >
+                <span>{cat.icon}</span>
+                <span>{cat.name}</span>
+                <span className="interests-v3-cat-badge">{cat.count}</span>
+              </button>
+            ))}
+          </nav>
 
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      disabled={isBlocked}
-                      onClick={() => toggleInterest(item.id)}
-                      className={`interests-v2-pill ${isSelected ? "selected" : ""} ${
-                        isBlocked ? "disabled" : ""
-                      }`}
-                      aria-pressed={isSelected}
-                      title={
-                        isBlocked
-                          ? "მაქსიმუმ 7 ინტერესია ნებადართული"
-                          : item.name_en
-                          ? `${item.name_ka || item.name} (${item.name_en})`
-                          : item.name_ka || item.name
-                      }
-                    >
-                      <span className="interests-v2-pill-check" aria-hidden="true">
-                        {isSelected ? "✓" : "+"}
-                      </span>
-                      <span className="interests-v2-pill-text">
-                        {item.name_ka || item.name}
-                      </span>
-                    </button>
-                  );
-                })}
+          {/* Grouped Catalog Items */}
+          <div className="interests-v3-catalog-scroll">
+            {groupedCategories.length === 0 ? (
+              <div className="interests-v3-empty-state">
+                <p>ინტერესი ვერ მოიძებნა.</p>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="interests-v3-btn-reset"
+                  >
+                    ძებნის გასუფთავება
+                  </button>
+                )}
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ) : (
+              groupedCategories.map((group) => (
+                <div key={group.slug} className="interests-v3-group-block">
+                  <div className="interests-v3-group-title">
+                    <span>{group.icon}</span>
+                    <span>{group.name}</span>
+                  </div>
+                  <div className="interests-v3-pills-grid">
+                    {group.items.map((item) => {
+                      const isSelected = selected.has(item.id);
+                      const isBlocked = !isSelected && isMaxReached;
+
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          disabled={isBlocked}
+                          onClick={() => toggleInterest(item.id)}
+                          className={`interests-v3-pill ${isSelected ? "selected" : ""} ${
+                            isBlocked ? "disabled" : ""
+                          }`}
+                          aria-pressed={isSelected}
+                        >
+                          <span className="interests-v3-pill-check" aria-hidden="true">
+                            {isSelected ? "✓" : "+"}
+                          </span>
+                          <span className="interests-v3-pill-text">
+                            {item.name_ka || item.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Continuation Actions Footer */}
-      <div className="interests-v2-footer">
-        <button
-          type="button"
-          className="interests-v2-btn-back"
-          onClick={onBack}
-        >
-          ← უკან
-        </button>
+      <div className="onboarding-v3-footer">
+        <div className="onboarding-v3-footer-left">
+          <button
+            type="button"
+            className="onboarding-v3-btn-back"
+            onClick={onBack}
+          >
+            ← უკან
+          </button>
+        </div>
 
-        <button
-          type="button"
-          className="interests-v2-btn-skip"
-          onClick={onSkip}
-        >
-          გამოტოვება
-        </button>
+        <div className="onboarding-v3-footer-right">
+          {(onSkipAll || onSkip) && (
+            <button
+              type="button"
+              className="onboarding-v3-btn-exit-all"
+              onClick={onSkipAll || onSkip}
+              title="გადი აპლიკაციაში, პროფილს მოგვიანებით შეავსებ"
+            >
+              მოგვიანებით შევავსებ
+            </button>
+          )}
 
-        <button
-          type="submit"
-          className="interests-v2-btn-submit"
-          disabled={count > 0 && count < 3}
-        >
-          <span>შემდეგი</span>
-          <span aria-hidden="true">→</span>
-        </button>
+          <button
+            type="submit"
+            className="onboarding-v3-btn-next"
+          >
+            <span>შემდეგი</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
       </div>
     </form>
   );

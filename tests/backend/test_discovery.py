@@ -144,8 +144,9 @@ async def test_discovery_does_not_calculate_missing_astrology_or_synastry(db_con
     em1 = f"u1_{uuid.uuid4().hex[:6]}@test.jester.app"
     em2 = f"u2_{uuid.uuid4().hex[:6]}@test.jester.app"
 
+    natia_name = f"Natia_{u2[:6]}"
     create_test_user(db_conn, u1, em1, "Alexandre")
-    create_test_user(db_conn, u2, em2, "Natia")
+    create_test_user(db_conn, u2, em2, natia_name)
 
     # Seed birth data so Swiss Ephemeris and Synastry engine compute real placements & signals
     with db_conn.cursor() as cur:
@@ -164,14 +165,14 @@ async def test_discovery_does_not_calculate_missing_astrology_or_synastry(db_con
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         res = await ac.get(
-            "/v1/interpretations/discovery-people?q=Natia",
+            f"/v1/interpretations/discovery-people?q={natia_name}",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 200
         people = res.json()
         target = next((p for p in people if p["id"] == u2), None)
         assert target is not None
-        assert target["display_name"] == "Natia"
+        assert target["display_name"] == natia_name
         assert target["compatibility_score"] is None
         assert target["hook_observation"] is None
         with db_conn.cursor() as cur:
