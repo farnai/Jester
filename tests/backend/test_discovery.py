@@ -192,8 +192,9 @@ async def test_discovery_strictly_enforces_18_plus_across_endpoints(db_conn, cle
     minor_cand = str(uuid.uuid4())
     no_birth_cand = str(uuid.uuid4())
 
+    adult_name = f"Adult_{adult_cand[:6]}"
     create_test_user(db_conn, viewer, f"v_{uuid.uuid4().hex[:6]}@test.jester.app", "Viewer")
-    create_test_user(db_conn, adult_cand, f"a_{uuid.uuid4().hex[:6]}@test.jester.app", "Adult Candidate")
+    create_test_user(db_conn, adult_cand, f"a_{uuid.uuid4().hex[:6]}@test.jester.app", adult_name)
     create_test_user(db_conn, minor_cand, f"m_{uuid.uuid4().hex[:6]}@test.jester.app", "Minor Candidate")
     create_test_user(db_conn, no_birth_cand, f"n_{uuid.uuid4().hex[:6]}@test.jester.app", "No Birth Candidate")
 
@@ -241,7 +242,7 @@ async def test_discovery_strictly_enforces_18_plus_across_endpoints(db_conn, cle
         assert no_birth_cand not in newest_ids
 
         # 3. Check /v1/interpretations/discovery-people with candidate filter
-        res_legacy = await ac.get("/v1/interpretations/discovery-people?q=Adult Candidate", headers=headers)
+        res_legacy = await ac.get(f"/v1/interpretations/discovery-people?q={adult_name}", headers=headers)
         assert res_legacy.status_code == 200
         legacy_ids = [p["id"] for p in res_legacy.json()]
         assert adult_cand in legacy_ids

@@ -13,6 +13,11 @@ class InterestItem(BaseModel):
     category_slug: str
     category_icon: str | None = None
     sort_order: int = 0
+    name_ka: str | None = None
+    name_en: str | None = None
+    aliases: list[str] = []
+    category_name_ka: str | None = None
+    category_name_en: str | None = None
 
 
 class InterestsListResponse(BaseModel):

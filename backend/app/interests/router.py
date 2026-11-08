@@ -34,9 +34,14 @@ async def list_candidate_interests(
                 i.category_id,
                 i.name,
                 i.slug,
+                i.name_ka,
+                i.name_en,
+                coalesce(i.aliases, ARRAY[]::text[]) as aliases,
                 c.name as category_name,
                 c.slug as category_slug,
                 c.icon as category_icon,
+                c.name_ka as category_name_ka,
+                c.name_en as category_name_en,
                 i.sort_order
             FROM public.interests i
             JOIN public.interest_categories c ON c.id = i.category_id
@@ -92,6 +97,13 @@ async def set_my_interests(
             message="მინიმუმ 3 ინტერესის არჩევაა საჭირო, ან გამოტოვეთ ეს ეტაპი (Must select at least 3 interests or skip).",
         )
 
+    if len(unique_ids) > 7:
+        raise JesterAPIException(
+            status_code=400,
+            error_code="max_seven_interests_exceeded",
+            message="მაქსიმუმ 7 ინტერესის არჩევაა შესაძლებელი (Maximum 7 interests allowed).",
+        )
+
     with db.transaction(), db.cursor(row_factory=dict_row) as cur:
         lock_owner(db, current_user.id)
         if unique_ids:
@@ -133,8 +145,11 @@ def get_person_interests(profile_id: uuid.UUID,
                          db: psycopg.Connection = Depends(get_db)):
     authorize_profile(db, current_user.id, profile_id)
     with db.cursor(row_factory=dict_row) as cur:
-        cur.execute('''SELECT i.id, i.category_id, i.name, i.slug, c.name AS category_name,
-            c.slug AS category_slug, c.icon AS category_icon, i.sort_order,
+        cur.execute('''SELECT i.id, i.category_id, i.name, i.slug,
+            i.name_ka, i.name_en, coalesce(i.aliases, ARRAY[]::text[]) as aliases,
+            c.name AS category_name, c.slug AS category_slug, c.icon AS category_icon,
+            c.name_ka AS category_name_ka, c.name_en AS category_name_en,
+            i.sort_order,
             EXISTS(SELECT 1 FROM public.user_interests mine WHERE mine.user_id = %s
                    AND mine.interest_id = i.id) AS shared
             FROM public.user_interests ui JOIN public.interests i ON i.id = ui.interest_id

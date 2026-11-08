@@ -99,12 +99,21 @@ function ProfileInterests({ owner, editable }: { owner: string; editable: boolea
       {!interests.data?.items.length && <p className="social-note">ინტერესები ჯერ არ არის არჩეული.</p>}
     </>}
     {editing && <form className="social-interest-editor" onSubmit={event => { event.preventDefault(); mutation.mutate(selected); }}>
-      <p>აირჩიე მინიმუმ 3 ინტერესი ან გაასუფთავე არჩევანი. არჩეულია: {selected.length}</p>
-      <input aria-label="ინტერესების ძებნა" placeholder="მოძებნე ინტერესი" value={search} onChange={e => setSearch(e.target.value)} />
+      <p>აირჩიე 3-დან 7 ინტერესამდე (ან გაასუფთავე არჩევანი). არჩეულია: {selected.length} / 7 {selected.length > 0 && selected.length < 3 && `(კიდევ ${3 - selected.length})`}</p>
+      <input aria-label="ინტერესების ძებნა" placeholder="მოძებნე ინტერესი (ქართულად ან ინგლისურად)" value={search} onChange={e => setSearch(e.target.value)} />
       {catalog.isPending && <p role="status">კატალოგი იტვირთება…</p>}
       {catalog.isError && <p role="alert">კატალოგი ვერ ჩაიტვირთა. <button type="button" onClick={() => catalog.refetch()}>ხელახლა ცდა</button></p>}
-      <div className="social-tags">{catalog.data?.items.filter(i => `${i.name} ${i.category_name}`.toLowerCase().includes(search.toLowerCase())).map(item => <button disabled={mutation.isPending} type="button" key={item.id} aria-pressed={selected.includes(item.id)} onClick={() => setSelected(ids => ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id])}>{item.name}</button>)}</div>
-      <div className="social-editor-actions"><button type="submit" disabled={mutation.isPending || (selected.length > 0 && selected.length < 3) || !catalog.data}>{mutation.isPending ? 'ინახება…' : 'ინტერესების შენახვა'}</button><button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>გასუფთავება</button></div>
+      <div className="social-tags">{catalog.data?.items.filter(i => {
+        const q = search.toLowerCase().trim();
+        if (!q) return true;
+        const haystack = [i.name, i.name_ka || '', i.name_en || '', ...(i.aliases || []), i.category_name, i.category_name_ka || '', i.category_name_en || ''].join(' ').toLowerCase();
+        return haystack.includes(q);
+      }).map(item => <button disabled={mutation.isPending} type="button" key={item.id} aria-pressed={selected.includes(item.id)} onClick={() => setSelected(ids => {
+        if (ids.includes(item.id)) return ids.filter(id => id !== item.id);
+        if (ids.length >= 7) return ids;
+        return [...ids, item.id];
+      })}>{item.name}</button>)}</div>
+      <div className="social-editor-actions"><button type="submit" disabled={mutation.isPending || (selected.length > 0 && selected.length < 3) || selected.length > 7 || !catalog.data}>{mutation.isPending ? 'ინახება…' : 'ინტერესების შენახვა'}</button><button type="button" disabled={mutation.isPending} onClick={() => setSelected([])}>გასუფთავება</button></div>
       {mutation.error && <p role="alert">{mutation.error.message}</p>}
     </form>}
     {mutation.isSuccess && <p role="status">ინტერესები შენახულია.</p>}

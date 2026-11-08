@@ -108,6 +108,26 @@ def test_validation_rejects_invalid_inputs():
         )
     assert exc.value.error_code == "invalid_birth_date"
 
+    # 1b. Underage (< 18) date rejected under 18+ policy
+    today = date.today()
+    # 17 years old
+    with pytest.raises(JesterAPIException) as exc:
+        validate_birth_data(
+            birth_date=date(today.year - 17, today.month, today.day),
+            birth_time=None,
+            birth_time_precision="unknown",
+            birth_timezone="UTC",
+        )
+    assert exc.value.error_code == "underage_user"
+
+    # 1c. Boundary: exactly 18 years old today must pass
+    validate_birth_data(
+        birth_date=date(today.year - 18, today.month, today.day),
+        birth_time=None,
+        birth_time_precision="unknown",
+        birth_timezone="UTC",
+    )
+
     # 2. Inconsistent unknown time with time provided
     with pytest.raises(JesterAPIException) as exc:
         validate_birth_data(

@@ -20,7 +20,8 @@ def validate_birth_data(
     Raises JesterAPIException on invalid inputs.
     """
     # 1. Validate birth date
-    if birth_date > date.today():
+    today = date.today()
+    if birth_date > today:
         raise JesterAPIException(
             status_code=400,
             error_code="invalid_birth_date",
@@ -31,6 +32,15 @@ def validate_birth_data(
             status_code=400,
             error_code="invalid_birth_date",
             message="Birth date cannot precede 1900",
+        )
+
+    # 18+ product policy (JESTER_PRODUCT_FOUNDATION.md Section 12.6)
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    if age < 18:
+        raise JesterAPIException(
+            status_code=400,
+            error_code="underage_user",
+            message="JESTER is strictly 18+. Users must be at least 18 years of age.",
         )
 
     # 2. Validate timezone

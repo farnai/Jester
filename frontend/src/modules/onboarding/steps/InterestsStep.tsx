@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { API } from "../../../core/api/endpoints";
 import { InterestItem } from "../../../core/api/types";
 import { LoadingState } from "../../../shared/StatusState";
@@ -11,39 +11,16 @@ interface InterestsStepProps {
   onBack: () => void;
 }
 
-const ICON_MAP: Record<string, string> = {
-  compass: "🧭",
-  utensils: "🍽️",
-  music: "🎧",
-  film: "🎬",
-  "book-open": "📖",
-  palette: "🎨",
-  dumbbell: "🏃",
-  laptop: "💻",
-  code: "💻",
-  atom: "🔬",
-  heart: "❤️",
-  coffee: "☕",
-  sparkles: "✨",
-  globe: "🌍",
-  plane: "✈️",
-  camera: "📷",
-  tv: "📺",
-  gamepad: "🎮",
-  activity: "⚡",
-  smile: "😊",
-  sun: "☀️",
-  moon: "🌙",
-};
-
-const resolveCategoryIcon = (iconName?: string | null, slug?: string): string => {
-  if (iconName && ICON_MAP[iconName.toLowerCase()]) {
-    return ICON_MAP[iconName.toLowerCase()];
-  }
-  if (slug && ICON_MAP[slug.toLowerCase()]) {
-    return ICON_MAP[slug.toLowerCase()];
-  }
-  return "✨";
+const CATEGORY_ICONS: Record<string, string> = {
+  "music-stage": "🎧",
+  "cinema-books-stories": "🎬",
+  "art-creativity": "🎨",
+  "food-city": "🍽️",
+  "travel-nature": "🧭",
+  "sports-movement": "🏃",
+  "games-tech": "🎮",
+  "knowledge-mind": "📖",
+  "hobbies-lifestyle": "✨",
 };
 
 export const InterestsStep: React.FC<InterestsStepProps> = ({
@@ -55,9 +32,14 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
   const [interests, setInterests] = useState<InterestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set(selectedIds));
+  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  // Load catalog from API
   useEffect(() => {
     let isMounted = true;
     API.interests
@@ -68,9 +50,9 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
         }
       })
       .catch((err) => {
-        console.error("Failed to load interests:", err);
+        console.error("Failed to load interests catalog:", err);
         if (isMounted) {
-          setError("ინტერესების ჩატვირთვა ვერ მოხერხდა.");
+          setError("ინტერესების კატალოგის ჩატვირთვა ვერ მოხერხდა. გთხოვთ სცადოთ ხელახლა.");
         }
       })
       .finally(() => {
@@ -82,6 +64,32 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
     };
   }, []);
 
+  // Map of interest by ID for rapid lookup (e.g. for selected tray)
+  const interestMap = useMemo(() => {
+    const map = new Map<string, InterestItem>();
+    interests.forEach((item) => map.set(item.id, item));
+    return map;
+  }, [interests]);
+
+  // Distinct categories ordered as returned by API
+  const categoryTabs = useMemo(() => {
+    const map = new Map<string, { slug: string; name: string; icon: string; count: number }>();
+    interests.forEach((item) => {
+      const slug = item.category_slug || "other";
+      if (!map.has(slug)) {
+        map.set(slug, {
+          slug,
+          name: item.category_name_ka || item.category_name || "სხვა",
+          icon: CATEGORY_ICONS[slug] || "✨",
+          count: 0,
+        });
+      }
+      map.get(slug)!.count += 1;
+    });
+    return Array.from(map.values());
+  }, [interests]);
+
+  // Toggle selection with strict 3..7 constraint enforcement
   const toggleInterest = (id: string) => {
     setError(null);
     setSelected((prev) => {
@@ -89,8 +97,21 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
       if (next.has(id)) {
         next.delete(id);
       } else {
+        if (next.size >= 7) {
+          setError("მაქსიმუმ 7 ინტერესის არჩევაა შესაძლებელი.");
+          return prev;
+        }
         next.add(id);
       }
+      return next;
+    });
+  };
+
+  const removeSelectedInterest = (id: string) => {
+    setError(null);
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
       return next;
     });
   };
@@ -108,85 +129,171 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
       setError("გთხოვთ აირჩიოთ მინიმუმ 3 ინტერესი, ან გამოიყენეთ 'გამოტოვება'.");
       return;
     }
+    if (count > 7) {
+      setError("მაქსიმუმ 7 ინტერესის არჩევაა შესაძლებელი.");
+      return;
+    }
 
     onNext(Array.from(selected));
   };
 
-  // Group interests by category
+  // Search filter across Georgian name, English name, and aliases
   const filteredInterests = useMemo(() => {
-    if (!searchQuery.trim()) return interests;
-    const query = searchQuery.toLowerCase().trim();
-    return interests.filter(
-      (item) =>
-        item.name.toLowerCase().includes(query) ||
-        item.category_name.toLowerCase().includes(query)
-    );
-  }, [interests, searchQuery]);
+    const q = searchQuery.toLowerCase().trim();
 
-  const categories = useMemo(() => {
-    const map = new Map<string, { name: string; slug: string; icon?: string | null; items: InterestItem[] }>();
+    return interests.filter((item) => {
+      // 1. Category filter
+      if (activeCategory !== "all" && item.category_slug !== activeCategory) {
+        return false;
+      }
+
+      // 2. Query search
+      if (!q) return true;
+
+      const candidates = [
+        item.name,
+        item.name_ka || "",
+        item.name_en || "",
+        ...(item.aliases || []),
+        item.category_name || "",
+        item.category_name_ka || "",
+        item.category_name_en || "",
+      ];
+
+      return candidates.some((text) => text.toLowerCase().includes(q));
+    });
+  }, [interests, activeCategory, searchQuery]);
+
+  // Group filtered results by category for clear hierarchical presentation
+  const groupedCategories = useMemo(() => {
+    const map = new Map<string, { slug: string; name: string; icon: string; items: InterestItem[] }>();
 
     filteredInterests.forEach((item) => {
-      const catKey = item.category_slug || item.category_name || "other";
-      if (!map.has(catKey)) {
-        map.set(catKey, {
-          name: item.category_name || "სხვა",
-          slug: item.category_slug || "other",
-          icon: item.category_icon,
+      const slug = item.category_slug || "other";
+      if (!map.has(slug)) {
+        map.set(slug, {
+          slug,
+          name: item.category_name_ka || item.category_name || "სხვა",
+          icon: CATEGORY_ICONS[slug] || "✨",
           items: [],
         });
       }
-      map.get(catKey)!.items.push(item);
+      map.get(slug)!.items.push(item);
     });
 
     return Array.from(map.values());
   }, [filteredInterests]);
 
   if (loading) {
-    return <LoadingState message="ინტერესების სიის ჩატვირთვა..." />;
+    return <LoadingState message="ინტერესების კატალოგი იტვირთება..." />;
   }
 
   const count = selected.size;
-  const isReady = count >= 3;
+  const isMaxReached = count >= 7;
+
+  // Selected items array for the overview tray
+  const selectedItems = Array.from(selected)
+    .map((id) => interestMap.get(id))
+    .filter((item): item is InterestItem => Boolean(item));
 
   return (
-    <form onSubmit={handleContinue} className="interests-step-container">
-      <div className="interests-step-header">
-        <h2>6. რა გაინტერესებს?</h2>
-        <p>აირჩიე მინიმუმ 3 თემა, რათა JESTER-მა შეძლოს შენთან რეზონანსული ადამიანების პოვნა.</p>
+    <form onSubmit={handleContinue} className="interests-step-v2">
+      {/* Header */}
+      <div className="interests-v2-header">
+        <span className="interests-v2-step-tag">ნაბიჯი 6 / 7</span>
+        <h2>რა გაინტერესებს?</h2>
+        <p>
+          აირჩიე <strong>3-დან 7-მდე</strong> ინტერესი, რათა JESTER-მა შეძლოს შენთან
+          რეზონანსული ადამიანების პოვნა და საუბრის დაწყება.
+        </p>
       </div>
 
+      {/* Error Notice */}
       {error && (
-        <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "10px", color: "#dc2626", fontSize: "12px" }}>
-          ⚠️ {error}
+        <div className="interests-v2-alert" role="alert">
+          <span className="interests-v2-alert-icon">⚠️</span>
+          <span>{error}</span>
         </div>
       )}
 
-      {/* Status Bar with Counter & Search */}
-      <div className="interests-status-bar">
-        <div className={`interests-counter-badge ${isReady ? "ready" : "pending"}`}>
-          <span>{isReady ? "✓" : "●"}</span>
-          <span>
-            არჩეულია: {count} {count > 0 && count < 3 && `(კიდევ ${3 - count})`}
-          </span>
+      {/* Selected Items Tray & Status Counter */}
+      <section className="interests-v2-tray-card" aria-label="შერჩეული ინტერესები">
+        <div className="interests-v2-tray-header">
+          <div className="interests-v2-counter-group">
+            <span className="interests-v2-counter-label">შერჩეულია</span>
+            <span
+              className={`interests-v2-counter-pill ${
+                count === 0
+                  ? "empty"
+                  : count < 3
+                  ? "need-more"
+                  : isMaxReached
+                  ? "maxed"
+                  : "ready"
+              }`}
+            >
+              {count} / 7
+            </span>
+          </div>
+
+          <div className="interests-v2-counter-hint">
+            {count === 0 && "აირჩიეთ მინიმუმ 3 თემა"}
+            {count > 0 && count < 3 && `დარჩა კიდევ ${3 - count} ინტერესი`}
+            {count >= 3 && count < 7 && "მზადაა გასაგრძელებლად (შეგიძლიათ კიდევ დაამატოთ)"}
+            {isMaxReached && "მიღწეულია მაქსიმალური ლიმიტი (7)"}
+          </div>
         </div>
 
-        <div className="interests-search-box">
-          <svg viewBox="0 0 20 20" fill="none" stroke="#9c978f" strokeWidth="1.8" width="14" height="14" aria-hidden="true">
+        {selectedItems.length > 0 && (
+          <div className="interests-v2-tray-chips">
+            {selectedItems.map((item) => (
+              <span key={item.id} className="interests-v2-tray-chip">
+                <span>{item.name_ka || item.name}</span>
+                <button
+                  type="button"
+                  aria-label={`წაშლა: ${item.name_ka || item.name}`}
+                  onClick={() => removeSelectedInterest(item.id)}
+                  className="interests-v2-tray-chip-remove"
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Search Input Bar */}
+      <div className="interests-v2-search-container">
+        <div className="interests-v2-search-box">
+          <svg
+            className="interests-v2-search-icon"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
             <circle cx="8.5" cy="8.5" r="5.5" />
             <path d="M13 13l4 4" strokeLinecap="round" />
           </svg>
           <input
-            type="text"
-            placeholder="ძებნა..."
+            ref={searchInputRef}
+            type="search"
+            aria-label="ინტერესების ძებნა"
+            placeholder="ძებნა (მაგ. როკი, კინო, იოგა, anime, tech)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           {searchQuery && (
             <button
               type="button"
-              onClick={() => setSearchQuery("")}
-              style={{ border: 0, background: "transparent", color: "#9c978f", cursor: "pointer", fontSize: "12px", padding: 0 }}
+              aria-label="ძებნის გასუფთავება"
+              onClick={() => {
+                setSearchQuery("");
+                searchInputRef.current?.focus();
+              }}
+              className="interests-v2-search-clear"
             >
               ✕
             </button>
@@ -194,55 +301,127 @@ export const InterestsStep: React.FC<InterestsStepProps> = ({
         </div>
       </div>
 
-      {/* Categorized Pills Grid */}
-      <div className="interests-categories-wrapper">
-        {categories.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "30px", color: "#8c8880", fontSize: "13px" }}>
-            ინტერესები ვერ მოიძებნა.
+      {/* Horizontal Category Quick-Filter Bar */}
+      <nav
+        ref={categoryScrollRef}
+        className="interests-v2-categories-nav"
+        aria-label="კატეგორიების ფილტრი"
+      >
+        <button
+          type="button"
+          onClick={() => setActiveCategory("all")}
+          className={`interests-v2-cat-btn ${activeCategory === "all" ? "active" : ""}`}
+          aria-pressed={activeCategory === "all"}
+        >
+          <span className="interests-v2-cat-icon">✨</span>
+          <span>ყველა</span>
+          <span className="interests-v2-cat-count">{interests.length}</span>
+        </button>
+
+        {categoryTabs.map((cat) => {
+          const isActive = activeCategory === cat.slug;
+          return (
+            <button
+              key={cat.slug}
+              type="button"
+              onClick={() => setActiveCategory(cat.slug)}
+              className={`interests-v2-cat-btn ${isActive ? "active" : ""}`}
+              aria-pressed={isActive}
+            >
+              <span className="interests-v2-cat-icon">{cat.icon}</span>
+              <span>{cat.name}</span>
+              <span className="interests-v2-cat-count">{cat.count}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Grouped Interest Pills */}
+      <div className="interests-v2-grid-scroll">
+        {groupedCategories.length === 0 ? (
+          <div className="interests-v2-empty-state">
+            <span className="interests-v2-empty-icon">🔍</span>
+            <h3>ინტერესი ვერ მოიძებნა</h3>
+            <p>
+              სცადეთ სხვა საძიებო სიტყვა (ქართულად ან ინგლისურად), ან აირჩიეთ კატეგორია „ყველა“.
+            </p>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="interests-v2-btn-reset-search"
+              >
+                ძებნის გასუფთავება
+              </button>
+            )}
           </div>
         ) : (
-          categories.map((cat) => {
-            const catIcon = resolveCategoryIcon(cat.icon, cat.slug);
-            return (
-              <div key={cat.slug} className="interests-category-group">
-                <div className="interests-category-title">
-                  <span>{catIcon}</span>
-                  <span>{cat.name}</span>
-                </div>
-                <div className="interests-pills-grid">
-                  {cat.items.map((item) => {
-                    const isSelected = selected.has(item.id);
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleInterest(item.id)}
-                        className={`interest-pill ${isSelected ? "is-selected" : ""}`}
-                        aria-pressed={isSelected}
-                      >
-                        <span className="interest-pill-check">{isSelected ? "✓" : "+"}</span>
-                        <span>{item.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+          groupedCategories.map((group) => (
+            <div key={group.slug} className="interests-v2-group-card">
+              <div className="interests-v2-group-title">
+                <span className="interests-v2-group-icon">{group.icon}</span>
+                <h4>{group.name}</h4>
               </div>
-            );
-          })
+
+              <div className="interests-v2-pills">
+                {group.items.map((item) => {
+                  const isSelected = selected.has(item.id);
+                  const isBlocked = !isSelected && isMaxReached;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      disabled={isBlocked}
+                      onClick={() => toggleInterest(item.id)}
+                      className={`interests-v2-pill ${isSelected ? "selected" : ""} ${
+                        isBlocked ? "disabled" : ""
+                      }`}
+                      aria-pressed={isSelected}
+                      title={
+                        isBlocked
+                          ? "მაქსიმუმ 7 ინტერესია ნებადართული"
+                          : item.name_en
+                          ? `${item.name_ka || item.name} (${item.name_en})`
+                          : item.name_ka || item.name
+                      }
+                    >
+                      <span className="interests-v2-pill-check" aria-hidden="true">
+                        {isSelected ? "✓" : "+"}
+                      </span>
+                      <span className="interests-v2-pill-text">
+                        {item.name_ka || item.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))
         )}
       </div>
 
-      {/* Actions */}
-      <div className="interests-actions">
-        <button type="button" className="interests-btn-back" onClick={onBack}>
-          ⬅️ უკან
+      {/* Continuation Actions Footer */}
+      <div className="interests-v2-footer">
+        <button
+          type="button"
+          className="interests-v2-btn-back"
+          onClick={onBack}
+        >
+          ← უკან
         </button>
-        <button type="button" className="interests-btn-skip" onClick={onSkip}>
+
+        <button
+          type="button"
+          className="interests-v2-btn-skip"
+          onClick={onSkip}
+        >
           გამოტოვება
         </button>
+
         <button
           type="submit"
-          className="interests-btn-next"
+          className="interests-v2-btn-submit"
           disabled={count > 0 && count < 3}
         >
           <span>შემდეგი</span>

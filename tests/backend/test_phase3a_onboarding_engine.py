@@ -272,12 +272,13 @@ async def test_step6_interests_lifecycle_and_validation(db_conn):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         await ac.post("/v1/profiles/initialize", headers={"Authorization": f"Bearer {token}"})
 
-        # 12. Load candidate pool
+        # 12. Load candidate pool (V2 canonical catalog: 79 items)
         list_res = await ac.get("/v1/interests")
         assert list_res.status_code == 200
         items = list_res.json()["items"]
-        assert len(items) >= 20
-        interest_ids = [item["id"] for item in items[:4]]
+        assert len(items) == 79
+        assert all("name_ka" in item and "name_en" in item and "aliases" in item for item in items)
+        interest_ids = [item["id"] for item in items[:9]]
 
         # 14. 1 or 2 selected interests rejected with 400
         res_one = await ac.put(
@@ -296,7 +297,16 @@ async def test_step6_interests_lifecycle_and_validation(db_conn):
         assert res_two.status_code == 400
         assert res_two.json()["error"]["code"] == "min_three_interests_required"
 
-        # 13 & 16. 3 interests can be saved; duplicates in input payload are deduplicated
+        # 14b. More than 7 selected interests rejected with 400 (max_seven_interests_exceeded)
+        res_eight = await ac.put(
+            "/v1/interests/me",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"interest_ids": interest_ids[:8]},
+        )
+        assert res_eight.status_code == 400
+        assert res_eight.json()["error"]["code"] == "max_seven_interests_exceeded"
+
+        # 13 & 16. 3 to 7 interests can be saved; duplicates in input payload are deduplicated
         res_three = await ac.put(
             "/v1/interests/me",
             headers={"Authorization": f"Bearer {token}"},
@@ -306,10 +316,19 @@ async def test_step6_interests_lifecycle_and_validation(db_conn):
         saved_ids = res_three.json()["interest_ids"]
         assert len(saved_ids) == 3
 
-        # Verify in database: exactly 3 rows, no duplicates
+        # 13b. Saving maximum allowed (7 interests) succeeds
+        res_seven = await ac.put(
+            "/v1/interests/me",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"interest_ids": interest_ids[:7]},
+        )
+        assert res_seven.status_code == 200
+        assert len(res_seven.json()["interest_ids"]) == 7
+
+        # Verify in database: exactly 7 rows, no duplicates
         with db_conn.cursor() as cur:
             cur.execute("SELECT count(*) as cnt FROM public.user_interests WHERE user_id = %s;", (uid,))
-            assert cur.fetchone()["cnt"] == 3
+            assert cur.fetchone()["cnt"] == 7
 
         # 15. Explicit skip allows zero interests
         res_skip = await ac.put(

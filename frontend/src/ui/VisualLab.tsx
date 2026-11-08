@@ -14,9 +14,13 @@ import {
 } from "./primitives";
 import { colors, spacing } from "./tokens";
 import { haptics, clipboard, storage } from "../platform";
+import { BirthDateInput } from "../shared/ui";
+import { InterestsStep } from "../modules/onboarding/steps/InterestsStep";
 
 export const VisualLab: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
+  const [labBirthDate, setLabBirthDate] = useState("1996-07-20");
+  const [labInterests, setLabInterests] = useState<string[]>([]);
   const [buttonLoading, setButtonLoading] = useState(false);
   const [storageStatus, setStorageStatus] = useState("Untested");
   const [copyStatus, setCopyStatus] = useState("Click to copy token");
@@ -224,7 +228,7 @@ export const VisualLab: React.FC = () => {
       </Card>
 
       {/* 4. Form Controls & Input */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
+      <Card elevation="sm" style={{ marginBottom: 24, zIndex: 50, overflow: "visible" }}>
         <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
           4. Cross-Platform Input Controls
         </Text>
@@ -241,6 +245,43 @@ export const VisualLab: React.FC = () => {
           value="invalid_coordinates"
           error="სისტემური შეცდომა: მონაცემები არავალიდურია"
         />
+
+        <Divider spacing={16} />
+
+        {/* 4b. 3-Segment Birth Date Selector */}
+        <View style={{ marginTop: 8 }}>
+          <Text variant="base" weight="bold" color="primary" style={{ marginBottom: 12 }}>
+            4b. 3-Segment Birth Date Selector (დღე / თვე / წელი)
+          </Text>
+          <BirthDateInput
+            label="დაბადების თარიღი (Birth Date)"
+            required
+            value={labBirthDate}
+            onChange={(val) => setLabBirthDate(val)}
+            helperText="სრულად რესპონსიული, ქართული ლოკალიზაციითა და 18+ ვალიდაციით"
+          />
+          <Text variant="xs" color="secondary" style={{ marginTop: 8 }}>
+            მიმდინარე ISO მნიშვნელობა: {labBirthDate || "(ცარიელი / არავალიდური)"}
+          </Text>
+        </View>
+
+        <Divider spacing={16} />
+
+        {/* 4c. Interests System V2 */}
+        <View style={{ marginTop: 8 }}>
+          <Text variant="base" weight="bold" color="primary" style={{ marginBottom: 12 }}>
+            4c. Interests System V2 (9 Categories, 79 Interests)
+          </Text>
+          <InterestsStep
+            selectedIds={labInterests}
+            onNext={(ids) => setLabInterests(ids)}
+            onSkip={() => setLabInterests([])}
+            onBack={() => {}}
+          />
+          <Text variant="xs" color="secondary" style={{ marginTop: 8 }}>
+            შერჩეული ID-ები ({labInterests.length}): {labInterests.join(", ") || "(არცერთი არ არის შერჩეული)"}
+          </Text>
+        </View>
       </Card>
 
       {/* 5. Astrological Badges & Chips */}

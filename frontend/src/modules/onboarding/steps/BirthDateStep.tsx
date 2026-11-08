@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Button, Input } from "../../../shared/ui";
+import {
+  Button,
+  BirthDateInput,
+  parseIsoDate,
+  validateBirthDateParts,
+} from "../../../shared/ui";
 
 interface BirthDateStepProps {
   birthDate: string;
@@ -16,29 +21,20 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
 }) => {
   const [error, setError] = useState<string | null>(null);
 
-  const today = new Date().toISOString().split("T")[0];
-
   const validateAndProceed = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!birthDate) {
-      setError("დაბადების თარიღის მითითება სავალდებულოა.");
+      setError("დაბადების თარიღის მითითება სავალდებულოა (დღე, თვე, წელი).");
       return;
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
-      setError("თარიღის არასწორი ფორმატი (უნდა იყოს YYYY-MM-DD).");
-      return;
-    }
+    const { year, month, day } = parseIsoDate(birthDate);
+    const result = validateBirthDateParts(year, month, day, new Date(), true);
 
-    if (birthDate > today) {
-      setError("დაბადების თარიღი არ შეიძლება იყოს მომავალში.");
-      return;
-    }
-
-    if (birthDate < "1900-01-01") {
-      setError("დაბადების თარიღი უნდა იყოს 1900 წლის შემდეგ.");
+    if (!result.isValid) {
+      setError(result.error || "თარიღი არასწორია.");
       return;
     }
 
@@ -46,18 +42,38 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
   };
 
   return (
-    <form onSubmit={validateAndProceed} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <form
+      onSubmit={validateAndProceed}
+      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      noValidate
+    >
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3
+          style={{
+            margin: "0 0 0.4rem 0",
+            fontSize: "1.2rem",
+            fontWeight: 700,
+            color: "#0f172a",
+          }}
+        >
           2. დაბადების თარიღი (Birth Date)
         </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
-          დაბადების ზუსტი თარიღი განსაზღვრავს თქვენს მზის, მთვარისა და პლანეტების ნატალურ პოზიციებს.
+        <p
+          style={{
+            margin: "0 0 1.25rem 0",
+            color: "#64748b",
+            fontSize: "0.875rem",
+          }}
+        >
+          დაბადების ზუსტი თარიღი განსაზღვრავს თქვენს მზის, მთვარისა და
+          პლანეტების ნატალურ პოზიციებს.
         </p>
       </div>
 
       {error && (
         <div
+          role="alert"
+          aria-live="polite"
           style={{
             padding: "0.75rem",
             background: "#fff1f0",
@@ -71,18 +87,15 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
         </div>
       )}
 
-      <Input
-        label="დაბადების თარიღი (Birth Date) *"
-        type="date"
+      <BirthDateInput
+        label="დაბადების თარიღი (Birth Date)"
         required
         value={birthDate}
-        max={today}
-        min="1900-01-01"
-        onChange={(e) => {
-          setBirthDate(e.target.value);
+        onChange={(val) => {
+          setBirthDate(val);
           if (error) setError(null);
         }}
-        helperText="კალენდარული თარიღი (დღე / თვე / წელი)"
+        helperText="აირჩიეთ დღე, თვე და მიუთითეთ წელი (18+)"
       />
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>

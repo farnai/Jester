@@ -60,6 +60,11 @@ export interface InterestItem {
   category_slug: string;
   category_icon?: string | null;
   sort_order: number;
+  name_ka?: string;
+  name_en?: string;
+  aliases?: string[];
+  category_name_ka?: string;
+  category_name_en?: string;
 }
 
 export interface InterestsListResponse {

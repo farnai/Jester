@@ -163,19 +163,18 @@ def test_display_name_derivation_logic():
 # 3. INTEREST TAXONOMY & USER INTERESTS TESTS
 # =====================================================================
 
-def test_authoritative_18_categories_present(db_conn):
-    """Verify that all 18 canonical categories are present and active."""
-    expected_slugs = {
-        "travel-exploring", "food-drink", "music", "movies-tv", "books-ideas",
-        "creative", "culture-arts", "sports-fitness", "nature-outdoors", "games",
-        "technology", "science-space", "astrology-spirituality", "wellness-mindfulness",
-        "fashion-style", "animals-pets", "social-nightlife", "learning-life"
+def test_authoritative_categories_present(db_conn):
+    """Verify that all 9 canonical V2 categories are present and active, with legacy categories preserved."""
+    expected_v2_slugs = {
+        "music-stage", "cinema-books-stories", "art-creativity", "food-city",
+        "travel-nature", "sports-movement", "games-tech", "knowledge-mind",
+        "hobbies-lifestyle"
     }
     with db_conn.cursor() as cur:
         cur.execute("SELECT slug, status FROM public.interest_categories;")
         rows = cur.fetchall()
-        found_slugs = {r["slug"] for r in rows if r["status"] == "active"}
-        assert expected_slugs.issubset(found_slugs)
+        found_active_slugs = {r["slug"] for r in rows if r["status"] == "active"}
+        assert expected_v2_slugs.issubset(found_active_slugs)
         assert len(rows) >= 18
 
 
