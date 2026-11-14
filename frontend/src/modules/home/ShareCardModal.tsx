@@ -7,6 +7,22 @@ interface ShareCardModalProps {
   item: { id: string; label: string; text: string; sign_badge?: string } | null;
 }
 
+// Helper to resolve CSS variables for HTML5 Canvas rendering (guarantees rgb/rgba string)
+function getCanvasThemeColor(varName: string, fallback: string): string {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return fallback;
+  try {
+    const el = document.createElement('span');
+    el.style.display = 'none';
+    el.style.color = varName.startsWith('var(') ? varName : `var(${varName}, ${fallback})`;
+    document.body.appendChild(el);
+    const resolved = window.getComputedStyle(el).color;
+    document.body.removeChild(el);
+    return resolved || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export const ShareCardModal: React.FC<ShareCardModalProps> = ({
   isOpen,
   onClose,
@@ -68,11 +84,11 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     if (!ctx) return null;
 
     // Background Warm Canvas
-    ctx.fillStyle = '#FAF7F2';
+    ctx.fillStyle = getCanvasThemeColor('--home-bg-canvas', '#FAF7F2');
     ctx.fillRect(0, 0, 1080, 1080);
 
     // Subtle Brand Top Accent Bar
-    ctx.fillStyle = '#FF7A2F';
+    ctx.fillStyle = getCanvasThemeColor('--home-brand-orange', '#FF7A2F');
     ctx.fillRect(0, 0, 1080, 16);
 
     // White Inner Card
@@ -82,8 +98,8 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     const cardH = 840;
     const radius = 32;
 
-    ctx.fillStyle = '#FFFFFF';
-    ctx.strokeStyle = '#E6E0D7';
+    ctx.fillStyle = getCanvasThemeColor('--home-surface-card', '#FFFFFF');
+    ctx.strokeStyle = getCanvasThemeColor('--home-card-border', '#E6E0D7');
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(cardX, cardY, cardW, cardH, radius);
@@ -91,16 +107,16 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     ctx.stroke();
 
     // JESTER Branding Header
-    ctx.fillStyle = '#FF7A2F';
+    ctx.fillStyle = getCanvasThemeColor('--home-brand-orange', '#FF7A2F');
     ctx.font = 'bold 36px "Noto Sans Georgian", sans-serif';
     ctx.fillText('J E S T E R', cardX + 60, cardY + 90);
 
-    ctx.fillStyle = '#788292';
+    ctx.fillStyle = getCanvasThemeColor('--home-text-secondary', '#788292');
     ctx.font = '600 20px "Noto Sans Georgian", sans-serif';
     ctx.fillText('RELATIONSHIP INTELLIGENCE', cardX + 60, cardY + 125);
 
     // Divider Line
-    ctx.strokeStyle = '#F0EBE3';
+    ctx.strokeStyle = getCanvasThemeColor('--jester-primitive-border-divider', '#F0EBE3');
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(cardX + 60, cardY + 155);
@@ -108,19 +124,19 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     ctx.stroke();
 
     // Layer Badge / Subtitle
-    ctx.fillStyle = '#FF7A2F';
+    ctx.fillStyle = getCanvasThemeColor('--home-brand-orange', '#FF7A2F');
     ctx.font = 'bold 22px "Noto Sans Georgian", sans-serif';
     ctx.fillText(`შრე ${layer.number} • ${layer.title.toUpperCase()}`, cardX + 60, cardY + 210);
 
     // Item Label & Sign Badge
-    ctx.fillStyle = '#222630';
+    ctx.fillStyle = getCanvasThemeColor('--home-text-primary', '#222630');
     ctx.font = 'bold 34px "Noto Sans Georgian", sans-serif';
     const labelText = item.sign_badge ? `${item.label}  ( ${item.sign_badge} )` : item.label;
     ctx.fillText(labelText, cardX + 60, cardY + 270);
 
     // Quote Container Box
-    ctx.fillStyle = '#FFFBF7';
-    ctx.strokeStyle = '#FED7AA';
+    ctx.fillStyle = getCanvasThemeColor('--jester-primitive-cream-tint', '#FFFBF7');
+    ctx.strokeStyle = getCanvasThemeColor('--jester-primitive-onboard-cream-border', '#FED7AA');
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(cardX + 60, cardY + 310, cardW - 120, 380, 20);
@@ -128,22 +144,22 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     ctx.stroke();
 
     // Orange left border accent on quote
-    ctx.fillStyle = '#FF7A2F';
+    ctx.fillStyle = getCanvasThemeColor('--home-brand-orange', '#FF7A2F');
     ctx.beginPath();
     ctx.roundRect(cardX + 60, cardY + 310, 8, 380, [20, 0, 0, 20]);
     ctx.fill();
 
     // Interpretation Quote Text
-    ctx.fillStyle = '#272C36';
+    ctx.fillStyle = getCanvasThemeColor('--jester-primitive-ink-deep', '#272C36');
     ctx.font = 'italic 500 28px "Noto Sans Georgian", sans-serif';
     wrapText(ctx, `„${item.text}“`, cardX + 100, cardY + 380, cardW - 200, 48);
 
     // Privacy Notice & Watermark inside card
-    ctx.fillStyle = '#8C94A0';
+    ctx.fillStyle = getCanvasThemeColor('--jester-primitive-ink-watermark', '#8C94A0');
     ctx.font = '500 18px "Noto Sans Georgian", sans-serif';
     ctx.fillText('ასტრონომიულად დამოწმებული პირადი ინტერპრეტაცია', cardX + 60, cardY + 740);
 
-    ctx.fillStyle = '#FF7A2F';
+    ctx.fillStyle = getCanvasThemeColor('--home-brand-orange', '#FF7A2F');
     ctx.font = 'bold 22px "Noto Sans Georgian", sans-serif';
     ctx.fillText('jester.ge', cardX + cardW - 180, cardY + 740);
 

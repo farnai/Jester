@@ -116,12 +116,12 @@ export const ResetPasswordPage: React.FC = () => {
               margin: "0 0 0.4rem 0",
               fontSize: "1.45rem",
               fontWeight: 800,
-              color: "#0f172a",
+              color: "var(--jester-color-text-primary)",
             }}
           >
             {isRecoveryMode ? "ახალი პაროლის დაყენება" : "პაროლის აღდგენა"}
           </h2>
-          <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>
+          <p style={{ margin: 0, color: "var(--jester-color-text-secondary)", fontSize: "0.85rem" }}>
             {isRecoveryMode
               ? "შეიყვანეთ თქვენი ახალი პაროლი ანგარიშში შესასვლელად."
               : "შეიყვანეთ თქვენი ელფოსტა და ჩვენ გამოგიგზავნით აღდგენის ბმულს."}
@@ -133,10 +133,10 @@ export const ResetPasswordPage: React.FC = () => {
             style={{
               padding: "0.75rem",
               marginBottom: "1.2rem",
-              background: "#fff1f0",
-              border: "1px solid #ff4d4f",
+              background: "var(--jester-color-danger-bg)",
+              border: "1px solid var(--jester-color-danger-border)",
               borderRadius: "6px",
-              color: "#cf1322",
+              color: "var(--jester-color-danger-text)",
               fontSize: "0.85rem",
             }}
           >
@@ -150,10 +150,10 @@ export const ResetPasswordPage: React.FC = () => {
               style={{
                 padding: "1rem",
                 marginBottom: "1.5rem",
-                background: "#f6ffed",
-                border: "1px solid #b7eb8f",
+                background: "var(--jester-color-success-bg)",
+                border: "1px solid var(--jester-color-success-border)",
                 borderRadius: "6px",
-                color: "#389e0d",
+                color: "var(--jester-color-success-text)",
                 fontSize: "0.9rem",
               }}
             >
@@ -164,8 +164,8 @@ export const ResetPasswordPage: React.FC = () => {
               style={{
                 display: "inline-block",
                 padding: "0.75rem 1.5rem",
-                background: "#6366f1",
-                color: "#fff",
+                background: "var(--jester-color-brand-primary)",
+                color: "var(--jester-color-brand-text)",
                 borderRadius: "8px",
                 textDecoration: "none",
                 fontWeight: 600,
@@ -233,12 +233,12 @@ export const ResetPasswordPage: React.FC = () => {
             marginTop: "1.5rem",
             textAlign: "center",
             fontSize: "0.85rem",
-            borderTop: "1px solid #f1f5f9",
+            borderTop: "1px solid var(--jester-color-border-subtle)",
             paddingTop: "1rem",
-            color: "#64748b",
+            color: "var(--jester-color-text-secondary)",
           }}
         >
-          <Link to="/auth/login" style={{ color: "#6366f1", fontWeight: "bold", textDecoration: "none" }}>
+          <Link to="/auth/login" style={{ color: "var(--jester-color-auth-link)", fontWeight: "bold", textDecoration: "none" }}>
             ⬅️ შესვლის გვერდზე დაბრუნება (Back to Log In)
           </Link>
         </div>

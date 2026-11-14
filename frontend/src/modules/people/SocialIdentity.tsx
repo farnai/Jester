@@ -198,7 +198,7 @@ function ProfilePersonality({ owner, editable, initialVisibility }: { owner: str
               id="personality-vis-select"
               value={visibility}
               onChange={(e) => setVisibility(e.target.value as VisibilityPolicy)}
-              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--jester-primitive-slate-300, #CBD5E1)' }}
             >
               <option value="public">საჯარო (Public)</option>
               <option value="connections_only">მხოლოდ კონტაქტებისთვის (Connections)</option>
@@ -320,7 +320,7 @@ function ProfileIntentions({ owner, editable, initialVisibility }: { owner: stri
               id="intentions-vis-select"
               value={visibility}
               onChange={(e) => setVisibility(e.target.value as VisibilityPolicy)}
-              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--jester-primitive-slate-300, #CBD5E1)' }}
             >
               <option value="public">საჯარო (Public)</option>
               <option value="connections_only">მხოლოდ კონტაქტებისთვის (Connections)</option>

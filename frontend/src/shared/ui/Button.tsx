@@ -45,46 +45,46 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles: Record<string, React.CSSProperties> = {
     primary: {
-      backgroundColor: "#FF7A2F",
-      color: "#222630", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast (white on #FF7A2F is only 2.60:1)
-      border: "1px solid #E9681F",
+      backgroundColor: "var(--jester-color-brand-primary)",
+      color: "var(--jester-color-brand-text)", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast (white on #FF7A2F is only 2.60:1)
+      border: "1px solid var(--jester-color-brand-border)",
       fontWeight: 700,
     },
     brand: {
-      backgroundColor: "#FF7A2F",
-      color: "#222630", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast
-      border: "1px solid #E9681F",
-      boxShadow: "0 2px 6px rgba(255, 122, 47, 0.22)",
+      backgroundColor: "var(--jester-color-brand-primary)",
+      color: "var(--jester-color-brand-text)", // ACCESSIBILITY FIX: 5.82:1 WCAG AA contrast
+      border: "1px solid var(--jester-color-brand-border)",
+      boxShadow: "var(--jester-shadow-brand-glow)",
       fontWeight: 700,
     },
     primaryDark: {
-      backgroundColor: "#9E4215", // Dark-orange variant when white text is desired (6.47:1)
-      color: "#FFFFFF",
-      border: "1px solid #713111",
+      backgroundColor: "var(--jester-color-brand-dark)", // Dark-orange variant when white text is desired (6.47:1)
+      color: "var(--jester-color-brand-dark-text)",
+      border: "1px solid var(--jester-color-brand-dark-border)",
       fontWeight: 700,
     },
     secondary: {
-      backgroundColor: "#FFFFFF",
-      color: "#222630",
-      border: "1px solid #D8D1C7",
+      backgroundColor: "var(--jester-color-surface)",
+      color: "var(--jester-color-text-primary)",
+      border: "1px solid var(--jester-color-border-medium)",
       fontWeight: 600,
     },
     outline: {
       backgroundColor: "transparent",
-      color: "#222630",
-      border: "1px solid #8F8A83",
+      color: "var(--jester-color-text-primary)",
+      border: "1px solid var(--jester-color-border-interactive)",
       fontWeight: 600,
     },
     ghost: {
       backgroundColor: "transparent",
-      color: "#6A716F",
+      color: "var(--jester-color-text-secondary)",
       border: "1px solid transparent",
       fontWeight: 600,
     },
     danger: {
-      backgroundColor: "#FBE9E8",
-      color: "#AE3534",
-      border: "1px solid #F5C6C5",
+      backgroundColor: "var(--jester-color-danger-bg)",
+      color: "var(--jester-color-danger-text)",
+      border: "1px solid var(--jester-color-danger-border)",
       fontWeight: 600,
     },
   };

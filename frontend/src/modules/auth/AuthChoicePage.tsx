@@ -43,7 +43,7 @@ export const AuthChoicePage: React.FC = () => {
             margin: "0 0 0.5rem 0",
             fontSize: "1.45rem",
             fontWeight: 800,
-            color: "#0f172a",
+            color: "var(--jester-color-text-primary)",
           }}
         >
           შემოუერთდით JESTER-ს
@@ -52,7 +52,7 @@ export const AuthChoicePage: React.FC = () => {
         <p
           style={{
             margin: "0 0 1.5rem 0",
-            color: "#64748b",
+            color: "var(--jester-color-text-secondary)",
             fontSize: "0.9rem",
             lineHeight: 1.5,
           }}
@@ -65,10 +65,10 @@ export const AuthChoicePage: React.FC = () => {
             style={{
               padding: "0.75rem",
               marginBottom: "1.2rem",
-              background: "#fff1f0",
-              border: "1px solid #ff4d4f",
+              background: "var(--jester-color-danger-bg)",
+              border: "1px solid var(--jester-color-danger-border)",
               borderRadius: "6px",
-              color: "#cf1322",
+              color: "var(--jester-color-danger-text)",
               fontSize: "0.85rem",
             }}
           >
@@ -80,10 +80,10 @@ export const AuthChoicePage: React.FC = () => {
           <SocialAuthButtons onError={(err) => setError(err)} />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "#94a3b8" }}>
-          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+        <div style={{ display: "flex", alignItems: "center", margin: "1.2rem 0", color: "var(--jester-color-auth-divider-text)" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--jester-color-border-subtle)" }} />
           <span style={{ padding: "0 0.75rem", fontSize: "0.8rem", textTransform: "uppercase" }}>ან ელფოსტით</span>
-          <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+          <div style={{ flex: 1, height: "1px", background: "var(--jester-color-border-subtle)" }} />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -112,7 +112,7 @@ export const AuthChoicePage: React.FC = () => {
               style={{
                 background: "none",
                 border: "none",
-                color: "#64748b",
+                color: "var(--jester-color-text-secondary)",
                 fontSize: "0.85rem",
                 cursor: "pointer",
                 padding: "0.4rem",

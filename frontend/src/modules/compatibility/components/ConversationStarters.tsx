@@ -70,12 +70,12 @@ export const ConversationStarters: React.FC<ConversationStartersProps> = ({
             margin: "0 0 0.25rem 0",
             fontSize: "1.15rem",
             fontWeight: 700,
-            color: "#0f172a",
+            color: "var(--jester-primitive-slate-900, #0f172a)",
           }}
         >
           საუბრის იდეები
         </h2>
-        <p style={{ margin: 0, fontSize: "0.88rem", color: "#64748b" }}>
+        <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
           ინსაითი, რომელიც შეგიძლიათ გამოიყენოთ დიალოგის დასაწყებად.
         </p>
       </div>
@@ -91,9 +91,9 @@ export const ConversationStarters: React.FC<ConversationStartersProps> = ({
                 variant="default"
                 size="md"
                 style={{
-                  backgroundColor: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  color: "#334155",
+                  backgroundColor: "var(--jester-primitive-slate-50, #f8fafc)",
+                  border: "1px solid var(--jester-primitive-slate-200, #e2e8f0)",
+                  color: "var(--jester-primitive-slate-700, #334155)",
                   fontWeight: 500,
                 }}
               >
@@ -112,8 +112,8 @@ export const ConversationStarters: React.FC<ConversationStartersProps> = ({
               key={i}
               padded
               style={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #f1f5f9",
+                backgroundColor: "var(--jester-primitive-white, #ffffff)",
+                border: "1px solid var(--jester-primitive-slate-100, #f1f5f9)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.75rem",
@@ -122,7 +122,7 @@ export const ConversationStarters: React.FC<ConversationStartersProps> = ({
               <div
                 style={{
                   fontSize: "0.95rem",
-                  color: "#1e293b",
+                  color: "var(--jester-primitive-slate-800, #1e293b)",
                   lineHeight: 1.55,
                   fontStyle: "italic",
                 }}

@@ -42,7 +42,7 @@ export const WelcomePage: React.FC = () => {
             margin: "0 0 0.5rem 0",
             fontSize: "1.75rem",
             fontWeight: 800,
-            color: "#0f172a",
+            color: "var(--jester-color-text-primary)",
             letterSpacing: "-0.025em",
           }}
         >
@@ -52,7 +52,7 @@ export const WelcomePage: React.FC = () => {
         <p
           style={{
             margin: "0 0 2rem 0",
-            color: "#64748b",
+            color: "var(--jester-color-text-secondary)",
             fontSize: "0.95rem",
             lineHeight: 1.5,
           }}

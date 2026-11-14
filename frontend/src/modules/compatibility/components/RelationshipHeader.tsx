@@ -35,7 +35,7 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
         border: "1px solid var(--jester-border-soft)",
         borderRadius: "16px",
         padding: "1.75rem 1.5rem",
-        boxShadow: "0 2px 8px rgba(34, 38, 48, 0.04)",
+        boxShadow: "var(--jester-shadow-subtle, 0 2px 8px rgba(34, 38, 48, 0.04))",
       }}
     >
       {/* Top Navigation Row */}
@@ -86,8 +86,8 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
             name={viewerName}
             size="lg"
             style={{
-              border: "3px solid #ffffff",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.08)",
+              border: "3px solid var(--jester-primitive-white, #ffffff)",
+              boxShadow: "var(--jester-shadow-avatar-ring, 0 2px 6px rgba(0, 0, 0, 0.08))",
               zIndex: 2,
             }}
           />
@@ -105,8 +105,8 @@ export const RelationshipHeader: React.FC<RelationshipHeaderProps> = ({
             name={targetName}
             size="lg"
             style={{
-              border: "3px solid #ffffff",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.08)",
+              border: "3px solid var(--jester-primitive-white, #ffffff)",
+              boxShadow: "var(--jester-shadow-avatar-ring, 0 2px 6px rgba(0, 0, 0, 0.08))",
               zIndex: 2,
             }}
           />

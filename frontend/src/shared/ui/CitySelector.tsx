@@ -240,7 +240,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
       <span>
         {parts.map((part, i) =>
           part.toLowerCase() === highlight.trim().toLowerCase() ? (
-            <strong key={i} style={{ color: "#4f46e5", fontWeight: 700 }}>
+            <strong key={i} style={{ color: "var(--jester-color-brand-primary)", fontWeight: 700 }}>
               {part}
             </strong>
           ) : (
@@ -270,15 +270,15 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
             justifyContent: "space-between",
             fontSize: "0.85rem",
             fontWeight: 600,
-            color: "#1e293b",
+            color: "var(--jester-primitive-slate-800)",
             marginBottom: "0.35rem",
           }}
         >
           <span>
-            {label} {required && <span style={{ color: "#ef4444" }}>*</span>}
+            {label} {required && <span style={{ color: "var(--jester-color-danger-text)" }}>*</span>}
           </span>
           {value && (
-            <span style={{ fontSize: "0.75rem", color: "#10b981", fontWeight: 700 }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--jester-primitive-strength-strong)", fontWeight: 700 }}>
               ✓ არჩეულია
             </span>
           )}
@@ -293,10 +293,10 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
             alignItems: "center",
             justifyContent: "space-between",
             padding: "0.85rem 1rem",
-            backgroundColor: "#f8fafc",
+            backgroundColor: "var(--jester-primitive-slate-50)",
             border: "1.5px solid var(--jester-brand-orange-500)",
             borderRadius: "8px",
-            boxShadow: "0 1px 3px rgba(255, 122, 47, 0.1)",
+            boxShadow: "var(--jester-shadow-brand-focus, 0 1px 3px color-mix(in srgb, var(--jester-primitive-orange-500) 10%, transparent))",
             transition: "all 0.15s ease",
           }}
         >
@@ -320,7 +320,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
               padding: "0.4rem 0.75rem",
               fontSize: "0.8rem",
               fontWeight: 600,
-              backgroundColor: "#ffffff",
+              backgroundColor: "var(--jester-color-surface, #ffffff)",
               color: "var(--jester-brand-orange-800)",
               border: "1px solid var(--jester-accent-peach)",
               borderRadius: "6px",
@@ -338,7 +338,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
             style={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: disabled ? "#f8fafc" : "#ffffff",
+              backgroundColor: disabled ? "var(--jester-primitive-slate-50)" : "var(--jester-color-surface, #ffffff)",
               border: `1.5px solid ${error ? "var(--jester-semantic-error)" : isOpen ? "var(--jester-brand-orange-800)" : "var(--jester-border-interactive)"}`,
               borderRadius: "8px",
               padding: "0 0.75rem",
@@ -347,7 +347,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
               boxSizing: "border-box",
             }}
           >
-            <span style={{ marginRight: "0.5rem", color: "#64748b", display: "flex" }}>
+            <span style={{ marginRight: "0.5rem", color: "var(--jester-color-onboard-subtitle)", display: "flex" }}>
               🔍
             </span>
 
@@ -371,7 +371,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                 outline: "none",
                 background: "transparent",
                 fontSize: "0.95rem",
-                color: "#0f172a",
+                color: "var(--jester-color-onboard-title)",
                 padding: "0.6rem 0",
                 minWidth: 0,
               }}
@@ -399,8 +399,8 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                 top: "calc(100% + 4px)",
                 left: 0,
                 right: 0,
-                backgroundColor: "#ffffff",
-                border: "1px solid #e2e8f0",
+                backgroundColor: "var(--jester-color-surface, #ffffff)",
+                border: "1px solid var(--jester-primitive-slate-200, #e2e8f0)",
                 borderRadius: "8px",
                 boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
                 maxHeight: "280px",
@@ -410,21 +410,21 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
               }}
             >
               {fetchError ? (
-                <div style={{ padding: "0.75rem", fontSize: "0.85rem", color: "#ef4444", textAlign: "center" }}>
+                <div style={{ padding: "0.75rem", fontSize: "0.85rem", color: "var(--jester-color-danger-text)", textAlign: "center" }}>
                   ⚠️ {fetchError}
                 </div>
               ) : query.trim().length === 1 ? (
                 /* Hint for 1 character */
-                <div style={{ padding: "0.6rem 0.8rem", fontSize: "0.825rem", color: "#64748b", textAlign: "center" }}>
+                <div style={{ padding: "0.6rem 0.8rem", fontSize: "0.825rem", color: "var(--jester-color-onboard-subtitle)", textAlign: "center" }}>
                   შეიყვანეთ მინიმუმ 2 სიმბოლო ქალაქის მოსაძებნად...
                 </div>
               ) : query.trim().length >= 2 ? (
                 /* STATE D: Search Results */
                 searchResults.length === 0 && !isLoading ? (
                   /* STATE E: No Results */
-                  <div style={{ padding: "1rem", fontSize: "0.85rem", color: "#64748b", textAlign: "center" }}>
+                  <div style={{ padding: "1rem", fontSize: "0.85rem", color: "var(--jester-color-onboard-subtitle)", textAlign: "center" }}>
                     <div>ქალაქი ვერ მოიძებნა (No city found)</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "4px" }}>
+                    <div style={{ fontSize: "0.75rem", color: "var(--jester-primitive-slate-400)", marginTop: "4px" }}>
                       სცადეთ ინგლისურად ან ქართული ტრანსლიტერაციით (მაგ. Tbilisi, Batumi, London...)
                     </div>
                   </div>
@@ -446,7 +446,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                           justifyContent: "space-between",
                           padding: "0.6rem 0.8rem",
                           borderRadius: "6px",
-                          backgroundColor: isHighlighted ? "#eef2ff" : "transparent",
+                          backgroundColor: isHighlighted ? "var(--jester-color-brand-subtle)" : "transparent",
                           cursor: "pointer",
                           transition: "background-color 0.1s ease",
                         }}
@@ -456,17 +456,17 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                             style={{
                               fontSize: "0.9rem",
                               fontWeight: 600,
-                              color: isHighlighted ? "#4338ca" : "#0f172a",
+                              color: isHighlighted ? "var(--jester-color-brand-dark)" : "var(--jester-color-onboard-title)",
                             }}
                           >
                             📍 {renderHighlighted(city.display_name, query)}
                           </div>
-                          <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "2px" }}>
+                          <div style={{ fontSize: "0.75rem", color: "var(--jester-color-onboard-subtitle)", marginTop: "2px" }}>
                             {subtitle}
                           </div>
                         </div>
 
-                        <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>
+                        <span style={{ fontSize: "0.75rem", color: "var(--jester-primitive-slate-400)", fontWeight: 600 }}>
                           {city.country_code}
                         </span>
                       </div>
@@ -480,7 +480,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                     style={{
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      color: "#64748b",
+                      color: "var(--jester-color-onboard-subtitle)",
                       textTransform: "uppercase",
                       letterSpacing: "0.05em",
                       padding: "0.3rem 0.6rem 0.4rem 0.6rem",
@@ -506,7 +506,7 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                           justifyContent: "space-between",
                           padding: "0.55rem 0.8rem",
                           borderRadius: "6px",
-                          backgroundColor: isHighlighted ? "#eef2ff" : "transparent",
+                          backgroundColor: isHighlighted ? "var(--jester-color-brand-subtle)" : "transparent",
                           cursor: "pointer",
                           transition: "background-color 0.1s ease",
                         }}
@@ -516,17 +516,17 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
                             style={{
                               fontSize: "0.875rem",
                               fontWeight: 600,
-                              color: isHighlighted ? "#4338ca" : "#0f172a",
+                              color: isHighlighted ? "var(--jester-color-brand-dark)" : "var(--jester-color-onboard-title)",
                             }}
                           >
                             📍 {city.display_name}
                           </div>
-                          <div style={{ fontSize: "0.725rem", color: "#64748b", marginTop: "1px" }}>
+                          <div style={{ fontSize: "0.725rem", color: "var(--jester-color-onboard-subtitle)", marginTop: "1px" }}>
                             {subtitle}
                           </div>
                         </div>
 
-                        <span style={{ fontSize: "0.7rem", color: "#94a3b8", fontWeight: 600 }}>
+                        <span style={{ fontSize: "0.7rem", color: "var(--jester-primitive-slate-400)", fontWeight: 600 }}>
                           {city.country_code}
                         </span>
                       </div>
@@ -541,11 +541,11 @@ export const CitySelector: React.FC<CitySelectorProps> = ({
 
       {/* Error and Helper Text */}
       {error ? (
-        <span style={{ fontSize: "0.8rem", color: "#ef4444", marginTop: "0.3rem", display: "block" }}>
+        <span style={{ fontSize: "0.8rem", color: "var(--jester-color-danger-text)", marginTop: "0.3rem", display: "block" }}>
           ⚠️ {error}
         </span>
       ) : helperText ? (
-        <span style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.3rem", display: "block" }}>
+        <span style={{ fontSize: "0.8rem", color: "var(--jester-color-onboard-subtitle)", marginTop: "0.3rem", display: "block" }}>
           {helperText}
         </span>
       ) : null}

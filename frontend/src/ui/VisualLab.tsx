@@ -1,403 +1,848 @@
-import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import React, { useState, useMemo } from "react";
 import {
-  Box,
-  Text,
   Button,
-  IconButton,
-  Card,
   Input,
-  Avatar,
+  Card,
   Badge,
-  Divider,
+  Avatar,
   Skeleton,
-} from "./primitives";
-import { colors, spacing } from "./tokens";
-import { haptics, clipboard, storage } from "../platform";
-import { BirthDateInput } from "../shared/ui";
-import { ProfileEnrichmentModule } from "../modules/onboarding/steps/ProfileEnrichmentModule";
+  BirthDateInput,
+  CitySelector,
+  JesterLogo,
+} from "../shared/ui";
+import {
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  PrivacySafeNotFoundState,
+} from "../shared/StatusState";
+import { TOKEN_SECTIONS, type DesignToken } from "./tokensCatalogData";
+
+interface PalettePreset {
+  id: string;
+  name: string;
+  emoji: string;
+  orange500: string;
+  orange600: string;
+  orange700: string;
+}
+
+const PALETTE_PRESETS: PalettePreset[] = [
+  {
+    id: "canonical",
+    name: "კანონიკური სტაფილოსფერი (Canonical Orange)",
+    emoji: "🥕",
+    orange500: "#FF7A2F",
+    orange600: "#E9681F",
+    orange700: "#C95618",
+  },
+  {
+    id: "purple",
+    name: "სამეფო იისფერი (Royal Purple)",
+    emoji: "💜",
+    orange500: "#8B5CF6",
+    orange600: "#7C3AED",
+    orange700: "#6D28D9",
+  },
+  {
+    id: "emerald",
+    name: "ზურმუხტისფერი მწვანე (Emerald Green)",
+    emoji: "🌿",
+    orange500: "#10B981",
+    orange600: "#059669",
+    orange700: "#047857",
+  },
+  {
+    id: "blue",
+    name: "ასტრალური ლურჯი (Astral Blue)",
+    emoji: "🔷",
+    orange500: "#3B82F6",
+    orange600: "#2563EB",
+    orange700: "#1D4ED8",
+  },
+  {
+    id: "crimson",
+    name: "ალისფერი ვარდისფერი (Crimson Rose)",
+    emoji: "🍷",
+    orange500: "#E11D48",
+    orange600: "#BE123C",
+    orange700: "#9F1239",
+  },
+];
 
 export const VisualLab: React.FC = () => {
-  const [inputValue, setInputValue] = useState("");
-  const [labBirthDate, setLabBirthDate] = useState("1996-07-20");
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const [storageStatus, setStorageStatus] = useState("Untested");
-  const [copyStatus, setCopyStatus] = useState("Click to copy token");
+  const [activeTab, setActiveTab] = useState<"catalog" | "components" | "studio">("catalog");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSection, setSelectedSection] = useState<string>("all");
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
-  const handleTestStorage = async () => {
-    await storage.setItem("jester_lab_test", "verified_token_ok");
-    const val = await storage.getItem("jester_lab_test");
-    setStorageStatus(val ? "Verified (Storage OK)" : "Failed");
-    haptics.success();
+  // Studio Theme Switcher State
+  const [activePreset, setActivePreset] = useState<PalettePreset>(PALETTE_PRESETS[0]);
+  const [customColor, setCustomColor] = useState("#FF7A2F");
+
+  // Interactive component states
+  const [demoInput, setDemoInput] = useState("JESTER Relationship Intelligence");
+  const [demoBirthDate, setDemoBirthDate] = useState("1996-07-20");
+  const [demoCityId, setDemoCityId] = useState<string | null>("tbilisi-ge");
+  const [demoCity, setDemoCity] = useState("თბილისი, საქართველო");
+  const [btnLoading, setBtnLoading] = useState(false);
+
+  // Copy to clipboard handler
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedToken(text);
+      setTimeout(() => setCopiedToken(null), 2000);
+    });
   };
 
-  const handleCopy = async () => {
-    await clipboard.setString("JESTER-UNIVERSAL-TOKEN-2026");
-    setCopyStatus("Copied to clipboard!");
-    haptics.light();
-    setTimeout(() => setCopyStatus("Click to copy token"), 2500);
-  };
+  // Filter tokens based on search and section
+  const filteredSections = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return TOKEN_SECTIONS.map((sec) => {
+      if (selectedSection !== "all" && sec.title !== selectedSection) {
+        return { ...sec, tokens: [] };
+      }
+      if (!q) return sec;
+      const filtered = sec.tokens.filter(
+        (t) =>
+          t.name.toLowerCase().includes(q) ||
+          t.value.toLowerCase().includes(q) ||
+          sec.title.toLowerCase().includes(q)
+      );
+      return { ...sec, tokens: filtered };
+    }).filter((sec) => sec.tokens.length > 0);
+  }, [searchQuery, selectedSection]);
+
+  const totalFilteredTokens = useMemo(
+    () => filteredSections.reduce((acc, s) => acc + s.tokens.length, 0),
+    [filteredSections]
+  );
+
+  // Scoped CSS variable overrides for theme studio
+  const studioOverrideStyle = useMemo<React.CSSProperties>(() => {
+    return {
+      "--jester-primitive-orange-500": activePreset.orange500,
+      "--jester-primitive-orange-600": activePreset.orange600,
+      "--jester-primitive-orange-700": activePreset.orange700,
+      "--jester-color-brand-primary": activePreset.orange500,
+      "--jester-color-brand-primary-hover": activePreset.orange600,
+      "--jester-color-brand-primary-active": activePreset.orange700,
+      "--jester-color-brand-border": activePreset.orange500,
+      "--home-brand-orange": activePreset.orange500,
+    } as React.CSSProperties;
+  }, [activePreset]);
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: 24, maxWidth: 900, alignSelf: "center", width: "100%" }}
+    <div
+      id="visual-lab-root"
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "var(--jester-color-canvas, #FAF7F2)",
+        color: "var(--jester-color-text-primary, #222630)",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        padding: "clamp(1rem, 3vw, 2.5rem)",
+        boxSizing: "border-box",
+        ...studioOverrideStyle,
+      }}
     >
-      {/* Header Banner */}
-      <Box surface="subtle" rounded="lg" padding={20} style={{ marginBottom: 24, borderWidth: 1, borderColor: colors.border }}>
-        <Badge variant="highlight" size="sm" style={{ marginBottom: 8 }}>
-          PHASE 4.1 FOUNDATION
-        </Badge>
-        <Text variant="2xl" weight="heavy" color="primary">
-          JESTER Universal Design System Lab
-        </Text>
-        <Text variant="sm" color="secondary" style={{ marginTop: 4 }}>
-          Route: <Text variant="sm" weight="semibold" color="accent">/visual-lab</Text> • Runtime: React Native Web / Universal Primitives • Zero DOM dependencies in primitives
-        </Text>
-      </Box>
+      <div style={{ maxWidth: "1140px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
+        
+        {/* HEADER BAR */}
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+            gap: "1.25rem",
+            paddingBottom: "1.5rem",
+            borderBottom: "1px solid var(--jester-color-border-subtle, #E6E0D7)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <JesterLogo height={36} variant="horizontal" />
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <h1 style={{ margin: 0, fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)", fontWeight: 850, letterSpacing: "-0.02em" }}>
+                  Design System Living Guide
+                </h1>
+                <Badge variant="brand">Living Guide</Badge>
+              </div>
+              <p style={{ margin: "0.3rem 0 0 0", color: "var(--jester-color-text-secondary, #6A716F)", fontSize: "0.875rem" }}>
+                ცოცხალი დიზაინ სახელმძღვანელო • Single Source of Truth: <code>colors.css</code> (508 ტოკენი)
+              </p>
+            </div>
+          </div>
 
-      {/* 1. Typography Hierarchy */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          1. Typography Matrix & Hierarchy
-        </Text>
-        <Text variant="3xl" weight="heavy" color="primary" style={{ marginBottom: 6 }}>
-          Display 3xl Heavy (30px)
-        </Text>
-        <Text variant="2xl" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-          Heading 2xl Bold (24px)
-        </Text>
-        <Text variant="xl" weight="semibold" color="accent" style={{ marginBottom: 6 }}>
-          Title xl Semibold (20px) — Accent Color
-        </Text>
-        <Text variant="lg" weight="medium" color="secondary" style={{ marginBottom: 6 }}>
-          Subheading lg Medium (18px) — Secondary Slate
-        </Text>
-        <Text variant="base" weight="normal" color="primary" style={{ marginBottom: 6 }}>
-          Body Base Normal (16px) — JESTER deterministic relationship intelligence and sharp psychological clarity.
-        </Text>
-        <Text variant="sm" weight="normal" color="muted" style={{ marginBottom: 6 }}>
-          Caption sm Normal (14px) — Muted metadata label
-        </Text>
-        <Text variant="xs" weight="semibold" color="highlight">
-          MICRO xs SEMIBOLD (12px) — HIGH-PRIORITY INSIGHT TAG
-        </Text>
-      </Card>
+          {/* Preset Pill & Route Status */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.4rem" }}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                padding: "0.25rem 0.65rem",
+                borderRadius: "20px",
+                backgroundColor: "var(--jester-color-surface, #FFFFFF)",
+                border: "1px solid var(--jester-color-border-subtle, #E6E0D7)",
+                color: "var(--jester-color-text-secondary, #6A716F)",
+                fontWeight: 600,
+              }}
+            >
+              მისამართი: <strong style={{ color: "var(--jester-color-text-primary)" }}>/visual-lab</strong>
+            </span>
+            {activePreset.id !== "canonical" && (
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  padding: "0.2rem 0.5rem",
+                  borderRadius: "6px",
+                  backgroundColor: "var(--jester-color-brand-primary)",
+                  color: "#FFFFFF",
+                  fontWeight: 700,
+                }}
+              >
+                აქტიური Preview: {activePreset.emoji} {activePreset.name}
+              </span>
+            )}
+          </div>
+        </header>
 
-      {/* 2. Universal Button States & Touch Targets */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          2. Button States (44px+ Accessible Touch Targets)
-        </Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-          <Button
-            variant="primary"
-            onPress={() => {
-              haptics.light();
+        {/* PRIMARY NAVIGATION TABS */}
+        <nav
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            borderBottom: "1px solid var(--jester-color-border-subtle, #E6E0D7)",
+            paddingBottom: "0.5rem",
+            flexWrap: "wrap",
+          }}
+          aria-label="დიზაინ სახელმძღვანელოს სექციები"
+        >
+          <button
+            onClick={() => setActiveTab("catalog")}
+            style={{
+              padding: "0.65rem 1.25rem",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: activeTab === "catalog" ? "var(--jester-color-brand-primary)" : "transparent",
+              color: activeTab === "catalog" ? "var(--jester-color-brand-text, #222630)" : "var(--jester-color-text-primary)",
+              fontWeight: 750,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
             }}
           >
-            Primary Action (#FF7A2F + Dark Text 5.82:1)
-          </Button>
+            🎨 ფერების კატალოგი (508)
+          </button>
 
-          <Button
-            variant="primaryDark"
-            onPress={() => {
-              haptics.light();
+          <button
+            onClick={() => setActiveTab("components")}
+            style={{
+              padding: "0.65rem 1.25rem",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: activeTab === "components" ? "var(--jester-color-brand-primary)" : "transparent",
+              color: activeTab === "components" ? "var(--jester-color-brand-text, #222630)" : "var(--jester-color-text-primary)",
+              fontWeight: 750,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
             }}
           >
-            Primary Dark Variant (#9E4215 + White Text 6.47:1)
-          </Button>
+            🧩 Shared/UI კომპონენტები
+          </button>
 
-          <Button
-            variant="highlight"
-            onPress={() => {
-              haptics.success();
+          <button
+            onClick={() => setActiveTab("studio")}
+            style={{
+              padding: "0.65rem 1.25rem",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: activeTab === "studio" ? "var(--jester-color-brand-primary)" : "transparent",
+              color: activeTab === "studio" ? "var(--jester-color-brand-text, #222630)" : "var(--jester-color-text-primary)",
+              fontWeight: 750,
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
             }}
           >
-            Highlight Action
-          </Button>
+            🎛️ პალიტრის Preview & Studio
+          </button>
+        </nav>
 
-          <Button
-            variant="secondary"
-            onPress={() => {
-              haptics.light();
-            }}
-          >
-            Secondary
-          </Button>
+        {/* =========================================================================
+            TAB 1: COLOR CATALOG
+            ========================================================================= */}
+        {activeTab === "catalog" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            {/* Search & Category Filter Controls */}
+            <Card padded style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+                <div style={{ flex: "1 1 280px" }}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ძებნა ტოკენის სახელით ან მნიშვნელობით (მაგ. brand, surface, #FF7A2F, chat)..."
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem 1rem",
+                      borderRadius: "10px",
+                      border: "1.5px solid var(--jester-color-border-subtle, #E6E0D7)",
+                      backgroundColor: "var(--jester-color-surface, #FFFFFF)",
+                      color: "var(--jester-color-text-primary, #222630)",
+                      fontSize: "0.95rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    style={{
+                      padding: "0.65rem 1rem",
+                      borderRadius: "8px",
+                      border: "1px solid var(--jester-color-border-subtle)",
+                      background: "transparent",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    გასუფთავება ✕
+                  </button>
+                )}
+                <div style={{ fontSize: "0.85rem", color: "var(--jester-color-text-secondary)", fontWeight: 600 }}>
+                  ნაპოვნია: {totalFilteredTokens} ტოკენი
+                </div>
+              </div>
 
-          <Button
-            variant="outline"
-            onPress={() => {
-              haptics.light();
-            }}
-          >
-            Outline
-          </Button>
-
-          <Button
-            variant="danger"
-            onPress={() => {
-              haptics.error();
-            }}
-          >
-            Danger
-          </Button>
-
-          <Button
-            variant="primary"
-            isLoading={buttonLoading}
-            onPress={() => {
-              setButtonLoading(true);
-              setTimeout(() => setButtonLoading(false), 2000);
-            }}
-          >
-            {buttonLoading ? "Loading..." : "Simulate Loading"}
-          </Button>
-
-          <Button variant="primary" disabled>
-            Disabled Button
-          </Button>
-        </View>
-
-        <Divider spacing={12} />
-
-        <Text variant="sm" weight="semibold" color="secondary" style={{ marginBottom: 8 }}>
-          IconButtons (Circular 44px)
-        </Text>
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          <IconButton
-            accessibilityLabel="Search"
-            icon={<Text color="inverse">🔍</Text>}
-            variant="default"
-            onPress={() => haptics.light()}
-          />
-          <IconButton
-            accessibilityLabel="Notifications"
-            icon={<Text>🔔</Text>}
-            variant="subtle"
-            onPress={() => haptics.light()}
-          />
-          <IconButton
-            accessibilityLabel="Settings"
-            icon={<Text>⚙️</Text>}
-            variant="outline"
-            onPress={() => haptics.light()}
-          />
-          <IconButton
-            accessibilityLabel="Remove"
-            icon={<Text>🗑️</Text>}
-            variant="danger"
-            onPress={() => haptics.error()}
-          />
-        </View>
-      </Card>
-
-      {/* 3. Surface & Card Elevations */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          3. Surfaces & Elevation Hierarchy
-        </Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
-          <Card elevation="none" variant="subtle" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="primary">Flat Subtle Surface (#F3EEE6)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="none" variant="subtle"</Text>
-          </Card>
-
-          <Card elevation="sm" variant="surface" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="primary">Surface Card (#FFFFFF)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="surface"</Text>
-          </Card>
-
-          <Card elevation="sm" variant="highlight" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="accent">Warm Peach Insight (#FBEEE7)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="highlight"</Text>
-          </Card>
-
-          <Card elevation="sm" variant="calm" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="sage">Measured Sage Support (#E8EFE2)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="sm" variant="calm"</Text>
-          </Card>
-
-          <Card elevation="lg" variant="bordered" style={{ flex: 1, minWidth: 200 }}>
-            <Text variant="sm" weight="bold" color="primary">Bordered Card (LG)</Text>
-            <Text variant="xs" color="secondary" style={{ marginTop: 4 }}>elevation="lg" variant="bordered"</Text>
-          </Card>
-        </View>
-      </Card>
-
-      {/* 4. Form Controls & Input */}
-      <Card elevation="sm" style={{ marginBottom: 24, zIndex: 50, overflow: "visible" }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          4. Cross-Platform Input Controls
-        </Text>
-        <Input
-          label="Display Name / სახელი"
-          placeholder="e.g. ელენე"
-          value={inputValue}
-          onChangeText={setInputValue}
-          helperText="Universal TextInput component with focus handling."
-        />
-        <Input
-          label="Error State Demonstration"
-          placeholder="Invalid input"
-          value="invalid_coordinates"
-          error="სისტემური შეცდომა: მონაცემები არავალიდურია"
-        />
-
-        <Divider spacing={16} />
-
-        {/* 4b. 3-Segment Birth Date Selector */}
-        <View style={{ marginTop: 8 }}>
-          <Text variant="base" weight="bold" color="primary" style={{ marginBottom: 12 }}>
-            4b. 3-Segment Birth Date Selector (დღე / თვე / წელი)
-          </Text>
-          <BirthDateInput
-            label="დაბადების თარიღი (Birth Date)"
-            required
-            value={labBirthDate}
-            onChange={(val) => setLabBirthDate(val)}
-            helperText="სრულად რესპონსიული, ქართული ლოკალიზაციითა და 18+ ვალიდაციით"
-          />
-          <Text variant="xs" color="secondary" style={{ marginTop: 8 }}>
-            მიმდინარე ISO მნიშვნელობა: {labBirthDate || "(ცარიელი / არავალიდური)"}
-          </Text>
-        </View>
-
-        <Divider spacing={16} />
-
-        {/* 4c. Onboarding V3 Profile Enrichment Module */}
-        <View style={{ marginTop: 8 }}>
-          <Text variant="base" weight="bold" color="primary" style={{ marginBottom: 12 }}>
-            4c. Onboarding V3: Profile Enrichment (Interests, Personality & Intentions)
-          </Text>
-          <ProfileEnrichmentModule
-            onComplete={() => alert("Profile enrichment completed or skipped successfully!")}
-            onBackToStep5={() => alert("Navigating back to step 5")}
-          />
-        </View>
-      </Card>
-
-      {/* 5. Astrological Badges & Chips */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          5. Badges & Astrological Category Chips
-        </Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-          <Badge variant="brand">♈ მზე ვერძში / Brand Orange (#FFE7D7)</Badge>
-          <Badge variant="highlight">🍑 JESTER Insight / Peach Soft (#FBEEE7)</Badge>
-          <Badge variant="sage">🌿 მხარდამჭერი / Measured Sage (#E8EFE2)</Badge>
-          <Badge variant="neutral">♌ ასცედენტი ლომში / Rising Leo</Badge>
-          <Badge variant="success">🔥 ცეცხლი / Fire Dominant</Badge>
-          <Badge variant="warning">⚡ კარდინალური / Cardinal</Badge>
-          <Badge variant="danger">⚔️ მარსი თევზებში / Mars Pisces</Badge>
-        </View>
-      </Card>
-
-      {/* 6. Avatars & Status Badges */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          6. Avatars with Online Status Indicators
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
-          <Avatar size="sm" name="A B" isOnline={true} />
-          <Avatar size="md" name="Davit Beridze" isOnline={false} />
-          <Avatar size="lg" name="Nino K" isOnline={true} />
-          <Avatar size="xl" name="Jester King" isOnline={true} />
-        </View>
-      </Card>
-
-      {/* 7. Skeleton Shimmer Loading States */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          7. Shimmer Skeleton Loading States
-        </Text>
-        <View style={{ gap: 10 }}>
-          <Skeleton width="40%" height={24} rounded="sm" />
-          <Skeleton width="100%" height={16} rounded="sm" />
-          <Skeleton width="90%" height={16} rounded="sm" />
-          <Skeleton width="75%" height={16} rounded="sm" />
-        </View>
-      </Card>
-
-      {/* 8. Spacing Grid Reference */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          8. 4px / 8px Baseline Spacing Scale
-        </Text>
-        <View style={{ gap: 8 }}>
-          {[1, 2, 3, 4, 6, 8, 12].map((step) => {
-            const px = spacing[step as keyof typeof spacing];
-            return (
-              <View key={step} style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                <Text variant="xs" weight="semibold" color="secondary" style={{ width: 80 }}>
-                  Step {step} ({px}px):
-                </Text>
-                <View
+              {/* Section Filter Pills */}
+              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => setSelectedSection("all")}
                   style={{
-                    height: 14,
-                    width: px * 4,
-                    backgroundColor: colors.accent,
-                    borderRadius: 2,
+                    padding: "0.35rem 0.75rem",
+                    borderRadius: "20px",
+                    border: selectedSection === "all" ? "1.5px solid var(--jester-color-brand-primary)" : "1px solid var(--jester-color-border-subtle)",
+                    backgroundColor: selectedSection === "all" ? "var(--jester-color-insight-peach-bg)" : "var(--jester-color-surface)",
+                    color: "var(--jester-color-text-primary)",
+                    fontSize: "0.8rem",
+                    fontWeight: selectedSection === "all" ? 700 : 500,
+                    cursor: "pointer",
                   }}
+                >
+                  ყველა სექცია
+                </button>
+                {TOKEN_SECTIONS.map((sec) => {
+                  const isSel = selectedSection === sec.title;
+                  return (
+                    <button
+                      key={sec.title}
+                      onClick={() => setSelectedSection(sec.title)}
+                      style={{
+                        padding: "0.35rem 0.75rem",
+                        borderRadius: "20px",
+                        border: isSel ? "1.5px solid var(--jester-color-brand-primary)" : "1px solid var(--jester-color-border-subtle)",
+                        backgroundColor: isSel ? "var(--jester-color-insight-peach-bg)" : "var(--jester-color-surface)",
+                        color: "var(--jester-color-text-primary)",
+                        fontSize: "0.8rem",
+                        fontWeight: isSel ? 700 : 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {sec.title.split("(")[0].trim()} ({sec.tokens.length})
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* Token Section Lists */}
+            {filteredSections.map((sec) => (
+              <div key={sec.title} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
+                  <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800 }}>
+                    {sec.title}
+                  </h2>
+                  <span style={{ fontSize: "0.8rem", color: "var(--jester-color-text-secondary)" }}>
+                    ({sec.tokens.length} ტოკენი)
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))",
+                    gap: "0.85rem",
+                  }}
+                >
+                  {sec.tokens.map((token: DesignToken) => {
+                    const isCopied = copiedToken === token.name;
+                    return (
+                      <div
+                        key={token.name}
+                        onClick={() => handleCopy(`var(${token.name})`)}
+                        style={{
+                          backgroundColor: "var(--jester-color-surface, #FFFFFF)",
+                          borderRadius: "12px",
+                          border: "1px solid var(--jester-color-border-subtle, #E6E0D7)",
+                          padding: "0.85rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.85rem",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          position: "relative",
+                        }}
+                      >
+                        {/* Live Swatch Box */}
+                        <div
+                          style={{
+                            width: "42px",
+                            height: "42px",
+                            borderRadius: "8px",
+                            backgroundColor: `var(${token.name})`,
+                            border: "1px solid rgba(0,0,0,0.1)",
+                            flexShrink: 0,
+                            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.2)",
+                          }}
+                        />
+
+                        {/* Token Details */}
+                        <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+                          <div
+                            style={{
+                              fontSize: "0.825rem",
+                              fontWeight: 700,
+                              color: "var(--jester-color-text-primary)",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              fontFamily: "monospace",
+                            }}
+                            title={token.name}
+                          >
+                            {token.name}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "var(--jester-color-text-secondary)",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              marginTop: "0.15rem",
+                            }}
+                            title={token.value}
+                          >
+                            {token.value}
+                          </div>
+                        </div>
+
+                        {/* Copy Badge */}
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            padding: "0.2rem 0.45rem",
+                            borderRadius: "6px",
+                            backgroundColor: isCopied ? "var(--jester-color-brand-primary)" : "var(--jester-color-surface-subtle, #F3EEE6)",
+                            color: isCopied ? "#FFFFFF" : "var(--jester-color-text-secondary)",
+                            fontWeight: 700,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {isCopied ? "დაკოპირდა!" : "Copy"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 2: SHARED / UI COMPONENT GALLERY
+            ========================================================================= */}
+        {activeTab === "components" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+            
+            {/* 1. BUTTON SUITE */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                1. Button კომპონენტების ნაკრები
+              </h2>
+              <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-text-secondary)", fontSize: "0.875rem" }}>
+                WCAG AA კონტრასტით სერტიფიცირებული ბრენდული, მეორადი, საშიშროებისა და მონახაზის ღილაკები.
+              </p>
+              <div style={{ display: "flex", gap: "0.85rem", flexWrap: "wrap", alignItems: "center" }}>
+                <Button variant="brand" size="md">
+                  🚀 Brand Action (#FF7A2F)
+                </Button>
+                <Button variant="secondary" size="md">
+                  Secondary Action
+                </Button>
+                <Button variant="danger" size="md">
+                  ⚠️ Danger Action
+                </Button>
+                <Button variant="outline" size="md">
+                  Outline Variant
+                </Button>
+                <Button
+                  variant="brand"
+                  size="md"
+                  isLoading={btnLoading}
+                  onClick={() => {
+                    setBtnLoading(true);
+                    setTimeout(() => setBtnLoading(false), 2000);
+                  }}
+                >
+                  {btnLoading ? "იტვირთება..." : "სიმულაცია Loading"}
+                </Button>
+                <Button variant="brand" size="md" disabled>
+                  Disabled State
+                </Button>
+                <Button variant="brand" size="sm">
+                  Small (sm)
+                </Button>
+                <Button variant="brand" size="lg">
+                  Large (lg)
+                </Button>
+              </div>
+            </Card>
+
+            {/* 2. CARD ELEVATIONS */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                2. Card ზედაპირები და სიღრმის იერარქია
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                <Card padded variant="default">
+                  <strong>Surface Default</strong>
+                  <p style={{ margin: "0.4rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-color-text-secondary)" }}>
+                    თეთრი საბაზისო ბარათი (#FFFFFF)
+                  </p>
+                </Card>
+                <Card padded variant="elevated">
+                  <strong>Elevated Card</strong>
+                  <p style={{ margin: "0.4rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-color-text-secondary)" }}>
+                    ჩრდილით გამოკვეთილი ზედაპირი
+                  </p>
+                </Card>
+                <Card padded variant="accent">
+                  <strong style={{ color: "var(--jester-brand-orange-800)" }}>Peach Insight Card</strong>
+                  <p style={{ margin: "0.4rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-color-text-secondary)" }}>
+                    ატმისფერი ინტერპრეტაციის ბარათი
+                  </p>
+                </Card>
+                <Card padded variant="calm">
+                  <strong style={{ color: "var(--jester-primitive-sage-ink)" }}>Sage Support Card</strong>
+                  <p style={{ margin: "0.4rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-color-text-secondary)" }}>
+                    სალბისფერი ასტროლოგიური მხარდაჭერა
+                  </p>
+                </Card>
+              </div>
+            </Card>
+
+            {/* 3. BADGES & ASTROLOGICAL CATEGORY CHIPS */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                3. Badge & Astrological Chips
+              </h2>
+              <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginTop: "1rem" }}>
+                <Badge variant="brand">♈ მზე ვერძში (Brand Orange)</Badge>
+                <Badge variant="score">🍑 84% Synastry Score</Badge>
+                <Badge variant="astrology">✦ ასტროლოგიური ასპექტი</Badge>
+                <Badge variant="success">✓ Real / დადასტურებული</Badge>
+                <Badge variant="warning">⚡ კარდინალური მოდალობა</Badge>
+                <Badge variant="danger">⚔️ მარსი თევზებში (დაძაბულობა)</Badge>
+                <Badge variant="default">◎ ნეიტრალური ინდიკატორი</Badge>
+                <Badge variant="outline">◇ Outline Variant</Badge>
+              </div>
+            </Card>
+
+            {/* 4. INPUTS & FORM CONTROLS */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                4. Input ველები და ვალიდაცია
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "1.25rem", marginTop: "1rem" }}>
+                <Input
+                  label="მომხმარებლის სახელი / Display Name"
+                  value={demoInput}
+                  onChange={(e) => setDemoInput(e.target.value)}
+                  placeholder="შეიყვანეთ სახელი..."
                 />
-              </View>
-            );
-          })}
-        </View>
-      </Card>
+                <Input
+                  label="შეცდომის მდგომარეობა (Error State)"
+                  value="არავალიდური მონაცემი"
+                  error="მითითებული ფორმატი არასწორია"
+                  readOnly
+                />
+              </div>
+            </Card>
 
-      {/* 9. Universal Platform Facades Test */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 16 }}>
-          9. Platform Abstraction Facades (Web / Native Universal)
-        </Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-          <Button variant="secondary" size="sm" onPress={handleTestStorage}>
-            Test Storage: {storageStatus}
-          </Button>
+            {/* 5. 3-SEGMENT BIRTH DATE INPUT */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                5. BirthDateInput (დღე / თვე / წელი + 18+ ვალიდაცია)
+              </h2>
+              <p style={{ margin: "0 0 1rem 0", color: "var(--jester-color-text-secondary)", fontSize: "0.875rem" }}>
+                ქართული ლოკალიზაციით, თაობების ფილტრითა და ზუსტი კალენდარული ასაკის დაცვით.
+              </p>
+              <div style={{ maxWidth: "480px" }}>
+                <BirthDateInput
+                  label="დაბადების თარიღი"
+                  required
+                  value={demoBirthDate}
+                  onChange={(val) => setDemoBirthDate(val)}
+                  helperText="შეამოწმეთ დღის, თვის და წლის შერჩევა"
+                />
+                <div style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "var(--jester-color-text-secondary)" }}>
+                  მიმდინარე მნიშვნელობა: <code>{demoBirthDate || "(ცარიელია)"}</code>
+                </div>
+              </div>
+            </Card>
 
-          <Button variant="outline" size="sm" onPress={handleCopy}>
-            {copyStatus}
-          </Button>
+            {/* 6. CANONICAL CITY SELECTOR */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                6. CitySelector (კანონიკური ქალაქის შერჩევა)
+              </h2>
+              <div style={{ maxWidth: "480px" }}>
+                <CitySelector
+                  value={demoCityId}
+                  initialDisplayLabel={demoCity}
+                  onChange={(item) => {
+                    setDemoCityId(item.city_id);
+                    setDemoCity(`${item.display_name}, ${item.country_name}`);
+                  }}
+                  onClear={() => {
+                    setDemoCityId(null);
+                    setDemoCity("");
+                  }}
+                  label="დაბადების ქალაქი"
+                  placeholder="მაგ. თბილისი, ბათუმი, London..."
+                />
+              </div>
+            </Card>
 
-          <Button
-            variant="highlight"
-            size="sm"
-            onPress={() => {
-              haptics.success();
-            }}
-          >
-            Trigger Haptic Pulse
-          </Button>
-        </View>
-      </Card>
+            {/* 7. AVATARS & SKELETON LOADING */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                7. Avatar & Skeleton Shimmer
+              </h2>
+              <div style={{ display: "flex", gap: "1.5rem", alignItems: "center", flexWrap: "wrap", marginTop: "1rem" }}>
+                <Avatar size="sm" name="Ana B" />
+                <Avatar size="md" name="Davit B" />
+                <Avatar size="lg" name="Nino K" />
+                <Avatar size="xl" name="Jester Master" />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "1.5rem" }}>
+                <Skeleton width="40%" height="24px" borderRadius="6px" />
+                <Skeleton width="100%" height="16px" borderRadius="4px" />
+                <Skeleton width="85%" height="16px" borderRadius="4px" />
+              </div>
+            </Card>
 
-      {/* 10. NativeWind Integration & Class Path Verification */}
-      <Card elevation="sm" style={{ marginBottom: 24 }}>
-        <Text variant="lg" weight="bold" color="primary" style={{ marginBottom: 8 }}>
-          10. NativeWind Integration & Class Path Verification
-        </Text>
-        <Text variant="sm" color="secondary" style={{ marginBottom: 16 }}>
-          Exercises NativeWind utility class resolution mapped directly to JESTER design tokens.
-        </Text>
-        <View className="bg-brand-50 p-4 rounded-lg border border-brand-200 mb-3">
-          <Text className="text-brand-800 font-bold text-base">
-            NativeWind Class Path: bg-brand-50 + text-brand-800
-          </Text>
-          <Text className="text-textSecondary text-sm mt-1">
-            Compiled through Tailwind token mapping: #FF7A2F brand active accent on warm canvas.
-          </Text>
-        </View>
-        <View className="bg-sage-50 p-4 rounded-lg border border-sage-200">
-          <Text className="text-sage-ink font-bold text-base">
-            NativeWind Class Path: bg-sage-50 + text-sage-ink
-          </Text>
-          <Text className="text-textSecondary text-sm mt-1">
-            Compiled through Tailwind token mapping: #788A69 / #4B6242 measured supportive sage on #F4F8F1 surface.
-          </Text>
-        </View>
-      </Card>
-    </ScrollView>
+            {/* 8. STATUS STATE SUITE */}
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                8. StatusState უკუკავშირის კომპონენტები
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                <LoadingState message="იტვირთება ასტროლოგიური მონაცემები..." />
+                <ErrorState error="დაფიქსირდა სერვერთან კავშირის შეცდომა." onRetry={() => alert("Retried!")} />
+                <EmptyState title="შეტყობინებები არ არის" description="აქ გამოჩნდება თქვენი ახალი შეტყობინებები." />
+                <PrivacySafeNotFoundState message="მოთხოვნილი პროფილი დაცულია ან მიუწვდომელია." />
+              </div>
+            </Card>
+
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 3: ISOLATED PALETTE PREVIEW & THEME STUDIO
+            ========================================================================= */}
+        {activeTab === "studio" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <Card padded>
+              <h2 style={{ margin: "0 0 0.5rem 0", fontSize: "1.25rem", fontWeight: 800 }}>
+                🎛️ ბრენდის პალიტრის ცოცხალი Preview (Theme Studio)
+              </h2>
+              <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-text-secondary)", fontSize: "0.9rem" }}>
+                შეცვალეთ ბრენდის ძირითადი ფერი და დააკვირდით, როგორ გავრცელდება ცვლილება მყისიერად ბრენდულ ღილაკებსა და ელემენტებზე,
+                ხოლო <strong>სტატუსები (Success/Danger), Stars (ოქროსფერი) და Chat ბაბლები დარჩება 100%-ით დამოუკიდებელი და უცვლელი</strong>.
+              </p>
+
+              {/* Preset Selector Buttons */}
+              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+                {PALETTE_PRESETS.map((preset) => {
+                  const isSel = activePreset.id === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      onClick={() => {
+                        setActivePreset(preset);
+                        setCustomColor(preset.orange500);
+                      }}
+                      style={{
+                        padding: "0.75rem 1rem",
+                        borderRadius: "12px",
+                        border: isSel ? `2px solid ${preset.orange500}` : "1px solid var(--jester-color-border-subtle)",
+                        backgroundColor: isSel ? "var(--jester-color-surface)" : "var(--jester-color-surface-subtle)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.6rem",
+                        cursor: "pointer",
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                        boxShadow: isSel ? `0 4px 12px ${preset.orange500}33` : "none",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "50%",
+                          backgroundColor: preset.orange500,
+                          border: "1px solid rgba(0,0,0,0.15)",
+                        }}
+                      />
+                      <span>{preset.emoji} {preset.name.split("(")[0]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Custom Color Override */}
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem", borderRadius: "10px", backgroundColor: "var(--jester-color-surface-subtle)" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 700 }}>საკუთარი ფერის არჩევა (Custom Hex):</label>
+                <input
+                  type="color"
+                  value={customColor}
+                  onChange={(e) => {
+                    const c = e.target.value;
+                    setCustomColor(c);
+                    setActivePreset({
+                      id: "custom",
+                      name: `Custom (${c})`,
+                      emoji: "🎨",
+                      orange500: c,
+                      orange600: c,
+                      orange700: c,
+                    });
+                  }}
+                  style={{ width: "40px", height: "36px", border: "none", cursor: "pointer", borderRadius: "6px" }}
+                />
+                <code style={{ fontSize: "0.9rem", fontWeight: 700 }}>{customColor}</code>
+
+                <button
+                  onClick={() => {
+                    setActivePreset(PALETTE_PRESETS[0]);
+                    setCustomColor(PALETTE_PRESETS[0].orange500);
+                  }}
+                  style={{
+                    marginLeft: "auto",
+                    padding: "0.5rem 0.85rem",
+                    borderRadius: "8px",
+                    border: "1px solid var(--jester-color-border-subtle)",
+                    backgroundColor: "var(--jester-color-surface)",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  კანონიკურზე დაბრუნება (Reset)
+                </button>
+              </div>
+            </Card>
+
+            {/* LIVE PREVIEW COMPARISON: PROPAGATED VS INDEPENDENT */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))", gap: "1.5rem" }}>
+              
+              {/* Box A: What changes dynamically */}
+              <Card padded style={{ borderTop: `4px solid ${activePreset.orange500}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>🎯</span>
+                  <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                    ბრენდის ტოკენები (ავტომატურად იცვლება)
+                  </h3>
+                </div>
+                <p style={{ margin: "0 0 1rem 0", color: "var(--jester-color-text-secondary)", fontSize: "0.85rem" }}>
+                  ერთი წყაროდან გავრცელებული ახალი ფერი:
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+                  <Button variant="brand" size="md">
+                    Brand Action Button
+                  </Button>
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <Badge variant="brand">Brand Badge</Badge>
+                    <span style={{ fontSize: "0.85rem", color: "var(--jester-color-brand-primary)", fontWeight: 700 }}>
+                      ბრენდული აქცენტის ტექსტი
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      padding: "0.75rem 1rem",
+                      borderRadius: "8px",
+                      border: "1.5px solid var(--jester-color-brand-primary)",
+                      backgroundColor: "var(--jester-color-surface)",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    აქტიური ინპუტის ან ბარათის ფოკუსის საზღვარი
+                  </div>
+                </div>
+              </Card>
+
+              {/* Box B: What remains strictly independent */}
+              <Card padded style={{ borderTop: "4px solid #10B981" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>🛡️</span>
+                  <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                    იზოლირებული როლები (რჩება უცვლელი)
+                  </h3>
+                </div>
+                <p style={{ margin: "0 0 1rem 0", color: "var(--jester-color-text-secondary)", fontSize: "0.85rem" }}>
+                  სტატუსები, მონეტარული სისტემა და შეტყობინებები არ იცვლება:
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+                  {/* Stars / Wallet */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0.75rem", borderRadius: "8px", backgroundColor: "var(--jester-color-stars-pill-bg-start, #FFFDF8)", border: "1px solid #FDE68A" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--jester-color-wallet-free-text, #2D5231)" }}>⭐ Stars Balance</span>
+                    <strong style={{ color: "#D97706" }}>120 Stars</strong>
+                  </div>
+
+                  {/* Status Danger */}
+                  <div style={{ padding: "0.5rem 0.75rem", borderRadius: "8px", backgroundColor: "var(--jester-color-status-danger-bg, #FEF2F2)", border: "1px solid var(--jester-color-status-danger-border, #FECACA)", color: "var(--jester-color-status-danger-text, #B91C1C)", fontSize: "0.825rem", fontWeight: 600 }}>
+                    ⚠️ შეცდომის სტატუსი (დარჩა Rose-700)
+                  </div>
+
+                  {/* Notification Blue */}
+                  <div style={{ padding: "0.5rem 0.75rem", borderRadius: "8px", backgroundColor: "var(--jester-color-notification-unread-bg, #EFF6FF)", border: "1px solid var(--jester-color-notification-unread-border, #93C5FD)", color: "var(--jester-color-notification-unread-action, #2563EB)", fontSize: "0.825rem", fontWeight: 600 }}>
+                    🔔 შეტყობინების ლურჯი აქცენტი (დარჩა Blue-600)
+                  </div>
+
+                  {/* Chat Bubbles */}
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <div style={{ flex: 1, padding: "0.4rem 0.6rem", borderRadius: "8px", backgroundColor: "var(--jester-color-chat-bubble-received-bg, #FAF8F5)", border: "1px solid var(--jester-color-chat-bubble-received-border, #EFEAE3)", fontSize: "0.75rem" }}>
+                      მიღებული ბაბლი
+                    </div>
+                    <div style={{ flex: 1, padding: "0.4rem 0.6rem", borderRadius: "8px", backgroundColor: "var(--jester-color-chat-bubble-sent-bg, #F5DDD1)", fontSize: "0.75rem" }}>
+                      გაგზავნილი ბაბლი
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
   );
 };

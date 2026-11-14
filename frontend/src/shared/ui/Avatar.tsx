@@ -37,15 +37,15 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   // Deterministic color palette for avatar fallback
   const getBgColor = (n?: string | null) => {
-    if (!n) return "#FF7A2F";
+    if (!n) return "var(--jester-color-avatar-fallback-0, #FF7A2F)";
     const colors = [
-      "#FF7A2F", // brand orange
-      "#C95618", // deep orange
-      "#788A69", // sage
-      "#4B6242", // sage ink
-      "#C7614B", // terracotta
-      "#C8966B", // copper
-      "#396F87", // slate blue
+      "var(--jester-color-avatar-fallback-0, #FF7A2F)", // brand orange
+      "var(--jester-color-avatar-fallback-1, #C95618)", // deep orange
+      "var(--jester-color-avatar-fallback-2, #788A69)", // sage
+      "var(--jester-color-avatar-fallback-3, #4B6242)", // sage ink
+      "var(--jester-color-avatar-fallback-4, #C7614B)", // terracotta
+      "var(--jester-color-avatar-fallback-5, #C8966B)", // copper
+      "var(--jester-color-avatar-fallback-6, #396F87)", // slate blue
     ];
     let hash = 0;
     for (let i = 0; i < n.length; i++) {
@@ -64,8 +64,8 @@ export const Avatar: React.FC<AvatarProps> = ({
           height: `${dimension}px`,
           borderRadius: "50%",
           objectFit: "cover",
-          border: "2px solid #ffffff",
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+          border: "2px solid var(--jester-primitive-ink-inverse, #ffffff)",
+          boxShadow: "var(--jester-shadow-avatar, 0 1px 3px rgba(0, 0, 0, 0.1))",
           boxSizing: "border-box",
           ...style,
         }}
@@ -80,15 +80,15 @@ export const Avatar: React.FC<AvatarProps> = ({
         height: `${dimension}px`,
         borderRadius: "50%",
         backgroundColor: getBgColor(name),
-        color: "#ffffff",
+        color: "var(--jester-primitive-ink-inverse, #ffffff)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontSize: font,
         fontWeight: 700,
         letterSpacing: "0.02em",
-        border: "2px solid #ffffff",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+        border: "2px solid var(--jester-primitive-ink-inverse, #ffffff)",
+        boxShadow: "var(--jester-shadow-avatar, 0 1px 3px rgba(0, 0, 0, 0.1))",
         userSelect: "none",
         flexShrink: 0,
         boxSizing: "border-box",

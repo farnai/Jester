@@ -53,7 +53,7 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
             margin: "0 0 0.4rem 0",
             fontSize: "1.2rem",
             fontWeight: 700,
-            color: "#0f172a",
+            color: "var(--jester-color-onboard-title)",
           }}
         >
           2. დაბადების თარიღი (Birth Date)
@@ -61,7 +61,7 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
         <p
           style={{
             margin: "0 0 1.25rem 0",
-            color: "#64748b",
+            color: "var(--jester-color-onboard-subtitle)",
             fontSize: "0.875rem",
           }}
         >
@@ -76,10 +76,10 @@ export const BirthDateStep: React.FC<BirthDateStepProps> = ({
           aria-live="polite"
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >

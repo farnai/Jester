@@ -55,10 +55,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.25rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.25rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           5. მონაცემების გადამოწმება (Review & Confirm)
         </h3>
-        <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: 0, color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           გადაამოწმეთ შეყვანილი მონაცემები ასტროლოგიური რუკის გამოთვლამდე.
         </p>
       </div>
@@ -68,15 +68,15 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <Card variant="default" style={{ padding: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#64748b", fontWeight: 600 }}>
+              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--jester-color-onboard-subtitle)", fontWeight: 600 }}>
                 სახელი და პროფილი (Profile)
               </div>
-              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--jester-color-onboard-title)", marginTop: "4px" }}>
                 {displayName}
                 {firstName && lastName ? ` (${firstName} ${lastName})` : ""}
               </div>
               {(city || occupation) && (
-                <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "2px" }}>
+                <div style={{ fontSize: "0.85rem", color: "var(--jester-color-onboard-subtitle)", marginTop: "2px" }}>
                   {[city, occupation].filter(Boolean).join(" · ")}
                 </div>
               )}
@@ -87,7 +87,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               style={{
                 background: "none",
                 border: "none",
-                color: "#6366f1",
+                color: "var(--jester-color-onboard-action-edit, #6366f1)",
                 fontSize: "0.8rem",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -103,10 +103,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <Card variant="default" style={{ padding: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#64748b", fontWeight: 600 }}>
+              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--jester-color-onboard-subtitle)", fontWeight: 600 }}>
                 დაბადების თარიღი (Birth Date)
               </div>
-              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--jester-color-onboard-title)", marginTop: "4px" }}>
                 📅 {formatDateDisplay(birthDate)}
               </div>
             </div>
@@ -116,7 +116,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               style={{
                 background: "none",
                 border: "none",
-                color: "#6366f1",
+                color: "var(--jester-color-onboard-action-edit, #6366f1)",
                 fontSize: "0.8rem",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -132,10 +132,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <Card variant="default" style={{ padding: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#64748b", fontWeight: 600 }}>
+              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--jester-color-onboard-subtitle)", fontWeight: 600 }}>
                 დაბადების დრო (Birth Time)
               </div>
-              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--jester-color-onboard-title)", marginTop: "4px" }}>
                 ⏰{" "}
                 {precision === "unknown"
                   ? "Not known / უცნობია"
@@ -148,7 +148,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               style={{
                 background: "none",
                 border: "none",
-                color: "#6366f1",
+                color: "var(--jester-color-onboard-action-edit, #6366f1)",
                 fontSize: "0.8rem",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -164,10 +164,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <Card variant="default" style={{ padding: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#64748b", fontWeight: 600 }}>
+              <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--jester-color-onboard-subtitle)", fontWeight: 600 }}>
                 დაბადების ადგილი (Birth Place)
               </div>
-              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+              <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--jester-color-onboard-title)", marginTop: "4px" }}>
                 📍 {placeLabel}
               </div>
             </div>
@@ -177,7 +177,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               style={{
                 background: "none",
                 border: "none",
-                color: "#6366f1",
+                color: "var(--jester-color-onboard-action-edit, #6366f1)",
                 fontSize: "0.8rem",
                 fontWeight: 600,
                 cursor: "pointer",

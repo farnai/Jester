@@ -17,34 +17,34 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const variantStyles: Record<string, React.CSSProperties> = {
     default: {
-      backgroundColor: "#FFFFFF",
-      border: "1px solid #E6E0D7",
-      boxShadow: "0 1px 3px rgba(34, 38, 48, 0.04)",
+      backgroundColor: "var(--jester-color-surface)",
+      border: "1px solid var(--jester-color-border-subtle)",
+      boxShadow: "var(--jester-shadow-card-subtle)",
     },
     elevated: {
-      backgroundColor: "#FFFFFF",
-      border: "1px solid #E6E0D7",
-      boxShadow: "0 4px 14px rgba(34, 38, 48, 0.06)",
+      backgroundColor: "var(--jester-color-surface)",
+      border: "1px solid var(--jester-color-border-subtle)",
+      boxShadow: "var(--jester-shadow-card-elevated)",
     },
     accent: {
       // Warm peach insight card
-      backgroundColor: "#FBEEE7",
-      border: "1px solid #F5DDD1",
-      boxShadow: "0 1px 4px rgba(255, 122, 47, 0.06)",
+      backgroundColor: "var(--jester-color-insight-peach-bg)",
+      border: "1px solid var(--jester-color-insight-peach-border)",
+      boxShadow: "var(--jester-shadow-brand-sm, 0 1px 4px color-mix(in srgb, var(--jester-primitive-orange-500) 6%, transparent))",
     },
     calm: {
       // Measured sage supportive insight card
-      backgroundColor: "#E8EFE2",
-      border: "1px solid #D6E1CD",
+      backgroundColor: "var(--jester-color-insight-sage-bg)",
+      border: "1px solid var(--jester-color-insight-sage-border)",
     },
     subtle: {
       // Warm alt surface card
-      backgroundColor: "#F3EEE6",
-      border: "1px solid #E6E0D7",
+      backgroundColor: "var(--jester-color-surface-subtle)",
+      border: "1px solid var(--jester-color-border-subtle)",
     },
     bordered: {
-      backgroundColor: "#FFFFFF",
-      border: "1.5px solid #D8D1C7",
+      backgroundColor: "var(--jester-color-surface)",
+      border: "1.5px solid var(--jester-color-border-medium)",
     },
   };
 

@@ -17,45 +17,45 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variantStyles: Record<string, React.CSSProperties> = {
     default: {
-      backgroundColor: "#F3EEE6",
-      color: "#6A716F",
-      border: "1px solid #E6E0D7",
+      backgroundColor: "var(--jester-color-surface-subtle)",
+      color: "var(--jester-color-text-secondary)",
+      border: "1px solid var(--jester-color-border-subtle)",
     },
     brand: {
-      backgroundColor: "#FFE7D7",
-      color: "#713111",
-      border: "1px solid #FFD0B2",
+      backgroundColor: "var(--jester-color-brand-subtle)",
+      color: "var(--jester-color-brand-subtle-text)",
+      border: "1px solid var(--jester-color-brand-subtle-border)",
     },
     score: {
-      backgroundColor: "#FBEEE7",
-      color: "#9E4215",
-      border: "1px solid #F5DDD1",
+      backgroundColor: "var(--jester-color-insight-peach-bg)",
+      color: "var(--jester-color-insight-peach-text)",
+      border: "1px solid var(--jester-color-insight-peach-border)",
       fontWeight: 700,
     },
     success: {
-      backgroundColor: "#EAF4EA",
-      color: "#4B6242",
-      border: "1px solid #BACAAC",
+      backgroundColor: "var(--jester-color-success-bg)",
+      color: "var(--jester-color-success-text)",
+      border: "1px solid var(--jester-color-success-border)",
     },
     warning: {
-      backgroundColor: "#FFF3DE",
-      color: "#925C18",
-      border: "1px solid #FFE0B2",
+      backgroundColor: "var(--jester-color-warning-bg)",
+      color: "var(--jester-color-warning-text)",
+      border: "1px solid var(--jester-color-warning-border)",
     },
     danger: {
-      backgroundColor: "#FBE9E8",
-      color: "#AE3534",
-      border: "1px solid #F5C6C5",
+      backgroundColor: "var(--jester-color-danger-bg)",
+      color: "var(--jester-color-danger-text)",
+      border: "1px solid var(--jester-color-danger-border)",
     },
     astrology: {
-      backgroundColor: "#E8EFE2",
-      color: "#4B6242",
-      border: "1px solid #D6E1CD",
+      backgroundColor: "var(--jester-color-astrology-bg)",
+      color: "var(--jester-color-astrology-text)",
+      border: "1px solid var(--jester-color-astrology-border)",
     },
     outline: {
       backgroundColor: "transparent",
-      color: "#6A716F",
-      border: "1px solid #D8D1C7",
+      color: "var(--jester-color-text-secondary)",
+      border: "1px solid var(--jester-color-border-medium)",
     },
   };
 

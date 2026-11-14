@@ -89,7 +89,7 @@ export const NotificationsPage: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div>
         <h2 style={{ marginTop: 0, marginBottom: "0.25rem" }}>შეტყობინებები</h2>
-        <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
+        <div style={{ fontSize: "0.85rem", color: "var(--jester-color-account-muted, #64748b)" }}>
           კავშირების, შეტყობინებებისა და ასტროლოგიური მოვლენების ჟურნალი
         </div>
       </div>
@@ -110,9 +110,13 @@ export const NotificationsPage: React.FC = () => {
                 onClick={() => handleNotificationClick(n)}
                 style={{
                   padding: "1rem",
-                  border: isUnread ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  border: isUnread
+                    ? "1px solid var(--jester-color-notification-unread-border, #93c5fd)"
+                    : "1px solid var(--jester-color-account-border, #e2e8f0)",
                   borderRadius: "8px",
-                  backgroundColor: isUnread ? "#eff6ff" : "#ffffff",
+                  backgroundColor: isUnread
+                    ? "var(--jester-color-notification-unread-bg, #eff6ff)"
+                    : "var(--jester-color-surface, #ffffff)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "0.5rem",
@@ -129,20 +133,22 @@ export const NotificationsPage: React.FC = () => {
                           fontWeight: 700,
                           padding: "0.15rem 0.4rem",
                           borderRadius: "4px",
-                          backgroundColor: isUnread ? "#2563eb" : "#94a3b8",
-                          color: "#ffffff",
+                          backgroundColor: isUnread
+                            ? "var(--jester-color-notification-unread-icon-bg, #2563eb)"
+                            : "var(--jester-color-notification-read-icon-bg, #94a3b8)",
+                          color: "var(--jester-primitive-white, #ffffff)",
                           textTransform: "uppercase",
                         }}
                       >
                         {isUnread ? "ახალი" : "წაკითხული"}
                       </span>
-                      <strong style={{ fontSize: "0.95rem", color: "#0f172a" }}>
+                      <strong style={{ fontSize: "0.95rem", color: "var(--jester-color-account-heading, #0f172a)" }}>
                         {title}
                       </strong>
                     </div>
 
                     {displayMessage && (
-                      <div style={{ fontSize: "0.875rem", color: "#334155", marginTop: "0.35rem" }}>
+                      <div style={{ fontSize: "0.875rem", color: "var(--jester-color-account-text, #334155)", marginTop: "0.35rem" }}>
                         {displayMessage}
                       </div>
                     )}
@@ -156,10 +162,10 @@ export const NotificationsPage: React.FC = () => {
                       }}
                       style={{
                         padding: "0.3rem 0.6rem",
-                        background: "#ffffff",
-                        border: "1px solid #93c5fd",
+                        background: "var(--jester-color-surface, #ffffff)",
+                        border: "1px solid var(--jester-color-notification-unread-border, #93c5fd)",
                         borderRadius: "4px",
-                        color: "#2563eb",
+                        color: "var(--jester-color-notification-unread-action, #2563eb)",
                         fontSize: "0.75rem",
                         cursor: "pointer",
                         fontWeight: 600,
@@ -171,7 +177,7 @@ export const NotificationsPage: React.FC = () => {
                   )}
                 </div>
 
-                <div style={{ fontSize: "0.75rem", color: "#94a3b8", borderTop: "1px dashed #f1f5f9", paddingTop: "0.4rem" }}>
+                <div style={{ fontSize: "0.75rem", color: "var(--jester-color-notification-time, #94a3b8)", borderTop: "1px dashed var(--jester-color-notification-divider, #f1f5f9)", paddingTop: "0.4rem" }}>
                   {new Date(n.created_at).toLocaleString("ka-GE")}
                 </div>
               </div>

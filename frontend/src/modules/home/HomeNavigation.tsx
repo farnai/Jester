@@ -156,8 +156,8 @@ export function HomeNavigation({
                       setWalletOpen(true);
                     }}
                   >
-                    <span style={{ color: '#D97706', fontSize: '1rem' }}>✦</span>
-                    <span style={{ fontWeight: 600, color: '#222630' }}>საფულე ({balance.toLocaleString()})</span>
+                    <span style={{ color: 'var(--jester-primitive-gold-base)', fontSize: '1rem' }}>✦</span>
+                    <span style={{ fontWeight: 600, color: 'var(--jester-color-text-primary)' }}>საფულე ({balance.toLocaleString()})</span>
                   </button>
                 </div>
 

@@ -70,10 +70,10 @@ export const FinishStep: React.FC<FinishStepProps> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.25rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.25rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           8. გადამოწმება და დასრულება (Finish)
         </h3>
-        <p style={{ margin: "0 0 1rem 0", color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: "0 0 1rem 0", color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           შეამოწმეთ შეყვანილი მონაცემები JESTER-ში შესვლამდე:
         </p>
       </div>
@@ -82,10 +82,10 @@ export const FinishStep: React.FC<FinishStepProps> = ({
         <div
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >
@@ -96,46 +96,46 @@ export const FinishStep: React.FC<FinishStepProps> = ({
       {/* Summary Review Card */}
       <Card variant="bordered" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>სახელი / გვარი:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a" }}>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>სახელი / გვარი:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)" }}>
             {firstName} {lastName} {displayName ? `(${displayName})` : ""}
           </span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>დაბადების თარიღი:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a" }}>{birthDate || "—"}</span>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>დაბადების თარიღი:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)" }}>{birthDate || "—"}</span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>დაბადების დრო:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a" }}>{formattedTime}</span>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>დაბადების დრო:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)" }}>{formattedTime}</span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>დაბადების ადგილი:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a", textAlign: "right", maxWidth: "60%" }}>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>დაბადების ადგილი:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)", textAlign: "right", maxWidth: "60%" }}>
             {birthCityLabel || "—"}
           </span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>საცხოვრებელი ქალაქი:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a", textAlign: "right", maxWidth: "60%" }}>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>საცხოვრებელი ქალაქი:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)", textAlign: "right", maxWidth: "60%" }}>
             {currentCityLabel || "—"}
           </span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>ინტერესები:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a" }}>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>ინტერესები:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)" }}>
             {interestsCount > 0 ? `${interestsCount} არჩეული` : "გამოტოვებული"}
           </span>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#64748b", fontSize: "0.85rem" }}>პროფილის ფოტო:</span>
-          <span style={{ fontWeight: 600, color: "#0f172a" }}>
+          <span style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.85rem" }}>პროფილის ფოტო:</span>
+          <span style={{ fontWeight: 600, color: "var(--jester-color-onboard-title)" }}>
             {avatarUrl ? "ატვირთულია ✓" : "არ არის არჩეული"}
           </span>
         </div>

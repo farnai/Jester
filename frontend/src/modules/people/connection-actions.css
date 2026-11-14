@@ -4,7 +4,7 @@
 .connection-actions .connection-pending { color:var(--jester-support-sage-ink); font-size:.8rem; line-height:1.4; }
 .connection-actions button:disabled { opacity:.6; cursor:wait; }
 .connection-dialog { width:min(440px, calc(100vw - 32px)); box-sizing:border-box; margin:auto; padding:26px; border:1px solid var(--jester-border-soft); border-radius:22px; background:var(--jester-surface-canvas); color:var(--jester-text-primary); }
-.connection-dialog::backdrop { background:rgba(34,38,48,.48); }
+.connection-dialog::backdrop { background:var(--jester-color-dialog-backdrop, color-mix(in srgb, var(--home-text-primary, #222630) 48%, transparent)); }
 .connection-dialog h2 { font-size:1.2rem; line-height:1.5; margin:0 0 14px; }
 .connection-dialog p { line-height:1.7; font-size:.9rem; }
 .connection-dialog > div { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }

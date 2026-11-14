@@ -113,7 +113,7 @@ export function ThreePerspectiveSpark({ className = '' }: { className?: string }
         d="M11.5 2C11.9 7.4 14.4 9.9 20 10.6C14.5 11.4 12.1 14 11.5 19.8C10.8 14 8.3 11.4 2.8 10.6C8.4 9.9 10.9 7.4 11.5 2Z"
         fill="currentColor"
       />
-      <circle cx="21.5" cy="5.5" r="2.6" fill="#FF7A2F" />
+      <circle cx="21.5" cy="5.5" r="2.6" fill="var(--home-brand-orange, #FF7A2F)" />
       <path
         d="M23 14.2C23.2 16.2 24.1 17.1 26.2 17.4C24.1 17.7 23.2 18.6 23 20.6C22.7 18.6 21.8 17.7 19.8 17.4C21.8 17.1 22.7 16.2 23 14.2Z"
         fill="currentColor"
@@ -140,7 +140,7 @@ export function ConnectionThreadMotif({ className = '' }: { className?: string }
       />
       <circle cx="10" cy="18" r="4" fill="currentColor" />
       <circle cx="106" cy="14" r="4" fill="currentColor" />
-      <path d="M58 9L62.5 13.5L58 18L53.5 13.5L58 9Z" fill="#FF7A2F" />
+      <path d="M58 9L62.5 13.5L58 18L53.5 13.5L58 9Z" fill="var(--home-brand-orange, #FF7A2F)" />
     </svg>
   );
 }

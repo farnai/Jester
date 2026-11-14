@@ -49,10 +49,10 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
   return (
     <form onSubmit={validateAndProceed} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           3. დაბადების დრო (Birth Time)
         </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           იცით თქვენი დაბადების დრო?
         </p>
       </div>
@@ -61,10 +61,10 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
         <div
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >
@@ -187,11 +187,11 @@ export const BirthTimeStep: React.FC<BirthTimeStepProps> = ({
         <div
           style={{
             padding: "0.85rem",
-            background: "#eff6ff",
-            border: "1px solid #bfdbfe",
+            background: "var(--jester-color-notice-blue-bg)",
+            border: "1px solid var(--jester-color-notice-blue-border)",
             borderRadius: "6px",
             fontSize: "0.825rem",
-            color: "#1e40af",
+            color: "var(--jester-color-notice-blue-text)",
             lineHeight: 1.5,
           }}
         >

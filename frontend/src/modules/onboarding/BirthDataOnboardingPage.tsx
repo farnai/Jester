@@ -378,9 +378,9 @@ export const BirthDataOnboardingPage: React.FC = () => {
         }}
       >
         {/* Onboarding Brand Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.85rem", borderBottom: "1px solid #ebe5dc" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", paddingBottom: "0.85rem", borderBottom: "1px solid var(--jester-primitive-divider-footer)" }}>
           <JesterLogo variant="horizontal" height={26} />
-          <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-brand-orange-500)", background: "#fff4eb", padding: "4px 10px", borderRadius: "12px", border: "1px solid #ffd8bf", letterSpacing: "0.3px" }}>
+          <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--jester-color-onboard-tag-text)", background: "var(--jester-color-onboard-tag-bg)", padding: "4px 10px", borderRadius: "12px", border: "1px solid var(--jester-color-onboard-tag-border)", letterSpacing: "0.3px" }}>
             ეტაპი {currentStep} / 8
           </span>
         </div>
@@ -392,7 +392,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
               display: "flex",
               justifyContent: "space-between",
               fontSize: "0.825rem",
-              color: "#64748b",
+              color: "var(--jester-color-onboard-subtitle)",
               fontWeight: 600,
               marginBottom: "0.45rem",
             }}
@@ -404,7 +404,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
             style={{
               height: "6px",
               width: "100%",
-              background: "#ebe5dc",
+              background: "var(--jester-color-onboard-progress-bg)",
               borderRadius: "4px",
               overflow: "hidden",
             }}
@@ -413,7 +413,7 @@ export const BirthDataOnboardingPage: React.FC = () => {
               style={{
                 height: "100%",
                 width: `${(currentStep / 8) * 100}%`,
-                background: "linear-gradient(90deg, #ff7a2f 0%, #f16417 100%)",
+                background: "var(--jester-color-onboard-progress-fill)",
                 borderRadius: "4px",
                 transition: "width 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
               }}

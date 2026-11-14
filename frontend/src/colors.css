@@ -1,0 +1,693 @@
+/**
+ * JESTER Design System — Colors Architecture
+ * 
+ * Single source of truth for color definitions and CSS variables.
+ * Designed to cleanly distinguish:
+ * 1. Base Primitives (Raw brand & foundation scales)
+ * 2. Semantic Surfaces, Text & Borders
+ * 3. Primary Brand Actions & Contrasts (independent of status colors)
+ * 4. Semantic Status Colors (Success, Warning, Danger, Info)
+ * 5. Feature Domains (Stars/Wallet, Astrology, Discovery/Score)
+ */
+
+:root {
+  /* =============================================================================
+     1. BASE PRIMITIVES (Raw Foundation Values)
+     ============================================================================= */
+
+  /* JESTER Brand Carrot Orange */
+  --jester-primitive-orange-50: #FFF6F0;
+  --jester-primitive-orange-100: #FFE7D7;
+  --jester-primitive-orange-200: #FFD0B2;
+  --jester-primitive-orange-300: #FFB185;
+  --jester-primitive-orange-400: #FF925A;
+  --jester-primitive-orange-500: #FF7A2F; /* Canonical Brand Core */
+  --jester-primitive-orange-600: #E9681F; /* Hover */
+  --jester-primitive-orange-700: #C95618; /* Active / Pressed */
+  --jester-primitive-orange-800: #9E4215; /* Focus / Dark Orange Variant */
+  --jester-primitive-orange-900: #713111; /* Dark Orange Border / Text */
+
+  /* Neutral Warm Paper Foundations */
+  --jester-primitive-paper-canvas: #FAF7F2;
+  --jester-primitive-paper-base: #FFFDFA;
+  --jester-primitive-paper-card: #FFFFFF;
+  --jester-primitive-paper-alt: #F3EEE6;
+  --jester-primitive-paper-border-soft: #E6E0D7;
+  --jester-primitive-paper-border-muted: #D8D1C7;
+  --jester-primitive-paper-border-interactive: #8F8A83;
+
+  /* Editorial Ink & Text */
+  --jester-primitive-ink-primary: #222630; /* Deep Charcoal */
+  --jester-primitive-ink-secondary: #6A716F; /* Editorial Slate */
+  --jester-primitive-ink-decorative: #8B918F;
+  --jester-primitive-ink-inverse: #FFFFFF;
+
+  /* Measured Sage (Astrology & Supportive Identity) */
+  --jester-primitive-sage-50: #F4F8F1;
+  --jester-primitive-sage-100: #E8EFE2;
+  --jester-primitive-sage-200: #D6E1CD;
+  --jester-primitive-sage-300: #BACAAC;
+  --jester-primitive-sage-400: #95A686;
+  --jester-primitive-sage-500: #788A69;
+  --jester-primitive-sage-ink: #4B6242;
+
+  /* Soft Peach (Curiosity & Insight Cards) */
+  --jester-primitive-peach: #F5DDD1;
+  --jester-primitive-peach-soft: #FBEEE7;
+
+  /* Semantic Feedback Scales (Completely independent from brand) */
+  --jester-primitive-success-base: #4B6242;
+  --jester-primitive-success-soft: #EAF4EA;
+  --jester-primitive-success-border: #BACAAC;
+
+  --jester-primitive-warning-base: #925C18;
+  --jester-primitive-warning-soft: #FFF3DE;
+  --jester-primitive-warning-border: #FFE0B2;
+
+  --jester-primitive-danger-base: #AE3534;
+  --jester-primitive-danger-soft: #FBE9E8;
+  --jester-primitive-danger-border: #F5C6C5;
+
+  --jester-primitive-info-base: #396F87;
+  --jester-primitive-info-soft: #EAF1F7;
+  --jester-primitive-info-border: #BCD5E2;
+
+  /* Stars & Wallet (Financial & Entitlement Domain) */
+  --jester-primitive-gold-base: #D97706;
+  --jester-primitive-gold-soft: #FEF3C7;
+  --jester-primitive-gold-border: #FDE68A;
+
+  /* Scenery, Atmosphere & Panorama Accents */
+  --jester-primitive-scenery-sun-glow: radial-gradient(ellipse at right bottom, #ffedb075, #ffd08925 40%, transparent 72%);
+  --jester-primitive-footer-text: #423a30;
+  --jester-primitive-footer-glow: #fff8ec;
+
+  /* Validation & Password Strength Accents */
+  --jester-primitive-strength-bar-bg: #e5e7eb;
+  --jester-primitive-strength-weak: #f59e0b;
+  --jester-primitive-strength-strong: #10b981;
+  --jester-primitive-strength-text: #6b7280;
+  --jester-primitive-match-bg: #ecfdf5;
+  --jester-primitive-match-text: #059669;
+  --jester-primitive-match-border: #a7f3d0;
+  --jester-primitive-mismatch-bg: #fef2f2;
+  --jester-primitive-mismatch-text: #dc2626;
+  --jester-primitive-mismatch-border: #fecaca;
+  --jester-primitive-sky-sunset: #302418;
+  --jester-primitive-brand-gradient-end: #F16417;
+  --jester-primitive-border-auth-input: #ded9d0;
+  --jester-primitive-border-auth-hover: #c4beb3;
+  --jester-primitive-text-placeholder: #9c978f;
+  --jester-primitive-text-icon-muted: #8c8880;
+  --jester-primitive-divider-auth: #e6e0d6;
+  --jester-primitive-divider-footer: #ebe5dc;
+
+  /* =============================================================================
+     2. SEMANTIC SYSTEM TOKENS (Contextual Roles)
+     ============================================================================= */
+
+  /* Surfaces & Canvas */
+  --jester-color-canvas: var(--jester-primitive-paper-canvas);
+  --jester-color-surface: var(--jester-primitive-paper-card);
+  --jester-color-surface-subtle: var(--jester-primitive-paper-alt);
+  --jester-color-surface-disabled: var(--jester-primitive-paper-alt);
+
+  /* Typography / Text */
+  --jester-color-text-primary: var(--jester-primitive-ink-primary);
+  --jester-color-text-secondary: var(--jester-primitive-ink-secondary);
+  --jester-color-text-tertiary: var(--jester-primitive-ink-decorative);
+  --jester-color-text-inverse: var(--jester-primitive-ink-inverse);
+
+  /* Borders & Dividers */
+  --jester-color-border-subtle: var(--jester-primitive-paper-border-soft);
+  --jester-color-border-medium: var(--jester-primitive-paper-border-muted);
+  --jester-color-border-interactive: var(--jester-primitive-paper-border-interactive);
+
+  /* Shadows */
+  --jester-shadow-card-subtle: 0 1px 3px rgba(34, 38, 48, 0.04);
+  --jester-shadow-tray-card: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --jester-shadow-card-elevated: 0 4px 14px rgba(34, 38, 48, 0.06);
+  --jester-shadow-brand-glow: 0 2px 6px color-mix(in srgb, var(--jester-primitive-orange-500) 22%, transparent);
+  --jester-shadow-focus-ring: 0 0 0 2px color-mix(in srgb, var(--jester-primitive-orange-800) 15%, transparent);
+  --jester-shadow-auth-card: 0 16px 48px -12px rgba(118, 81, 42, 0.12), 0 2px 6px rgba(118, 81, 42, 0.04);
+  --jester-shadow-auth-button: 0 4px 14px color-mix(in srgb, var(--jester-primitive-orange-500) 32%, transparent);
+  --jester-shadow-auth-button-hover: 0 6px 20px color-mix(in srgb, var(--jester-primitive-orange-500) 42%, transparent);
+  --jester-shadow-auth-focus: 0 0 0 3.5px color-mix(in srgb, var(--jester-primitive-orange-500) 16%, transparent), 0 2px 6px color-mix(in srgb, var(--jester-primitive-orange-500) 6%, transparent);
+  --jester-shadow-reg-card: 0 14px 50px #76512a15, 0 1px 4px #76512a05;
+  --jester-shadow-reg-card-mobile: 0 10px 35px #76512a0c;
+  --jester-shadow-reg-nav: 0 12px 32px #76512a20;
+
+  /* =============================================================================
+     3. BRAND ACTION TOKENS (Independent of Status & Wallet)
+     ============================================================================= */
+  --jester-color-brand-primary: var(--jester-primitive-orange-500);
+  --jester-color-brand-hover: var(--jester-primitive-orange-600);
+  --jester-color-brand-active: var(--jester-primitive-orange-700);
+  --jester-color-brand-border: var(--jester-primitive-orange-600);
+  --jester-color-brand-dark: var(--jester-primitive-orange-800);
+  --jester-color-brand-dark-border: var(--jester-primitive-orange-900);
+  --jester-color-brand-subtle: var(--jester-primitive-orange-100);
+  --jester-color-brand-subtle-border: var(--jester-primitive-orange-200);
+  --jester-color-brand-subtle-text: var(--jester-primitive-orange-900);
+
+  /* Text on Brand Backgrounds (WCAG AA Compliant) */
+  --jester-color-brand-text: var(--jester-primitive-ink-primary); /* 5.82:1 with #FF7A2F */
+  --jester-color-brand-dark-text: var(--jester-primitive-ink-inverse); /* 6.47:1 with #9E4215 */
+
+  /* Auth & Scenery Specific Semantic Roles */
+  --jester-color-auth-card-bg: var(--jester-primitive-paper-base);
+  --jester-color-auth-card-border: rgba(222, 217, 208, 0.75);
+  --jester-color-auth-input-bg: var(--jester-primitive-paper-card);
+  --jester-color-auth-input-bg-focus: #fffefb;
+  --jester-color-auth-input-border: var(--jester-primitive-border-auth-input);
+  --jester-color-auth-input-border-hover: var(--jester-primitive-border-auth-hover);
+  --jester-color-auth-input-border-focus: var(--jester-color-brand-primary);
+  --jester-color-auth-input-icon: var(--jester-primitive-text-icon-muted);
+  --jester-color-auth-input-placeholder: var(--jester-primitive-text-placeholder);
+  --jester-color-auth-link: var(--jester-primitive-orange-700);
+  --jester-color-auth-link-hover: var(--jester-primitive-orange-800);
+  --jester-color-auth-divider: var(--jester-primitive-divider-auth);
+  --jester-color-auth-divider-text: #a09a8f;
+  --jester-color-auth-footer-border: var(--jester-primitive-divider-footer);
+  --jester-color-auth-glow: radial-gradient(circle, color-mix(in srgb, var(--jester-primitive-orange-500) 12%, transparent) 0%, color-mix(in srgb, var(--jester-primitive-orange-500) 0%, transparent) 70%);
+  --jester-color-auth-gradient-btn: linear-gradient(135deg, var(--jester-primitive-orange-500) 0%, var(--jester-primitive-brand-gradient-end) 100%);
+  --jester-color-auth-cream-arc: linear-gradient(135deg, var(--jester-primitive-cream-warm) 0%, var(--jester-primitive-cream-soft) 70%);
+
+  /* Registration Form & Scenery Semantic Roles */
+  --jester-color-reg-step: var(--jester-primitive-orange-700);
+  --jester-color-reg-focus-outline: var(--jester-primitive-orange-800);
+  --jester-color-reg-header-login-hover: var(--jester-primitive-orange-100);
+  --jester-color-reg-privacy-icon: var(--jester-primitive-orange-600);
+  --jester-color-reg-strength-bg: var(--jester-primitive-strength-bar-bg);
+  --jester-color-reg-strength-weak: var(--jester-primitive-strength-weak);
+  --jester-color-reg-strength-strong: var(--jester-primitive-strength-strong);
+  --jester-color-reg-strength-text: var(--jester-primitive-strength-text);
+  --jester-color-reg-match-bg: var(--jester-primitive-match-bg);
+  --jester-color-reg-match-text: var(--jester-primitive-match-text);
+  --jester-color-reg-match-border: var(--jester-primitive-match-border);
+  --jester-color-reg-mismatch-bg: var(--jester-primitive-mismatch-bg);
+  --jester-color-reg-mismatch-text: var(--jester-primitive-mismatch-text);
+  --jester-color-reg-mismatch-border: var(--jester-primitive-mismatch-border);
+  --jester-color-reg-sun-glow: var(--jester-primitive-scenery-sun-glow);
+  --jester-color-reg-footer-text: var(--jester-primitive-footer-text);
+  --jester-color-reg-footer-glow: var(--jester-primitive-footer-glow);
+  --jester-color-reg-footer-scrim: linear-gradient(transparent, #30241855);
+
+  /* =============================================================================
+     4. STATUS & FEEDBACK TOKENS (Independent of Brand)
+     ============================================================================= */
+  --jester-color-success-bg: var(--jester-primitive-success-soft);
+  --jester-color-success-text: var(--jester-primitive-success-base);
+  --jester-color-success-border: var(--jester-primitive-success-border);
+
+  --jester-color-warning-bg: var(--jester-primitive-warning-soft);
+  --jester-color-warning-text: var(--jester-primitive-warning-base);
+  --jester-color-warning-border: var(--jester-primitive-warning-border);
+
+  --jester-color-danger-bg: var(--jester-primitive-danger-soft);
+  --jester-color-danger-text: var(--jester-primitive-danger-base);
+  --jester-color-danger-border: var(--jester-primitive-danger-border);
+
+  --jester-color-info-bg: var(--jester-primitive-info-soft);
+  --jester-color-info-text: var(--jester-primitive-info-base);
+  --jester-color-info-border: var(--jester-primitive-info-border);
+
+  /* =============================================================================
+     5. DOMAIN TOKENS (Insights, Astrology, Wallet/Stars)
+     ============================================================================= */
+  /* Insight Card Accents */
+  --jester-color-insight-peach-bg: var(--jester-primitive-peach-soft);
+  --jester-color-insight-peach-border: var(--jester-primitive-peach);
+  --jester-color-insight-peach-text: var(--jester-primitive-orange-800);
+
+  --jester-color-insight-sage-bg: var(--jester-primitive-sage-100);
+  --jester-color-insight-sage-border: var(--jester-primitive-sage-200);
+  --jester-color-insight-sage-text: var(--jester-primitive-sage-ink);
+
+  /* Astrology Badge & Identity */
+  --jester-color-astrology-bg: var(--jester-primitive-sage-100);
+  --jester-color-astrology-text: var(--jester-primitive-sage-ink);
+  --jester-color-astrology-border: var(--jester-primitive-sage-200);
+
+  /* Wallet & Stars (Distinct Financial Domain) */
+  --jester-color-stars-bg: var(--jester-primitive-gold-soft);
+  --jester-color-stars-text: var(--jester-primitive-gold-base);
+  --jester-color-stars-border: var(--jester-primitive-gold-border);
+
+  /* =============================================================================
+     6. BACKWARDS COMPATIBILITY ALIASES
+     ============================================================================= */
+  --jester-brand-orange-50: var(--jester-primitive-orange-50);
+  --jester-brand-orange-100: var(--jester-primitive-orange-100);
+  --jester-brand-orange-200: var(--jester-primitive-orange-200);
+  --jester-brand-orange-300: var(--jester-primitive-orange-300);
+  --jester-brand-orange-400: var(--jester-primitive-orange-400);
+  --jester-brand-orange-500: var(--jester-primitive-orange-500);
+  --jester-brand-orange-600: var(--jester-primitive-orange-600);
+  --jester-brand-orange-700: var(--jester-primitive-orange-700);
+  --jester-brand-orange-800: var(--jester-primitive-orange-800);
+  --jester-brand-orange-900: var(--jester-primitive-orange-900);
+
+  --jester-surface-canvas: var(--jester-color-canvas);
+  --jester-surface-base: var(--jester-primitive-paper-base);
+  --jester-surface-card: var(--jester-color-surface);
+  --jester-surface-alt: var(--jester-color-surface-subtle);
+  --jester-surface-raised: var(--jester-color-surface);
+
+  --jester-text-primary: var(--jester-color-text-primary);
+  --jester-text-secondary: var(--jester-color-text-secondary);
+  --jester-text-tertiary-decorative: var(--jester-color-text-tertiary);
+  --jester-text-inverse: var(--jester-color-text-inverse);
+
+  --jester-support-sage-50: var(--jester-primitive-sage-50);
+  --jester-support-sage-100: var(--jester-primitive-sage-100);
+  --jester-support-sage-200: var(--jester-primitive-sage-200);
+  --jester-support-sage-300: var(--jester-primitive-sage-300);
+  --jester-support-sage-400: var(--jester-primitive-sage-400);
+  --jester-support-sage-500: var(--jester-primitive-sage-500);
+  --jester-support-sage-ink: var(--jester-primitive-sage-ink);
+
+  --jester-accent-peach: var(--jester-primitive-peach);
+  --jester-accent-peach-soft: var(--jester-primitive-peach-soft);
+
+  --jester-border-soft: var(--jester-color-border-subtle);
+  --jester-border-muted: var(--jester-color-border-medium);
+  --jester-border-interactive: var(--jester-color-border-interactive);
+
+  --jester-semantic-success: var(--jester-primitive-success-base);
+  --jester-semantic-success-soft: var(--jester-primitive-success-soft);
+  --jester-semantic-warning: var(--jester-primitive-warning-base);
+  --jester-semantic-warning-soft: var(--jester-primitive-warning-soft);
+  --jester-semantic-error: var(--jester-primitive-danger-base);
+  --jester-semantic-error-soft: var(--jester-primitive-danger-soft);
+  --jester-semantic-info: var(--jester-primitive-info-base);
+  --jester-semantic-info-soft: var(--jester-primitive-info-soft);
+
+  --jester-bg-app: var(--jester-color-canvas);
+  --jester-bg-card: var(--jester-color-surface);
+  --jester-bg-subtle: var(--jester-color-surface-subtle);
+  --jester-fg-primary: var(--jester-color-text-primary);
+  --jester-fg-secondary: var(--jester-color-text-secondary);
+  --jester-action-primary: var(--jester-color-brand-primary);
+  --jester-action-primary-hover: var(--jester-color-brand-hover);
+  --jester-action-primary-label: var(--jester-color-brand-text);
+  --jester-action-primary-dark: var(--jester-color-brand-dark);
+  --jester-action-primary-dark-label: var(--jester-color-brand-dark-text);
+  --jester-action-focus: var(--jester-color-brand-dark);
+  --jester-input-border: var(--jester-color-border-interactive);
+  --jester-border-default: var(--jester-color-border-subtle);
+  --jester-insight-warm-bg: var(--jester-color-insight-peach-bg);
+  --jester-insight-calm-bg: var(--jester-color-insight-sage-bg);
+  --jester-insight-calm-fg: var(--jester-color-insight-sage-text);
+
+  --color-brand: var(--jester-color-brand-primary);
+  --color-brand-hover: var(--jester-color-brand-hover);
+  --color-brand-subtle: var(--jester-color-brand-subtle);
+  --color-brand-border: var(--jester-primitive-orange-300);
+
+  --color-score: var(--jester-color-brand-primary);
+  --color-score-bg: var(--jester-color-insight-peach-bg);
+  --color-score-border: var(--jester-color-insight-peach-border);
+
+  --color-bg-page: var(--jester-color-canvas);
+  --color-bg-surface: var(--jester-color-surface);
+  --color-bg-subtle: var(--jester-color-surface-subtle);
+
+  --color-text-main: var(--jester-color-text-primary);
+  --color-text-muted: var(--jester-color-text-secondary);
+  --color-text-subtle: var(--jester-color-text-tertiary);
+
+  --color-border-main: var(--jester-color-border-subtle);
+  --color-border-dark: var(--jester-color-border-medium);
+
+  /* Slate Foundation Palette (Preserved for Onboarding V2/V3) */
+  --jester-primitive-slate-50: #F8FAFC;
+  --jester-primitive-slate-100: #F1F5F9;
+  --jester-primitive-slate-200: #E2E8F0;
+  --jester-primitive-slate-300: #CBD5E1;
+  --jester-primitive-slate-400: #94A3B8;
+  --jester-primitive-slate-500: #64748B;
+  --jester-primitive-slate-600: #475569;
+  --jester-primitive-slate-700: #334155;
+  --jester-primitive-slate-800: #1E293B;
+  --jester-primitive-slate-900: #0F172A;
+
+  /* Onboarding Warm Accents & Glows */
+  --jester-primitive-onboard-peach-bg: #FFF4EB;
+  --jester-primitive-onboard-peach-border: #FFD8BF;
+  --jester-primitive-onboard-cream-bg: #FFF5EB;
+  --jester-primitive-onboard-cream-border: #FED7AA;
+  --jester-primitive-onboard-cream-hover: #FFF7ED;
+  --jester-primitive-onboard-orange-bright: #F96915;
+  --jester-primitive-onboard-orange-deep: #C2410C;
+  --jester-primitive-onboard-orange-dark: #9A3412;
+  --jester-primitive-onboard-orange-border: #FDBA74;
+  --jester-primitive-onboard-orange-subtle: #FFE2CC;
+  --jester-primitive-onboard-card-subtle: #FFFBF7;
+
+  /* Onboarding Blue Accent (Birth Time Notice) */
+  --jester-primitive-blue-50: #EFF6FF;
+  --jester-primitive-blue-200: #BFDBFE;
+  --jester-primitive-blue-800: #1E40AF;
+
+  /* Additional Foundation Primitives */
+  --jester-primitive-indigo-500: #6366F1;
+  --jester-primitive-terracotta: #C7614B;
+  --jester-primitive-copper: #C8966B;
+  --jester-primitive-success-dark: #047857;
+  --jester-primitive-orange-650: #D95710;
+
+  /* Avatar Fallback Deterministic Palette */
+  --jester-color-avatar-fallback-0: var(--jester-primitive-orange-500);
+  --jester-color-avatar-fallback-1: var(--jester-primitive-orange-700);
+  --jester-color-avatar-fallback-2: var(--jester-primitive-sage-500);
+  --jester-color-avatar-fallback-3: var(--jester-primitive-sage-ink);
+  --jester-color-avatar-fallback-4: var(--jester-primitive-terracotta);
+  --jester-color-avatar-fallback-5: var(--jester-primitive-copper);
+  --jester-color-avatar-fallback-6: var(--jester-primitive-info-base);
+  --jester-shadow-avatar: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --jester-shadow-tab-active: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --jester-color-substep-tab-hover-bg: rgba(255, 255, 255, 0.6);
+
+  /* Action Links & Buttons in Onboarding */
+  --jester-color-onboard-action-edit: var(--jester-primitive-indigo-500);
+  --jester-color-onboard-btn-hover: var(--jester-primitive-orange-650);
+  --jester-color-interest-counter-ready: var(--jester-primitive-success-dark);
+
+  /* Onboarding Semantic Roles */
+  --jester-color-onboard-title: var(--jester-primitive-slate-900);
+  --jester-color-onboard-subtitle: var(--jester-primitive-slate-500);
+  --jester-color-onboard-muted: var(--jester-primitive-slate-400);
+  --jester-color-onboard-border: var(--jester-primitive-slate-200);
+  --jester-color-onboard-border-subtle: var(--jester-primitive-slate-300);
+  --jester-color-onboard-bg-subtle: var(--jester-primitive-slate-50);
+  --jester-color-onboard-bg-alt: var(--jester-primitive-slate-100);
+  --jester-color-onboard-tag-bg: var(--jester-primitive-onboard-peach-bg);
+  --jester-color-onboard-tag-border: var(--jester-primitive-onboard-peach-border);
+  --jester-color-onboard-tag-text: var(--jester-primitive-orange-500);
+  --jester-color-onboard-progress-bg: var(--jester-primitive-divider-auth);
+  --jester-color-onboard-progress-fill: linear-gradient(90deg, var(--jester-primitive-orange-500) 0%, var(--jester-primitive-brand-gradient-end) 100%);
+
+  /* Interests V2 / V3 Component Tokens */
+  --jester-color-interest-bg-default: #FFFFFF;
+  --jester-color-interest-border-default: var(--jester-primitive-slate-300);
+  --jester-color-interest-text-default: var(--jester-primitive-slate-700);
+  --jester-color-interest-bg-hover: var(--jester-primitive-slate-50);
+  --jester-color-interest-border-hover: var(--jester-primitive-slate-400);
+  --jester-color-interest-bg-selected: var(--jester-primitive-onboard-cream-bg);
+  --jester-color-interest-border-selected: var(--jester-primitive-orange-600);
+  --jester-color-interest-text-selected: var(--jester-primitive-onboard-orange-deep);
+  --jester-color-interest-check-bg: var(--jester-primitive-orange-600);
+  --jester-color-interest-check-fg: #FFFFFF;
+  --jester-color-interest-badge-bg: var(--jester-primitive-onboard-cream-bg);
+  --jester-color-interest-badge-text: var(--jester-primitive-orange-600);
+  --jester-color-interest-badge-border: var(--jester-primitive-onboard-cream-border);
+  --jester-color-interest-active-card-bg: var(--jester-primitive-onboard-card-subtle);
+  --jester-color-interest-banner-glow: radial-gradient(ellipse at center, color-mix(in srgb, var(--jester-primitive-orange-500) 15%, transparent) 0%, color-mix(in srgb, var(--jester-primitive-orange-500) 0%, transparent) 70%);
+  --jester-color-interest-glow-subtle: color-mix(in srgb, var(--jester-primitive-orange-600) 18%, transparent);
+  --jester-color-interest-glow-focus: color-mix(in srgb, var(--jester-primitive-orange-600) 25%, transparent);
+  --jester-color-interest-glow-strong: color-mix(in srgb, var(--jester-primitive-orange-600) 35%, transparent);
+  --jester-color-interest-glow-button: 0 4px 14px color-mix(in srgb, var(--jester-primitive-orange-600) 30%, transparent);
+
+  /* Birth Time Notice Box */
+  --jester-color-notice-blue-bg: var(--jester-primitive-blue-50);
+  --jester-color-notice-blue-border: var(--jester-primitive-blue-200);
+  --jester-color-notice-blue-text: var(--jester-primitive-blue-800);
+
+  /* =============================================================================
+     7. HOME & NAVIGATION DOMAIN TOKENS
+     ============================================================================= */
+  /* Brand Tints & Warm Accents */
+  --jester-primitive-orange-60: #FFF0E6;
+  --jester-primitive-orange-75: #FFF1E6;
+  --jester-primitive-orange-150: #FFEAD9;
+  --jester-primitive-orange-175: #FFE8D9;
+  --jester-primitive-orange-250: #FFDEBF;
+  --jester-primitive-orange-450: #F97316;
+  --jester-primitive-orange-650-alt: #EA580C;
+  --jester-primitive-orange-wash-subtle: #FAF2EC;
+  --jester-primitive-orange-border-soft: #F8DFCE;
+  --jester-primitive-orange-divider: #F5EAE1;
+  --jester-primitive-orange-dark-gradient: #E07000;
+  --jester-primitive-orange-deep-ink: #5A2708;
+  --jester-primitive-orange-text-warm: #7A3B12;
+  --jester-primitive-orange-amber-tag: #71462E;
+  --jester-primitive-orange-card-hover: #FFF8F2;
+  --jester-primitive-orange-wash-alt: #FFF7F0;
+  --jester-primitive-orange-wash-soft: #FFF8F0;
+
+  /* Warm Editorial Paper Surfaces */
+  --jester-primitive-paper-subtle: #FFFDF9;
+  --jester-primitive-paper-warm: #FFFDF8;
+  --jester-primitive-paper-light: #FFFCF9;
+  --jester-primitive-paper-hover: #FCFAF7;
+  --jester-primitive-paper-pure: #FCFBF9;
+  --jester-primitive-paper-glow: #FBF8F4;
+  --jester-primitive-paper-cream: #F9F6F0;
+  --jester-primitive-paper-subtle-alt: #FAF8F5;
+  --jester-primitive-paper-card-alt: #F4EFEB;
+  --jester-primitive-paper-tag: #F3EFEA;
+  --jester-primitive-paper-divider: #F3EFE9;
+  --jester-primitive-paper-sand: #F2EDE6;
+  --jester-primitive-paper-shimmer: #F0ECE4;
+  --jester-primitive-paper-muted: #F0EBE3;
+  --jester-primitive-paper-arc: #ECE4D8;
+  --jester-primitive-paper-tint-soft: #FFF8F3;
+  --jester-primitive-paper-pure-white: #FFFBFB;
+
+  /* Borders & Dividers */
+  --jester-primitive-border-soft-alt: #EFEAE3;
+  --jester-primitive-border-divider: #EDE7DF;
+  --jester-primitive-border-card: #ECE7E0;
+  --jester-primitive-border-tab: #EAE5DE;
+  --jester-primitive-border-box: #E8E0D5;
+  --jester-primitive-border-card-alt: #E6DFD4;
+  --jester-primitive-border-pill: #E5DFD5;
+  --jester-primitive-border-scrollbar: #E4DCD3;
+  --jester-primitive-border-dashed: #DDD5CA;
+  --jester-primitive-border-cool: #E2E6EC;
+
+  /* Editorial Ink & Text Extensions */
+  --jester-primitive-ink-darkest: #181B22;
+  --jester-primitive-ink-header: #1F242E;
+  --jester-primitive-ink-deep: #272C36;
+  --jester-primitive-ink-tag: #4A4D53;
+  --jester-primitive-ink-slate-dark: #4C5564;
+  --jester-primitive-ink-neutral: #525760;
+  --jester-primitive-ink-body: #555D6B;
+  --jester-primitive-ink-secondary-alt: #6E7684;
+  --jester-primitive-ink-muted-alt: #70757E;
+  --jester-primitive-ink-hint: #8A92A0;
+  --jester-primitive-ink-caption: #8C94A0;
+  --jester-primitive-ink-warm: #8C8070;
+
+  /* Home Success Scale (Do Items & Real Badges) */
+  --jester-primitive-home-success-text: #2D6A2E;
+  --jester-primitive-home-success-bg: #EAF4EA;
+  --jester-primitive-home-success-border: #C2E2C2;
+  --jester-primitive-green-700: #15803D;
+  --jester-primitive-emerald-800: #065F46;
+  --jester-primitive-green-200: #86EFAC;
+  --jester-primitive-green-soft: #E8F5E5;
+  --jester-primitive-green-50: #F0FDF4;
+  --jester-primitive-green-canvas: #FAFDF8;
+  --jester-primitive-sage-light-border: #D3E6CD;
+
+  /* Home Danger Scale (Don't Items & Signout) */
+  --jester-primitive-home-danger-text: #B91C1C;
+  --jester-primitive-home-danger-bg: #FEE2E2;
+  --jester-primitive-home-danger-border: #F4D3D2;
+  --jester-primitive-danger-light: #FDE8E8;
+
+  /* Gold / Stars / Premium Extensions */
+  --jester-primitive-gold-hover: #B45309;
+  --jester-primitive-gold-dark: #92400E;
+  --jester-primitive-gold-darkest: #78350F;
+  --jester-primitive-gold-gradient-start: #FFFBEB;
+
+  /* Astrology & Neutral Badges */
+  --jester-primitive-purple-base: #6B21A8;
+  --jester-primitive-purple-soft: #F3E8FF;
+  --jester-primitive-gray-badge-bg: #F0F2F5;
+  --jester-primitive-gray-bg: #F3F4F6;
+  --jester-primitive-gray-alt: #F5F7FA;
+  --jester-primitive-gray-border: #E5E7EB;
+  --jester-primitive-gray-text: #6B7280;
+  --jester-primitive-gray-dark: #4B5563;
+
+  /* Supporting System Scales */
+  --home-support-sage-border: #D2E4CB;
+  --jester-primitive-sage-gradient: #F8FAF6;
+  --jester-primitive-sage-card-glow: #F9FAF7;
+
+  /* Canonical Home Domain Aliases (:root) */
+  --home-bg-canvas: var(--jester-color-canvas);
+  --home-surface-card: var(--jester-color-surface);
+  --home-surface-subtle: var(--jester-primitive-paper-subtle, #FFFDF9);
+  --home-card-border: var(--jester-primitive-paper-border-soft, #E6E0D7);
+  --home-card-border-hover: color-mix(in srgb, var(--jester-primitive-orange-500) 45%, transparent);
+
+  --home-card-shadow: 0 2px 10px -1px rgba(34, 38, 48, 0.04), 0 1px 3px rgba(34, 38, 48, 0.02);
+  --home-card-shadow-hover: 0 14px 34px -4px rgba(34, 38, 48, 0.08), 0 4px 12px -2px color-mix(in srgb, var(--jester-primitive-orange-500) 10%, transparent);
+  --home-card-shadow-featured: 0 10px 30px -4px color-mix(in srgb, var(--jester-primitive-sage-ink) 8%, transparent);
+
+  --home-radius-card: 20px;
+  --home-radius-sm: 12px;
+  --home-radius-pill: 9999px;
+
+  --home-text-primary: var(--jester-color-text-primary);
+  --home-text-secondary: #5A626F;
+  --home-text-muted: #878E99;
+  --home-text-inverse: var(--jester-color-text-inverse);
+
+  --home-brand-orange: var(--jester-color-brand-primary);
+  --home-brand-orange-hover: var(--jester-color-brand-hover);
+  --home-brand-orange-wash: var(--jester-primitive-orange-50);
+  --home-brand-orange-tint: var(--jester-primitive-orange-150, #FFEAD9);
+
+  --home-support-sage: var(--jester-primitive-sage-ink);
+  --home-support-sage-wash: var(--jester-primitive-sage-100);
+  --home-support-peach: var(--jester-primitive-peach);
+
+
+  /* ===========================================================================
+     8. DISCOVERY & PEOPLE PROFILE DOMAIN TOKENS
+     =========================================================================== */
+  /* Primitives for Astral / Safe Astrology Perspective */
+  --jester-primitive-astral-badge-bg: #F0F4F8;
+  --jester-primitive-astral-badge-bg-alt: #F5F7FA;
+  --jester-primitive-astral-badge-text: #384A62;
+  --jester-primitive-astral-badge-border: #D8E2EC;
+  --jester-primitive-astral-badge-border-alt: #E2E6EC;
+
+  /* Real Badge Alternative Variants */
+  --jester-primitive-real-badge-text-dark: #225C23;
+  --jester-primitive-real-badge-bg-alt: #EAF5EA;
+  --jester-primitive-real-badge-border-alt: #C8E6C8;
+
+  /* Warm Paper & Surface Primitives */
+  --jester-primitive-paper-warm-alt: #FBF8F4;
+  --jester-primitive-paper-sand-soft: #ECE4D8;
+  --jester-primitive-cream-warm: #F3E2CE;
+  --jester-primitive-cream-soft: #FFF9EF;
+  --jester-primitive-cream-tint: #FFFBF7;
+  --jester-primitive-border-neutral-warm: #E4DDD3;
+  --jester-primitive-border-card-subtle: #E6DFD4;
+  --jester-primitive-border-sand-soft: #F0EAE1;
+
+  /* Ink Sub-Tones */
+  --jester-primitive-ink-header-muted: #4C525E;
+  --jester-primitive-ink-soft: #70757E;
+  --jester-primitive-ink-warm-muted: #8C8070;
+
+  /* Orange Border Accent */
+  --jester-primitive-orange-border-subtle: #FFD0B2;
+
+  /* Discovery Domain Semantic Tokens */
+  --jester-primitive-white: #FFFFFF;
+  --jester-color-discover-card-bg: var(--jester-surface-base, #FFFFFF);
+  --jester-color-discover-photo-bg: var(--jester-color-text-primary, #222630);
+  --jester-color-discover-progress-active: var(--jester-primitive-white, #FFFFFF);
+  --jester-color-discover-progress-inactive: color-mix(in srgb, var(--jester-primitive-white, #FFFFFF) 40%, transparent);
+  --jester-color-discover-progress-shadow: 0 1px 3px #0004;
+  --jester-color-discover-photo-scrim: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  --jester-color-discover-photo-btn-bg: color-mix(in srgb, var(--jester-color-text-primary, #222630) 60%, transparent);
+  --jester-color-discover-photo-btn-border: color-mix(in srgb, var(--jester-primitive-white, #FFFFFF) 60%, transparent);
+  --jester-color-discover-hint-bg: color-mix(in srgb, var(--jester-color-text-primary, #222630) 72%, transparent);
+  --jester-color-discover-card-shadow: 0 12px 40px color-mix(in srgb, var(--jester-color-text-primary, #222630) 7%, transparent);
+  --jester-color-discover-overlay-text: var(--jester-primitive-white, #FFFFFF);
+
+  /* Person Profile & Social Identity Domain Tokens */
+  --jester-color-person-portrait-bg: var(--jester-primitive-ink-deep, #272C36);
+  --jester-color-person-vignette-scrim: linear-gradient(180deg, rgba(18, 22, 28, 0.32) 0%, rgba(18, 22, 28, 0) 100%);
+  --jester-color-person-vignette-bottom: rgba(18, 22, 28, 0.72);
+  --jester-color-person-synastry-bg: var(--jester-primitive-cream-tint, #FFFBF7);
+  --jester-color-person-synastry-border: var(--jester-primitive-onboard-cream-border, #FED7AA);
+  --jester-color-person-connect-primary-bg: var(--jester-color-brand-primary, #FF7A2F);
+  --jester-color-person-connect-primary-shadow: 0 3px 10px color-mix(in srgb, var(--jester-color-brand-primary, #FF7A2F) 35%, transparent);
+  --jester-color-person-connect-why-bg: var(--jester-color-surface, #FFFFFF);
+  --jester-color-person-connect-why-border: var(--jester-primitive-border-card, #E6E0D7);
+
+  /* Dialog Backdrop */
+  --jester-color-dialog-backdrop: color-mix(in srgb, var(--jester-color-text-primary, #222630) 48%, transparent);
+  --jester-color-overlay-badge: rgba(22, 26, 33, 0.72);
+  --jester-color-glass-white: rgba(255, 255, 255, 0.5);
+
+  /* ===========================================================================
+     9. COMPATIBILITY, WALLET & CHAT DOMAIN TOKENS
+     =========================================================================== */
+  /* Indigo Aspect Primitives (Independent Astrological Signal) */
+  --jester-primitive-indigo-50: #eef2ff;
+  --jester-primitive-indigo-100: #e0e7ff;
+
+  /* Wallet & Monetary Domain Tokens (Completely independent from Brand) */
+  --jester-primitive-gold-focus: #F59E0B;
+  --jester-color-stars-pill-bg-start: #FFFDF8;
+  --jester-color-stars-card-start: #FFFDF8;
+  --jester-color-stars-card-end: #FFF8EE;
+  --jester-color-wallet-credit: #15803D;
+  --jester-color-wallet-debit: #B91C1C;
+  --jester-color-wallet-free-text: #2D5231;
+
+  /* Chat & Messaging Domain Tokens */
+  --jester-color-chat-bubble-received-bg: var(--jester-surface-alt, #FAF8F5);
+  --jester-color-chat-bubble-received-border: var(--jester-border-soft, #EFEAE3);
+  --jester-color-chat-bubble-sent-bg: var(--jester-accent-peach, #F5DDD1);
+  --jester-color-chat-unread-badge-bg: var(--jester-color-brand-primary, #FF7A2F);
+  --jester-color-chat-unread-badge-text: var(--jester-color-text-primary, #222630);
+
+  /* Compatibility Domain Tokens */
+  --jester-color-compat-aspect-bg: var(--jester-primitive-indigo-50, #eef2ff);
+  --jester-color-compat-aspect-border: var(--jester-primitive-indigo-100, #e0e7ff);
+  --jester-color-compat-aspect-text: var(--jester-primitive-indigo-500, #6366f1);
+
+  /* ===========================================================================
+     10. NOTIFICATION, STATUS STATE & ACCOUNT DOMAIN TOKENS
+     =========================================================================== */
+  /* Shared Brand Shadows */
+  --jester-shadow-brand-sm: 0 1px 4px color-mix(in srgb, var(--jester-primitive-orange-500) 6%, transparent);
+  --jester-shadow-brand-focus: 0 1px 3px color-mix(in srgb, var(--jester-primitive-orange-500) 10%, transparent);
+  --jester-shadow-brand-cohort: 0 1px 2px color-mix(in srgb, var(--jester-primitive-orange-500) 15%, transparent);
+
+  /* Blue Feedback & Notification Primitives (Independent from Brand) */
+  --jester-primitive-blue-100: #dbeafe;
+  --jester-primitive-blue-300: #93c5fd;
+  --jester-primitive-blue-600: #2563eb;
+
+  /* Notification Domain Semantic Tokens */
+  --jester-color-notification-unread-bg: var(--jester-primitive-blue-50, #eff6ff);
+  --jester-color-notification-unread-border: var(--jester-primitive-blue-300, #93c5fd);
+  --jester-color-notification-unread-icon-bg: var(--jester-primitive-blue-600, #2563eb);
+  --jester-color-notification-unread-action: var(--jester-primitive-blue-600, #2563eb);
+  --jester-color-notification-read-icon-bg: var(--jester-primitive-slate-400, #94a3b8);
+  --jester-color-notification-time: var(--jester-primitive-slate-400, #94a3b8);
+  --jester-color-notification-divider: var(--jester-primitive-slate-100, #f1f5f9);
+
+  /* Rose / Danger Primitives (Strictly Independent Feedback Scale) */
+  --jester-primitive-rose-50: #fef2f2;
+  --jester-primitive-rose-200: #fecaca;
+  --jester-primitive-rose-700: #b91c1c;
+  --jester-primitive-rose-800: #991b1b;
+
+  /* Status State Semantic Tokens */
+  --jester-color-status-danger-bg: var(--jester-primitive-rose-50, #fef2f2);
+  --jester-color-status-danger-border: var(--jester-primitive-rose-200, #fecaca);
+  --jester-color-status-danger-text: var(--jester-primitive-rose-700, #b91c1c);
+  --jester-color-status-danger-detail: var(--jester-primitive-rose-800, #991b1b);
+  --jester-color-status-loading-text: var(--jester-primitive-slate-500, #64748b);
+  --jester-color-status-loading-title: var(--jester-primitive-slate-600, #475569);
+  --jester-color-status-empty-title: var(--jester-primitive-slate-800, #1e293b);
+  --jester-color-status-empty-text: var(--jester-primitive-slate-500, #64748b);
+  --jester-color-status-empty-border: var(--jester-primitive-slate-300, #cbd5e1);
+  --jester-color-status-empty-bg: var(--jester-primitive-slate-50, #f8fafc);
+
+  /* Account & Me Page Domain Tokens */
+  --jester-color-account-heading: var(--jester-primitive-slate-900, #0f172a);
+  --jester-color-account-text: var(--jester-primitive-slate-700, #334155);
+  --jester-color-account-muted: var(--jester-primitive-slate-500, #64748b);
+  --jester-color-account-subtle: var(--jester-primitive-slate-400, #94a3b8);
+  --jester-color-account-card-bg: var(--jester-primitive-slate-50, #f8fafc);
+  --jester-color-account-border: var(--jester-primitive-slate-200, #e2e8f0);
+  --jester-color-account-border-input: var(--jester-primitive-slate-300, #cbd5e1);
+  --jester-color-account-label: var(--jester-primitive-slate-800, #1e293b);
+}

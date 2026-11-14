@@ -55,10 +55,10 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
   return (
     <form onSubmit={handleContinue} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           7. პროფილის ფოტო (Profile Photo)
         </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           ატვირთეთ ფოტო, რათა სხვა ადამიანებმა შეძლონ თქვენი ამოცნობა (არასავალდებულო).
         </p>
       </div>
@@ -67,10 +67,10 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
         <div
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >
@@ -89,7 +89,7 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
               height: "120px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "3px solid #6366f1",
+              border: "3px solid var(--jester-color-onboard-action-edit, #6366f1)",
             }}
           />
         ) : (
@@ -98,13 +98,13 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
               width: "120px",
               height: "120px",
               borderRadius: "50%",
-              background: "#f1f5f9",
-              border: "2px dashed #cbd5e1",
+              background: "var(--jester-primitive-slate-100)",
+              border: "2px dashed var(--jester-primitive-slate-300, #cbd5e1)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "2rem",
-              color: "#94a3b8",
+              color: "var(--jester-primitive-slate-400)",
             }}
           >
             👤
@@ -116,13 +116,13 @@ export const ProfilePhotoStep: React.FC<ProfilePhotoStepProps> = ({
             style={{
               display: "inline-block",
               padding: "0.5rem 1rem",
-              background: "#f8fafc",
-              border: "1px solid #cbd5e1",
+              background: "var(--jester-primitive-slate-50)",
+              border: "1px solid var(--jester-primitive-slate-300)",
               borderRadius: "6px",
               cursor: uploading ? "not-allowed" : "pointer",
               fontSize: "0.875rem",
               fontWeight: 600,
-              color: "#334155",
+              color: "var(--jester-primitive-slate-700)",
             }}
           >
             {uploading ? "იტვირთება..." : currentAvatar ? "კიდევ ერთი ფოტო" : "ფოტოს არჩევა"}

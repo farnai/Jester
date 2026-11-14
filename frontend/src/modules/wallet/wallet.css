@@ -6,26 +6,26 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: linear-gradient(135deg, #FFFDF8 0%, #FEF3C7 100%);
-  border: 1px solid #FDE68A;
-  color: #92400E;
+  background: linear-gradient(135deg, var(--jester-color-stars-pill-bg-start, #FFFDF8) 0%, var(--jester-primitive-gold-soft, #FEF3C7) 100%);
+  border: 1px solid var(--jester-primitive-gold-border, #FDE68A);
+  color: var(--jester-primitive-gold-dark, #92400E);
   padding: 0.35rem 0.8rem;
   border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.1);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--jester-primitive-gold-base, #D97706) 10%, transparent);
   min-height: 36px;
   user-select: none;
   flex-shrink: 0;
 }
 
 .home-stars-pill:hover {
-  background: #FDE68A;
-  border-color: #F59E0B;
-  color: #78350F;
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+  background: var(--jester-primitive-gold-border, #FDE68A);
+  border-color: var(--jester-primitive-gold-focus, #F59E0B);
+  color: var(--jester-primitive-gold-darkest, #78350F);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--jester-primitive-gold-base, #D97706) 20%, transparent);
   transform: translateY(-1px);
 }
 
@@ -34,13 +34,13 @@
 }
 
 .home-stars-pill:focus-visible {
-  outline: 2px solid #F59E0B;
+  outline: 2px solid var(--jester-primitive-gold-focus, #F59E0B);
   outline-offset: 2px;
 }
 
 .home-stars-pill .home-stars-icon {
   font-size: 0.95rem;
-  color: #D97706;
+  color: var(--jester-primitive-gold-base, #D97706);
   line-height: 1;
 }
 
@@ -61,7 +61,7 @@
 
 .wallet-modal-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #EFEAE3;
+  border-bottom: 1px solid var(--jester-primitive-border-soft-alt, #EFEAE3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -76,7 +76,7 @@
 .wallet-modal-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #222630;
+  color: var(--jester-color-text-primary, #222630);
   margin: 0;
   display: flex;
   align-items: center;
@@ -85,7 +85,7 @@
 
 .wallet-modal-subtitle {
   font-size: 0.8rem;
-  color: #6A716F;
+  color: var(--jester-primitive-ink-secondary, #6A716F);
   margin: 0;
 }
 
@@ -99,8 +99,8 @@
 
 /* Balance Hero Card */
 .wallet-hero-card {
-  background: linear-gradient(135deg, #FFFDF8 0%, #FFF8EE 100%);
-  border: 1px solid #FDE68A;
+  background: linear-gradient(135deg, var(--jester-color-stars-card-start, #FFFDF8) 0%, var(--jester-color-stars-card-end, #FFF8EE) 100%);
+  border: 1px solid var(--jester-primitive-gold-border, #FDE68A);
   border-radius: 16px;
   padding: 1.25rem;
   text-align: center;
@@ -114,7 +114,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #92400E;
+  color: var(--jester-primitive-gold-dark, #92400E);
   font-weight: 600;
 }
 
@@ -127,13 +127,13 @@
 
 .wallet-hero-star {
   font-size: 1.8rem;
-  color: #D97706;
+  color: var(--jester-primitive-gold-base, #D97706);
 }
 
 .wallet-hero-number {
   font-size: 2.4rem;
   font-weight: 800;
-  color: #78350F;
+  color: var(--jester-primitive-gold-darkest, #78350F);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
@@ -141,7 +141,7 @@
 .wallet-hero-currency {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #B45309;
+  color: var(--jester-primitive-gold-hover, #B45309);
 }
 
 .wallet-hero-stats {
@@ -150,11 +150,11 @@
   gap: 1.25rem;
   margin-top: 0.25rem;
   padding-top: 0.75rem;
-  border-top: 1px dashed #FDE68A;
+  border-top: 1px dashed var(--jester-primitive-gold-border, #FDE68A);
   width: 100%;
   justify-content: center;
   font-size: 0.8rem;
-  color: #78350F;
+  color: var(--jester-primitive-gold-darkest, #78350F);
 }
 
 .wallet-hero-stat-item span {
@@ -171,7 +171,7 @@
 .wallet-section-heading {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #222630;
+  color: var(--jester-color-text-primary, #222630);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0;
@@ -184,8 +184,8 @@
 }
 
 .wallet-pricing-item {
-  background: #FAF8F5;
-  border: 1px solid #EFEAE3;
+  background: var(--jester-primitive-paper-subtle-alt, #FAF8F5);
+  border: 1px solid var(--jester-primitive-border-soft-alt, #EFEAE3);
   border-radius: 12px;
   padding: 0.75rem 0.85rem;
   display: flex;
@@ -196,28 +196,28 @@
 .wallet-pricing-name {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #222630;
+  color: var(--jester-color-text-primary, #222630);
 }
 
 .wallet-pricing-cost {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #C95618;
+  color: var(--jester-primitive-archetype-badge-text, #C95618);
 }
 
 .wallet-pricing-note {
   font-size: 0.72rem;
-  color: #6A716F;
+  color: var(--jester-primitive-ink-secondary, #6A716F);
 }
 
 /* Free list */
 .wallet-free-features {
-  background: #F4F8F1;
-  border: 1px solid #D6E1CD;
+  background: var(--jester-primitive-sage-50, #F4F8F1);
+  border: 1px solid var(--jester-primitive-sage-200, #D6E1CD);
   border-radius: 10px;
   padding: 0.6rem 0.85rem;
   font-size: 0.75rem;
-  color: #2D5231;
+  color: var(--jester-color-wallet-free-text, #2D5231);
   line-height: 1.4;
 }
 
@@ -241,8 +241,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 0.85rem;
-  background: #FFFFFF;
-  border: 1px solid #EFEAE3;
+  background: var(--jester-color-surface, #FFFFFF);
+  border: 1px solid var(--jester-primitive-border-soft-alt, #EFEAE3);
   border-radius: 10px;
   gap: 0.75rem;
 }
@@ -257,12 +257,12 @@
 .wallet-tx-desc {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #222630;
+  color: var(--jester-color-text-primary, #222630);
 }
 
 .wallet-tx-date {
   font-size: 0.72rem;
-  color: #8B918F;
+  color: var(--jester-primitive-ink-decorative, #8B918F);
 }
 
 .wallet-tx-amount-col {
@@ -279,32 +279,32 @@
 }
 
 .wallet-tx-amount.is-credit {
-  color: #15803D;
+  color: var(--jester-color-wallet-credit, #15803D);
 }
 
 .wallet-tx-amount.is-debit {
-  color: #B91C1C;
+  color: var(--jester-color-wallet-debit, #B91C1C);
 }
 
 .wallet-tx-balance-after {
   font-size: 0.7rem;
-  color: #6A716F;
+  color: var(--jester-primitive-ink-secondary, #6A716F);
   font-variant-numeric: tabular-nums;
 }
 
 .wallet-empty-history {
   text-align: center;
   padding: 1.5rem;
-  color: #8B918F;
+  color: var(--jester-primitive-ink-decorative, #8B918F);
   font-size: 0.85rem;
-  background: #FAF8F5;
+  background: var(--jester-primitive-paper-subtle-alt, #FAF8F5);
   border-radius: 10px;
 }
 
 .wallet-footer-notice {
   font-size: 0.75rem;
-  color: #6A716F;
-  background: #FAF7F2;
+  color: var(--jester-primitive-ink-secondary, #6A716F);
+  background: var(--jester-color-canvas, #FAF7F2);
   border-radius: 10px;
   padding: 0.65rem 0.85rem;
   line-height: 1.4;

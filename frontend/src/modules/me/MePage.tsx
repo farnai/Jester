@@ -252,10 +252,10 @@ export const MePage: React.FC = () => {
       {activeTab === "insights" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>
+            <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "var(--jester-color-account-heading, #0f172a)" }}>
               ვინ ვარ მე — დეტერმინისტული დაკვირვებები
             </h2>
-            <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
+            <p style={{ margin: "0.25rem 0 0 0", color: "var(--jester-color-account-muted, #64748b)", fontSize: "0.9rem" }}>
               JESTER-ის ინტერპრეტაციები თქვენი ხასიათის, ემოციებისა და სოციალური როლის შესახებ:
             </p>
           </div>
@@ -277,8 +277,8 @@ export const MePage: React.FC = () => {
           ) : !astro ? (
             <Card padded style={{ textAlign: "center", padding: "2.5rem 1rem" }}>
               <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🧭</div>
-              <h3 style={{ margin: "0 0 0.5rem 0", color: "#1e293b" }}>დაბადების მონაცემები არ არის შეყვანილი</h3>
-              <p style={{ color: "#64748b", fontSize: "0.9rem", maxWidth: "420px", margin: "0 auto 1.5rem auto" }}>
+              <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--jester-color-account-label, #1e293b)" }}>დაბადების მონაცემები არ არის შეყვანილი</h3>
+              <p style={{ color: "var(--jester-color-account-muted, #64748b)", fontSize: "0.9rem", maxWidth: "420px", margin: "0 auto 1.5rem auto" }}>
                 თქვენი პერსონალური დაკვირვებებისა და სინასტრიული რუკის გამოსათვლელად შეიყვანეთ დაბადების თარიღი და ადგილი.
               </p>
               <Link to="/onboarding/birth-data" style={{ textDecoration: "none" }}>
@@ -307,7 +307,7 @@ export const MePage: React.FC = () => {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span style={{ fontSize: "1.25rem" }}>{icon}</span>
-                        <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "#0f172a" }}>
+                        <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "var(--jester-color-account-heading, #0f172a)" }}>
                           {obs.title}
                         </h3>
                       </div>
@@ -317,7 +317,7 @@ export const MePage: React.FC = () => {
                     </div>
 
                     {/* Primary: Human Narrative Interpretation in JESTER Voice */}
-                    <p style={{ margin: 0, color: "#334155", fontSize: "0.95rem", lineHeight: 1.65 }}>
+                    <p style={{ margin: 0, color: "var(--jester-color-account-text, #334155)", fontSize: "0.95rem", lineHeight: 1.65 }}>
                       {obs.interpretation?.text}
                     </p>
                   </Card>
@@ -327,25 +327,25 @@ export const MePage: React.FC = () => {
               {/* Elemental & Modality Dynamics Breakdown */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))", gap: "1rem", marginTop: "0.5rem" }}>
                 <Card padded>
-                  <div style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
+                  <div style={{ fontSize: "0.8rem", color: "var(--jester-color-account-muted, #64748b)", textTransform: "uppercase", fontWeight: 700 }}>
                     დომინანტური სტიქია
                   </div>
-                  <div style={{ fontSize: "1.3rem", fontWeight: 800, marginTop: "0.3rem", color: "#0f172a" }}>
+                  <div style={{ fontSize: "1.3rem", fontWeight: 800, marginTop: "0.3rem", color: "var(--jester-color-account-heading, #0f172a)" }}>
                     🔥 {astro.element_primary}
                   </div>
-                  <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.2rem" }}>
+                  <div style={{ fontSize: "0.825rem", color: "var(--jester-color-account-muted, #64748b)", marginTop: "0.2rem" }}>
                     განსაზღვრავს თქვენი ენერგიის ძირითად ბუნებასა და რეაქციებს.
                   </div>
                 </Card>
 
                 <Card padded>
-                  <div style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>
+                  <div style={{ fontSize: "0.8rem", color: "var(--jester-color-account-muted, #64748b)", textTransform: "uppercase", fontWeight: 700 }}>
                     მოდალობა
                   </div>
-                  <div style={{ fontSize: "1.3rem", fontWeight: 800, marginTop: "0.3rem", color: "#0f172a" }}>
+                  <div style={{ fontSize: "1.3rem", fontWeight: 800, marginTop: "0.3rem", color: "var(--jester-color-account-heading, #0f172a)" }}>
                     ⚡ {astro.modality_primary}
                   </div>
-                  <div style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "0.2rem" }}>
+                  <div style={{ fontSize: "0.825rem", color: "var(--jester-color-account-muted, #64748b)", marginTop: "0.2rem" }}>
                     ცხოვრებისეული გადაწყვეტილებების დინამიკა და ცვლილებებთან ადაპტაცია.
                   </div>
                 </Card>
@@ -353,7 +353,7 @@ export const MePage: React.FC = () => {
 
               {/* Recalculate Natal Placements Action */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "space-between", alignItems: "center", marginTop: "1rem" }}>
-                <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
+                <span style={{ fontSize: "0.8rem", color: "var(--jester-color-account-subtle, #94a3b8)" }}>
                   ბოლოს გადათვლილი: {new Date(astro.updated_at).toLocaleDateString("ka-GE")}
                 </span>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -383,10 +383,10 @@ export const MePage: React.FC = () => {
       {activeTab === "settings" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>
+            <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "var(--jester-color-account-heading, #0f172a)" }}>
               პროფილის ინფორმაციის რედაქტირება
             </h2>
-            <p style={{ margin: "0.25rem 0 0 0", color: "#64748b", fontSize: "0.9rem" }}>
+            <p style={{ margin: "0.25rem 0 0 0", color: "var(--jester-color-account-muted, #64748b)", fontSize: "0.9rem" }}>
               ეს მონაცემები ჩანს თქვენს საჯარო პროფილზე და აღმოჩენის გვერდზე.
             </p>
           </div>
@@ -417,7 +417,7 @@ export const MePage: React.FC = () => {
               />
 
               <div>
-                <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "#1e293b", marginBottom: "0.35rem", display: "block" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--jester-color-account-label, #1e293b)", marginBottom: "0.35rem", display: "block" }}>
                   ბიო / Bio (მოკლე აღწერა)
                 </label>
                 <textarea
@@ -427,7 +427,7 @@ export const MePage: React.FC = () => {
                   style={{
                     width: "100%",
                     padding: "0.65rem",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--jester-color-account-border-input, #cbd5e1)",
                     borderRadius: "8px",
                     fontFamily: "inherit",
                     fontSize: "0.95rem",
@@ -467,8 +467,8 @@ export const MePage: React.FC = () => {
                   alignItems: "center",
                   gap: "0.75rem",
                   padding: "0.85rem 1rem",
-                  backgroundColor: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  backgroundColor: "var(--jester-color-account-card-bg, #f8fafc)",
+                  border: "1px solid var(--jester-color-account-border, #e2e8f0)",
                   borderRadius: "8px",
                   margin: "0.25rem 0",
                 }}
@@ -503,10 +503,10 @@ export const MePage: React.FC = () => {
           {/* Account Security & Birth Parameters Card */}
           <Card padded style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              <h3 style={{ margin: "0 0 0.25rem 0", fontSize: "1.05rem", color: "#0f172a" }}>
+              <h3 style={{ margin: "0 0 0.25rem 0", fontSize: "1.05rem", color: "var(--jester-color-account-heading, #0f172a)" }}>
                 დაბადების პარამეტრები & ანგარიში
               </h3>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>
+              <p style={{ margin: 0, color: "var(--jester-color-account-muted, #64748b)", fontSize: "0.85rem" }}>
                 თქვენი დაბადების დრო, თარიღი და ადგილი დაცულია და არასდროს ჩანს საჯაროდ.
               </p>
             </div>

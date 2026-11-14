@@ -58,10 +58,10 @@ export const WhereYouLiveStep: React.FC<WhereYouLiveStepProps> = ({
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           5. სად ცხოვრობთ? (Where You Live)
         </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           მიუთითეთ თქვენი მიმდინარე საცხოვრებელი ქალაქი. ეს ინფორმაცია საჭიროა სიახლოვისა და ადამიანების აღმოჩენისთვის.
         </p>
       </div>
@@ -70,10 +70,10 @@ export const WhereYouLiveStep: React.FC<WhereYouLiveStepProps> = ({
         <div
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >
@@ -87,15 +87,15 @@ export const WhereYouLiveStep: React.FC<WhereYouLiveStepProps> = ({
           variant="bordered"
           style={{
             padding: "0.875rem",
-            backgroundColor: "#f8fafc",
-            borderColor: "#cbd5e1",
+            backgroundColor: "var(--jester-primitive-slate-50, #f8fafc)",
+            borderColor: "var(--jester-primitive-slate-300, #cbd5e1)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "0.5rem",
           }}
         >
-          <div style={{ fontSize: "0.875rem", color: "#334155" }}>
+          <div style={{ fontSize: "0.875rem", color: "var(--jester-primitive-slate-700)" }}>
             ამჟამადაც <strong>{birthCityLabel.split(",")[0]}</strong>-ში ცხოვრობთ?
           </div>
           <Button

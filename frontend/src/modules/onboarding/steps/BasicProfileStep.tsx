@@ -42,10 +42,10 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
-        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "#0f172a" }}>
+        <h3 style={{ margin: "0 0 0.4rem 0", fontSize: "1.2rem", fontWeight: 700, color: "var(--jester-color-onboard-title)" }}>
           1. სახელი და გვარი (Basic Identity)
         </h3>
-        <p style={{ margin: "0 0 1.25rem 0", color: "#64748b", fontSize: "0.875rem" }}>
+        <p style={{ margin: "0 0 1.25rem 0", color: "var(--jester-color-onboard-subtitle)", fontSize: "0.875rem" }}>
           მიუთითეთ თქვენი რეალური სახელი და გვარი. საჯარო სახელი (Display Name) ავტომატურად შედგება: სახელი + გვარის ინიციალი.
         </p>
       </div>
@@ -54,10 +54,10 @@ export const BasicProfileStep: React.FC<BasicProfileStepProps> = ({
         <div
           style={{
             padding: "0.75rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "6px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.85rem",
           }}
         >

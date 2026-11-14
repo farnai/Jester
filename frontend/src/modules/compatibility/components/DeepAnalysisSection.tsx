@@ -46,12 +46,12 @@ export const DeepAnalysisSection: React.FC<DeepAnalysisSectionProps> = ({
               margin: "0 0 0.2rem 0",
               fontSize: "1.15rem",
               fontWeight: 700,
-              color: "#0f172a",
+              color: "var(--jester-primitive-slate-900, #0f172a)",
             }}
           >
             უფრო ღრმად
           </h2>
-          <p style={{ margin: 0, fontSize: "0.88rem", color: "#64748b" }}>
+          <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
             დეტალური თემატური ანალიზი თქვენი ურთიერთობის შესახებ.
           </p>
         </div>
@@ -81,13 +81,13 @@ export const DeepAnalysisSection: React.FC<DeepAnalysisSectionProps> = ({
                 key={idx}
                 padded
                 style={{
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #f1f5f9",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
+                  backgroundColor: "var(--jester-primitive-white, #ffffff)",
+                  border: "1px solid var(--jester-primitive-slate-100, #f1f5f9)",
+                  boxShadow: "var(--jester-shadow-card-subtle, 0 1px 3px rgba(0,0,0,0.02))",
                 }}
               >
                 <div style={{ marginBottom: "0.4rem" }}>
-                  <Badge variant="default" size="sm" style={{ color: "#6366f1", backgroundColor: "#eef2ff" }}>
+                  <Badge variant="default" size="sm" style={{ color: "var(--jester-color-compat-aspect-text, var(--jester-primitive-indigo-500, #6366f1))", backgroundColor: "var(--jester-color-compat-aspect-bg, var(--jester-primitive-indigo-50, #eef2ff))" }}>
                     {dimensionLabel}
                   </Badge>
                 </div>
@@ -96,7 +96,7 @@ export const DeepAnalysisSection: React.FC<DeepAnalysisSectionProps> = ({
                   style={{
                     margin: 0,
                     fontSize: "0.92rem",
-                    color: "#334155",
+                    color: "var(--jester-primitive-slate-700, #334155)",
                     lineHeight: 1.6,
                   }}
                 >

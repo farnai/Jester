@@ -32,16 +32,16 @@ export const AuthCallbackPage: React.FC = () => {
       >
         <Card variant="elevated" style={{ maxWidth: "440px", textAlign: "center", padding: "2rem" }}>
           <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⚠️</div>
-          <h3 style={{ margin: "0 0 0.5rem 0", color: "#dc2626" }}>ავტორიზაციის შეცდომა</h3>
-          <p style={{ color: "#64748b", fontSize: "0.9rem", marginBottom: "1.5rem" }}>{error}</p>
-          <p><Link to="/auth/verify-email">დადასტურების წერილის ხელახლა გაგზავნა</Link></p>
+          <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--jester-color-danger-text)" }}>დადასტურების შეცდომა</h3>
+          <p style={{ color: "var(--jester-color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>{error}</p>
+          <p><Link to="/auth/verify-email" style={{ color: "var(--jester-color-auth-link)" }}>დადასტურების წერილის ხელახლა გაგზავნა</Link></p>
           <Link
             to="/auth/login"
             style={{
               display: "inline-block",
               padding: "0.6rem 1.2rem",
-              background: "#6366f1",
-              color: "#fff",
+              background: "var(--jester-color-brand-primary)",
+              color: "var(--jester-color-brand-text)",
               borderRadius: "6px",
               textDecoration: "none",
               fontWeight: 600,

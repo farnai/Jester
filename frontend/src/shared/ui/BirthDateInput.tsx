@@ -405,10 +405,10 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
     height: "46px",
     borderRadius: "10px",
     border: `1.5px solid ${
-      isInputInvalid ? "#AE3534" : "#8F8A83"
+      isInputInvalid ? "var(--jester-color-danger-text)" : "var(--jester-color-border-interactive)"
     }`,
-    backgroundColor: disabled ? "#F3EEE6" : "#FFFFFF",
-    color: "#222630",
+    backgroundColor: disabled ? "var(--jester-color-surface-disabled)" : "var(--jester-color-surface, #FFFFFF)",
+    color: "var(--jester-color-text-primary)",
     fontSize: "0.95rem",
     fontWeight: 500,
     outline: "none",
@@ -440,13 +440,13 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
           style={{
             fontSize: "0.875rem",
             fontWeight: 700,
-            color: "#0F172A",
+            color: "var(--jester-color-onboard-title)",
             marginBottom: "0.45rem",
             display: "block",
             padding: 0,
           }}
         >
-          {label} {required && <span style={{ color: "#E9681F" }}>*</span>}
+          {label} {required && <span style={{ color: "var(--jester-color-brand-border)" }}>*</span>}
         </legend>
       )}
 
@@ -475,7 +475,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
             style={{
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: "#64748B",
+              color: "var(--jester-color-onboard-subtitle)",
             }}
           >
             დღე
@@ -500,13 +500,13 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
               }}
               onFocus={(e) => {
                 if (!isInputInvalid) {
-                  e.target.style.borderColor = "#9E4215";
-                  e.target.style.boxShadow = "0 0 0 2px rgba(158, 66, 21, 0.15)";
+                  e.target.style.borderColor = "var(--jester-color-brand-dark)";
+                  e.target.style.boxShadow = "var(--jester-shadow-focus-ring)";
                 }
               }}
               onBlur={(e) => {
                 if (!isInputInvalid) {
-                  e.target.style.borderColor = "#8F8A83";
+                  e.target.style.borderColor = "var(--jester-color-border-interactive)";
                   e.target.style.boxShadow = "none";
                 }
               }}
@@ -532,7 +532,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                 top: "50%",
                 transform: "translateY(-50%)",
                 pointerEvents: "none",
-                color: "#64748B",
+                color: "var(--jester-color-onboard-subtitle)",
                 fontSize: "0.75rem",
               }}
             >
@@ -556,7 +556,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
             style={{
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: "#64748B",
+              color: "var(--jester-color-onboard-subtitle)",
             }}
           >
             თვე
@@ -581,13 +581,13 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
               }}
               onFocus={(e) => {
                 if (!isInputInvalid) {
-                  e.target.style.borderColor = "#9E4215";
-                  e.target.style.boxShadow = "0 0 0 2px rgba(158, 66, 21, 0.15)";
+                  e.target.style.borderColor = "var(--jester-color-brand-dark)";
+                  e.target.style.boxShadow = "var(--jester-shadow-focus-ring)";
                 }
               }}
               onBlur={(e) => {
                 if (!isInputInvalid) {
-                  e.target.style.borderColor = "#8F8A83";
+                  e.target.style.borderColor = "var(--jester-color-border-interactive)";
                   e.target.style.boxShadow = "none";
                 }
               }}
@@ -609,7 +609,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                 top: "50%",
                 transform: "translateY(-50%)",
                 pointerEvents: "none",
-                color: "#64748B",
+                color: "var(--jester-color-onboard-subtitle)",
                 fontSize: "0.75rem",
               }}
             >
@@ -636,7 +636,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
             style={{
               fontSize: "0.75rem",
               fontWeight: 600,
-              color: "#64748B",
+              color: "var(--jester-color-onboard-subtitle)",
             }}
           >
             წელი
@@ -690,7 +690,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                 transform: "translateY(-50%)",
                 background: "none",
                 border: "none",
-                color: "#64748B",
+                color: "var(--jester-color-onboard-subtitle)",
                 fontSize: "0.75rem",
                 cursor: disabled ? "not-allowed" : "pointer",
                 padding: "0.25rem",
@@ -716,9 +716,9 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                 marginTop: "0.35rem",
                 width: "275px",
                 maxWidth: "92vw",
-                backgroundColor: "#FFFFFF",
+                backgroundColor: "var(--jester-color-surface, #FFFFFF)",
                 borderRadius: "10px",
-                border: "1.5px solid #CBD5E1",
+                border: "1.5px solid var(--jester-primitive-slate-300, #CBD5E1)",
                 boxShadow:
                   "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
                 zIndex: 1000,
@@ -734,10 +734,10 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                   justifyContent: "space-between",
                   marginBottom: "0.45rem",
                   paddingBottom: "0.35rem",
-                  borderBottom: "1px solid #F1F5F9",
+                  borderBottom: "1px solid var(--jester-primitive-slate-100, #F1F5F9)",
                 }}
               >
-                <div style={{ display: "flex", gap: "0.25rem", background: "#F1F5F9", padding: "2px", borderRadius: "6px" }}>
+                <div style={{ display: "flex", gap: "0.25rem", background: "var(--jester-primitive-slate-100)", padding: "2px", borderRadius: "6px" }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -749,8 +749,8 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                       padding: "0.15rem 0.45rem",
                       borderRadius: "4px",
                       border: "none",
-                      background: filterMode === "generations" ? "#FFFFFF" : "transparent",
-                      color: filterMode === "generations" ? "#0F172A" : "#64748B",
+                      background: filterMode === "generations" ? "var(--jester-color-surface, #FFFFFF)" : "transparent",
+                      color: filterMode === "generations" ? "var(--jester-color-onboard-title)" : "var(--jester-color-onboard-subtitle)",
                       fontWeight: filterMode === "generations" ? 700 : 500,
                       cursor: "pointer",
                       boxShadow: filterMode === "generations" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
@@ -769,8 +769,8 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                       padding: "0.15rem 0.45rem",
                       borderRadius: "4px",
                       border: "none",
-                      background: filterMode === "decades" ? "#FFFFFF" : "transparent",
-                      color: filterMode === "decades" ? "#0F172A" : "#64748B",
+                      background: filterMode === "decades" ? "var(--jester-color-surface, #FFFFFF)" : "transparent",
+                      color: filterMode === "decades" ? "var(--jester-color-onboard-title)" : "var(--jester-color-onboard-subtitle)",
                       fontWeight: filterMode === "decades" ? 700 : 500,
                       cursor: "pointer",
                       boxShadow: filterMode === "decades" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
@@ -779,7 +779,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                     ათწლეულები
                   </button>
                 </div>
-                <span style={{ fontSize: "0.68rem", color: "#94A3B8" }}>
+                <span style={{ fontSize: "0.68rem", color: "var(--jester-primitive-slate-400)" }}>
                   {filterMode === "generations" ? "თაობა" : "ათწლეული"}
                 </span>
               </div>
@@ -792,7 +792,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                   flexWrap: "wrap",
                   marginBottom: "0.55rem",
                   paddingBottom: "0.55rem",
-                  borderBottom: "1px solid #E2E8F0",
+                  borderBottom: "1px solid var(--jester-primitive-slate-200, #E2E8F0)",
                 }}
               >
                 <button
@@ -803,12 +803,12 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                     fontSize: "0.72rem",
                     padding: "0.25rem 0.55rem",
                     borderRadius: "8px",
-                    border: selectedCohort === null ? "1.5px solid #FF7A2F" : "1px solid #E2E8F0",
-                    backgroundColor: "#FFFFFF",
-                    color: selectedCohort === null ? "#E9681F" : "#334155",
+                    border: selectedCohort === null ? "1.5px solid var(--jester-primitive-orange-500, #FF7A2F)" : "1px solid var(--jester-primitive-slate-200, #E2E8F0)",
+                    backgroundColor: "var(--jester-color-surface, #FFFFFF)",
+                    color: selectedCohort === null ? "var(--jester-color-brand-border)" : "var(--jester-primitive-slate-700)",
                     fontWeight: selectedCohort === null ? 700 : 500,
                     cursor: "pointer",
-                    boxShadow: selectedCohort === null ? "0 1px 2px rgba(255, 122, 47, 0.15)" : "none",
+                    boxShadow: selectedCohort === null ? "var(--jester-shadow-brand-cohort, 0 1px 2px color-mix(in srgb, var(--jester-primitive-orange-500) 15%, transparent))" : "none",
                   }}
                 >
                   ყველა
@@ -825,12 +825,12 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                         fontSize: "0.72rem",
                         padding: "0.25rem 0.55rem",
                         borderRadius: "8px",
-                        border: isSelected ? "1.5px solid #FF7A2F" : "1px solid #E2E8F0",
-                        backgroundColor: "#FFFFFF",
-                        color: isSelected ? "#E9681F" : "#334155",
+                        border: isSelected ? "1.5px solid var(--jester-primitive-orange-500, #FF7A2F)" : "1px solid var(--jester-primitive-slate-200, #E2E8F0)",
+                        backgroundColor: "var(--jester-color-surface, #FFFFFF)",
+                        color: isSelected ? "var(--jester-color-brand-border)" : "var(--jester-primitive-slate-700)",
                         fontWeight: isSelected ? 700 : 500,
                         cursor: "pointer",
-                        boxShadow: isSelected ? "0 1px 2px rgba(255, 122, 47, 0.15)" : "none",
+                        boxShadow: isSelected ? "var(--jester-shadow-brand-cohort, 0 1px 2px color-mix(in srgb, var(--jester-primitive-orange-500) 15%, transparent))" : "none",
                       }}
                     >
                       {cohort.label}
@@ -855,7 +855,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                     style={{
                       gridColumn: "1 / -1",
                       textAlign: "center",
-                      color: "#94A3B8",
+                      color: "var(--jester-primitive-slate-400)",
                       fontSize: "0.8rem",
                       padding: "1rem 0",
                     }}
@@ -883,17 +883,17 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
                           fontSize: "0.95rem",
                           cursor: "pointer",
                           backgroundColor: isSelected
-                            ? "#FF7A2F"
+                            ? "var(--jester-color-brand-primary)"
                             : isHighlighted
-                            ? "#F1F5F9"
+                            ? "var(--jester-primitive-slate-100)"
                             : "transparent",
                           color: isSelected
-                            ? "#FFFFFF"
+                            ? "var(--jester-primitive-ink-inverse, #FFFFFF)"
                             : isRecommendedAge
-                            ? "#0F172A"
-                            : "#94A3B8",
+                            ? "var(--jester-color-onboard-title)"
+                            : "var(--jester-primitive-slate-400)",
                           fontWeight: isSelected ? 800 : isRecommendedAge ? 600 : 400,
-                          border: isSelected ? "1px solid #E9681F" : "1px solid transparent",
+                          border: isSelected ? "1px solid var(--jester-primitive-orange-600, #E9681F)" : "1px solid transparent",
                           userSelect: "none",
                           transition: "background-color 0.15s ease, color 0.15s ease",
                         }}
@@ -917,7 +917,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
           aria-live="polite"
           style={{
             marginTop: "0.45rem",
-            color: "#AE3534",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.8rem",
             fontWeight: 500,
             display: "flex",
@@ -933,7 +933,7 @@ export const BirthDateInput: React.FC<BirthDateInputProps> = ({
           id={helperId}
           style={{
             marginTop: "0.45rem",
-            color: "#64748B",
+            color: "var(--jester-color-onboard-subtitle)",
             fontSize: "0.8rem",
           }}
         >

@@ -234,7 +234,7 @@ export function HomePersonalInsights({
                               {unlockingLayerId === layer.layer_id ? 'იხსნება…' : `შრის განბლოკვა (${layer.star_cost ?? 5} ✦)`}
                             </button>
                             {layerUnlockErrors[layer.layer_id] && (
-                              <p role="alert" className="home-unlock-error" style={{ color: '#B91C1C', fontSize: '0.8rem', marginTop: '0.4rem' }}>
+                              <p role="alert" className="home-unlock-error" style={{ color: 'var(--jester-primitive-home-danger-text)', fontSize: '0.8rem', marginTop: '0.4rem' }}>
                                 {layerUnlockErrors[layer.layer_id]}
                               </p>
                             )}

@@ -169,10 +169,10 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
         <div style={{ fontSize: "3rem", marginBottom: "1rem", animation: "spin 2s linear infinite" }}>
           🪐
         </div>
-        <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#0f172a", margin: "0 0 0.5rem 0" }}>
+        <h3 style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--jester-color-onboard-title)", margin: "0 0 0.5rem 0" }}>
           ასტროლოგიური რუკის გამოთვლა...
         </h3>
-        <p style={{ color: "#64748b", fontSize: "0.9rem", margin: 0 }}>
+        <p style={{ color: "var(--jester-color-onboard-subtitle)", fontSize: "0.9rem", margin: 0 }}>
           Swiss Ephemeris-ის საშუალებით ითვლება თქვენი ნატალური პლანეტები და ასტროლოგიური პარამეტრები.
         </p>
       </div>
@@ -185,10 +185,10 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
         <div
           style={{
             padding: "1rem",
-            background: "#fff1f0",
-            border: "1px solid #ff4d4f",
+            background: "var(--jester-color-danger-bg)",
+            border: "1px solid var(--jester-color-danger-border)",
             borderRadius: "8px",
-            color: "#cf1322",
+            color: "var(--jester-color-danger-text)",
             fontSize: "0.9rem",
           }}
         >
@@ -231,10 +231,10 @@ export const CreateSelfStep: React.FC<CreateSelfStepProps> = ({
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", textAlign: "center" }}>
       <div>
         <div style={{ fontSize: "2.8rem", marginBottom: "0.5rem" }}>🎉</div>
-        <h2 style={{ margin: "0 0 0.4rem 0", fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>
+        <h2 style={{ margin: "0 0 0.4rem 0", fontSize: "1.5rem", fontWeight: 800, color: "var(--jester-color-onboard-title)" }}>
           კეთილი იყოს თქვენი მობრძანება JESTER-ში!
         </h2>
-        <p style={{ margin: 0, color: "#64748b", fontSize: "0.9rem" }}>
+        <p style={{ margin: 0, color: "var(--jester-color-onboard-subtitle)", fontSize: "0.9rem" }}>
           თქვენი პროფილი და ნატალური რუკა წარმატებით შეიქმნა.
         </p>
       </div>

@@ -184,8 +184,8 @@ export const ComparePage: React.FC = () => {
         {/* Header Skeleton */}
         <div
           style={{
-            backgroundColor: "#ffffff",
-            border: "1px solid #e2e8f0",
+            backgroundColor: "var(--jester-primitive-white, #ffffff)",
+            border: "1px solid var(--jester-primitive-slate-200, #e2e8f0)",
             borderRadius: "16px",
             padding: "1.75rem 1.5rem",
             display: "flex",

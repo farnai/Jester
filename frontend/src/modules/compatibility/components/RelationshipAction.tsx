@@ -30,14 +30,14 @@ export const RelationshipAction: React.FC<RelationshipActionProps> = ({
     <Card
       padded
       style={{
-        backgroundColor: "#ffffff",
-        border: "1px solid #e2e8f0",
+        backgroundColor: "var(--jester-primitive-white, #ffffff)",
+        border: "1px solid var(--jester-primitive-slate-200, #e2e8f0)",
         borderRadius: "16px",
         padding: "1.5rem",
         display: "flex",
         flexDirection: "column",
         gap: "1rem",
-        boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+        boxShadow: "var(--jester-shadow-subtle, 0 2px 8px rgba(15, 23, 42, 0.04))",
       }}
     >
       {/* State: none (Unconnected) */}
@@ -52,10 +52,10 @@ export const RelationshipAction: React.FC<RelationshipActionProps> = ({
           }}
         >
           <div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>
+            <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--jester-primitive-slate-900, #0f172a)" }}>
               დაკავშირება {targetName}-თან
             </div>
-            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "#64748b" }}>
+            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
               ინსაითი გაძლევთ საუბრის დასაწყისს — გაუგზავნეთ მოწვევა.
             </p>
           </div>
@@ -84,10 +84,10 @@ export const RelationshipAction: React.FC<RelationshipActionProps> = ({
           }}
         >
           <div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>
+            <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--jester-primitive-slate-900, #0f172a)" }}>
               მოწვევა გაგზავნილია
             </div>
-            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "#64748b" }}>
+            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
               თქვენი მოთხოვნა {targetName}-ის პასუხის მოლოდინშია.
             </p>
           </div>
@@ -110,10 +110,10 @@ export const RelationshipAction: React.FC<RelationshipActionProps> = ({
           }}
         >
           <div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>
+            <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--jester-primitive-slate-900, #0f172a)" }}>
               {targetName} გიწვევთ დასაკავშირებლად
             </div>
-            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "#64748b" }}>
+            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
               დათანხმდით მოწვევას პირდაპირი საუბრის დასაწყებად.
             </p>
           </div>
@@ -151,10 +151,10 @@ export const RelationshipAction: React.FC<RelationshipActionProps> = ({
           }}
         >
           <div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>
+            <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--jester-primitive-slate-900, #0f172a)" }}>
               თქვენ დაკავშირებული ხართ
             </div>
-            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "#64748b" }}>
+            <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.85rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
               გადადით პირდაპირ ჩატში და გაუზიარეთ თქვენი აზრი.
             </p>
           </div>

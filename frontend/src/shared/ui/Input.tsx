@@ -41,7 +41,7 @@ export const Input: React.FC<InputProps> = ({
           style={{
             fontSize: "0.85rem",
             fontWeight: 700,
-            color: "#222630",
+            color: "var(--jester-color-text-primary)",
             marginBottom: "0.35rem",
             display: "block",
           }}
@@ -54,10 +54,10 @@ export const Input: React.FC<InputProps> = ({
         style={{
           display: "flex",
           alignItems: "center",
-          backgroundColor: disabled ? "#F3EEE6" : "#FFFFFF",
+          backgroundColor: disabled ? "var(--jester-color-surface-disabled)" : "var(--jester-color-surface)",
           // 3:1+ WCAG non-text contrast for interactive inputs (#8F8A83), focused (#9E4215), error (#AE3534)
-          border: `1.5px solid ${error ? "#AE3534" : isFocused ? "#9E4215" : "#8F8A83"}`,
-          boxShadow: isFocused && !error ? "0 0 0 2px rgba(158, 66, 21, 0.15)" : undefined,
+          border: `1.5px solid ${error ? "var(--jester-color-danger-text)" : isFocused ? "var(--jester-color-brand-dark)" : "var(--jester-color-border-interactive)"}`,
+          boxShadow: isFocused && !error ? "var(--jester-shadow-focus-ring)" : undefined,
           borderRadius: "10px",
           padding: "0 0.85rem",
           minHeight: "44px", // Accessible 44px touch target height
@@ -66,7 +66,7 @@ export const Input: React.FC<InputProps> = ({
         }}
       >
         {prefixIcon && (
-          <span style={{ marginRight: "0.5rem", color: "#6A716F", display: "flex" }}>
+          <span style={{ marginRight: "0.5rem", color: "var(--jester-color-text-secondary)", display: "flex" }}>
             {prefixIcon}
           </span>
         )}
@@ -88,7 +88,7 @@ export const Input: React.FC<InputProps> = ({
             outline: "none",
             background: "transparent",
             fontSize: "0.95rem",
-            color: "#222630",
+            color: "var(--jester-color-text-primary)",
             padding: "0.6rem 0",
             minWidth: 0,
             ...style,
@@ -97,18 +97,18 @@ export const Input: React.FC<InputProps> = ({
         />
 
         {suffixIcon && (
-          <span style={{ marginLeft: "0.5rem", color: "#6A716F", display: "flex" }}>
+          <span style={{ marginLeft: "0.5rem", color: "var(--jester-color-text-secondary)", display: "flex" }}>
             {suffixIcon}
           </span>
         )}
       </div>
 
       {error ? (
-        <span style={{ fontSize: "0.8rem", color: "#AE3534", marginTop: "0.3rem", fontWeight: 600 }}>
+        <span style={{ fontSize: "0.8rem", color: "var(--jester-color-danger-text)", marginTop: "0.3rem", fontWeight: 600 }}>
           {error}
         </span>
       ) : helperText ? (
-        <span style={{ fontSize: "0.8rem", color: "#6A716F", marginTop: "0.25rem" }}>
+        <span style={{ fontSize: "0.8rem", color: "var(--jester-color-text-secondary)", marginTop: "0.25rem" }}>
           {helperText}
         </span>
       ) : null}

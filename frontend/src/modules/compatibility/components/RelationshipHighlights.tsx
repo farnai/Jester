@@ -39,25 +39,25 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
             margin: "0 0 0.25rem 0",
             fontSize: "1.15rem",
             fontWeight: 700,
-            color: "#0f172a",
+            color: "var(--jester-primitive-slate-900, #0f172a)",
           }}
         >
           რა გამოირჩევა თქვენ შორის?
         </h2>
-        <p style={{ margin: 0, fontSize: "0.88rem", color: "#64748b" }}>
+        <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--jester-primitive-slate-500, #64748b)" }}>
           ურთიერთობის ძირითადი მახასიათებლები და ინტუიციური დინამიკა.
         </p>
       </div>
 
       {/* Primary Relational Narrative */}
       {interpretation?.text && (
-        <Card padded style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0" }}>
+        <Card padded style={{ backgroundColor: "var(--jester-primitive-white, #ffffff)", border: "1px solid var(--jester-primitive-slate-200, #e2e8f0)" }}>
           {interpretation.title && (
             <div
               style={{
                 fontSize: "1.05rem",
                 fontWeight: 700,
-                color: "#1e293b",
+                color: "var(--jester-primitive-slate-800, #1e293b)",
                 marginBottom: "0.5rem",
               }}
             >
@@ -68,7 +68,7 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
             style={{
               margin: 0,
               fontSize: "0.95rem",
-              color: "#334155",
+              color: "var(--jester-primitive-slate-700, #334155)",
               lineHeight: 1.6,
             }}
           >
@@ -95,9 +95,9 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
                 key={idx}
                 padded
                 style={{
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #f1f5f9",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
+                  backgroundColor: "var(--jester-primitive-white, #ffffff)",
+                  border: "1px solid var(--jester-primitive-slate-100, #f1f5f9)",
+                  boxShadow: "var(--jester-shadow-card-subtle, 0 1px 3px rgba(0,0,0,0.02))",
                 }}
               >
                 <div
@@ -115,7 +115,7 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
                       {cat.icon} {cat.label}
                     </Badge>
                     {strengthLabel && (
-                      <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 500 }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--jester-primitive-slate-400, #94a3b8)", fontWeight: 500 }}>
                         • {strengthLabel}
                       </span>
                     )}
@@ -126,7 +126,7 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
                   style={{
                     fontSize: "0.98rem",
                     fontWeight: 600,
-                    color: "#0f172a",
+                    color: "var(--jester-primitive-slate-900, #0f172a)",
                     marginBottom: text ? "0.35rem" : 0,
                   }}
                 >
@@ -138,7 +138,7 @@ export const RelationshipHighlights: React.FC<RelationshipHighlightsProps> = ({
                     style={{
                       margin: 0,
                       fontSize: "0.9rem",
-                      color: "#475569",
+                      color: "var(--jester-primitive-slate-600, #475569)",
                       lineHeight: 1.55,
                     }}
                   >
